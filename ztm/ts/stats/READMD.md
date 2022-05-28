@@ -1,6 +1,8 @@
 # Note
 
 
+- Reuseable Code
+
 ```bash
 # init
 pnpm add -g typescript
@@ -11,7 +13,13 @@ pnpm add @type/node
 
 # use enum
 
+# use tuple
+
 # interface
+
+# Generic
+
+# inheritance
 
 abstract class Foo
   -> class Foo1
