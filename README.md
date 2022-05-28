@@ -2,7 +2,7 @@
 
 > Record my learning path, in case one day I forgot something important.
 
-Sometime you don't need notes, but just need some coding example.
+Sometimes you don't need notes, but just need some coding example to recall some details.
 
 Keep Learning and Happy Coding!
 
