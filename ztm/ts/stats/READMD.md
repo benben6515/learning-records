@@ -1,8 +1,5 @@
 # Note
 
-
-- Reuseable Code
-
 ```bash
 # init
 pnpm add -g typescript

@@ -1,0 +1,21 @@
+{
+  "name": "build-web-framework",
+  "version": "1.0.0",
+  "description": "build a web frame work by ts",
+  "main": "index.js",
+  "scripts": {
+    "start:parcel": "parcel index.html",
+    "start:db": "json-server -w db.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "0.27.1"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "process": "^0.11.10"
+  }
+}
