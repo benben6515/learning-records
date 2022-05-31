@@ -21,4 +21,10 @@ pnpm add axios
 
 # big class -> use composition class
 
+tsc --init
+
+# In TS, strings can be types (like: 'apple' | 'banana')
+
+# In JS and TS, all keys of Object are "string"
+
 ```

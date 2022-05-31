@@ -1,21 +1,23 @@
-import axios, { AxiosResponse } from "axios";
-const BaseURL = 'http://localhost:3000'
+import axios, { AxiosPromise } from "axios";
 
-// TODO: refactor sync class
-export class Sync {
-  fetch(): void {
-    axios.get(`${BaseURL}/users/${this.get('id')}`)
-      .then((response: AxiosResponse): void => {
-        this.set(response.data)
-      })
+interface HasId {
+  id?: number
+}
+
+export class Sync<T extends HasId> {
+  constructor(public rootUrl: string) {}
+
+  public fetch(id: number): AxiosPromise {
+    return axios.get(`${this.rootUrl}/${id}`)
   }
 
-  save(): void {
-    const id = this.get('id')
+  public save(data: T): AxiosPromise {
+    const { id } = data
+
     if (id) {
-      axios.put(`${BaseURL}/users/${id}`, this.data)
+      return axios.put(`${this.rootUrl}/${id}`, data)
     } else {
-      axios.post(`${BaseURL}/users`, this.data)
+      return axios.post(`${this.rootUrl}`, data)
     }
   }
 
