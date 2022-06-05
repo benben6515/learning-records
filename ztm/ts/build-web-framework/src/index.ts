@@ -1,9 +1,8 @@
-import { Collection } from './models/Collection'
+import { UserForm } from './views/UserForm'
+import { User } from './models/User'
 
-const collection = new Collection('https://localhost:3000/user')
+const user = User.buildUser({ name: 'name', age: 25 })
 
-collection.on('change', () => {
-  console.log(collection)
-})
+const userFrom = new UserForm(document.getElementById('root'), user)
 
-collection.fetch()
+userFrom.render()
