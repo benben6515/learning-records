@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express'
+import { Router, Request, Response, NextFunction } from "express"
 
 interface RequestWithBody extends Request {
   body: { [key: string]: string | undefined }
@@ -11,12 +11,12 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   }
 
   res.status(403)
-  res.send('Not permitted')
+  res.send("Not permitted")
 }
 
 const router = Router()
 
-router.get('/login', (req: Request, res: Response) => {
+router.get("/login", (req: Request, res: Response) => {
   res.send(`
     <form method="POST">
       <div>
@@ -32,18 +32,18 @@ router.get('/login', (req: Request, res: Response) => {
   `)
 })
 
-router.post('/login', (req: RequestWithBody, res: Response) => {
+router.post("/login", (req: RequestWithBody, res: Response) => {
   const { email, password } = req.body
-  if (email && password && email === 'hi@hi.com' && password === 'password') {
+  if (email && password && email === "hi@hi.com" && password === "password") {
     console.log(email + password)
     req.session = { loggedIn: true }
-    res.redirect('/')
+    res.redirect("/")
   } else {
-    res.send('Invalid email or password')
+    res.send("Invalid email or password")
   }
 })
 
-router.get('/', (req: Request, res: Response) => {
+router.get("/", (req: Request, res: Response) => {
   if (req.session?.loggedIn) {
     res.send(`
       <div>
@@ -54,13 +54,49 @@ router.get('/', (req: Request, res: Response) => {
   }
 })
 
-router.get('/logout', (req: Request, res: Response) => {
+router.get("/logout", (req: Request, res: Response) => {
   req.session = null
-  res.redirect('/')
+  res.redirect("/")
 })
 
-router.get('/protected', requireAuth, (req: Request, res: Response) => {
-  res.send('Welcome to protected page')
+router.get("/protected", requireAuth, (req: Request, res: Response) => {
+  res.send("Welcome to protected page")
 })
 
 export { router }
+
+// class
+
+@controller("/auth")
+class LoginController {
+  @get("/login")
+  getLogin(req: Request, res: Response): void {
+    res.send("from")
+  }
+
+  @post("/login")
+  @validateBody("email", "password")
+  @URLSearchParams(requireAuth)
+  postLogin(req: Request, res: Response): void {
+    const { email, password } = req.body
+    if (email && password && email === "hi@hi.com" && password === "password") {
+      console.log(email + password)
+      req.session = { loggedIn: true }
+      res.redirect("/")
+    } else {
+      res.send("Invalid email or password")
+    }
+  }
+}
+
+const post =
+  (routeName: string) =>
+  (target: any, key: string, decs: PropertyDescriptor) => {
+    router.post(routeName, target[key])
+  }
+
+const use = (middleware: any) => (target: any, key: string, decs: PropertyDescriptor) => {
+  // hard part
+  router.addMiddlewareToHandlerWeJustRegistered(middleware)
+  // TODO
+}
