@@ -64,39 +64,3 @@ router.get("/protected", requireAuth, (req: Request, res: Response) => {
 })
 
 export { router }
-
-// class
-
-@controller("/auth")
-class LoginController {
-  @get("/login")
-  getLogin(req: Request, res: Response): void {
-    res.send("from")
-  }
-
-  @post("/login")
-  @validateBody("email", "password")
-  @URLSearchParams(requireAuth)
-  postLogin(req: Request, res: Response): void {
-    const { email, password } = req.body
-    if (email && password && email === "hi@hi.com" && password === "password") {
-      console.log(email + password)
-      req.session = { loggedIn: true }
-      res.redirect("/")
-    } else {
-      res.send("Invalid email or password")
-    }
-  }
-}
-
-const post =
-  (routeName: string) =>
-  (target: any, key: string, decs: PropertyDescriptor) => {
-    router.post(routeName, target[key])
-  }
-
-const use = (middleware: any) => (target: any, key: string, decs: PropertyDescriptor) => {
-  // hard part
-  router.addMiddlewareToHandlerWeJustRegistered(middleware)
-  // TODO
-}
