@@ -9,11 +9,11 @@ const requireAuth = (req, res, next) => {
         return;
     }
     res.status(403);
-    res.send('Not permitted');
+    res.send("Not permitted");
 };
 const router = (0, express_1.Router)();
 exports.router = router;
-router.get('/login', (req, res) => {
+router.get("/login", (req, res) => {
     res.send(`
     <form method="POST">
       <div>
@@ -28,18 +28,18 @@ router.get('/login', (req, res) => {
     <form>
   `);
 });
-router.post('/login', (req, res) => {
+router.post("/login", (req, res) => {
     const { email, password } = req.body;
-    if (email && password && email === 'hi@hi.com' && password === 'password') {
+    if (email && password && email === "hi@hi.com" && password === "password") {
         console.log(email + password);
         req.session = { loggedIn: true };
-        res.redirect('/');
+        res.redirect("/");
     }
     else {
-        res.send('Invalid email or password');
+        res.send("Invalid email or password");
     }
 });
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
     var _a;
     if ((_a = req.session) === null || _a === void 0 ? void 0 : _a.loggedIn) {
         res.send(`
@@ -50,10 +50,10 @@ router.get('/', (req, res) => {
     `);
     }
 });
-router.get('/logout', (req, res) => {
+router.get("/logout", (req, res) => {
     req.session = null;
-    res.redirect('/');
+    res.redirect("/");
 });
-router.get('/protected', requireAuth, (req, res) => {
-    res.send('Welcome to protected page');
+router.get("/protected", requireAuth, (req, res) => {
+    res.send("Welcome to protected page");
 });
