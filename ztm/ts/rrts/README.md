@@ -1,3 +1,16 @@
+# react, redux and typescript
+
+- setup
+```
+npx create-react-app project --template typescript
+
+npm i redux react-redux redux-thunk axios
+```
+
+
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
