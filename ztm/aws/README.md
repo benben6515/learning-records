@@ -1,6 +1,6 @@
 # ztm aws
 
-### course outline
+## course outline
 
 - course introduction
 - cloud concepts
@@ -9,7 +9,8 @@
 - billing and pricing
 - preparing for the exam
 
-### AWS exam
+## AWS exam
+
 - Domain1: Cloud Concepts 26%
 - Domain2: Security and Compliance 25%
 - Domain3: Technology 33%

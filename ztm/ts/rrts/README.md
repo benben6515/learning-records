@@ -7,8 +7,6 @@ npx create-react-app project --template typescript
 npm i redux react-redux redux-thunk axios
 ```
 
-
-
 ---
 
 # Getting Started with Create React App

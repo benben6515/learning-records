@@ -10,11 +10,9 @@
 
 ### Resources to keep handy for this module
 
-[ Official AWS Certified Cloud Practitioner Exam Guide ]:
-https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf
+[Official AWS Certified Cloud Practitioner Exam Guide](https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf)
 
-[ AWS Well-Architected Framework ]:
-https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html
+[AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html)
 
 ### The core components require to run your website
 
