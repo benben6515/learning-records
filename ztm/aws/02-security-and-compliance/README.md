@@ -28,9 +28,23 @@ Resources to keep handy for this module:
 > Control authentication (who) and authorization (what they can do)
 
 - IAM Users
-  - TODO
+  - console > Users > `Add users`
+  - Root User
+    - One per account
+    - Unrestricted access
+    - Difficult to restrict or revoke access
+    - Can perform the following tasks: Close an AWS account, Change an AWS support plan, Change AWS account settings
+  - IAM User
+    - Multiple per account
+    - Users can be deleted or disabled
+    - Easy to restrict access
+  - Best Practice
+    - Always work in your IAM account, not the root account
+    - Set up IAM users with least number of permissions needed
 
 - IAM User group
+  - console > Users > `Add users`
+
 - IAM Roles
 - IAM Policies
 - Multi-Factor Authentication(MFA)
