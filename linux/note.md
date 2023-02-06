@@ -113,3 +113,56 @@ getfacl FILE_NAME
 # set file acl
 setfacl -m u:USER_NAME:rw /tmp/FILE_NAME
 ```
+
+- help commend
+
+```sh
+# 3 type of help
+
+# simple desc
+whatis command
+
+# usage
+command --help
+
+# document
+man command
+```
+
+- adding text to files
+
+```sh
+# 3 way to add text to a file
+
+# 1. vi
+vi hi
+
+# 2. Redirect command output > or >>
+
+# 3. echo > or >>
+echo "Hello world" > hi
+cat hi
+
+# add text on bottom of file
+echo "hi" >> hi
+```
+
+- input and output
+
+stdin: Standard input, 0
+stdout: Standard output, 1
+stderr: Standard error, 2
+
+```sh
+# output
+ls -la > listings
+ls -la >> listings
+
+# input
+cat < listings
+# same
+cat listings
+mail -s "Office memo" allusers@abc.com < memo-letter
+
+# error
+```
