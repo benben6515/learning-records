@@ -166,3 +166,27 @@ mail -s "Office memo" allusers@abc.com < memo-letter
 
 # error
 ```
+
+- pipe
+
+```sh
+# tee
+echo "hello world" | tee hi
+echo hi
+
+# add on the bottom
+echo "hello world" | tee -a hi
+```
+
+@ find line in dir
+
+```sh
+# find line in file
+wc -w index.js
+
+# find line in file
+wc -l index.js
+
+# find line in dir
+find /src -type f | xargs wc -l
+```
