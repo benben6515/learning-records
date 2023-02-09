@@ -190,3 +190,51 @@ wc -l index.js
 # find line in dir
 find /src -type f | xargs wc -l
 ```
+
+- pipes
+
+```sh
+# command1 | command2
+ls -ltr | more
+
+ls -l | tail -l
+```
+
+- file maintenance commands
+
+```sh
+cp
+rm
+mv
+mkdir
+rmdir # or `rm -r`, `rm -Rf` (remove sub-dir and its all content)
+chgrp
+chown
+```
+
+- file display commands
+
+```sh
+# cat
+cat FILE_NAME
+
+# more
+more FILE_NAME # `space` for next page, `q` for quit
+
+# less
+less FILE_NAME
+
+# head
+lead -2 FILE_NAME
+
+# tail
+tail -2 FILE_NAME
+```
+
+- filters / text processors
+  - cut
+  - awk
+  - grep/egrep
+  - sort
+  - uniq
+  - wc (word count)
