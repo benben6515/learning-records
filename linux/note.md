@@ -238,3 +238,64 @@ tail -2 FILE_NAME
   - sort
   - uniq
   - wc (word count)
+
+- cut
+
+```sh
+# utils
+cut --version
+cut --help
+
+# does not work, you need add `-X`
+cut FILE_NAME
+
+# cut first character
+cut -c1 FILE_NAME
+
+# cut character by range, chose
+cut -c1,2,4 FILE_NAME
+cut -c1-3 FILE_NAME
+cut -c1-3,6-8 FILE_NAME
+
+# cut list by byte size (same as c1-3, but on certain device byte may change)
+cut -b1,3 FILE_NAME
+
+# field
+cut -d: -f 6 /etc/passwd
+cut -d, -f 6-7 /etc/passwd
+
+# combine
+ls -l | cut -c2-4
+```
+
+- awk
+
+awk is a utility/language for data extraction.
+
+> Its name comes from the initials of its designers: **Aho, Weinberger, and Kernighan**. awk features user-defined functions, multiple input streams, TCP/IP networking access, and a rich set of regular expressions.
+
+```sh
+# utils
+awk --version
+
+# field
+awk '{print $1}' FILE_NAME
+ls -l | awk '{print $1,$3}' FILE_NAME
+ls -l | awk '{print $NF}' FILE_NAME
+
+# search
+awk '/Jerry/ {print}' FILE_NAME
+
+# output only 1 field of FILE_NAME
+awk -F: '{print $1}' /etc/passwd
+
+# replace
+echo "Hello Tom" | awk '{$2="Benben"; print $0}'
+cat FILE_NAME | awk '${$2="Benben"; print $0}'
+
+awk 'length($0) > 15' FILE_NAME
+ls -l | awk '{if($9 == "Benben") print $0;}'
+
+# number of fields
+ls -l | awk '{print NF}'
+```
