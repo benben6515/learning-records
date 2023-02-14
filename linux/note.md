@@ -299,3 +299,37 @@ ls -l | awk '{if($9 == "Benben") print $0;}'
 # number of fields
 ls -l | awk '{print NF}'
 ```
+
+- grep/egrep
+
+grep command which stands for **global regular expression print**, processes text line by line and prints any lines which match a specific pattern.
+
+```sh
+# utility
+grep --version
+grep --help
+
+# search
+grep keyword FILE_NAME
+ls -ltr | grep keyword FILE_NAME
+
+# search and count
+grep -c keyword FILE_NAME
+
+# search and ignore case-sensitive
+grep -i KEYword FILE_NAME
+
+# search and display match lines and their line numbers
+grep -n keyword FILE_NAME
+
+# search and display keyword
+grep -n keyword FILE_NAME
+
+# combine
+grep keyword FILE_NAME | awk `{print $1}`
+grep keyword FILE_NAME | awk `{print $1}` | cut -c1-3
+ls -l | grep Desktop
+
+# search for 2 keywords
+egrep -i "keyword1|keyword2" FILE_NAME
+```
