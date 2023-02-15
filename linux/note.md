@@ -333,3 +333,49 @@ ls -l | grep Desktop
 # search for 2 keywords
 egrep -i "keyword1|keyword2" FILE_NAME
 ```
+
+- sort/uniq
+
+```sh
+# sort
+sort FILE_NAME
+
+# sort reverse
+sort -r FILE_NAME
+
+# sort by field
+sort -k2 FILE_NAME
+
+# uniq
+uniq FILE_NAME
+
+# combine
+sort FILE_NAME | uniq
+
+# count
+sort FILE_NAME | uniq -c
+```
+
+- wc
+
+The command reads either standard input or a list of files and generates: **newline count, word count, and byte count**
+
+```sh
+# cat newline count, word count, and byte count
+wc FILE_NAME
+
+# cat lines
+wc -l FILE_NAME
+# cat words
+wc -w FILE_NAME
+# cat bytes
+wc -c FILE_NAME
+
+# combine
+ls -l | wc -l
+```
+
+- diff/cmp
+
+diff: line by line
+cmp: byte by byte
