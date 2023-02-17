@@ -378,4 +378,71 @@ ls -l | wc -l
 - diff/cmp
 
 diff: line by line
-cmp: byte by byte
+
+cmp: byte by byte, compare
+
+```sh
+diff FILE_NAME1 FILE_NAME2
+
+cmp FILE_NAME1 FILE_NAME2
+```
+
+- tar/gzip/gunzip
+
+```sh
+# ----- tar ----- Tape ARchive
+# c = create, v = verbose list, f = file archive
+tar -cvf archive.tar .
+
+# create archive.tar from foo and bar
+tar -cf archive.tar foo bar
+
+# extract file form archive
+tar -xvf archive.tar
+
+# ----- gzip ----- compress
+# compress archive.tar => archive.tar.gz
+gzip archive.tar
+
+# un compress
+gzip -d archive.tar.gz
+```
+
+- truncate
+
+often to shrink or extend the size of a file to the specified size
+
+```sh
+# shrink file to 10 byte
+truncate -s 10 FILE_NAME
+```
+
+- multiple files cna be combined into one and one file can be split into multiple files
+
+```sh
+cat file1 file2 file3 > file4
+split file4
+
+# split file.txt into 300 lines per file and output to child_file_aa, child_file_ab, child_file_ac
+split -l 300 file.txt child_file
+
+# combine
+cat test01 > file
+cat test02 >> file
+cat test03 >> file
+cat test04 >> file
+cat test05 >> file
+cat file | wc -l
+split -ls 2 file sep
+ls -ltr
+# speaa
+# speab
+# speac
+# spead
+```
+
+- linux vs. windows
+
+ | description            | windows | linux |
+ | ---------------------- | ------- | ----- |
+ | listing of a directory | dir     | ls -l |
