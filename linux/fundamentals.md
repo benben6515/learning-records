@@ -443,6 +443,16 @@ ls -ltr
 
 - linux vs. windows
 
- | description            | windows | linux |
- | ---------------------- | ------- | ----- |
- | listing of a directory | dir     | ls -l |
+ | description                               | windows        | linux       |
+ | ----------------------------------------- | -------------- | ----------- |
+ | listing of a directory                    | dir            | ls -l       |
+ | rename a file                             | ren            | mv          |
+ | copy a file                               | copy           | cp          |
+ | move a file                               | move           | mv          |
+ | clears screen                             | **cls**        | clear       |
+ | delete file                               | del            | rm          |
+ | compare contents of files                 | fc             | diff        |
+ | search for a word/string in a file        | find           | grep        |
+ | display command help                      | **command /?** | man command |
+ | displays your location in the file system | **chdir**      | pwd         |
+ | displays the time                         | **time**       | date        |
