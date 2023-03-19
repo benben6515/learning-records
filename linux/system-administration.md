@@ -141,3 +141,28 @@ last | more
 last | awk '{print $1}' | sort | uniq
 
 ```
+
+- talking to users (users, wall, write)
+
+```sh
+# check users
+users
+
+# broadcast
+wall
+
+# send message to specific user
+write
+
+whoami
+ipconfig
+wall
+# enter message
+# ctrl + v
+# message should show in the system
+
+users USER_NAME
+# enter message
+# ctrl + v
+# message should show is USER_NAME
+```
