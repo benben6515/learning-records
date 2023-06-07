@@ -6,9 +6,13 @@
 
 ```md
 master
-  => worker
-  => worker
+  => fork() / worker
+  => fork() / worker
+  => fork() / worker
   => ...
+
+3 instances of Node
+1 process
 ```
 
 - round robin
@@ -38,4 +42,22 @@ pm2 monit
 
 pm2 restart server
 pm2 reload server # 0 runtime restart
+```
+
+### worker threads
+
+JavaScript don't have multi-treading feature
+
+worker_threads in node.js are based on the `web worker api` and v8 isolated
+
+```md
+main tread
+  => new work() / worker thread
+  => new work() / worker thread
+  => new work() / worker thread
+  => ...
+
+3 instances of Node
+1 process
+share memory with others
 ```
