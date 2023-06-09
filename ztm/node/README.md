@@ -61,3 +61,55 @@ main tread
 1 process
 share memory with others
 ```
+
+## database
+
+- SQL
+
+### 5 main database
+
+structure query language
+
+1. Relational (MySQL ...)
+2. Document (MongoDB ...)
+3. Key Value
+4. Graph
+5. Wide Columnar
+
+- query
+
+```sql
+SELECT * FROM uses
+WHERE id = 1
+```
+
+- Imperative vs Declarative
+  - Declarative: What it happen
+  - Imperative: How it happen
+  - they can both exist (like Python)
+- SQL standard
+  - SQL86 => SQL98 => ... => SQL2008 => SQL2011 => ...
+- Tables: like sheet
+- Columns: vertical line, include table head, column type
+- Rows: horizontal line, a set of attributes
+- Primary Key and Foreign Key
+  - a foreign key is a reference to another primary key
+- Relational vs NoSQL vs MongoBD Databases
+  - need know pros and cons, and design your scheme
+- Scalability
+- Sharding
+  - split and manger multiple database
+
+### comparing sql vs nosql
+
+|                | MongoDB              | Postgres           |
+| -------------- | -------------------- | ------------------ |
+| Type           | Document             | Relational         |
+| Organized into | Document             | Tables             |
+| Query Language | NoSQL                | SQL                |
+| Scaling        | Primarily horizontal | Primarily vertical |
+| Scheme         | Flexible             | Rigid              |
+
+- requirements
+  1. data need to persist between restarts
+  2. api nee ds to be stateless for cluster mode
