@@ -6,10 +6,10 @@
 
 ```md
 master
-  => fork() / worker
-  => fork() / worker
-  => fork() / worker
-  => ...
+=> fork() / worker
+=> fork() / worker
+=> fork() / worker
+=> ...
 
 3 instances of Node
 1 process
@@ -52,10 +52,10 @@ worker_threads in node.js are based on the `web worker api` and v8 isolated
 
 ```md
 main tread
-  => new work() / worker thread
-  => new work() / worker thread
-  => new work() / worker thread
-  => ...
+=> new work() / worker thread
+=> new work() / worker thread
+=> new work() / worker thread
+=> ...
 
 3 instances of Node
 1 process
@@ -100,7 +100,7 @@ WHERE id = 1
 - Sharding
   - split and manger multiple database
 
-### comparing sql vs nosql
+### comparing sql vs no-sql
 
 |                | MongoDB              | Postgres           |
 | -------------- | -------------------- | ------------------ |
@@ -113,3 +113,20 @@ WHERE id = 1
 - requirements
   1. data need to persist between restarts
   2. api nee ds to be stateless for cluster mode
+- ACID
+  - atomicity
+  - consistency
+  - isolation
+  - durability
+- transaction
+- more and more new JavaScript build with MongoDB
+
+### mongoose
+
+```md
+node
+-(Queries)-> Model
+-(Uses)-> Schemes
+-(Maps to)-> Collection
+-(Has many)-> Document
+```
