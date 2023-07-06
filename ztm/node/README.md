@@ -130,3 +130,32 @@ node
 -(Maps to)-> Collection
 -(Has many)-> Document
 ```
+
+```md
+web browser
+
+> http
+> web application
+> http
+> node api
+> mongodb driver
+> database
+```
+
+- ObjectID
+
+  - `_id`: it can be parse to timestamp
+  - `__v`: auto created by mongo, version key
+
+- referential integrity
+- using auto increament id
+
+  - ex:
+
+  ```sql
+  CREATE TABLE animals (
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    name CHAR(30) NOT NULL,
+    PRIMARY KEY (id)
+  );
+  ```
