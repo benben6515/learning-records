@@ -16,6 +16,7 @@ A tag for setting the document base URL, which will be used for all relative lin
 <base href="https://algoexpert.io" />
 
 <!-- This would go to https://algoexpert.io/frontend -->
+
 `<a href="/frontend">FrontendExpert</a>`
 Learn more: <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base>
 
@@ -29,8 +30,8 @@ The line break tag. This is an empty tag used to create a line break in text, su
 
 ```html
 <p>
-    Dear User, <br />
-    We hope you are enjoying FrontendExpert!
+  Dear User, <br />
+  We hope you are enjoying FrontendExpert!
 </p>
 ```
 
@@ -50,10 +51,14 @@ For example, this is a valid HTML form:
 ```html
 <form>
   <label for="username">Username:</label>
-  <input type="text" id="username" />
+  <input
+    type="text"
+    id="username" />
 
   <label for="password">Password:</label>
-  <input type="password" id="password" />
+  <input
+    type="password"
+    id="password" />
 
   <button>Submit</button>
 </form>
@@ -87,7 +92,9 @@ src: The path to the image, either relative or absolute.
 alt: Alternative text to be used with screen readers or any time the image cannot be displayed.
 
 ```html
-<img src="img/dog.png" alt="dog" />
+<img
+  src="img/dog.png"
+  alt="dog" />
 ```
 
 Learn more: <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img>
@@ -99,15 +106,15 @@ List items can also contain other lists to create nested lists. For example:
 
 ```html
 <ol>
-    <li>Step 1</li>
-    <li>
-      Step 2:
-      <ol>
-        <li>Substep 1:</li>
-        <li>Substep 2:</li>
-      </ol>
-    </li>
-    <li>Step 3</li>
+  <li>Step 1</li>
+  <li>
+    Step 2:
+    <ol>
+      <li>Substep 1:</li>
+      <li>Substep 2:</li>
+    </ol>
+  </li>
+  <li>Step 3</li>
 </ol>
 ```
 
@@ -130,13 +137,19 @@ These are some of the more common metadata tags:
 <meta charset="utf-8" />
 
 <!-- Allows for custom responsive CSS, rather than the default scaling behavior of small devices -->
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1" />
 
 <!-- Sets the page author -->
-<meta name="author" content="Conner Ardman" />
+<meta
+  name="author"
+  content="Conner Ardman" />
 
 <!-- Sets the page description -->
-<meta name="description" content="Ace the frontend interviews!" />
+<meta
+  name="description"
+  content="Ace the frontend interviews!" />
 ```
 
 Learn more: <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta>
@@ -148,9 +161,9 @@ The ordered list should contain any number of <li> tags. For example:
 
 ```html
 <ol>
-    <li>Step 1</li>
-    <li>Step 2</li>
-    <li>Step 3</li>
+  <li>Step 1</li>
+  <li>Step 2</li>
+  <li>Step 3</li>
 </ol>
 ```
 
@@ -208,19 +221,35 @@ An HTML tag for representing data with rows and columns. As a general rule, anyt
 There are a variety of tags associated with tables, with these being some of the most common:
 
 ```html
-<tr>: A single row in the table.
-<th>: A heading in the table. This should be used with the scope attribute of either row or col to choose what the content is a heading for.
-<td>: A single piece of data in the table, also referred to as a cell.
-<thead>: A grouping tag for the heading of a table, usually containing a single <tr> with column headings.
-<tbody>: A grouping tag for the body of the table, used for containing the primary rows of data.
-<tfoot>: A grouping tag for the footer of the table.
-<caption>: A caption or title for the table.
-For example, this is a valid HTML table:
+<tr>
+  : A single row in the table.
+  <th>: A heading in the table. This should be used with the scope attribute of either row or col to choose what the content is a heading for.</th>
+  <td>
+    : A single piece of data in the table, also referred to as a cell.
+    <thead>
+      : A grouping tag for the heading of a table, usually containing a single
+      <tr>
+        with column headings.
+        <tbody>
+          : A grouping tag for the body of the table, used for containing the primary rows of data.
+        </tbody>
+        <tfoot>
+          : A grouping tag for the footer of the table.
+          <caption>
+            : A caption or title for the table. For example, this is a valid HTML table:
+          </caption>
+        </tfoot>
+      </tr>
+    </thead>
+  </td>
+</tr>
 ```
 
 ```html
 <table>
-  <caption>AlgoExpert Products</caption>
+  <caption>
+    AlgoExpert Products
+  </caption>
   <thead>
     <tr>
       <th scope="col">Product</th>
@@ -260,24 +289,24 @@ Learn more: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
 A keyword for defining points within an animation timeline. An animation is made up of a variety of keyframes, and the browser will fill in the spaces between the keyframes based on the timing function. Keyframes are defined using this syntax:
 
 @keyframes animation-name {
-  from {
-    property: value;
-    property: value;
-  }
+from {
+property: value;
+property: value;
+}
 
-  50% {
-    property: value;
-    property: value;
-  }
+50% {
+property: value;
+property: value;
+}
 
-  to {
-    property: value;
-    property: value;
-  }
+to {
+property: value;
+property: value;
+}
 }
 The from and to keywords are equivalent to 0% and 100% respectively.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes>
 Absolute Unit
 A unit whose value is not dependent on something else, so its size will be constant regardless of the context. In general, the px unit is the only one of these used on the web.
 
@@ -289,7 +318,7 @@ A tree representation of the page focusing on information specific to accessibil
 
 The accessibility tree is created from the DOM tree and kept in sync with it. Assistive technologies such as screen readers interact with the accessibility tree rather than directly with the DOM.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Glossary/Accessibility_tree
+Learn more: <https://developer.mozilla.org/en-US/docs/Glossary/Accessibility_tree>
 Animations
 A css module for animating properties, very similar to transitions, but with a bit more control. An animation is defined using keyframes as well as these properties:
 
@@ -306,7 +335,7 @@ Alternatively, the animation property can be used as a shorthand for all of thes
 For example after a two second delay, this would run the move animation over three seconds with the ease timing function. The animation would continue to run indefinitely, alternating the order each time.
 
 animation: move 3s ease infinite alternate 2s;
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations>
 API Key
 A unique key used to identify an application to an API. These keys are sent with each request and thus should be considered public information when working on a public application.
 
@@ -320,26 +349,26 @@ JavaScript arrays are mutable and can contain data of different types. While the
 
 const arr = [1, 2, 3];
 console.log(arr[1]); // 2
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array>
 Arrow Function
 A more concise function syntax, particularly useful for replacing short anonymous functions. The basic syntax for an arrow function is:
 
 (param1, param2) => {
-  doSomething(param1, param2);
-  return 'hello world';
+doSomething(param1, param2);
+return 'hello world';
 }
 However, if an arrow function only requires one line, then the curly braces and return keyword can be removed. Additionally, when these are used inline such as for a call to the array map function, the semicolon must be removed. Finally, if there is only one parameter, the parentheses around the parameter can also be removed. For example, this code will create an array with the values doubled:
 
-[1, 2, 3, 4].map(num => num * 2);
+[1, 2, 3, 4].map(num => num \* 2);
 There are a few constraints to arrow functions which will be explored throughout the crash course. The most important of these is that arrow functions do not have their own this binding. Additionally, arrow functions cannot be used as constructors or generators.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions>
 async function
 A function declared using the async keyword, causing the function to implicitly return a Promise and allowing for usage of the await keyword.
 
 Asynchronous functions are primarily an alternative syntax to chaining calls to Promise.then.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function>
 Atomic CSS
 A CSS methodology based on the idea of minimizing any repeated declarations. Rather than creating classes based on components, Atomic CSS creates utility classes based on single declarations. For example, in Atomic CSS a "margin-12" class might be created that adds 12 pixels of margin, rather than including that declaration on all of the components needing 12 pixels of margin.
 
@@ -365,19 +394,19 @@ A program that automatically formats code based on a set of rules, making it eas
 await
 A keyword indicating that JavaScript should wait for a Promise to settle before continuing execution of the code. Traditionally this is only available in async functions, but it can also be used at the top level of modules.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await>
 BEM
 The "Block, Element, Modifier" CSS methodology. This breaks CSS classes into three categories:
 
 Blocks: Standalone elements with their own meaning. These are referenced simply by the name of the block such as class="menu".
-Elements: Parts of a block without their own meaning. These are referenced by the name of the block, two underscores then the name of the element such as class="menu__item".
+Elements: Parts of a block without their own meaning. These are referenced by the name of the block, two underscores then the name of the element such as class="menu\_\_item".
 Modifiers: Flags to change styles for blocks or elements, such as disabled or selected. These are prefixed by the class they modify and two dashes, and they are included in addition to that original class such as class="menu menu--disabled".
 Block Element
 An element with its display property set to block. These have a few key properties:
 
 They start on new lines.
 By default they span the entire width of their parent.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements>
 Block Scope
 The behavior of a variable that is only accessible inside of the block it was defined. Most of the time, the block will simply be the nearest pair of curly braces to the declaration.
 
@@ -388,24 +417,24 @@ A border-radius can also be used to create rounded corners on an element, regard
 
 Additionally, border-top, border-right, border-bottom and border-left can be used to set borders on a single side of an element.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/border
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/border>
 Box Model
 A box surrounding all elements on the document used for layout. From inside to out, this consists of the content, padding, border and margin.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model
+Learn more: <https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model>
 box-sizing
 A CSS property for specifying how width and height should be calculated for the selected element. The default value is content-box for most elements, which sets the width and height to only control the size of the content. However, a value of border-box would include the size of the padding and border.
 
 For example, if an element has width: 100px, padding: 12px, and border: 24px, then with box-sizing: content-box it would take up a total of 172px of width (note this includes padding and border twice to account for the left and right side). However, with box-sizing: border-box it would only take up a total width of 100px.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing>
 Cascading
 The order that stylesheets are used. These stylesheets can be grouped into three main categories:
 
 User Agent Stylesheets: Contain browser defaults for styles, these get the lowest level of precedence.
 User Stylesheets: Contain user preferences saved in the browser, which override user agent stylesheets.
 Author Stylesheets: Contain the CSS code we write, these get the highest level of precedence (assuming !important has not been used).
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade>
 Chunking
 A process for preventing slow functions from clogging the call stack and thus making the entire page unresponsive. The core idea of chunking is to take large tasks and split them up into smaller ones.
 
@@ -417,28 +446,28 @@ A JavaScript syntax to emulate that of classical inheritance, although for the m
 An example class would look like this:
 
 class Person {
-  static isHuman = true; // public static field
-  #age; // private instance field
+static isHuman = true; // public static field
+# age; // private instance field
 
-  constructor(name, age) {
-    this.name = name; // public instance field
-    this.#age = age;
-  }
+constructor(name, age) {
+this.name = name; // public instance field
+this.#age = age;
+}
 
-  // instance method
-  speak() {
-    console.log('Hello this is ' + this.name);
-  }
+// instance method
+speak() {
+console.log('Hello this is ' + this.name);
+}
 
-  // instance getter function
-  get age() {
-    return this.#age;
-  }
+// instance getter function
+get age() {
+return this.#age;
+}
 
-  // instance setter function
-  set age(value) {
-    this.#age = value;
-  }
+// instance setter function
+set age(value) {
+this.#age = value;
+}
 }
 
 const conner = new Person('Conner', 24);
@@ -452,12 +481,12 @@ console.log(Person.isHuman); // true
 Classes can also extend other classes, which internally creates a prototype chain. In the class constructor, super can be used to call the parent constructor. super.method() can also be used in the class to call parent classes. For example:
 
 class Child extends Person {
-  constructor(name, age, grade) {
-    super(name, age);
-    this.grade = grade;
-  }
+constructor(name, age, grade) {
+super(name, age);
+this.grade = grade;
 }
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
+}
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes>
 Class-Based Component
 A JavaScript class that extends the React.Component class and acts as a React component.
 
@@ -471,7 +500,7 @@ componentDidMount: Runs immediately after the component mounts. This method is u
 componentDidUpdate: Runs immediately after the component updates due to a state or props change. A common use case for this method is for network requests that depend on props or state.
 componentWillUnmount: Runs right before a component unmounts. This method is usually used for cleaning up any subscriptions.
 shouldComponentUpdate: Similar to React.memo, determines if the component should re-render based on new props and new state values.
-Learn more: https://reactjs.org/docs/state-and-lifecycle.html#converting-a-function-to-a-class
+Learn more: <https://reactjs.org/docs/state-and-lifecycle.html#converting-a-function-to-a-class>
 Client
 A machine or process that requests data or service from a server. In the case of the web, browsers are clients that request HTML pages from servers.
 
@@ -483,7 +512,7 @@ The paradigm by which modern systems are designed, which consists of clients req
 Closure
 A function along with a saved reference to the lexical environment it was defined in. Simply put, this means functions have access to all of the variables in scope at the time of definition, even if the parent function has returned.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>
 Component
 A reusable independent piece of a user interface. In modern React, components are usually functional components, which are simply functions that return JSX.
 
@@ -497,24 +526,24 @@ Conditional Rendering
 The process of changing the returned element of a component based on some condition. Conditional rendering can be achieved in a variety of ways, but the most common utilizes ternary operators or short circuit evaluation. This works because null, undefined, true and false all do not render anything. For example:
 
 <React.Fragment>
-  { myBool ? <h1>Hello World</h1> : null }
-  { myOtherBool && <p>React is Awesome!</p> }
+{ myBool ? <h1>Hello World</h1> : null }
+{ myOtherBool && <p>React is Awesome!</p> }
 </React.Fragment>
-Learn more: https://reactjs.org/docs/conditional-rendering.html
+Learn more: <https://reactjs.org/docs/conditional-rendering.html>
 const
 A keyword for declaring a constant value. Constants have the same behavior as variables declared with let, except they cannot be reassigned.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const>
 Context
 A way to pass values down a component tree without needing to pass props through every component (known as prop drilling). Contexts are generally useful for global state needed throughout an application or page, which would be inconvenient to pass as props to every element needing it.
 
-Learn more: https://reactjs.org/docs/context.html
+Learn more: <https://reactjs.org/docs/context.html>
 Controlled Component
 A pattern of using React state to control the current state of an input, rather than allowing the native elements to control their own state (known as an uncontrolled component). For example, an input can be controlled via the value and onChange props (note that in React, onChange works the same as onInput). For example:
 
 const [value, setValue] = useState('');
 return <input value={value} onChange={e => setValue(e.target.value)} />;
-Learn more: https://reactjs.org/docs/forms.html#controlled-components
+Learn more: <https://reactjs.org/docs/forms.html#controlled-components>
 Cookies
 The simplest form of browser storage, comprised of string key-value pairs. Cookies are most often set by the server to store information such as the logged in user account, however they can also be created via the document.cookie JavaScript property.
 
@@ -541,7 +570,7 @@ DOM-based: A vulnerability that happens exclusively on the frontend without any 
 CSS
 Cascading Style Sheets is the primary styling language of the web. This language is used to describe the style and layout of HTML documents.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS>
 CSS Framework
 Pre-written code that can be used to simplify development. Oftentimes these include ready to use classes, pre-built components and responsive layout systems.
 
@@ -573,7 +602,7 @@ grid-area: Places the item in a grid-area based on a name created in grid-templa
 align-self: Overrides the align-items value used for the grid container.
 justify-self: Overrides the justify-items value used for the grid container.
 place-self: A shorthand for both align-self and justify-self in the same format as place-items.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout>
 CSS Inheritance
 How elements choose a value when none has been explicitly declared in any stylesheet. All properties are either inherited properties or non-inherited properties. Inherited properties will take their parent's value in the case no value has been set for the property. Non-inherited properties on the other hand will be set to initial in this case.
 
@@ -583,16 +612,16 @@ inherit: The value should inherit from its parent, regardless of if it is normal
 initial: The value should be set to the value defined in the CSS specification. Note this is oftentimes different from browser defaults.
 unset: The value should be set to inherit if it is normally an inherited property, otherwise initial. This can be useful for "resetting" browser defaults from the user agent stylesheet.
 revert: The value should revert back to the next stylesheet in the cascade. For author stylesheets, this would act as if the author did not write any declaration for the property, but it would still honor the user agent and user stylesheets as normal.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/inheritance
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/inheritance>
 Currying
 The process of transforming a function to treat its parameters as a sequence of individual function calls that each take one parameter. For example, func(a, b, c) would become func(a)(b)(c).
 
 Currying is achieved by creating functions that return other functions, taking advantage of closures. For example, a curried sum function would look like this:
 
 function curriedSum(a) {
-  return function(b) {
-    return a + b;
-  };
+return function(b) {
+return a + b;
+};
 }
 This could then be used to create partial versions of this function, for example an "add four" function:
 
@@ -601,30 +630,30 @@ addFour(10); // 14
 Custom Hook
 A helper function that uses hooks. When hook code becomes redundant or too long to easily read, it can be helpful to move that code into a helper function. To denote that this helper function uses a hook itself, the name should be prefixed with use just like the built-in React hook functions.
 
-Learn more: https://reactjs.org/docs/hooks-custom.html
+Learn more: <https://reactjs.org/docs/hooks-custom.html>
 Custom Properties
 Also known as variables, these are used to keep track of repeated values in CSS. Custom properties always start with -- and can be included in any ruleset. However, most commonly they are defined on the :root ruleset so the variables will be accessible throughout the website. Custom properties are then used with the var() CSS function. For example, this code defines a custom property called --main-color and uses it for a background color:
 
 :root {
-  --main-color: #00334C;
+--main-color: #00334C;
 }
 
 main {
-  background-color: var(--main-color);
+background-color: var(--main-color);
 }
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties>
 Declaration
 A CSS property-value pair in the form property: value;
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax#css_declarations
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax#css_declarations>
 Declaration Block
 A group of declarations surrounded by {}, such as:
 
 {
-  color: blue;
-  margin: 10px;
+color: blue;
+margin: 10px;
 }
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax#css_declaration_blocks
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax#css_declaration_blocks>
 Destructuring Assignment
 A JavaScript syntax for saving values from an array or object in variables. For example:
 
@@ -641,9 +670,9 @@ console.log(firstName); // 'Conner'
 Destructuring can also be used in a function parameter, for example:
 
 function printName({ name }) {
-  console.log(name);
+console.log(name);
 }
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment>
 Developer Tools
 A set of tooling provided by the browser to simplify the process of debugging frontend code. For example, Chrome comes with the Chrome DevTools .
 
@@ -703,25 +732,26 @@ componentDidCatch(error, errorInfo): Called during the commit phase for the purp
 For example, this would be a complete error boundary component:
 
 class ErrorBoundary extends Component {
-  state = { hasError: false };
+state = { hasError: false };
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
+static getDerivedStateFromError(error) {
+return { hasError: true };
+}
 
-  componentDidCatch(error, errorInfo) {
-    logErrorToServer(error, errorInfo);
-  }
+componentDidCatch(error, errorInfo) {
+logErrorToServer(error, errorInfo);
+}
 
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback;
-    }
+render() {
+if (this.state.hasError) {
+return this.props.fallback;
+}
 
     return this.props.children;
-  }
+
 }
-Learn more: https://reactjs.org/docs/error-boundaries.html
+}
+Learn more: <https://reactjs.org/docs/error-boundaries.html>
 Event Delegation
 The process of using a single event listener on a parent element to manually delegate events to children, rather than using event listeners on each child.
 
@@ -737,7 +767,7 @@ Execute code until the call stack is empty.
 Execute microtasks one at a time until the microtask queue is empty.
 Render any changes to the DOM.
 Go to step one.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop>
 Event Propagation
 The process by which an event travels through the DOM to call event listeners on nested elements. Event propagation consists of 3 phases:
 
@@ -781,7 +811,7 @@ response.json(): Returns a Promise with an object representation of the response
 response.status: A number representation of the response status code. A successful request will be in the 200-299 range, most commonly 200.
 response.ok: A boolean representation of the response status code. A successful request in the 200-299 range will be true, everything else evaluates to false.
 response.headers: A Headers object containing the headers included with the response.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/fetch
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/fetch>
 Flexbox
 A layout model, also known as the Flexible Box Layout Module, particularly useful for building responsive designs with row or column layouts. An element can be made a flex container with display: flex, and all of its direct children will automatically be laid out as flex items.
 
@@ -802,7 +832,7 @@ flex-grow: Determines if the flex item is able to grow into extra space. If the 
 flex-shrink: Determines if a flex item is able to shrink in the case that the flex items are too large for the container. Flex items with a value of 0 will not shrink. Otherwise they will all shrink proportionally based on their values, similar to flex grow. The higher the value, the more the flex item will potentially shrink.
 flex: A shorthand property for flex-grow, flex-shrink, and flex-basis in that order.
 order: Moves the flex-item to a different location amongst the other flex items rather than using the order defined in the DOM. All flex items default to having a value of 0. This means a value of -1 would move an item before all other items that have not changed their order. Likewise, a value of 1 would place the item at the end.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout>
 Function Constructor
 A function intended to be used to construct an object using the new operator.
 
@@ -811,14 +841,14 @@ When the new operator is used, a new object is created automatically. The protot
 By default the prototype property of the function will simply be an object with its constructor property set to the function itself. However, this can be changed, for example:
 
 function Person(name) {
-  this.name = name;
+this.name = name;
 }
 
-// This object will become the [[Prototype]] of
+// This object will become the [\[Prototype\]] of
 // any objects resulting from a new Person() call
 Person.prototype = {
-  constructor: Person,
-  isHuman: true
+constructor: Person,
+isHuman: true
 }
 
 const clement = new Person('Clement');
@@ -829,11 +859,11 @@ The behavior of a variable that is accessible anywhere inside of the function it
 Gatsby
 A JavaScript framework with the primary use case of static-site generation. In addition to static-site generation, Gatsby also includes a wide variety of other features that simplify development and improve performance, similar to Next.js.
 
-Learn more: https://www.gatsbyjs.com/
+Learn more: <https://www.gatsbyjs.com/>
 Generator
 An iterable object created by using a generator function.
 
-A generator function is defined using function*. Then each yield results in another item being added to the iterable generator object.
+A generator function is defined using function\*. Then each yield results in another item being added to the iterable generator object.
 
 The generator object has three methods:
 
@@ -842,10 +872,10 @@ return(value): Adds a passed in argument to the iterable results and ends iterat
 throw(error): Throws an error, stopping code execution unless the error is caught.
 For example:
 
-function* genNumbers() {
-  const x = yield 1;
-  yield x + 2;
-  yield 3;
+function\* genNumbers() {
+const x = yield 1;
+yield x + 2;
+yield 3;
 }
 
 const generatorObj = genNumbers();
@@ -853,7 +883,7 @@ console.log(generatorObj.next().value); // 1
 console.log(generatorObj.next(3).value); // 5
 console.log(generatorObj.return(7).value); // 7
 console.log(generatorObj.next().value); // undefined
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator>
 GraphQL
 A query language for querying APIs by describing the format of the requested data. GraphQL has major benefits in only sending necessary data on the network and potentially combining requests for multiple resources into a single request.
 
@@ -874,14 +904,14 @@ let letNum = 5;
 
 console.log(varNum); // 5
 console.log(letNum); // 5
-Learn more: https://developer.mozilla.org/en-US/docs/Glossary/Hoisting
+Learn more: <https://developer.mozilla.org/en-US/docs/Glossary/Hoisting>
 Hook
 A JavaScript function used to "hook" into React features such as state and the larger component lifecycle. The names of hooks always begin with use, and they cannot be called conditionally.
 
 HTML
 HyperText Markup Language is the primary language of the web, containing the content and structure of a website.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/HTML
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/HTML>
 HTTPS
 The HyperText Transfer Protocol Secure is an extension of HTTP that's used for secure communication online. It requires servers to have trusted certificates and uses the Transport Layer Security (TLS), a security protocol built on top of TCP, to encrypt data communicated between a client and a server.
 
@@ -890,10 +920,10 @@ Oftentimes abbreviated as HTTP, a common network protocol used for sending reque
 
 HTTP requests generally have three components: the request line, headers and a body (although the body is optional for some request methods). The request line includes the method, path and HTTP version. Headers contain key value pairs of extra information for the server. The body contains the contents of the request, such as new data being uploaded in a post request. For example, a GET request to AlgoExpert's home page might look like this:
 
-  GET / HTTP/1.1
+GET / HTTP/1.1
 
-  host: www.algoexpert.io
-  accept: text/html
+host: <www.algoexpert.io>
+accept: text/html
 HTTP responses follow the same general format as requests, but in the top line (referred to as a status line), there is no method or path. Instead, this line contains a status code and message. For example, the status code of 200 with a message of OK will be included in the response to a successful GET request.
 
 HTTP/1.1 200 OK
@@ -913,20 +943,20 @@ Also called an IIFE, a function that is immediately called after its definition.
 There are a few ways to define an IIFE, but the most common is using an anonymous or arrow function. This function is then wrapped in parentheses, which causes it to be treated as an expression. Finally, () is added to call the function. For example:
 
 (function() {
-  console.log('Wahoo!');
+console.log('Wahoo!');
 })();
-Learn more: https://developer.mozilla.org/en-US/docs/Glossary/IIFE
+Learn more: <https://developer.mozilla.org/en-US/docs/Glossary/IIFE>
 IndexedDB
 A browser API for storing complex objects. IndexedDB uses object stores, which are similar to tables in relational databases. Each object in the object store must then have a unique key used to identify it.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API>
 Inline Element
 An element with its display property set to inline. These have a few key properties:
 
 They start immediately after the content before them, without a new line.
 They span the width of their content.
 width and height properties have no effect on them.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements>
 Inline-Block Element
 An element with its display property set to inline-block. These have a few key properties:
 
@@ -945,7 +975,7 @@ Trumps: !important overrides for when they are needed.
 JavaScript
 The primary programming language of the web, primarily used for adding functionality to websites. JavaScript is a general purpose multi-paradigm programming language with dynamic typing.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript>
 JavaScript Engine
 A program used to execute JavaScript code.
 
@@ -972,22 +1002,22 @@ JSX
 Short for JavaScript XML, a JavaScript syntax extension for inlining XML and HTML in JavaScript. For example, this code could be compiled into standard JavaScript function calls to create a heading element:
 
 const h1 = <h1>Hello World</h1>;
-Learn more: https://reactjs.org/docs/introducing-jsx.html
+Learn more: <https://reactjs.org/docs/introducing-jsx.html>
 Key Prop
 A prop passed to each element in a list to help React keep track of those elements. Key props should be unique identifiers. By passing key props, if the list changes, React can easily know which elements need to be mounted, updated, and unmounted. For example, when rendering an array of messages from the server, message IDs could be used as a key prop:
 
 return (
-  {
-    messages.map(message => {
-      return <p key={message.id}>{message.text}</p>;
-    });
-  }
+{
+messages.map(message => {
+return <p key={message.id}>{message.text}</p>;
+});
+}
 );
-Learn more: https://reactjs.org/docs/lists-and-keys.html
+Learn more: <https://reactjs.org/docs/lists-and-keys.html>
 let
 A keyword for declaring a block-scoped variable that cannot be accessed before initialization.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let>
 Lexical Environment
 An internal data structure used for keeping track of identifiers (variable and function names) and their values. A lexical environment stores all of the locally available identifiers as well as a reference to the parent environment.
 
@@ -997,11 +1027,11 @@ The scoping system in JavaScript that ensures all code blocks have access to all
 Lifting State Up
 A common React pattern of moving shared state up to the lowest common ancestor component in the tree. This allows for a single component to keep track of the state and pass the current value and setter function down through props.
 
-Learn more: https://reactjs.org/docs/lifting-state-up.html
+Learn more: <https://reactjs.org/docs/lifting-state-up.html>
 Local Storage
 Part of the web storage API, a system for storing information in the browser without any expiration date. Values can be added to local storage with localStorage.setItem('key', 'value'), and the value can be retrieved with localStorage.getItem('key').
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage>
 Loose Equality
 The most basic equality operator in JavaScript using ==. Loose equality compares values regardless of types following these steps:
 
@@ -1012,7 +1042,7 @@ If comparing an object to a string, convert the object using its toString() or v
 If the types are the same, follow the same rules as strict equality.
 In general, strict equality should be preferred due to it being easier to predict. However, loose equality can be useful for checking against null and undefined at once with value == null.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality>
 Map
 A built-in JavaScript class for holding key-value pairs. While similar to standard objects, maps have a few key differences:
 
@@ -1020,7 +1050,7 @@ Map keys can be of any type, while object keys must be strings or symbols.
 Maps maintain insertion order for iteration, while objects do not.
 Maps cannot easily be converted to JSON, while objects can.
 Objects oftentimes utilize the prototype chain for inheritance, while Maps cannot do this.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map>
 margin
 A property used to create extra space around an element. The margin CSS property is a shorthand for margin-top, margin-right, margin-bottom and margin-left in that order.
 
@@ -1028,7 +1058,7 @@ A value of auto can also be used to allow the browser to choose margins, which w
 
 Adjacent horizontal margins will be added together to determine the space between elements. Vertical margins on the other hand will usually be collapsed, meaning only the larger margin value will be used.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/margin
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/margin>
 Microtask Queue
 A queue data structure, similar to the task queue, used for storing microtasks.
 
@@ -1055,11 +1085,11 @@ export const num = 10;
 
 // File 2:
 import { num } from 'file1.js';
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules>
 Next.js
 A JavaScript framework built around React. The primary use case for Next.js is server-side rendering, but it also includes a wide variety of other tools to simplify development and improve performance.
 
-Learn more: https://nextjs.org/
+Learn more: <https://nextjs.org/>
 Null Coalescing
 Also referred to as nullish coalescing, an operator using ?? for providing a default value if a value is null. If the value on the left side of the operator is not null or undefined, that value is used. Otherwise, the value on the right side of the operator is used. For example:
 
@@ -1067,7 +1097,7 @@ const num = null ?? 1234; // 1234
 const num2 = undefined ?? 1234; // 1234
 const num3 = 5678 ?? 1234; // 5678
 const num4 = '' ?? 1234; // ''
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator>
 OAuth
 Open Authorization, a common standard for service authorization. Services can use OAuth to allow users to give other services specific API access to portions of their accounts.
 
@@ -1077,10 +1107,10 @@ The base non-primitive data structure of JavaScript used to store key-value pair
 Objects are usually declared with the object literal syntax such as:
 
 const website = {
-  name: 'AlgoExpert',
-  domain: 'algoexpert.io'
+name: 'AlgoExpert',
+domain: 'algoexpert.io'
 };
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#objects
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#objects>
 OOCSS
 The "Object-Oriented" CSS methodology. This is based on object-oriented programming principles, which can be applied to CSS class design by treating UI components as objects. Styles are then given one of two categories:
 
@@ -1091,11 +1121,11 @@ Along with separating structure and skin into classes, OOCSS also makes a clear 
 Optional Chaining
 A JavaScript operator using ?. for reading object properties without throwing an error if the object is null. For example, person?.company?.website will act the same as person.company.website, however if any values in the chain are null or undefined, it will return undefined rather than throwing an error.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining>
 padding
 A property used to create extra space within an element, between the content and border. The padding CSS property is a shorthand for padding-top, padding-right, padding-bottom and padding-left in that order.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/padding
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/padding>
 Paradigm
 A style of programming. Oftentimes languages are built with a specific paradigm in mind, but JavaScript is known as a multi-paradigm language, because it allows for programming in a variety of paradigms. Some of the major paradigms of JavaScript include:
 
@@ -1109,7 +1139,7 @@ A built-in method for rendering React elements into a DOM node outside of the pa
 
 A portal is created by using the ReactDOM.createPortal function, which takes in a React element as the first parameter and the DOM node as the second parameter. The element will be appended to that DOM node, but it will still act the same as any other element in the original React tree (it can still take props, read from context providers and have events bubble up).
 
-Learn more: https://reactjs.org/docs/portals.html
+Learn more: <https://reactjs.org/docs/portals.html>
 position
 A CSS property for setting how the browser should position an element in the document. This defaults to static, but can take a variety of values:
 
@@ -1118,7 +1148,7 @@ fixed: The element is positioned relative to the viewport and removed from the n
 relative: The element is positioned in the same place as it would be with static, however, it can be repositioned with top, left, right and bottom relative to its natural position on the document.
 sticky: The element will act similar to a relative positioned element, but once it scrolls off screen it will stay fixed to the screen, essentially acting as position: fixed. This is particularly useful for menu bars that need to "stick" to the top of the screen as the user scrolls.
 absolute: By default, this will act the same as fixed, except the element will be positioned relative to the document instead of the viewport. This means that, as the page is scrolled, it will move with the page rather than stay at the same viewport location. However, if any element above it in the DOM, oftentimes referred to as an ancestor, has a position value other than static, then it will be positioned relative to that nearest positioned ancestor.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/position
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/position>
 Preprocessor
 A program that converts code of another syntax into CSS that the browser can understand. Usually these add new features to CSS to make the code easier to read, write and maintain.
 
@@ -1134,7 +1164,7 @@ Null: A nonexistent value.
 Undefined: A value that has not been set.
 JavaScript has a typeof operator that can get the type of a value as a lowercase string. However, do be aware that this function does have some special casing. For example, typeof function will return "function" even though functions are just objects.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Glossary/Primitive
+Learn more: <https://developer.mozilla.org/en-US/docs/Glossary/Primitive>
 Promise
 An object used for asynchronous operations. These objects have a state of either pending, fulfilled or rejected.
 
@@ -1149,7 +1179,7 @@ catch(rejectedFn): Calls rejectedFn if the Promise is rejected. returns a new fu
 finally(callback): Calls the callback function whenever the Promise is settled (fulfilled or rejected).
 Since these functions all return a new Promise, they can be chained together, such as promise.then(doX).then(doY).catch(handleError).finally(doZ).
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise>
 Props
 A JavaScript object passed as a parameter to functional components, containing all of the key-value pairs that were passed as attributes to the component. For example, given this JSX:
 
@@ -1157,85 +1187,87 @@ A JavaScript object passed as a parameter to functional components, containing a
 The MyComponent function would take in props with two key-value pairs:
 
 function MyComponent(props) {
-  console.log(props.message); // "hello"
-  console.log(props.number); // 42
-  return <h1>Hello World!</h1>;
+console.log(props.message); // "hello"
+console.log(props.number); // 42
+return <h1>Hello World!</h1>;
 }
-Learn more: https://reactjs.org/docs/components-and-props.html
+Learn more: <https://reactjs.org/docs/components-and-props.html>
 Prototypal Inheritance
 The inheritance model used in JavaScript. The key difference between prototypal inheritance and classical inheritance is that in prototypal inheritance objects only inherit from other objects, rather than using class blueprints.
 
 Prototype Chain
 The chain of inheritance created through object prototypes. When a property does not exist on an object, JavaScript will look to its prototype. If it doesn't exist on that object, it will look to its prototype and so on until the chain ends with a null prototype.
 
-Internally, the prototype is stored on the [[Prototype]] property, but we cannot directly access this property. Instead, we have a few alternative ways to get and set prototypes:
+Internally, the prototype is stored on the [\[Prototype\]] property, but we cannot directly access this property. Instead, we have a few alternative ways to get and set prototypes:
 
-obj.__proto__: Although being deprecated, this property was the original way to get and set the prototype of an object and is still useful for debugging.
+obj.**proto**: Although being deprecated, this property was the original way to get and set the prototype of an object and is still useful for debugging.
 Object.getPrototypeOf(obj): Returns the prototype object of obj.
 Object.setPrototypeOf(obj, proto): Sets the prototype object of obj to proto.
 Object.create(proto): Creates a new object with the prototype set to proto.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain>
 Pseudo Class
 An addition to a CSS selector for selecting based on the current state of the element. These start with :, so for example button:hover would select buttons currently hovered over.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes>
 Pseudo Element
 An addition to a CSS selector for selecting a specific portion of the element. These start with ::, so for example p::first-letter would select the first letter of paragraphs.
 
 ::before and ::after are special pseudo elements that insert children before or after the content of the element, allowing for styling before or after the content. This is oftentimes used with the CSS content property, but not always.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements>
 React
 A JavaScript library developed by Facebook for building user interfaces. React uses a component-based architecture to create interfaces with an intuitive declarative approach.
 
-Learn more: https://reactjs.org/
+Learn more: <https://reactjs.org/>
 React DevTools
 An official React browser extension for debugging React.
 
 React Element
 The internal object representation of a node in the React tree. React elements can represent either DOM nodes or React components.
 
-Learn more: https://reactjs.org/blog/2015/12/18/react-components-elements-and-instances.html#elements-describe-the-tree
+Learn more: <https://reactjs.org/blog/2015/12/18/react-components-elements-and-instances.html#elements-describe-the-tree>
 React Router
 A React library for declaratively controlling page routing from the client-side.
 
-Learn more: https://reactrouter.com/
+Learn more: <https://reactrouter.com/>
 React.createContext
 A react function for creating a context object. This function takes in a default value, which will be used if there is no matching context provider in a tree. For example, this would create a context that could be used to keep track of a user's selected theme:
 
 const ThemeContext = createContext({
-  mode: 'dark'
+mode: 'dark'
 });
 This context would then have a provider component, which must be above any components in the tree that wish to use the context. The value prop will be passed as the value to all children using the context. For example:
 
 return (
-  <ThemeContext.Provider value={{mode: 'dark'}}>
-    {props.children}
-  </ThemeContext.Provider>
+<ThemeContext.Provider value={{mode: 'dark'}}>
+{props.children}
+</ThemeContext.Provider>
 );
-Learn more: https://reactjs.org/docs/context.html#reactcreatecontext
+Learn more: <https://reactjs.org/docs/context.html#reactcreatecontext>
 React.forwardRef
 A function used by a custom component to forward a ref attribute on to a child element. The forwardRef function is a higher-order component function, meaning it takes in a component and returns a new one. In this case, it takes a component that has a second parameter for the ref. For example:
 
 function Parent() {
-  const ref = useRef(null);
-  return <Child ref={ref}>This child has a ref</Child>;
+const ref = useRef(null);
+return <Child ref={ref}>This child has a ref</Child>;
 }
 
 const child = forwardRef(function (props, ref) {
-  return <div ref={ref}>{props.children}</div>;
+return <div ref={ref}>{props.children}</div>;
 });
-Learn more: https://reactjs.org/docs/forwarding-refs.html
+Learn more: <https://reactjs.org/docs/forwarding-refs.html>
 React.Fragment
 A React container component that renders its children without adding any additional DOM nodes. This can be used for returning multiple adjacent elements without wrapping them in an unnecessary element. For example:
 
 <React.Fragment>
+
   <h1>Hello World</h1>
   <p>React is awesome!</p>
 </React.Fragment>
 Fragments can also be created by using an empty tag, rather than the Fragment export from React. For example:
 
 <>
+
   <h1>Hello World</h1>
   <p>React is Awesome!</p>
 </>
@@ -1244,16 +1276,16 @@ React.lazy
 A React function for dynamically importing components, creating a potential performance boost when certain components are included in a module but not necessary for the initial render. The lazy function takes in a callback function that is run when the component is used, and this function should return a call to the import function. For example:
 
 const LazyComponent = react.lazy(() => import('./MyComponent'));
-Learn more: https://reactjs.org/docs/react-api.html#reactlazy
+Learn more: <https://reactjs.org/docs/react-api.html#reactlazy>
 React.memo
 A React higher-order component that takes in a component and returns a memoized version of that component. If the props have not changed, wrapping a component in React.memo will cause it to avoid re-rendering. This function can optionally also take in a second callback function as a parameter to determine when the component should re-render with more fine control. For example, this component will only need to re-render when the number prop changes:
 
 function areEqual(oldProps, newProps) {
-  return oldProps.number === newProps.render;
+return oldProps.number === newProps.render;
 }
 
 const MemoizedComponent = React.memo(myComponent, areEqual);
-Learn more: https://reactjs.org/docs/react-api.html#reactmemo
+Learn more: <https://reactjs.org/docs/react-api.html#reactmemo>
 React.Profiler
 A React component for tracking how often a component renders. The Profiler requires two props:
 
@@ -1261,24 +1293,25 @@ id: A unique identifier.
 onRender: A callback function to run after the component renders (during the commit phase).
 For performance reasons, the Profiler is ignored in production mode.
 
-Learn more: https://reactjs.org/docs/profiler.html
+Learn more: <https://reactjs.org/docs/profiler.html>
 React.StrictMode
 A React component for putting a component in strict mode. Strict mode has two primary benefits for assisting in debugging:
 
 It provides warnings when using deprecated functions or lifecycle methods.
 It double-invokes some functions, such as functional components. This helps find potential bugs related to side-effects in functions that should not have side-effects.
-Learn more: https://reactjs.org/docs/strict-mode.html
+Learn more: <https://reactjs.org/docs/strict-mode.html>
 React.Suspense
 A react component for specifying a fallback interface while a child component is preparing to render (such as waiting for a lazy import). The Suspense component takes a fallback prop of a React element, and its children prop is a suspending component. For example:
 
 <React.Suspense fallback={<LoadingIndicator />}>
-  <LazyComponent />
+<LazyComponent />
 </React.Suspense>
-Learn more: https://reactjs.org/docs/react-api.html#reactsuspense
+Learn more: <https://reactjs.org/docs/react-api.html#reactsuspense>
 ReactDOM
 A package used with React to work as the bridge between React elements and the actual DOM in the browser. The most frequently used ReactDOM function is the render function, which adds a component to the DOM. For example:
 
 ReactDOM.render(
+
   <h1>Hello World</h1>,
   document.getElementById('root')
 );
@@ -1286,19 +1319,19 @@ Learn more: https://reactjs.org/docs/react-dom.html
 Recoil
 A JavaScript state-management library built for React. Recoil uses atoms, which are global pieces of state that any component can subscribe to.
 
-Learn more: https://recoiljs.org/
+Learn more: <https://recoiljs.org/>
 Reconciliation
 The algorithm used by React to determine the "diff" between two trees of React elements. After each state update, React runs the reconciliation algorithm to determine what has changed, and that changelog is sent to the rendering function (in the case of the browser, this is from React DOM) which can update the page using the information.
 
-Learn more: https://reactjs.org/docs/reconciliation.html
+Learn more: <https://reactjs.org/docs/reconciliation.html>
 Redux
 A JavaScript state-management library often used with React. Redux uses reducer functions to create a global store that any component can read from.
 
-Learn more: https://redux.js.org/
+Learn more: <https://redux.js.org/>
 Ref
 A React value specific to an instance of a component that persists between renders, but updating the value does not cause a re-render (unlike state). Refs are oftentimes used to reference the DOM node associated with the component, which can be achieved with the ref attribute.
 
-Learn more: https://reactjs.org/docs/refs-and-the-dom.html
+Learn more: <https://reactjs.org/docs/refs-and-the-dom.html>
 Relative Unit
 A unit whose value is dependent on something else. These are the most frequently used relative units:
 
@@ -1315,7 +1348,7 @@ For example, requestAnimationFrame(myFunction); would call myFunction before the
 
 This function returns an ID, and the callback can be cancelled by calling cancelAnimationFrame(animationFrameID);.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame>
 REST
 The Representational State Transfer API architectural style. An API using REST is usually referred to as a RESTful API and must follow these constraints:
 
@@ -1343,11 +1376,11 @@ const { key1, key2, ...rest } = obj; // rest is { key3: 3, key4: 4 }
 Moreover, rest syntax can be used for function parameters to accept an infinite number of arguments, which are accessible as an array. For example:
 
 function myFunc(...myArguments) {
-  console.log(myArguments);
+console.log(myArguments);
 }
 
 myFunc(1, 2, 3, 4); // logs [1, 2, 3, 4]
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters>
 RPC
 The Remote Procedure Call API architectural style. In this style, the server provides an interface for the client to call certain functions on the server.
 
@@ -1355,10 +1388,10 @@ Ruleset
 A selector followed by a declaration block for styling elements matching the selector with the declarations in the declaration block. Rulesets follow this syntax:
 
 selector {
-  property: value;
-  property: value;
+property: value;
+property: value;
 }
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax#css_rulesets
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax#css_rulesets>
 Same-Origin Policy
 A browser policy limiting the ability of a page from reading resources from different origins. Two resources are from the same origin only if they have the same protocol, host, and port.
 
@@ -1375,13 +1408,13 @@ Excluding the value will select all elements with the attribute set to any value
 Attribute selectors can also use special syntax for basic pattern matching within the value. There are a variety of options here, but these are some of the more common ones:
 [href*="algoexpert.io"] would select all elements with an href attribute with the text "algoexpert.io" at any location.
 [href$="algoexpert.io"] would select all elements with an href attribute with the text "algoexpert.io" at the end of the value.
-[href^="https://algoexpert.io"] would select all elements with an href attribute with the text "https://algoexpert.io" at the beginning of the value.
+[href^="https://algoexpert.io"] would select all elements with an href attribute with the text "<https://algoexpert.io>" at the beginning of the value.
 Combinator: Combines multiple selectors to select elements based on their location in the DOM. There are a few types of combinators:
 Descendant combinator: Represented by a single space, in the format selector1 selector2. Selects all elements that match selector2 and are a descendant of an element matching selector1. A descendant does not need to be a direct child (e.g. the selected element's grandparent could match selector1).
 Child combinator: Represented by >, in the format selector1 > selector2. Selects all elements that match selector2 and are a direct child of an element matching selector1.
 Sibling combinator: Represented by ~, in the format selector1 ~ selector2. Selects all elements that match selector2 and are a sibling of an element matching selector1. The element matching selector2 must come after the element matching selector1.
 Adjacent sibling combinator: Represented by +, in the format selector1 + selector2. Selects all elements that match selector2 and have an element matching selector1 directly before them in the DOM.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors>
 Semantic HTML
 HTML that clearly describes the content of the page. HTML loses its semantic meaning when tags are misused, or generic tags (namely <div> and <span>) are overused instead of semantic tags.
 
@@ -1405,11 +1438,11 @@ A method of rendering an application where the server generates the final HTML p
 Session Storage
 Part of the web storage API, a system for storing information in the browser that expires at the end of a session. Values can be added to session storage with sessionStorage.setItem('key', 'value'), and the value can be retrieved with sessionStorage.getItem('key').
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage>
 Set
 A built-in JavaScript class for holding unique values of any type. Values are considered unique if they are different primitives or references to different objects (this means that two different objects with the same contents are considered unique from each other). Values in Sets are kept in insertion order for when the Set is iterated over.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set>
 setInterval
 A JavaScript function for calling a function repeatedly over an interval.
 
@@ -1417,7 +1450,7 @@ For example, setInterval(myFunction, 1000); would call myFunction every second (
 
 This function returns an ID, and the interval can be cancelled by calling clearInterval(intervalID);.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/setInterval
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/setInterval>
 setTimeout
 A JavaScript function for delaying execution of a callback function.
 
@@ -1425,7 +1458,7 @@ For example, setTimeout(myFunction, 1000); would call myFunction after 1 second 
 
 This function returns an ID, and the timeout can be cancelled by calling clearTimeout(timeoutID);.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/setTimeout>
 Short Circuit Evaluation
 A method of utilizing the evaluation order of JavaScript to conditionally run code. This usually uses the && operator, because for it to return true, both the left and right expressions must be true. Since the browser runs code from left to right, if it encounters false on the left side, it does not even run the code on the right side. Thus, this can be used to conditionally run code. For example:
 
@@ -1458,17 +1491,17 @@ Pseudo-Classes: 10
 Attributes: 10
 Elements: 1
 Pseudo-Elements: 1
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity>
 Spread Operator
 A JavaScript operator using ... for expanding iterables into individual elements. For example myFunction(...myArray) would pass each value in myArray as individual arguments to myFunction.
 
 The spread syntax can also be used to combine two arrays, for example, [...arr1, ...arr2] would make a single array with all of the values of both arrays. Similarly, objects can be spread as well. For example, {key: 'value', ...otherObj} would add all of the fields from the other object into this object. Moreover, {...obj} can be used as a shallow clone of an object, since it creates a new object with the same fields.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax>
 Stacking Context
 A group of elements positioned together on the z-axis. Stacking contexts can be nested within other stacking contexts, and z-index values are used to determine the layering of elements with the same stacking context parent.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context>
 State
 Data specific to an instance of a component that persists between renders and causes re-renders when changed.
 
@@ -1483,7 +1516,7 @@ If the values have different types, return false.
 If both values are null or both values are undefined, return true.
 If both values are objects, return true if they are the same object. False otherwise.
 If both values are of the same primitive type, return true if the values are the same. False otherwise.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality>
 Style Guide
 A document describing the preferred coding style for a project or organization used to promote clean and consistent code. Many style guides, such as the Google JavaScript Style Guide , are open source.
 
@@ -1494,11 +1527,11 @@ A symbol is created using the Symbol(description) function, which returns a uniq
 
 While symbols created using the Symbol(description) function are completely unique, symbols can also be created using Symbol.for(key). This works the same way, except two calls to this function with the same key will return the same symbol, based on a global symbol registry.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Glossary/Symbol
+Learn more: <https://developer.mozilla.org/en-US/docs/Glossary/Symbol>
 SyntheticEvent
 The object type passed to React event handler functions. Synthetic events generally work the same as native events, but with more consistency across browsers.
 
-Learn more: https://reactjs.org/docs/events.html
+Learn more: <https://reactjs.org/docs/events.html>
 Tag
 The primary method of marking up content using HTML. Tags use the syntax <tagname>content</tagname>.
 
@@ -1516,11 +1549,11 @@ A queue data structure for storing asynchronous callbacks to be added to the cal
 Web APIs move callbacks into the task queue, where they wait for the call stack to be empty before executing.
 
 Template Literal
-Strings created using backticks `` that allow for inlining expressions rather than needing concatenation. Inlined expressions use the syntax ${expression}. For example, `Hello ${name}` would have the same output as 'Hello' + name.
+Strings created using backticks ``that allow for inlining expressions rather than needing concatenation. Inlined expressions use the syntax ${expression}. For example,`Hello ${name}` would have the same output as 'Hello' + name.
 
 Template literals also allow for tagging to write a function that defines custom behavior for the template literals. Tagging can be read about further in the MDN documentation, but it doesn't tend to be used too often.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals>
 this
 A JavaScript keyword for referencing the context in which the current code is running.
 
@@ -1539,7 +1572,7 @@ JavaScript provides three functions for binding the value of this to functions:
 func.bind(thisArg): Returns a new function with thisArg bound to this.
 func.call(thisArg, x, y): Calls func(x, y) with thisArg bound to this.
 func.apply(thisArg, [x, y]): Calls func(x, y) with thisArg bound to this.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this>
 Transitions
 A css module for smoothly transitioning between values when a value is changed. Transitions can be defined with a combination of these properties:
 
@@ -1552,25 +1585,25 @@ Alternatively, the transition property can be used as a shorthand for all of the
 For example, this would set the width to smoothly transition linearly over one second, two seconds after the value is changed:
 
 transition: width 1s linear 2s;
-Learn more: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions>
 Transmission Control Protocol
 Oftentimes abbreviated as TCP, a network protocol used to establish a connection between two computers on the internet. TCP is the primary mechanism by which HTTP requests are delivered.
 
 TypeScript
 A superset of JavaScript adding static typing. The primary purpose of using TypeScript is to prevent bugs related to incorrect types and to improve the development workflow. Since browsers only understand standard JavaScript, TypeScript is compiled back into JavaScript.
 
-Learn more: https://www.typescriptlang.org/
+Learn more: <https://www.typescriptlang.org/>
 useCallback
 A React hook for memoizing a function. This function works the exact same as useMemo, except rather than memoizing the return value of a function, it memoizes the entire function. This can be useful for a variety of reasons, such as if a callback is passed into a dependency array that requires it to not change on every render. For example:
 
 const callback = useCallback(() => console.log(x, y), [x, y]);
-Learn more: https://reactjs.org/docs/hooks-reference.html#usecallback
+Learn more: <https://reactjs.org/docs/hooks-reference.html#usecallback>
 useContext
 A React hook for using a context. The useContext function takes in a context object created with createContext, and it returns the value from the first context provider of that context above it in the tree. For example:
 
 const theme = useContext(ThemeContext);
 console.log(theme.mode); // 'dark'
-Learn more: https://reactjs.org/docs/hooks-reference.html#usecontext
+Learn more: <https://reactjs.org/docs/hooks-reference.html#usecontext>
 useEffect
 A React hook for performing side effects around the component lifecycle. The useEffect hook takes in a callback function and an optional dependency array.
 
@@ -1579,11 +1612,11 @@ If no dependency array is provided, the callback function will run on every rend
 The callback function can also return a cleanup function, which will run on unmount and before the main effect function runs on any re-renders. For example:
 
 useEffect(() => {
-  console.log('count changed');
+console.log('count changed');
 
-  return () => console.log('cleanup count changed effect');
+return () => console.log('cleanup count changed effect');
 }, [count]);
-Learn more: https://reactjs.org/docs/hooks-effect.html
+Learn more: <https://reactjs.org/docs/hooks-effect.html>
 useImperativeHandle
 A React hook for customizing the value provided to a parent component when using a ref. The useImperativeHandle hook takes in a ref as the first parameter, followed by a callback function and an optional dependency array.
 
@@ -1592,77 +1625,77 @@ The return value of the callback function will act as the current value of the r
 Since useImperativeHandle requires a ref on a custom component, it should always be used with React.forwardRef. For example:
 
 forwardRef(function (props, ref) {
-  const [count, setCount] = useState(0);
+const [count, setCount] = useState(0);
 
-  useImperativeHandle(ref, () => {
-    return {
-      resetCount: () => setCount(0)
-    };
-  });
+useImperativeHandle(ref, () => {
+return {
+resetCount: () => setCount(0)
+};
+});
 
-  return (
-    <button onClick={() => setCount(count + 1)}>
-      Increment
-    </button>
-  );
-  }
-Learn more: https://reactjs.org/docs/hooks-reference.html#useimperativehandle
+return (
+<button onClick={() => setCount(count + 1)}>
+Increment
+</button>
+);
+}
+Learn more: <https://reactjs.org/docs/hooks-reference.html#useimperativehandle>
 useLayoutEffect
 A React hook for performing side effects around the component lifecycle in the same way as useEffect. The only difference between the two functions is that useLayoutEffect works synchronously, meaning the effects always finish running before the browser paints. This hook should only be used for effects that will make visual changes to the DOM, because otherwise the synchronous nature will give worse performance than useEffect without any benefits.
 
-Learn more: https://reactjs.org/docs/hooks-reference.html#uselayouteffect
+Learn more: <https://reactjs.org/docs/hooks-reference.html#uselayouteffect>
 useMemo
 A React hook for memoizing a value. The useMemo function takes in a function that returns a value to be memoized and a dependency array. The useMemo function then returns the memoized value, and it only calls the passed in function to recalculate the value if an item in the dependency array changes. For example:
 
 const value = useMemo(() => slowFunction(x, y), [x, y]);
-Learn more: https://reactjs.org/docs/hooks-reference.html#usememo
+Learn more: <https://reactjs.org/docs/hooks-reference.html#usememo>
 useReducer
 An alternative React hook for creating stateful components, oftentimes used for more complex state. The useReducer function takes in a reducer function and the initial state. It returns an array with two elements: the current state value and a dispatch function.
 
 The reducer function takes in the previous state and an action object as parameters, then it returns the new state. Usually the action object will have a type property, which will be used in a switch statement. For example:
 
 function reducer(state, action) {
-  switch (action.type) {
-    case 'increment':
-      return {count: state.count + action.num};
-    case 'decrement':
-      return {count: state.count - action.num};
-    default:
-      throw new Error('Unknown action type');
-  }
+switch (action.type) {
+case 'increment':
+return {count: state.count + action.num};
+case 'decrement':
+return {count: state.count - action.num};
+default:
+throw new Error('Unknown action type');
+}
 }
 The dispatch function will then take in an object, which will be passed as the action to the reducer function. For example:
 
 const [state, dispatch] = useReducer(reducer, {
-  count: 0
+count: 0
 });
 
 return (
-  <button onClick={() => dispatch({
-    type: 'increment',
-    num: 1
-  })}>Increment</button>
+<button onClick={() => dispatch({
+type: 'increment',
+num: 1
+})}>Increment</button>
 );
-Learn more: https://reactjs.org/docs/hooks-reference.html#usereducer
+Learn more: <https://reactjs.org/docs/hooks-reference.html#usereducer>
 useRef
 A React hook for creating a ref. The useRef hook takes in an initial value and returns a ref. The ref is simply an object with a current property set to the current value.
 
 const div = useRef(null);
 return <div ref={div}>This div has a ref</div>;
-Learn more: https://reactjs.org/docs/hooks-reference.html#useref
+Learn more: <https://reactjs.org/docs/hooks-reference.html#useref>
 useState
 A React hook for creating stateful components. The useState function takes in an initial state value (or a function that returns that initial value), and it returns an array with two elements: the current state value and a setter function. For example:
 
 const [number, setNumber] = useState(42);
-Learn more: https://reactjs.org/docs/hooks-state.html
+Learn more: <https://reactjs.org/docs/hooks-state.html>
 var
 A keyword for declaring a function-scoped variable that is automatically initialized to undefined when it is hoisted.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var>
 Virtual DOM
 A "virtual" representation of the DOM kept by React internally. Since this data structure is not tied to the actual DOM, it is much quicker to update than the DOM.
 
-Learn more: https://reactjs.org/docs/faq-internals.html
+Learn more: <https://reactjs.org/docs/faq-internals.html>
 WAI-ARIA
 The "Web Accessibility Initiative - Accessible Rich Internet Applications" specification for accessible HTML created by the World Wide Web Consortium (W3C). Oftentimes referred to as just ARIA, this contains a set of HTML attributes that can be added to provide extra information to the accessibility tree.
 
@@ -1676,17 +1709,17 @@ Window: Sub-windows in the browser.
 Live Region: Regions with dynamically changing content.
 Properties: Extra meaning and characteristics of the element, such as labels.
 States: Current state of the element, such as if it is disabled.
-Learn more: https://developer.mozilla.org/en-US/docs/Learn/Accessibility/WAI-ARIA_basics
+Learn more: <https://developer.mozilla.org/en-US/docs/Learn/Accessibility/WAI-ARIA_basics>
 WeakMap
 A built-in JavaScript class for holding key-value pairs similar to the Map class. There are two primary differences between Map and WeakMap:
 
 WeakMap can only have objects as keys, primitive values cannot be added as keys.
 WeakMaps hold "weak" references to objects, meaning that they do not prevent the objects from being garbage collected. If no other references to an object exist, it can be garbage collected and automatically removed from the WeakMap. As a result, WeakMaps cannot be iterated over.
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap>
 WeakSet
 A built-in JavaScript class for holding unique values similar to the Set class. However, a WeakSet acts just like a WeakMap, meaning that the values must all be objects, and references to those objects are "weakly" held.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet>
 Web Worker
 A browser API for running scripts in a separate thread from the main execution thread.
 
@@ -1698,14 +1731,14 @@ Workers can send messages back and forth with the main thread via the postMessag
 const worker = new Worker('worker.js');
 worker.postMessage('hello');
 worker.addEventListener('message', (event) => {
-  console.log(event.data); // 'world'
+console.log(event.data); // 'world'
 });
 
 // worker.js
 postMessage('world');
 addEventListener('message', (event) => {
-  console.log(event.data); // 'hello'
+console.log(event.data); // 'hello'
 });
 In general, most workers are dedicated workers, meaning they can only communicate with the script that created them. However, a SharedWorker can also be created to share a worker with multiple tabs or iframes. That said, SharedWorkers still do not have widespread support across browsers.
 
-Learn more: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
+Learn more: <https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API>
