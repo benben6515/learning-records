@@ -16,6 +16,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -278,6 +279,120 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
+
+        .content-section {
+            max-width: 400px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .section-header h3 {
+            font-size: 18px;
+        }
+
+        .section-header .arrow {
+            transition: transform 0.3s;
+        }
+
+        .section-header.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .section-content.open {
+            display: block;
+        }
+
+        .section-content h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .section-content ul {
+            padding-left: 20px;
+            color: #333;
+        }
+
+        .section-content li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .section-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .section-content th,
+        .section-content td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .section-content th {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        .word-card {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .word-jp {
+            font-size: 18px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .word-en {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .error-box {
+            background: #fee;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .error-box h4 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+
+        .error-box li {
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -311,6 +426,212 @@
 
     <div class="autoplay-indicator" id="autoplayIndicator">Auto: <span id="countdown">30</span>s</div>
 
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>💡 記憶技巧</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <h4>1. 聯想記憶法</h4>
+            <ul>
+                <li><strong>あ</strong>：像一個人張開嘴說「啊～」</li>
+                <li><strong>き</strong>：像一把「key」(鑰匙)</li>
+                <li><strong>の</strong>：像「No」的符號</li>
+                <li><strong>カ</strong>：像刀「cut」的形狀</li>
+                <li><strong>ト</strong>：像「ten」的 T</li>
+                <li><strong>シ</strong>：像笑臉 smile 的 si</li>
+            </ul>
+
+            <h4>2. 筆順練習法</h4>
+            <ul>
+                <li>用田字格練習本，每個字寫10-20遍</li>
+                <li><strong>筆順很重要！</strong> 正確筆順能幫助記憶</li>
+            </ul>
+
+            <h4>3. 對比記憶法</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>平假名</th>
+                        <th>片假名</th>
+                        <th>區別方法</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ぬ vs ね</td>
+                        <td>ヌ vs ネ</td>
+                        <td>ぬ像「奴」，ね像「根」/ ヌ往右，ネ往左</td>
+                    </tr>
+                    <tr>
+                        <td>は vs ほ</td>
+                        <td>ハ vs ホ</td>
+                        <td>は兩撇，ほ有圈 / ハ兩撇，ホ三筆</td>
+                    </tr>
+                    <tr>
+                        <td>シ vs ツ</td>
+                        <td>-</td>
+                        <td>シ直立，ツ斜躺</td>
+                    </tr>
+                    <tr>
+                        <td>ソ vs ン</td>
+                        <td>-</td>
+                        <td>ソ往左，ン往右</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>4. 單字記憶法</h4>
+            <div class="word-card">
+                <span class="word-jp">愛 あい</span>
+                <span class="word-en">ai (愛)</span>
+            </div>
+            <div class="word-card">
+                <span class="word-jp">海 うみ</span>
+                <span class="word-en">umi (海)</span>
+            </div>
+            <div class="word-card">
+                <span class="word-jp">猫 ねこ</span>
+                <span class="word-en">neko (貓)</span>
+            </div>
+            <div class="word-card">
+                <span class="word-jp">犬 いぬ</span>
+                <span class="word-en">inu (狗)</span>
+            </div>
+            <div class="word-card">
+                <span class="word-jp">桜 さくら</span>
+                <span class="word-en">sakura (櫻花)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>⚠️ 常見錯誤避免</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+        <div class="section-content">
+            <h4>每日練習計劃</h4>
+            <ul>
+                <li><strong>早上 (10分鐘)</strong>：寫5-10個新字，每個寫5遍</li>
+                <li><strong>中午 (5分鐘)</strong>：用 app 複習</li>
+                <li><strong>晚上 (10分鐘)</strong>：默寫今天學的字，測試自己</li>
+            </ul>
+        </div>
+            <div class="error-box">
+                <ul>
+                    <li>❌ <strong>不要一次學太多</strong>：一天最多學5-10個</li>
+                    <li>❌ <strong>不要只看不寫</strong>：一定要動手寫</li>
+                    <li>❌ <strong>不要平片假名一起學</strong>：先精通平假名</li>
+                    <li>❌ <strong>不要跳過複習</strong>：前一天的字要每天複習</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>🎯 進階：濁音・半濁音</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <p style="color: #666; margin-bottom: 15px;">掌握基本五十音後再學這些：</p>
+
+            <h4>濁音（加兩點 ゛）</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>原字</th>
+                        <th>濁音</th>
+                        <th>發音變化</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>か(ka)</td>
+                        <td>が(ga)</td>
+                        <td>k → g</td>
+                    </tr>
+                    <tr>
+                        <td>さ(sa)</td>
+                        <td>ざ(za)</td>
+                        <td>s → z</td>
+                    </tr>
+                    <tr>
+                        <td>た(ta)</td>
+                        <td>だ(da)</td>
+                        <td>t → d</td>
+                    </tr>
+                    <tr>
+                        <td>は(ha)</td>
+                        <td>ば(ba)</td>
+                        <td>h → b</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin-top: 20px;">半濁音（加圓圈 ゜）</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>原字</th>
+                        <th>半濁音</th>
+                        <th>發音變化</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>は(ha)</td>
+                        <td>ぱ(pa)</td>
+                        <td>h → p</td>
+                    </tr>
+                    <tr>
+                        <td>ひ(hi)</td>
+                        <td>ぴ(pi)</td>
+                        <td>h → p</td>
+                    </tr>
+                    <tr>
+                        <td>ふ(fu)</td>
+                        <td>ぷ(pu)</td>
+                        <td>h → p</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>📅 3週速成計劃</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <ul>
+                <li><strong>第1週</strong>：清音（あ行～わ行）+ 每天複習</li>
+                <li><strong>第2週</strong>：濁音、半濁音 + 綜合測驗</li>
+                <li><strong>第3週</strong>：拗音（きゃ、きゅ、きょ等）+ 實際閱讀練習</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>🎮 實用測試方法</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <ul>
+                <li><strong>隨機測試</strong>：把字卡打亂，看能認出多少</li>
+                <li><strong>聽寫測試</strong>：用 YouTube 五十音歌，邊聽邊寫</li>
+                <li><strong>實戰閱讀</strong>：試著讀日文兒童繪本</li>
+            </ul>
+            <p style="color: #666; margin-top: 15px; line-height: 1.6;">
+                建議你先專注於平假名，每天花20-30分鐘，大約2週就能掌握基本的46個字。
+            </p>
+        </div>
+    </div>
+
     <script>
         const slidesData = [
             {
@@ -324,7 +645,7 @@
                     { hiragana: 'え', katakana: 'エ', romaji: 'e' },
                     { hiragana: 'お', katakana: 'オ', romaji: 'o' }
                 ],
-                memoryTip: '平：像「安」的草書 / 片：像「A」去掉一橫'
+                memoryTip: 'あ：像人張嘴說「啊～」/ い：像「以」的草書 / う：像在說「u～」/ え：像「衣」字 / お：像「於」字'
             },
             {
                 day: 2,
@@ -334,7 +655,8 @@
                     { hiragana: 'か', katakana: 'カ', romaji: 'ka' },
                     { hiragana: 'き', katakana: 'キ', romaji: 'ki' },
                     { hiragana: 'く', katakana: 'ク', romaji: 'ku' }
-                ]
+                ],
+                memoryTip: 'き：像一把「key」鑰匙 / カ：像刀「cut」的形狀'
             },
             {
                 day: 3,
@@ -353,7 +675,8 @@
                     { hiragana: 'さ', katakana: 'サ', romaji: 'sa' },
                     { hiragana: 'し', katakana: 'シ', romaji: 'shi' },
                     { hiragana: 'す', katakana: 'ス', romaji: 'su' }
-                ]
+                ],
+                memoryTip: 'シ：像笑臉 smile 的 si'
             },
             {
                 day: 5,
@@ -374,7 +697,7 @@
                     { hiragana: 'ち', katakana: 'チ', romaji: 'chi' },
                     { hiragana: 'つ', katakana: 'ツ', romaji: 'tsu' }
                 ],
-                memoryTip: 'シ直立，ツ斜躺'
+                memoryTip: 'ト：像「ten」的 T / シ直立，ツ斜躺'
             },
             {
                 day: 7,
@@ -393,7 +716,8 @@
                     { hiragana: 'な', katakana: 'ナ', romaji: 'na' },
                     { hiragana: 'に', katakana: 'ニ', romaji: 'ni' },
                     { hiragana: 'ぬ', katakana: 'ヌ', romaji: 'nu' }
-                ]
+                ],
+                memoryTip: 'ぬ像「奴」，ね像「根」/ ヌ往右，ネ往左'
             },
             {
                 day: 9,
@@ -403,7 +727,7 @@
                     { hiragana: 'ね', katakana: 'ネ', romaji: 'ne' },
                     { hiragana: 'の', katakana: 'ノ', romaji: 'no' }
                 ],
-                memoryTip: 'ぬ像「奴」，ね像「根」/ ヌ往右，ネ往左'
+                memoryTip: 'の：像「No」的符號 / ぬ像「奴」，ね像「根」/ ヌ往右，ネ往左'
             },
             {
                 day: 10,
@@ -413,7 +737,8 @@
                     { hiragana: 'は', katakana: 'ハ', romaji: 'ha' },
                     { hiragana: 'ひ', katakana: 'ヒ', romaji: 'hi' },
                     { hiragana: 'ふ', katakana: 'フ', romaji: 'fu' }
-                ]
+                ],
+                memoryTip: 'は兩撇，ほ有圈 / ハ兩撇，ホ三筆'
             },
             {
                 day: 11,
@@ -453,7 +778,8 @@
                     { hiragana: 'ゆ', katakana: 'ユ', romaji: 'yu' },
                     { hiragana: 'よ', katakana: 'ヨ', romaji: 'yo' }
                 ],
-                isYRow: true
+                isYRow: true,
+                memoryTip: 'や像家屋的屋頂，ゆ像弓箭的弓，よ像手指的「1」'
             },
             {
                 day: 15,
@@ -784,6 +1110,13 @@
             intervalInput.value = savedInterval;
         }
         generateSlides();
+
+        // Toggle accordion sections
+        function toggleSection(header) {
+            header.classList.toggle('open');
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+        }
     </script>
 </body>
 </html>
