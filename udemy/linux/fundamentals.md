@@ -48,9 +48,10 @@ ls -ltri
 
 ```
 
-## 04 Linux fundamentals
+## 04 linux fundamentals
 
 - permissions types
+
   - r: read
   - w: write
   - x: execute
@@ -97,7 +98,6 @@ su -
 pwd
 ls -ltr
 chown root FILE_NAME
-
 ```
 
 - ACL (Access Control List)
@@ -178,7 +178,7 @@ echo hi
 echo "hello world" | tee -a hi
 ```
 
-@ find line in dir
+- find line in dir
 
 ```sh
 # find line in file
@@ -216,7 +216,7 @@ chown
 
 ```sh
 # cat
-cat FILE_NAME
+cat FILE_NAME (bat is better, but need install)
 
 # more
 more FILE_NAME # `space` for next page, `q` for quit
@@ -238,7 +238,6 @@ tail -2 FILE_NAME
   - sort
   - uniq
   - wc (word count)
-
 - cut
 
 ```sh
@@ -390,7 +389,7 @@ cmp FILE_NAME1 FILE_NAME2
 - tar/gzip/gunzip
 
 ```sh
-# ----- tar ----- Tape ARchive
+# ----- tar ----- Tape Archive
 # c = create, v = verbose list, f = file archive
 tar -cvf archive.tar .
 
@@ -435,6 +434,7 @@ cat test05 >> file
 cat file | wc -l
 split -ls 2 file sep
 ls -ltr
+
 # speaa
 # speab
 # speac
@@ -443,16 +443,16 @@ ls -ltr
 
 - linux vs. windows
 
- | description                               | windows        | linux       |
- | ----------------------------------------- | -------------- | ----------- |
- | listing of a directory                    | dir            | ls -l       |
- | rename a file                             | ren            | mv          |
- | copy a file                               | copy           | cp          |
- | move a file                               | move           | mv          |
- | clears screen                             | **cls**        | clear       |
- | delete file                               | del            | rm          |
- | compare contents of files                 | fc             | diff        |
- | search for a word/string in a file        | find           | grep        |
- | display command help                      | **command /?** | man command |
- | displays your location in the file system | **chdir**      | pwd         |
- | displays the time                         | **time**       | date        |
+| description                               | windows        | linux       |
+| ----------------------------------------- | -------------- | ----------- |
+| listing of a directory                    | dir            | ls -l       |
+| rename a file                             | ren            | mv          |
+| copy a file                               | copy           | cp          |
+| move a file                               | move           | mv          |
+| clears screen                             | **cls**        | clear       |
+| delete file                               | del            | rm          |
+| compare contents of files                 | fc             | diff        |
+| search for a word/string in a file        | find           | grep        |
+| display command help                      | **command /?** | man command |
+| displays your location in the file system | **chdir**      | pwd         |
+| displays the time                         | **time**       | date        |
