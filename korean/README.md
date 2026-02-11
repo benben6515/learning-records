@@ -1,6 +1,6 @@
-# Learning Japanese
+# Learning Korean
 
-`basic/` basic 50(46) Japanese symbols
+`basic/` basic Korean symbols
 
 ---
 
