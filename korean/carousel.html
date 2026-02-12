@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韓文字母學習</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #c1272d 0%, #003478 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .carousel-container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .carousel-header {
+            background: linear-gradient(135deg, #c1272d 0%, #003478 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .carousel-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .day-counter {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .carousel-track-wrapper {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            width: 100%;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            padding: 30px 20px;
+        }
+
+        .slide-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .slide-subtitle {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .hangul-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .hangul-grid.small {
+            grid-template-columns: repeat(3, 1fr);
+            justify-items: center;
+        }
+
+        .hangul-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 16px 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .hangul-card:active {
+            transform: scale(0.95);
+        }
+
+        .hangul-card.vowel {
+            background: linear-gradient(135deg, #ffe5e5 0%, #ffc9c9 100%);
+            border: 2px solid #c1272d;
+        }
+
+        .hangul-card.consonant {
+            background: linear-gradient(135deg, #e5f0ff 0%, #c9dff5 100%);
+            border: 2px solid #003478;
+        }
+
+        .hangul-card.double {
+            background: linear-gradient(135deg, #fff4e5 0%, #ffe5c9 100%);
+            border: 2px solid #ff9500;
+        }
+
+        .hangul-char {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .hangul-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .hangul-romaja {
+            font-size: 14px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .memory-tip {
+            background: #e8f4fd;
+            border-left: 4px solid #003478;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .memory-tip h4 {
+            color: #003478;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .memory-tip p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            gap: 20px;
+            background: #f8f9fa;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c1272d 0%, #003478 100%);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .indicators {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 10px;
+            flex-wrap: wrap;
+        }
+
+        .settings {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .settings label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .settings input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .settings button {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #c1272d 0%, #003478 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .autoplay-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(193, 39, 45, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .autoplay-indicator.active {
+            display: block;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: linear-gradient(135deg, #c1272d 0%, #003478 100%);
+            transform: scale(1.2);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e0e0e0;
+            width: 100%;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #c1272d 0%, #003478 100%);
+            transition: width 0.4s;
+            width: 0%;
+        }
+
+        @media (max-width: 360px) {
+            .hangul-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .content-section {
+            max-width: 400px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #c1272d 0%, #003478 100%);
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .section-header h3 {
+            font-size: 18px;
+        }
+
+        .section-header .arrow {
+            transition: transform 0.3s;
+        }
+
+        .section-header.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .section-content.open {
+            display: block;
+        }
+
+        .section-content h4 {
+            color: #003478;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .section-content ul {
+            padding-left: 20px;
+            color: #333;
+        }
+
+        .section-content li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .word-card {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .word-kr {
+            font-size: 18px;
+            color: #c1272d;
+            font-weight: bold;
+        }
+
+        .word-en {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .example-row {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel-container">
+        <div class="carousel-header">
+            <h1>韓文字母學習</h1>
+            <div class="day-counter">Day <span id="currentDay">1</span> / 14</div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="carousel-track-wrapper">
+            <div class="carousel-track" id="carouselTrack"></div>
+        </div>
+
+        <div class="carousel-controls">
+            <button class="control-btn" id="prevBtn" disabled>❮</button>
+            <button class="control-btn" id="nextBtn">❯</button>
+        </div>
+
+        <div class="indicators" id="indicators"></div>
+
+        <div class="settings">
+            <label for="intervalInput">Interval (sec):</label>
+            <input type="number" id="intervalInput" min="5" max="120" value="30">
+            <button id="toggleAutoplay">▶ Start Auto</button>
+        </div>
+    </div>
+
+    <div class="autoplay-indicator" id="autoplayIndicator">Auto: <span id="countdown">30</span>s</div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>💡 記憶技巧</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <h4>用形狀來記憶</h4>
+            <ul>
+                <li><strong>ㅏ</strong>：張嘴的形狀 (a)</li>
+                <li><strong>ㅓ</strong>：衣服袖子的形狀 (eo)</li>
+                <li><strong>ㅗ</strong>：手指的形狀 (o)</li>
+                <li><strong>ㅜ</strong>：碗的形狀 (u)</li>
+                <li><strong>ㅡ</strong>：漢江的形狀 (eu)</li>
+                <li><strong>ㄱ</strong> : 下排牙齒的形狀 (g/k)</li>
+                <li><strong>ㅂ</strong> : 額頭孔洞的形狀 (b/p)</li>
+                <li><strong>ㅎ</strong> : 衣架的形狀 (h)</li>
+            </ul>
+        </div>
+    </div>
+        <div class="section-content">
+            <h4>모양으로 기억하기</h4>
+            <ul>
+                <li><strong>ㅏ</strong>：입을 벌린 모양 (a)</li>
+                <li><strong>ㅓ</strong>：옷 소매 모양 (eo)</li>
+                <li><strong>ㅗ</strong>：숟가락 모양 (o)</li>
+                <li><strong>ㅜ</strong>：그릇 모양 (u)</li>
+                <li><strong>ㅡ</strong>：한강 모양 (eu)</li>
+                <li><strong>ㄱ</strong> : 아랫니 모양 (g/k)</li>
+                <li><strong>ㅂ</strong> : 콧구멍 모양 (b/p)</li>
+                <li><strong>ㅎ</strong> : 옷걸이 모양 (h)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>📝 韓文字組合方法</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <ul>
+                <li><strong>子音 + 母音</strong>：가, 나, 다</li>
+                <li><strong>有收音的字</strong>：각, 낚, 닫</li>
+                <li><strong>複合母音</strong>：과, 의, 웨</li>
+            </ul>
+            <div class="example-row">
+                <span class="word-kr">가</span>
+                <span class="word-en">ㄱ + ㅏ = ga</span>
+            </div>
+            <div class="example-row">
+                <span class="word-kr">한</span>
+                <span class="word-en">ㅎ + ㅏ + ㄴ = han</span>
+            </div>
+            <div class="example-row">
+                <span class="word-kr">글</span>
+                <span class="word-en">ㄱ + ㅡ + ㄹ = geul</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>⚠️ 注意事項</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <ul>
+                <li>❌ <strong>不要一次學太多</strong>：一天最多5-10個</li>
+                <li>❌ <strong>不要只看不寫</strong>：一定要動手寫</li>
+                <li>❌ <strong>不要忽略收音</strong>：收音對發音很重要</li>
+                <li>❌ <strong>不要跳過複習</strong>：前一天的内容要每天複習</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>🎯 發音規則</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <ul>
+                <li><strong>ㄱ</strong> : 字尾時發 'k' 音 (例: 밖)</li>
+                <li><strong>ㄷ</strong> : 字尾時發 't' 音 (例: 받)</li>
+                <li><strong>ㅂ</strong> : 字尾時發 'p' 音 (例: 앞)</li>
+                <li><strong>ㅈ/ㅊ</strong> : 字尾時發 'ch' 音</li>
+                <li><strong>ㅎ</strong> : 字尾時變弱或消失</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <h3>📅 2週學習計劃</h3>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="section-content">
+            <ul>
+                <li><strong>第1週</strong> : 基本子音 + 母音 (14個)</li>
+                <li><strong>第2週</strong> : 雙子音、複合母音 + 單字練習</li>
+            </ul>
+            <p style="color: #666; margin-top: 15px; line-height: 1.6;">
+                每天花20-30分鐘學習，大約2週就能掌握基本的韓文字母。
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const slidesData = [
+            {
+                day:1,
+                title: '第1天：基本母音(1)',
+                subtitle: 'ㅏ ㅓ ㅗ ㅜ (4個)',
+                hanguls: [
+                    { char: 'ㅏ', name: '아', romaja: 'a', type: 'vowel' },
+                    { char: 'ㅓ', name: '어', romaja: 'eo', type: 'vowel' },
+                    { char: 'ㅗ', name: '오', romaja: 'o', type: 'vowel' },
+                    { char: 'ㅜ', name: '우', romaja: 'u', type: 'vowel' }
+                ],
+                memoryTip: 'ㅏ: 張嘴的形狀 / ㅓ: 衣服袖子 / ㅗ: 手指 / ㅜ: 碗'
+            },
+            {
+                day: 2,
+                title: '第2天：基本母音(2)',
+                subtitle: 'ㅡ ㅣ (2個)',
+                hanguls: [
+                    { char: 'ㅡ', name: '으', romaja: 'eu', type: 'vowel' },
+                    { char: 'ㅣ', name: '이', romaja: 'i', type: 'vowel' }
+                ],
+                memoryTip: 'ㅡ: 漢江形狀 / ㅣ: 人站立的形狀'
+            },
+            {
+                day: 3,
+                title: '第3天：基本子音(1)',
+                subtitle: 'ㄱ ㄴ ㄷ ㄹ (4個)',
+                hanguls: [
+                    { char: 'ㄱ', name: '기역', romaja: 'g/k', type: 'consonant' },
+                    { char: 'ㄴ', name: '니은', romaja: 'n', type: 'consonant' },
+                    { char: 'ㄷ', name: '디귿', romaja: 'd/t', type: 'consonant' },
+                    { char: 'ㄹ', name: '리을', romaja: 'r/l', type: 'consonant' }
+                ],
+                memoryTip: 'ㄱ: 下排牙齒 / ㄴ: 舌頭張開的形狀 / ㄷ: 上排牙齒 / ㄹ: 舌頭捲起'
+            },
+            {
+                day: 4,
+                title: '第4天：基本子音(2)',
+                subtitle: 'ㅁ ㅂ ㅅ (3個)',
+                hanguls: [
+                    { char: 'ㅁ', name: '미음', romaja: 'm', type: 'consonant' },
+                    { char: 'ㅂ', name: '비읍', romaja: 'b/p', type: 'consonant' },
+                    { char: 'ㅅ', name: '시옷', romaja: 's', type: 'consonant' }
+                ],
+                memoryTip: 'ㅁ: 嘴巴 / ㅂ: 額頭孔洞 / ㅅ: 牙齒'
+            },
+            {
+                day: 5,
+                title: '第5天：基本子音(3)',
+                subtitle: 'ㅇ ㅈ ㅊ (3個)',
+                hanguls: [
+                    { char: 'ㅇ', name: '이응', romaja: '-/ng', type: 'consonant' },
+                    { char: 'ㅈ', name: '지읒', romaja: 'j', type: 'consonant' },
+                    { char: 'ㅊ', name: '치읓', romaja: 'ch', type: 'consonant' }
+                ],
+                memoryTip: 'ㅇ: 喉嚨孔 / ㅈ: 舌尖碰觸牙齒 / ㅊ: ㅈ加上氣流噴出'
+            },
+            {
+                day: 6,
+                title: '第6天：基本子音(4)',
+                subtitle: 'ㅋ ㅌ ㅍ ㅎ (4個)',
+                hanguls: [
+                    { char: 'ㅋ', name: '키읔', romaja: 'k', type: 'consonant' },
+                    { char: 'ㅌ', name: '티읕', romaja: 't', type: 'consonant' },
+                    { char: 'ㅍ', name: '피읖', romaja: 'p', type: 'consonant' },
+                    { char: 'ㅎ', name: '히읗', romaja: 'h', type: 'consonant' }
+                ],
+                memoryTip: 'ㅋ: ㄱ加上氣流噴出 / ㅌ: ㅂ加上氣流噴出 / ㅍ: ㅂ更強 / ㅎ: 衣架'
+            },
+            {
+                day: 7,
+                title: '第7天：複合母音(1)',
+                subtitle: 'ㅑ ㅕ ㅛ ㅠ (4個)',
+                hanguls: [
+                    { char: 'ㅑ', name: '야', romaja: 'ya', type: 'vowel' },
+                    { char: 'ㅕ', name: '여', romaja: 'yeo', type: 'vowel' },
+                    { char: 'ㅛ', name: '요', romaja: 'yo', type: 'vowel' },
+                    { char: 'ㅠ', name: '유', romaja: 'yu', type: 'vowel' }
+                ],
+                isSmall: true,
+                memoryTip: 'ㅑ是 y+a, ㅕ是 y+eo, ㅛ是 y+o, ㅠ是 y+u'
+            },
+            {
+                day: 8,
+                title: '第8天：複合母音(2)',
+                subtitle: 'ㅐ ㅔ ㅒ ㅖ (4個)',
+                hanguls: [
+                    { char: 'ㅐ', name: '애', romaja: 'ae', type: 'vowel' },
+                    { char: 'ㅔ', name: '에', romaja: 'e', type: 'vowel' },
+                    { char: 'ㅒ', name: '얘', romaja: 'yae', type: 'vowel' },
+                    { char: 'ㅖ', name: '예', romaja: 'ye', type: 'vowel' }
+                ],
+                isSmall: true,
+                memoryTip: 'ㅐ發 e 音, ㅔ也發 e 音 / ㅒ是 y+ae, ㅖ是 y+e'
+            },
+            {
+                day: 9,
+                title: '第9天：複合母音(3)',
+                subtitle: 'ㅘ ㅙ ㅚ (3個)',
+                hanguls: [
+                    { char: 'ㅘ', name: '와', romaja: 'wa', type: 'vowel' },
+                    { char: 'ㅙ', name: '왜', romaja: 'wae', type: 'vowel' },
+                    { char: 'ㅚ', name: '외', romaja: 'oe', type: 'vowel' }
+                ],
+                isSmall: true,
+                memoryTip: 'ㅘ是 w+a, ㅙ是 w+ae, ㅚ是 w+e (오 + ㅏ/ㅐ/ㅔ)'
+            },
+            {
+                day: 10,
+                title: '第10天：複合母音(4)',
+                subtitle: 'ㅝ ㅞ ㅟ (3個)',
+                hanguls: [
+                    { char: 'ㅝ', name: '워', romaja: 'wo', type: 'vowel' },
+                    { char: 'ㅞ', name: '웨', romaja: 'we', type: 'vowel' },
+                    { char: 'ㅟ', name: '위', romaja: 'wi', type: 'vowel' }
+                ],
+                isSmall: true,
+                memoryTip: 'ㅝ是 w+o, ㅞ是 w+e, ㅟ是 w+i (우 + ㅓ/ㅔ/ㅣ)'
+            },
+            {
+                day: 11,
+                title: '第11天：複合母音(5)',
+                subtitle: 'ㅢ (1個)',
+                hanguls: [
+                    { char: 'ㅢ', name: '의', romaja: 'ui', type: 'vowel' }
+                ],
+                isSmall: true,
+                memoryTip: 'ㅢ是 w+eu (으 + ㅣ) 或單獨使用時發 "ui" 或 "e"'
+            },
+            {
+                day: 12,
+                title: '第12天：雙子音',
+                subtitle: 'ㄲ ㄸ ㅃ ㅆ ㅉ (5個)',
+                hanguls: [
+                    { char: 'ㄲ', name: '쌍기역', romaja: 'kk', type: 'double' },
+                    { char: 'ㄸ', name: '쌍디귿', romaja: 'tt', type: 'double' },
+                    { char: 'ㅃ', name: '쌍비읍', romaja: 'pp', type: 'double' },
+                    { char: 'ㅆ', name: '쌍시옷', romaja: 'ss', type: 'double' },
+                    { char: 'ㅉ', name: '쌍지읒', romaja: 'jj', type: 'double' }
+                ],
+                memoryTip: '強氣音，發音更強更長'
+            },
+            {
+                day: 13,
+                title: '第13天：子音整理',
+                subtitle: '所有子音 (14個)',
+                hanguls: [
+                    { char: 'ㄱ', name: '기역', romaja: 'g/k', type: 'consonant' },
+                    { char: 'ㄴ', name: '니은', romaja: 'n', type: 'consonant' },
+                    { char: 'ㄷ', name: '디귿', romaja: 'd/t', type: 'consonant' },
+                    { char: 'ㄹ', name: '리을', romaja: 'r/l', type: 'consonant' }
+                ],
+                memoryTip: '重複練習基本子音'
+            },
+            {
+                day: 14,
+                title: '第14天：複習',
+                subtitle: '母音 + 子音複習',
+                hanguls: [
+                    { char: 'ㅏ', name: '아', romaja: 'a', type: 'vowel' },
+                    { char: 'ㅓ', name: '어', romaja: 'eo', type: 'vowel' },
+                    { char: 'ㅗ', name: '오', romaja: 'o', type: 'vowel' }
+                ],
+                memoryTip: '練習組合已學的母音和子音，創造單字!'
+            }
+        ];
+
+        let currentIndex = 0;
+        let startX = 0;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+        let isDragging = false;
+        let autoplayInterval = null;
+        let countdownInterval = null;
+        let isAutoplaying = false;
+        let countdownValue = 30;
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const carouselTrackWrapper = carouselTrack.parentElement;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const indicatorsContainer = document.getElementById('indicators');
+        const currentDayEl = document.getElementById('currentDay');
+        const progressFill = document.getElementById('progressFill');
+        const intervalInput = document.getElementById('intervalInput');
+        const toggleAutoplayBtn = document.getElementById('toggleAutoplay');
+        const autoplayIndicator = document.getElementById('autoplayIndicator');
+        const countdownEl = document.getElementById('countdown');
+
+        function generateSlides() {
+            slidesData.forEach((slide, index) => {
+                const slideEl = document.createElement('div');
+                slideEl.className = 'carousel-slide';
+                slideEl.dataset.index = index;
+
+                let hangulGridClass = 'hangul-grid';
+                if (slide.isSmall) {
+                    hangulGridClass += ' small';
+                }
+
+                let memoryTipHtml = '';
+                if (slide.memoryTip) {
+                    memoryTipHtml = `
+                        <div class="memory-tip">
+                            <h4>💡 記憶技巧</h4>
+                            <p>${slide.memoryTip}</p>
+                        </div>
+                    `;
+                }
+
+                slideEl.innerHTML = `
+                    <div class="slide-title">${slide.title}</div>
+                    <div class="slide-subtitle">${slide.subtitle}</div>
+                    <div class="${hangulGridClass}">
+                        ${slide.hanguls.map(hangul => `
+                            <div class="hangul-card ${hangul.type}">
+                                <div class="hangul-char">${hangul.char}</div>
+                                <div class="hangul-name">${hangul.name}</div>
+                                <div class="hangul-romaja">${hangul.romaja}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${memoryTipHtml}
+                `;
+
+                carouselTrack.appendChild(slideEl);
+
+                const indicator = document.createElement('button');
+                indicator.className = 'indicator';
+                indicator.dataset.index = index;
+                indicator.addEventListener('click', () => goToSlide(index));
+                indicatorsContainer.appendChild(indicator);
+            });
+
+            updateUI();
+        }
+
+        function updateUI() {
+            currentTranslate = -currentIndex * 100;
+            carouselTrack.style.transform = `translateX(${currentTranslate}%)`;
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === slidesData.length - 1;
+
+            currentDayEl.textContent = currentIndex + 1;
+
+            document.querySelectorAll('.indicator').forEach((ind, index) => {
+                ind.classList.toggle('active', index === currentIndex);
+            });
+
+            const progress = ((currentIndex + 1) / slidesData.length) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        function goToSlide(index) {
+            currentIndex = index;
+            updateUI();
+            if (isAutoplaying) resetAutoplay();
+        }
+
+        function nextSlide() {
+            if (currentIndex < slidesData.length - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0;
+            }
+            updateUI();
+            if (isAutoplaying) resetAutoplay();
+        }
+
+        function startAutoplay() {
+            const interval = parseInt(intervalInput.value) * 1000;
+            if (interval < 5000 || interval > 120000) {
+                alert('Interval must be between 5 and 120 seconds');
+                return;
+            }
+
+            isAutoplaying = true;
+            countdownValue = parseInt(intervalInput.value);
+            localStorage.setItem('koreanCarouselInterval', intervalInput.value);
+            toggleAutoplayBtn.textContent = '⏸ Stop Auto';
+            autoplayIndicator.classList.add('active');
+
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                countdownEl.textContent = countdownValue;
+                if (countdownValue <= 0) {
+                    nextSlide();
+                    countdownValue = parseInt(intervalInput.value);
+                    countdownEl.textContent = countdownValue;
+                }
+            }, 1000);
+        }
+
+        function stopAutoplay() {
+            isAutoplaying = false;
+            clearInterval(countdownInterval);
+            toggleAutoplayBtn.textContent = '▶ Start Auto';
+            autoplayIndicator.classList.remove('active');
+        }
+
+        function resetAutoplay() {
+            if (!isAutoplaying) return;
+            clearInterval(countdownInterval);
+            countdownValue = parseInt(intervalInput.value);
+            countdownEl.textContent = countdownValue;
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                countdownEl.textContent = countdownValue;
+                if (countdownValue <= 0) {
+                    nextSlide();
+                    countdownValue = parseInt(intervalInput.value);
+                    countdownEl.textContent = countdownValue;
+                }
+            }, 1000);
+        }
+
+        function toggleAutoplay() {
+            if (isAutoplaying) {
+                stopAutoplay();
+            } else {
+                startAutoplay();
+            }
+        }
+
+        function prevSlide() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateUI();
+                if (isAutoplaying) resetAutoplay();
+            }
+        }
+
+        carouselTrackWrapper.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            carouselTrack.style.transition = 'none';
+        });
+
+        carouselTrackWrapper.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const diff = currentX - startX;
+            carouselTrack.style.transform = `translateX(${currentTranslate + diff}px)`;
+            e.preventDefault();
+        }, { passive: false });
+
+        carouselTrackWrapper.addEventListener('touchend', (e) => {
+            isDragging = false;
+            carouselTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+
+            let navigated = false;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0 && currentIndex < slidesData.length - 1) {
+                    currentIndex++;
+                    navigated = true;
+                } else if (diff < 0 && currentIndex > 0) {
+                    currentIndex--;
+                    navigated = true;
+                }
+            }
+
+            updateUI();
+            if (navigated && isAutoplaying) resetAutoplay();
+        });
+
+        carouselTrackWrapper.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isDragging = true;
+            carouselTrack.style.transition = 'none';
+        });
+
+        carouselTrackWrapper.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.clientX;
+            const diff = currentX - startX;
+            carouselTrack.style.transform = `translateX(${currentTranslate + diff}px)`;
+        });
+
+        carouselTrackWrapper.addEventListener('mouseup', (e) => {
+            isDragging = false;
+            carouselTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+            const endX = e.clientX;
+            const diff = startX - endX;
+
+            let navigated = false;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0 && currentIndex < slidesData.length - 1) {
+                    currentIndex++;
+                    navigated = true;
+                } else if (diff < 0 && currentIndex > 0) {
+                    currentIndex--;
+                    navigated = true;
+                }
+            }
+
+            updateUI();
+            if (navigated && isAutoplaying) resetAutoplay();
+        });
+
+        carouselTrackWrapper.addEventListener('mouseleave', () => {
+            if (isDragging) {
+                isDragging = false;
+                carouselTrack.style.transition = 'transform 0.4s cubic-bezier(0.46, 0.45, 0.94)';
+                updateUI();
+            }
+        });
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        toggleAutoplayBtn.addEventListener('click', toggleAutoplay);
+
+        intervalInput.addEventListener('change', () => {
+            const value = parseInt(intervalInput.value);
+            if (value >= 5 && value <= 120) {
+                localStorage.setItem('koreanCarouselInterval', value);
+                if (isAutoplaying) {
+                    stopAutoplay();
+                    startAutoplay();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === ' ') {
+                e.preventDefault();
+                toggleAutoplay();
+            }
+        });
+
+        const savedInterval = localStorage.getItem('koreanCarouselInterval');
+        if (savedInterval) {
+            intervalInput.value = savedInterval;
+        }
+        generateSlides();
+
+        function toggleSection(header) {
+            header.classList.toggle('open');
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
