@@ -1,6 +1,7 @@
 # Learning Japanese
 
 `basic/` basic 50(46) Japanese symbols
+`anime-common-japanese.md` 動漫常用日文速查表
 
 ---
 
