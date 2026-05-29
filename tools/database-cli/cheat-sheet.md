@@ -232,13 +232,33 @@ DELETE FROM users;   -- Remove all rows (slow, logged, triggers fire)
 
 ## 5. Joins
 
+**Join Types Visual:**
+
+Given these two tables:
+
 ```
-  INNER JOIN          LEFT JOIN           RIGHT JOIN          FULL OUTER JOIN
-  ┌─────┐┌─────┐     ┌─────┐┌─────┐     ┌─────┐┌─────┐     ┌─────┐ ┌─────┐
-  │  A  ████  B  │     │  A  ████████  │     │  ██████████ B  │     │  A  ████████  B  │
-  │     └┘└     │     │     └┘└     │     │     └┘└     │     │     └ ┘└     │
-  └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
-   matching rows       all A + match       all B + match       all rows from both
+users (A)              orders (B)
+┌────┬────────┐         ┌────────┬───────┐
+│ id │ name   │         │ user_id│ total │
+├────┼────────┤         ├────────┼───────┤
+│ 1  │ Alice  │         │   4    │  100  │  -- user_id 4 does not exist in users
+│ 2  │ Bob    │         │   3    │  200  │
+│ 3  │ Carol  │         │   3    │  300  │
+└────┴────────┘         └────────┴───────┘
+```
+
+```
+INNER JOIN              LEFT JOIN               RIGHT JOIN              FULL JOIN
+(A ∩ B)                 (A + match)             (match + B)             (A + B)
+┌────┬───────┬─────┐    ┌────┬───────┬──────┐   ┌────┬───────┬─────┐   ┌────┬───────┬──────┐
+│ id │ name  │total│    │ id │ name  │total │   │ id │ name  │total│   │ id │ name  │total │
+├────┼───────┼─────┤    ├────┼───────┼──────┤   ├────┼───────┼─────┤   ├────┼───────┼──────┤
+│ 3  │ Carol │ 200 │    │ 1  │ Alice │ NULL │   │NULL│ NULL  │ 100 │   │ 1  │ Alice │ NULL │
+│ 3  │ Carol │ 300 │    │ 2  │ Bob   │ NULL │   │ 3  │ Carol │ 200 │   │ 2  │ Bob   │ NULL │
+└────┴───────┴─────┘    │ 3  │ Carol │ 200  │   │ 3  │ Carol │ 300 │   │ 3  │ Carol │ 200  │
+                        │ 3  │ Carol │ 300  │   └────┴───────┴─────┘   │ 3  │ Carol │ 300  │
+                        └────┴───────┴──────┘                           │NULL│ NULL  │ 100  │
+                                                                       └────┴───────┴──────┘
 ```
 
 ### Examples (using `users` and `orders` tables)
@@ -458,10 +478,10 @@ WHERE username ~* '^[a-z]+'           -- PostgreSQL case-insensitive regex
 
 -- Other useful
 LEFT(str, n)                          -- first n chars (MySQL, PostgreSQL)
-RIGHT(str, n)                         -- last n chars
-REVERSE(str)                          -- reverse string
-LPAD(str, len, pad)                   -- left-pad to length
-RPAD(str, len, pad)                   -- right-pad to length
+RIGHT(str, n)                         -- last n chars (MySQL, PostgreSQL)
+REVERSE(str)                          -- reverse string (MySQL, PostgreSQL)
+LPAD(str, len, pad)                   -- left-pad to length (MySQL, PostgreSQL)
+RPAD(str, len, pad)                   -- right-pad to length (MySQL, PostgreSQL)
 ```
 
 ---
@@ -470,15 +490,15 @@ RPAD(str, len, pad)                   -- right-pad to length
 
 ```sql
 -- Current date/time
-NOW()                                -- current timestamp
+NOW()                                -- current timestamp (MySQL, PostgreSQL)
 CURRENT_DATE                         -- current date
 CURRENT_TIMESTAMP                    -- same as NOW()
 
 -- Extract parts
-YEAR(created_at)
-MONTH(created_at)
-DAY(created_at)
-EXTRACT(YEAR FROM created_at)        -- PostgreSQL standard
+YEAR(created_at)                     -- MySQL
+MONTH(created_at)                    -- MySQL
+DAY(created_at)                      -- MySQL
+EXTRACT(YEAR FROM created_at)        -- MySQL, PostgreSQL
 DATE_PART('year', created_at)        -- PostgreSQL
 
 -- Format (MySQL)
@@ -493,11 +513,16 @@ TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS')
 -- Arithmetic
 DATE_ADD(NOW(), INTERVAL 7 DAY)                        -- MySQL
 NOW() - INTERVAL '7 days'                               -- PostgreSQL
-DATE(created_at)                                         -- cast to date
+DATE(created_at)                                         -- cast to date (MySQL, PostgreSQL)
 
--- Difference
+-- Difference (days between two dates)
 DATEDIFF('2025-12-31', '2025-01-01')                    -- MySQL: days between
-created_at - INTERVAL '30 days'                          -- PostgreSQL
+AGE('2025-12-31', '2025-01-01')                         -- PostgreSQL: returns interval
+DATE_PART('day', '2025-12-31'::timestamp - '2025-01-01'::timestamp)  -- PostgreSQL: days between
+
+-- Subtract interval from date
+DATE_SUB(NOW(), INTERVAL 30 DAY)                         -- MySQL: 30 days ago
+created_at - INTERVAL '30 days'                          -- PostgreSQL: 30 days before created_at
 
 -- SQLite (limited built-in date functions)
 DATE('now')
@@ -691,7 +716,7 @@ SELECT NOW();
 
 ### MySQL
 
-```bash
+````bash
 # Dump entire database
 mysqldump -u root -p mydb > mydb_backup.sql
 
@@ -712,6 +737,7 @@ mysql -u root -p -e "
     LINES TERMINATED BY '\n';
 " mydb
 
+```sql
 -- Or from within mysql client:
 SELECT * FROM users
 INTO OUTFILE '/tmp/users.csv'
@@ -722,7 +748,7 @@ LOAD DATA INFILE '/tmp/users.csv'
 INTO TABLE users
 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
-```
+````
 
 ### PostgreSQL
 
