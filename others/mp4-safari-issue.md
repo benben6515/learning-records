@@ -4,11 +4,11 @@
 
 MP4 檔案是由一個個 **atom**（也叫 box）組成的，每個 atom 存放不同類型的資料：
 
-| Atom | 內容 |
-|------|------|
-| `ftyp` | 檔案類型宣告（「我是 MP4」） |
+| Atom   | 內容                                                                   |
+| ------ | ---------------------------------------------------------------------- |
+| `ftyp` | 檔案類型宣告（「我是 MP4」）                                           |
 | `moov` | **中繼資料**（軌道清單、每個影格的偏移位置、時間戳索引、編解碼參數等） |
-| `mdat` | 實際的影音資料（佔檔案 95% 以上體積） |
+| `mdat` | 實際的影音資料（佔檔案 95% 以上體積）                                  |
 
 可以把 `moov` 想像成一本書最前面的**目錄**，告訴播放器「第 500 影格的資料在檔案的第 3,840,000 byte」。
 
@@ -59,6 +59,60 @@ ffmpeg -i input.mp4 -c copy -movflags +faststart output.mp4
 - `-c copy`：直接複製串流，不重新編碼
 - `-movflags +faststart`：將 `moov` atom 移到檔案開頭
 
+## 真正的兇手：伺服器端 gzip 壓縮影片
+
+修完 `moov` 位置後，Safari 仍無法播放。檢查 HTTP response headers 發現：
+
+```
+x-goog-stored-content-encoding: gzip    ← 影片被 gzip 壓縮了！
+Accept-Ranges: （沒有）                     ← 不支援 Range requests
+Content-Length: （沒有）                     ← 沒有檔案大小資訊
+```
+
+### 原因
+
+專案透過 `gulpfile.js` 上傳靜態檔案到 Google Cloud Storage 時，**所有檔案都設了 `gzip: true`**，包含 MP4 影片。MP4 本身已經是壓縮格式（H.264），再用 gzip 壓縮會導致：
+
+1. Safari 無法做 byte-range 定位（因為 gzip 改變了內容長度）
+2. 伺服器不回傳 `Accept-Ranges` header，Safari 無法分段載入
+3. 缺少 `Content-Length`，Safari 不知道檔案大小
+
+Chrome 能容忍這些問題（會嘗試各種方式讀取），但 Safari 嚴格要求正確的 headers。
+
+### 修復方式
+
+修改上傳邏輯，讓已壓縮格式（影片、字型等）不套用 gzip：
+
+```js
+const noGzipExts = [
+  ".mp4",
+  ".webm",
+  ".mp3",
+  ".ogg",
+  ".woff2",
+  ".woff",
+  ".ttf",
+  ".eot",
+];
+
+for (const filePath of uploadFilesPath) {
+  const ext = path.extname(filePath).toLowerCase();
+  const shouldGzip = !noGzipExts.includes(ext);
+  await storage.bucket(bucketName).upload(filePath, {
+    destination: `${filePath.replace(distDir, "").replace(/\\/g, "/")}`,
+    metadata: { cacheControl: "no-store" },
+    gzip: shouldGzip,
+  });
+}
+```
+
 ## 補充：H.264 Profile 不影響 Safari 播放
 
 `Format profile: Main@L4` 是 H.264 的 Profile（編碼工具集）和 Level（解析度/位元率上限）。Safari 完整支援 H.264 的 Baseline / Main / High profile，Level 4.0 的上限是 2048×2048@30fps。一般錄影檔案都在範圍內，不會是 Safari 無法播放的原因。
+
+## 總結：Safari 無法播放 MP4 的排查清單
+
+1. **`moov` atom 位置** — 需在檔案開頭（`-movflags +faststart`）
+2. **伺服器 gzip 壓縮** — 影片等已壓縮格式不應再 gzip
+3. **HTTP headers** — 需要 `Accept-Ranges: bytes` 和正確的 `Content-Length`
+4. **H.264 Profile** — Main / High 都支援，通常不是問題
