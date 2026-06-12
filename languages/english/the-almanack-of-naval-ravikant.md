@@ -96,3 +96,26 @@ blaise pascal 布萊士·帕斯卡
 emergent 新興的
 paraphrased 改寫
 ```
+
+> 2026-06-12
+
+```
+serotonin 血清素
+tryptophan 色氨酸
+meticulously 一絲不苟地
+annoyance 困擾
+instantaneously 立即
+emulate 模擬
+sterile 無菌
+hypothesis 假設
+angst 焦慮
+malaise 不適
+scarcity 缺乏
+ketogenic diet 生酮飲食
+satiated 飽足了
+dietary 飲食的
+imploding 內爆
+regimen 規律
+transcendental meditation 超覺冥想
+barnacle 藤壺
+```
