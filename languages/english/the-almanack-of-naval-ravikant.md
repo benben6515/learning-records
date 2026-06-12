@@ -4,6 +4,7 @@
 
 > 2026-05-15
 
+```
 multivariate 多變量的
 estate market 不動產
 catastrophic 災難性的
@@ -51,9 +52,11 @@ contrarian 逆向思維
 conformist 循規蹈矩者
 cynicism 玩世不恭
 mimicry 模仿
+```
 
 > 2026-05-22
 
+```
 intellectual 知識分子
 arithmetic 算術
 discrete 離散的
@@ -92,3 +95,4 @@ repercussions 後果
 blaise pascal 布萊士·帕斯卡
 emergent 新興的
 paraphrased 改寫
+```
