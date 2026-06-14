@@ -119,3 +119,39 @@ regimen 規律
 transcendental meditation 超覺冥想
 barnacle 藤壺
 ```
+
+> 2026-06-13
+
+```
+angst 焦慮
+monologue 獨白
+neocortex 新皮質
+wimp out 退縮
+perishable 易腐爛的
+faculties 各科室
+prerequisites 先決條件
+arithmetic 算術
+falsifiable 可證偽的
+devotional 靈修的
+prophet 先知
+awe 敬畏
+regurgitated 反芻
+treatises 論文
+contrarianism 逆向主義
+puberty 青春期
+onset 發病
+heresies 異端邪說
+pauper 貧民
+intrinsic 固有的
+thermodynamics 熱力學
+testosterone 睪酮
+reconcile 調和
+nomenclature 命名法
+espouses 擁護者
+levitate 漂浮
+skeptical 懷疑的
+corrupt 腐敗
+virtue 美德
+imparted 傳授
+democratization 民主化
+```
