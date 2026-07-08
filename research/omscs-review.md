@@ -49,6 +49,124 @@
 
 ---
 
+## 英文能力門檻
+
+所有申請者都必須證明英文能力——**沒有例外，沒有自動豁免**。台灣護照不是 approved country，所以台灣申請者一定要考試或走學歷證明。
+
+### 測驗成績要求（官方最低標準）
+
+| 測驗                            | 最低成績                                                                     | 注意事項                  |
+| ------------------------------- | ---------------------------------------------------------------------------- | ------------------------- |
+| **TOEFL iBT**（2026 年 1 月前） | Overall ≥ 90，各科 ≥ 19                                                      | 較熟悉的舊制計分          |
+| **TOEFL iBT**（2026 年 1 月後） | Overall ≥ 4.5，Reading ≥ 4，Listening ≥ 4，Writing ≥ 4，Speaking ≥ 3.5       | 新制計分（2026 改版）     |
+| **IELTS Academic**              | Overall ≥ 7.0，Reading ≥ 6.5，Listening ≥ 6.5，Speaking ≥ 6.5，Writing ≥ 5.5 | 可考 at-home Indicator 版 |
+| Duolingo                        | **不接受**                                                                   | —                         |
+
+成績有效期 2 年（從開學日算起）。ETS code: 5248（Georgia Tech, "Graduate"）。
+
+### 其他滿足方式
+
+- **英語授權學位**：從英語授課的機構取得學位（需區域認證或國際同等），開學前 30 天提交證明
+- **GTLI 密集英語課程**：完成 Georgia Tech Language Institute 700 級（8 週，每年 5 次）
+- **美國公民/綠卡**：提交政府文件（護照、出生證明等）
+
+### ⚠️ 重要政策變更（Fall 2027 起）
+
+從 2027 年秋季入學開始，**單靠公民身分不再足以滿足英文要求**。所有申請者都必須透過：approved academic study、English-medium instruction 證明、或正式考試成績來證明。
+
+### 台灣申請者的現實
+
+| 情境                            | 需要                             |
+| ------------------------------- | -------------------------------- |
+| 台灣學士學位（中文授課）        | TOEFL 或 IELTS 成績              |
+| 台灣學士 + 美國碩士（英語授課） | 可用美國學位證明免考             |
+| 全線上 OMSCS（無赴美）          | 仍需滿足英文要求，不影響簽證問題 |
+| 在美國工作（H1B）的台灣人       | **仍需考試**——業界經驗不算豁免   |
+
+> **結論：以台灣學歷申請，TOEFL ≥ 90 或 IELTS ≥ 7.0 是硬門檻，跑不掉。**
+
+來源：[Georgia Tech Graduate Education - English Proficiency](https://grad.gatech.edu/english-proficiency)、[Reddit TOEFL 討論](https://www.reddit.com/r/OMSCS/comments/16af1a9/toefl_requirement/)
+
+---
+
+## 申請流程與文件
+
+### Deadline（固定兩季，無 Summer）
+
+| 入學學期           | 申請截止       | 放榜時間          |
+| ------------------ | -------------- | ----------------- |
+| **Fall**（秋季）   | **3 月 1 日**  | 截止後約 10–12 週 |
+| **Spring**（春季） | **8 月 15 日** | 截止後約 10–12 週 |
+
+- 全年可申請，但材料必須在截止日期前全部到齊
+- 截止後完成的學業成績不納入審查
+- 有 Priority Decision 機制（早申請早放榜）
+- 放榜後不要催——發 email 詢問反而會拖慢審查
+
+### 必備文件
+
+| 文件              | 說明                                                   |
+| ----------------- | ------------------------------------------------------ |
+| **成績單**        | 所有讀過的機構都要，必須是官方掃描件（非學生系統截圖） |
+| **學位證明**      | 成績單必須顯示畢業日期（conferral date），否則直接拒件 |
+| **履歷 (Resume)** | 必繳                                                   |
+| **TOEFL / IELTS** | 國際學生必繳（見英文門檻章節）                         |
+| **推薦信 × 3**    | 需提供推薦人聯絡資訊（見下方）                         |
+| **補充問卷**      | 自由填答 + Yes/No 題（最後 Q1–Q8 全部要 Yes）          |
+
+### 推薦信（3 封）
+
+| 項目     | 建議                                                             |
+| -------- | ---------------------------------------------------------------- |
+| 數量     | **3 封**                                                         |
+| 最佳人選 | 現任/前任老師、主管——能評論你的學術能力                          |
+| 不建議   | 同學、同事（說服力低）                                           |
+| 重點     | 推薦人要「了解你」，能針對智識能力、專業知識、溝通能力做權威評論 |
+| 形式     | 申請時填入推薦人 email，系統會自動聯繫他們提交                   |
+
+### SOP / 補充問卷
+
+OMSCS 沒有傳統的長篇 Statement of Purpose，而是用 **supplemental questions**（補充問卷）取代：
+
+- 數題自由填答（**有字數限制**，不是傳統無限長的 SOP）
+- 數題 Yes/No 題
+- 最後 8 題（Q1–Q8）是檢查清單，確保申請完整
+- 全部必答，不接受空白
+
+### 國際學生額外注意
+
+- 成績單可能需要翻譯/評估（由指定廠商處理）
+- 所有文件需在截止前到齊——建議至少提前 1 個月準備
+
+來源：[OMSCS 官方申請頁](https://omscs.gatech.edu/deadlines-decisions-requirements-and-guidelines)
+
+---
+
+## Udemy 對應課程（先修/體驗用）
+
+如果你想在申請前先試水溫，或入學前先補背景知識，Udemy 上有對應 OMSCS 核心課程的類似內容：
+
+| OMSCS 課程                          | Udemy 對應                                  | 連結                                                                                                                                                        |
+| ----------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CS-6515** Graduate Algorithms     | Algorithms & Data Structures                | [udemy.com/course/algorithms-data-structures](https://www.udemy.com/course/algorithms-data-structures/)                                                     |
+|                                     | Dynamic Programming Master Course           | [udemy.com/course/dynamic-programming-master-course-coding-minutes](https://www.udemy.com/course/dynamic-programming-master-course-coding-minutes/)         |
+| **CS-7641** Machine Learning        | Supervised vs. Unsupervised Learning        | [udemy.com/course/supervised-vs-unsupervised-learning-architectures](https://www.udemy.com/course/supervised-vs-unsupervised-learning-architectures/)       |
+| **CS-6601** Artificial Intelligence | Problem Solving in AI（含 CSP、對抗搜尋）   | [udemy.com/course/problem-solving-in-artificial-intelligence](https://www.udemy.com/course/problem-solving-in-artificial-intelligence/)                     |
+| **CS-6200** Operating Systems       | Operating System Concepts（含執行緒、同步） | [udemy.com/course/operating-system-concepts-2](https://www.udemy.com/course/operating-system-concepts-2/)                                                   |
+| **CS-6250** Computer Networks       | Computer Networks Fundamentals（TCP/IP）    | [udemy.com/course/computer-networks-fundamentals](https://www.udemy.com/course/computer-networks-fundamentals/)                                             |
+| **CS-7646** ML for Trading          | Algorithmic Trading with Python + ML        | [udemy.com/course/python-for-finance-and-data-science](https://www.udemy.com/course/python-for-finance-and-data-science/)                                   |
+| **CS-6300** Software Dev Process    | The Software Development Process            | [udemy.com/course/the-software-development-process-the-complete-course](https://www.udemy.com/course/the-software-development-process-the-complete-course/) |
+
+> 注意：Udemy 課程深度通常不到 OMSCS 的研究所水準，但適合用來：
+>
+> 1. 入學前補背景知識（尤其是演算法、OS）
+> 2. 試探自己對某領域有沒有興趣
+> 3. 確認自己能不能適應全英文授課
+
+來源：DuckDuckGo 搜尋 site:udemy.com，2025-07
+
+---
+
 ## 六大專精領域
 
 | 專精領域                            | 中文名           | 核心課程                     |
@@ -147,6 +265,7 @@
 - 沒相關背景又沒打算大量補課的人 → 會超級痛苦
 - 想靠這學位去美國工作的**國際學生** → 線上學位不發簽證、沒 OPT，無法赴美就業
 - 無法每週穩定撥出 15–25 小時的人 → 會嚴重落後
+- **無法考到 TOEFL ≥ 90 / IELTS ≥ 7.0 的人** → 申請門檻都過不了（台灣護照不豁免）
 
 ---
 
@@ -163,15 +282,16 @@
 
 ## 個人對照（Benben 的情況）
 
-| 考量      | OMSCS                       | 台灣在職專班                                  |
-| --------- | --------------------------- | --------------------------------------------- |
-| 互動支援  | 偏少，孤軍奮戰              | 有實體互動、同儕壓力                          |
-| 數學底子  | 可發揮（應數系背景）        | 同樣可發揮                                    |
-| 學習風格  | 自學為主                    | 較符合喜歡討論的風格                          |
-| 目標領域  | AI/ML（需先補 CS 核心課程） | AI/數據科學（成大AI資訊、交大資電、中央資工） |
-| 簽證/就業 | 線上無簽證                  | 在職進修，直接在台灣發展                      |
-| 費用      | ~$8,950 USD（約 28 萬台幣） | 視學校而定                                    |
-| 每週工時  | 核心課 15–25 hrs/wk         | 視學校而定，通常有實體課可問                  |
+| 考量         | OMSCS                                        | 台灣在職專班                                  |
+| ------------ | -------------------------------------------- | --------------------------------------------- |
+| 互動支援     | 偏少，孤軍奮戰                               | 有實體互動、同儕壓力                          |
+| 數學底子     | 可發揮（應數系背景）                         | 同樣可發揮                                    |
+| 學習風格     | 自學為主                                     | 較符合喜歡討論的風格                          |
+| 目標領域     | AI/ML（需先補 CS 核心課程）                  | AI/數據科學（成大AI資訊、交大資電、中央資工） |
+| 簽證/就業    | 線上無簽證                                   | 在職進修，直接在台灣發展                      |
+| 費用         | ~$8,950 USD（約 28 萬台幣）                  | 視學校而定                                    |
+| 每週工時     | 核心課 15–25 hrs/wk                          | 視學校而定，通常有實體課可問                  |
+| **英文門檻** | **TOEFL ≥ 90 / IELTS ≥ 7.0（硬性，不豁免）** | 多數不需英文檢定                              |
 
 **結論**：OMSCS 雖然便宜，但省掉的是「互動與支援」，而我重視數學底子 + 應用，這種孤軍奮戰的模式可能不適合我的學習風格。台灣在職專班雖然貴一些，但有實體互動和同儕壓力，可能更適合。
 
