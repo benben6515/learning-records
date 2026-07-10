@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Odyssey — 奧德賽</title>
+<style>
+  :root {
+    --gold: #d4af37;
+    --gold-soft: #e8d9a0;
+    --wine: #5c1a1b;
+    --wine-deep: #3a0f10;
+    --parchment: #f3e9d2;
+    --parchment-dark: #e0d2b0;
+    --ink: #2a1810;
+    --sea: #1e5a7a;
+    --sea-deep: #0d2f42;
+    --shadow: rgba(0,0,0,0.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--parchment);
+    color: var(--ink);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ===== Top Nav Bar ===== */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1.5rem;
+    background: rgba(58,15,16,0.92);
+    backdrop-filter: blur(6px);
+    color: var(--gold-soft);
+  }
+  .top-nav a {
+    color: var(--gold-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    transition: color 0.3s;
+  }
+  .top-nav a:hover { color: var(--gold); }
+  .top-nav .nav-home { font-weight: 600; }
+  .top-nav .nav-center {
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at top, var(--sea) 0%, var(--sea-deep) 60%, var(--wine-deep) 100%);
+    color: var(--parchment);
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 80% 20%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1px 1px at 40% 50%, rgba(255,255,255,0.25), transparent),
+      radial-gradient(2px 2px at 90% 60%, rgba(255,255,255,0.3), transparent);
+    background-size: 400px 400px;
+    animation: drift 60s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes drift {
+    from { transform: translateY(0); }
+    to { transform: translateY(-400px); }
+  }
+
+  .hero-waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 9vw, 7rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(212,175,55,0.4), 2px 4px 8px var(--shadow);
+    z-index: 2;
+    animation: fadeUp 1.4s ease-out;
+  }
+
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.3em;
+    z-index: 2;
+    animation: fadeUp 1.4s ease-out 0.3s both;
+  }
+
+  .hero .tagline {
+    margin-top: 2rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+    max-width: 600px;
+    color: var(--parchment-dark);
+    z-index: 2;
+    animation: fadeUp 1.4s ease-out 0.6s both;
+  }
+
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.6rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    z-index: 2;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-soft);
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Progress Bar ===== */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+    z-index: 1000;
+    transition: width 0.1s;
+  }
+
+  /* ===== Side Nav ===== */
+  .side-nav {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--wine);
+    background: var(--parchment);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .nav-dot.active {
+    background: var(--gold);
+    border-color: var(--wine-deep);
+    transform: scale(1.4);
+    box-shadow: 0 0 10px rgba(212,175,55,0.6);
+  }
+
+  .nav-dot:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--wine);
+    color: var(--parchment);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    font-family: Georgia, serif;
+  }
+
+  @media (max-width: 768px) {
+    .side-nav { display: none; }
+  }
+
+  /* ===== Table of Contents ===== */
+  .toc {
+    padding: 4rem 2rem;
+    background: linear-gradient(180deg, var(--wine-deep) 0%, var(--wine) 100%);
+    color: var(--parchment);
+  }
+
+  .toc-inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .toc h2 {
+    text-align: center;
+    font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.3rem;
+  }
+
+  .toc h2 + .zh {
+    text-align: center;
+    color: var(--gold-soft);
+    opacity: 0.75;
+    font-size: 0.95rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 2.5rem;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 2rem;
+  }
+
+  @media (max-width: 640px) {
+    .toc-list { grid-template-columns: 1fr; }
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: var(--parchment);
+  }
+
+  .toc-item:hover {
+    background: rgba(212,175,55,0.12);
+    transform: translateX(4px);
+  }
+
+  .toc-num {
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    min-width: 5.5em;
+  }
+
+  .toc-text {
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .toc-text .en {
+    font-size: 0.95rem;
+    color: var(--parchment);
+  }
+
+  .toc-text .zh {
+    font-size: 0.78rem;
+    color: var(--gold-soft);
+    opacity: 0.7;
+    display: block;
+  }
+
+  /* ===== Chapters ===== */
+  .chapter {
+    min-height: 100vh;
+    padding: 6rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .chapter:nth-child(even) {
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+  }
+
+  .chapter:nth-child(odd) {
+    background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+  }
+
+  .chapter-content {
+    max-width: 720px;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+
+  .chapter-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .chapter-num {
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    color: var(--wine);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .chapter-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--wine-deep);
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+  }
+
+  .chapter-title-zh {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--wine);
+    opacity: 0.75;
+    margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+  }
+
+  .divider {
+    width: 80px;
+    height: 2px;
+    background: var(--gold);
+    margin-bottom: 2rem;
+  }
+
+  .chapter-body {
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+  }
+
+  .chapter-body p {
+    margin-bottom: 1.2rem;
+  }
+
+  .chapter-body p.zh {
+    color: #6b5a42;
+    font-size: 0.88em;
+    font-style: italic;
+    margin-top: -0.5rem;
+    margin-bottom: 1.8rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--gold-soft);
+  }
+
+  .key-events {
+    margin-top: 2rem;
+    padding: 1.2rem 1.5rem;
+    background: rgba(92,26,27,0.06);
+    border-radius: 6px;
+    border-left: 4px solid var(--wine);
+  }
+
+  .key-events h4 {
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--wine);
+    margin-bottom: 0.6rem;
+  }
+
+  .key-events ul {
+    list-style: none;
+  }
+
+  .key-events li {
+    padding: 0.35rem 0;
+    display: flex;
+    gap: 0.6rem;
+    flex-direction: column;
+  }
+
+  .key-events li::before {
+    content: "◆";
+    color: var(--gold);
+    font-size: 0.7em;
+    position: absolute;
+    margin-left: -1.1rem;
+    margin-top: 0.15rem;
+  }
+
+  .key-events li { position: relative; padding-left: 0.3rem; }
+
+  .key-events li .en {
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+
+  .key-events li .zh {
+    font-size: 0.82rem;
+    color: #7a6850;
+    font-style: italic;
+    margin-top: 0.1rem;
+  }
+
+  /* ===== Scene Toggle ===== */
+  .scene-toggle {
+    margin-top: 1.5rem;
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    background: transparent;
+    border: 1.5px solid var(--wine);
+    color: var(--wine);
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    transition: all 0.3s;
+  }
+
+  .scene-toggle:hover {
+    background: var(--wine);
+    color: var(--parchment);
+  }
+
+  /* ===== Finale ===== */
+  .finale {
+    min-height: 60vh;
+    padding: 5rem 2rem;
+    text-align: center;
+    background: radial-gradient(ellipse at center, var(--wine) 0%, var(--wine-deep) 100%);
+    color: var(--parchment);
+  }
+
+  .finale h2 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .finale .zh {
+    color: var(--gold-soft);
+    font-size: 1.1rem;
+    opacity: 0.8;
+  }
+
+  .finale p {
+    max-width: 500px;
+    margin: 1.5rem auto;
+    font-style: italic;
+    opacity: 0.85;
+  }
+
+  /* ===== Character badges ===== */
+  .char-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .char-badge {
+    padding: 0.3rem 0.8rem;
+    background: rgba(212,175,55,0.15);
+    border: 1px solid var(--gold-soft);
+    border-radius: 15px;
+    font-size: 0.8rem;
+    color: var(--wine-deep);
+  }
+
+  /* ===== Reading mode indicator ===== */
+  .reading-progress {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: rgba(58,15,16,0.9);
+    color: var(--gold-soft);
+    padding: 0.4rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: opacity 0.4s;
+    backdrop-filter: blur(4px);
+  }
+
+  .reading-progress.show { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <a href="index.html" class="nav-home">← All Epics</a>
+  <span class="nav-center">STAGE 3 · THE HOMECOMING</span>
+  <a href="aeneid.html">Next: The Aeneid →</a>
+</div>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <h1>THE ODYSSEY</h1>
+  <p class="subtitle">奧 德 賽</p>
+  <p class="tagline">
+    Homer's epic of the long journey home — ten years of wandering, monsters, gods, and the will of one man.
+    <span class="zh">荷馬史詩 · 歷經十年漂泊、怪物、神祇，與一個人的意志，漫長的歸鄉之路。</span>
+  </p>
+  <div class="scroll-hint">SCROLL TO BEGIN ↓</div>
+  <svg class="hero-waves" viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,60 C150,100 350,20 600,60 C850,100 1050,20 1200,60 L1200,120 L0,120 Z" fill="rgba(243,233,210,0.15)"/>
+    <path d="M0,80 C200,120 400,40 600,80 C800,120 1000,40 1200,80 L1200,120 L0,120 Z" fill="rgba(243,233,210,0.1)"/>
+  </svg>
+</section>
+
+<!-- ===== TABLE OF CONTENTS ===== -->
+<section class="toc" id="toc">
+  <div class="toc-inner">
+    <h2>TABLE OF CONTENTS</h2>
+    <p class="zh">目　錄</p>
+    <ul class="toc-list">
+      <li><a class="toc-item" data-target="ch1">
+        <span class="toc-num">Book I</span>
+        <span class="toc-text"><span class="en">The Wrath of the Gods</span><span class="zh">神祇之怒</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch2">
+        <span class="toc-num">Book II</span>
+        <span class="toc-text"><span class="en">The Voyage of Telemachus</span><span class="zh">忒勒瑪科斯之航</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch3">
+        <span class="toc-num">Book III</span>
+        <span class="toc-text"><span class="en">Tales of the Fallen</span><span class="zh">英雄之後</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch4">
+        <span class="toc-num">Book IV</span>
+        <span class="toc-text"><span class="en">The Raft and the Storm</span><span class="zh">木筏與風暴</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch5">
+        <span class="toc-num">Book V</span>
+        <span class="toc-text"><span class="en">The Phaeacian Court</span><span class="zh">費埃克斯王宮</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch6">
+        <span class="toc-num">Book VI</span>
+        <span class="toc-text"><span class="en">The Lotus-Eaters & the Cyclops</span><span class="zh">食蓮者與獨眼巨人</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch7">
+        <span class="toc-num">Book VII</span>
+        <span class="toc-text"><span class="en">Aeolus, Laestrygonians & Circe</span><span class="zh">風神、食人族與喀耳刻</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch8">
+        <span class="toc-num">Book VIII</span>
+        <span class="toc-text"><span class="en">The Underworld</span><span class="zh">冥府之旅</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch9">
+        <span class="toc-num">Book IX</span>
+        <span class="toc-text"><span class="en">Sirens, Scylla & Charybdis</span><span class="zh">海妖、斯庫拉與卡律布狄斯</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch10">
+        <span class="toc-num">Book X</span>
+        <span class="toc-text"><span class="en">The Cattle of the Sun</span><span class="zh">太陽神的牛群</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch11">
+        <span class="toc-num">Book XI</span>
+        <span class="toc-text"><span class="en">The Return to Ithaca</span><span class="zh">歸返伊塔卡</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch12">
+        <span class="toc-num">Book XII</span>
+        <span class="toc-text"><span class="en">The Contest of the Bow</span><span class="zh">弓之試煉</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch13">
+        <span class="toc-num">Book XIII</span>
+        <span class="toc-text"><span class="en">Slaughter in the Hall</span><span class="zh">殿堂血戰</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="ch14">
+        <span class="toc-num">Book XIV</span>
+        <span class="toc-text"><span class="en">The Reunion</span><span class="zh">重逢</span></span>
+      </a></li>
+      <li><a class="toc-item" data-target="finale">
+        <span class="toc-num">Finale</span>
+        <span class="toc-text"><span class="en">Home at Last</span><span class="zh">終歸故里</span></span>
+      </a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== SIDE NAV ===== -->
+<nav class="side-nav" id="sideNav"></nav>
+
+<div class="reading-progress" id="readingProgress"></div>
+
+<!-- ===== CHAPTERS ===== -->
+
+<!-- Book I -->
+<section class="chapter" id="ch1">
+  <div class="chapter-content">
+    <p class="chapter-num">Book I · 第一卷</p>
+    <h2 class="chapter-title">The Wrath of the Gods</h2>
+    <p class="chapter-title-zh">神祇之怒 — 特洛伊戰後，歸途未啟</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Ten years have passed since the fall of Troy. All the Greek heroes have returned home — except one. Odysseus, king of Ithaca, lies trapped on the island of the goddess Calypso, longing for home.</p>
+      <p class="zh">特洛伊城陷落已逾十年。希臘諸英雄皆已歸鄉——唯獨一人除外。伊塔卡之王奧德修斯，被困於女神卡呂普索的島上，日夜思念故土。</p>
+      <p>On Olympus, Athena pleads with her father Zeus to set Odysseus free. Zeus agrees, and Athena flies down to Ithaca in disguise — to inspire Odysseus's son, Telemachus, to seek news of his father.</p>
+      <p class="zh">在奧林帕斯山上，雅典娜懇求父神宙斯釋放奧德修斯。宙斯允諾，雅典娜遂化身下凡至伊塔卡——去激勵奧德修斯之子忒勒瑪科斯，去尋找父親的消息。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Troy has fallen; Odysseus is stranded with Calypso</span><span class="zh">特洛伊已陷落；奧德修斯受困於卡呂普索身邊</span></li>
+          <li><span class="en">Athena persuades Zeus to intervene</span><span class="zh">雅典娜說服宙斯出手干預</span></li>
+          <li><span class="en">Penelope's suitors waste Odysseus's palace in Ithaca</span><span class="zh">求婚者們在伊塔卡的宮殿中揮霍奧德修斯的家產</span></li>
+          <li><span class="en">Telemachus begins to grow into a leader</span><span class="zh">忒勒瑪科斯開始成長為一個領袖</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus 奧德修斯</span>
+        <span class="char-badge">Athena 雅典娜</span>
+        <span class="char-badge">Zeus 宙斯</span>
+        <span class="char-badge">Telemachus 忒勒瑪科斯</span>
+        <span class="char-badge">Penelope 珀涅羅珀</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book II -->
+<section class="chapter" id="ch2">
+  <div class="chapter-content">
+    <p class="chapter-num">Book II · 第二卷</p>
+    <h2 class="chapter-title">The Voyage of Telemachus</h2>
+    <p class="chapter-title-zh">忒勒瑪科斯之航 — 少年尋父</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Empowered by Athena, young Telemachus confronts the arrogant suitors who crowd his home. He calls an assembly — the first in years — and demands they leave. They refuse.</p>
+      <p class="zh">在雅典娜的鼓舞下，年輕的忒勒瑪科斯面對那些盤踞家中的傲慢求婚者。他召開了多年來首次的公民大會，要求他們離去。他們拒絕了。</p>
+      <p>Athena, still in disguise, urges him to sail for Pylos and Sparta, to ask the old warriors Nestor and Menelaus for any word of his father. Telemachus sets sail under cover of night — the beginning of his own journey.</p>
+      <p class="zh">雅典娜仍化身在側，催促他航向皮洛斯與斯巴達，向老將涅斯托爾與墨涅拉奧斯打聽父親的下落。忒勒瑪科斯趁夜啟航——他自己的旅程就此展開。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Telemachus defies the suitors at the assembly</span><span class="zh">忒勒瑪科斯在大會上公開反抗求婚者</span></li>
+          <li><span class="en">He sails to Pylos to consult King Nestor</span><span class="zh">他航向皮洛斯，向涅斯托爾國王請教</span></li>
+          <li><span class="en">Then to Sparta to seek Menelaus and Helen</span><span class="zh">繼而前往斯巴達尋訪墨涅拉奧斯與海倫</span></li>
+          <li><span class="en">The suitors plot to ambush Telemachus at sea</span><span class="zh">求婚者密謀在海上伏擊忒勒瑪科斯</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Telemachus</span>
+        <span class="char-badge">Nestor 涅斯托爾</span>
+        <span class="char-badge">Menelaus 墨涅拉奧斯</span>
+        <span class="char-badge">Helen 海倫</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book III -->
+<section class="chapter" id="ch3">
+  <div class="chapter-content">
+    <p class="chapter-num">Book III · 第三卷</p>
+    <h2 class="chapter-title">Tales of the Fallen</h2>
+    <p class="chapter-title-zh">英雄之後 — 諸將歸途的悲歌</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>From Menelaus, Telemachus hears the fates of the other Greek kings. Agamemnon was murdered by his own wife upon returning home. The great Ajax drowned. Only scattered rumors remain of Odysseus — last seen, perhaps, on Calypso's island.</p>
+      <p class="zh">從墨涅拉奧斯口中，忒勒瑪科斯得知了其他希臘諸王的命運。阿伽門農歸鄉後遭妻子謀殺。大埃阿斯溺斃於海。關於奧德修斯，僅存零星傳聞——據聞最後出現在卡呂普索的島上。</p>
+      <p>Meanwhile, on Olympus, the gods finally send Hermes to order Calypso to release her captive. The great voyage is about to resume.</p>
+      <p class="zh">同時，在奧林帕斯山上，眾神終於差遣赫密斯前去命令卡呂普索釋放她的俘虜。偉大的航程即將重新開啟。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Menelaus tells of Agamemnon's murder</span><span class="zh">墨涅拉奧斯講述阿伽門農遇害之事</span></li>
+          <li><span class="en">News surfaces: Odysseus may be alive, on Calypso's isle</span><span class="zh">傳聞浮現：奧德修斯可能尚在人世，在卡呂普索島上</span></li>
+          <li><span class="en">Hermes descends with Zeus's command</span><span class="zh">赫密斯帶著宙斯的旨意降臨</span></li>
+          <li><span class="en">Calypso reluctantly frees Odysseus</span><span class="zh">卡呂普索不情願地釋放奧德修斯</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Telemachus</span>
+        <span class="char-badge">Menelaus</span>
+        <span class="char-badge">Hermes 赫密斯</span>
+        <span class="char-badge">Calypso 卡呂普索</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book IV -->
+<section class="chapter" id="ch4">
+  <div class="chapter-content">
+    <p class="chapter-num">Book IV · 第四卷</p>
+    <h2 class="chapter-title">The Raft and the Storm</h2>
+    <p class="chapter-title-zh">木筏與風暴 — 神怒與重生</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Odysseus builds a raft with his own hands and sets out across the sea. But Poseidon, god of the oceans — still furious that Odysseus blinded his son, the Cyclops Polyphemus — sends a terrible storm that shatters the raft.</p>
+      <p class="zh">奧德修斯親手打造木筏，揚帆出海。然而海神波塞冬——因奧德修斯弄瞎了他的兒子獨眼巨人波呂斐摩斯而怒火未消——降下可怕的風暴，將木筏擊碎。</p>
+      <p>Battered and nearly drowned, Odysseus is washed ashore on the land of the Phaeacians, guided by the sea-nymph Ino's veil. He staggers into a river, naked and exhausted, and falls asleep beneath olive branches.</p>
+      <p class="zh">遍體鱗傷、幾近溺斃的奧德修斯，在海仙女伊諾的面紗指引下，被沖上了費埃克斯人的國土。他踉蹌步入一條河流，赤身裸體、筋疲力竭，倒在橄欖枝下沉沉睡去。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Odysseus builds a raft and sails from Ogygia</span><span class="zh">奧德修斯造木筏，自奧吉吉亞島啟航</span></li>
+          <li><span class="en">Poseidon destroys the raft with a storm</span><span class="zh">波塞冬以風暴摧毀木筏</span></li>
+          <li><span class="en">Saved by Ino's magical veil</span><span class="zh">海仙女伊諾的魔法面紗救了他一命</span></li>
+          <li><span class="en">Wrecked on Scheria, land of the Phaeacians</span><span class="zh">漂流至斯克里亞——費埃克斯人的國度</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Poseidon 波塞冬</span>
+        <span class="char-badge">Ino 伊諾</span>
+        <span class="char-badge">Athena</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book V -->
+<section class="chapter" id="ch5">
+  <div class="chapter-content">
+    <p class="chapter-num">Book V · 第五卷</p>
+    <h2 class="chapter-title">The Phaeacian Court</h2>
+    <p class="chapter-title-zh">費埃克斯王宮 — 倖存者的傾訴</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Found by the princess Nausicaa, Odysseus is welcomed into the palace of King Alcinous. At a feast, moved by the blind bard Demodocus's songs of Troy, the weathered stranger finally weeps — and reveals who he truly is.</p>
+      <p class="zh">公主瑙西卡發現了他，奧德修斯被迎入阿爾喀諾俄斯國王的宮殿。在盛宴上，盲眼吟遊詩人德摩多科斯唱起特洛伊的戰歌，滄桑的陌生人終於流下淚來——道出了自己的真實身分。</p>
+      <p>"I am Odysseus, son of Laertes," he declares. "And I shall tell you all my wanderings." Thus begins the great flashback — the wanderings of Odysseus, told in his own voice.</p>
+      <p class="zh">「我是奧德修斯，萊爾忒斯之子，」他宣告。「我將告訴你們我所有的漂泊。」偉大的倒敘就此展開——奧德修斯以自己的聲音，講述他的流浪歲月。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Princess Nausicaa discovers Odysseus on the shore</span><span class="zh">瑙西卡公主在海邊發現了奧德修斯</span></li>
+          <li><span class="en">King Alcinous welcomes him to the Phaeacian court</span><span class="zh">阿爾喀諾俄斯國王將他迎入費埃克斯宮廷</span></li>
+          <li><span class="en">The bard's song of Troy moves Odysseus to tears</span><span class="zh">吟遊詩人的特洛伊之歌令奧德修斯潸然淚下</span></li>
+          <li><span class="en">Odysseus reveals his identity — the flashback begins</span><span class="zh">奧德修斯揭露身分——倒敘正式展開</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Nausicaa 瑙西卡</span>
+        <span class="char-badge">King Alcinous 阿爾喀諾俄斯</span>
+        <span class="char-badge">Queen Arete 阿瑞忒</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book VI -->
+<section class="chapter" id="ch6">
+  <div class="chapter-content">
+    <p class="chapter-num">Book VI · 第六卷</p>
+    <h2 class="chapter-title">The Lotus-Eaters & the Cyclops</h2>
+    <p class="chapter-title-zh">食蓮者與獨眼巨人 — 迷醉與蠻力</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>First, they came to the land of the Lotus-Eaters, whose flower-fruit stole all desire for home. Three of Odysseus's men ate the lotus and had to be dragged back to the ships in tears.</p>
+      <p class="zh">首先，他們抵達了食蓮者的國度。那花果能奪走人一切歸鄉的念頭。三名船手吃了蓮果，哭喊著不願離去，不得不被強拖回船上。</p>
+      <p>Then they reached the island of the Cyclops. Trapped in the cave of Polyphemus — who ate six of his men raw — Odysseus devised a cunning plan. He drove a blazing stake into the giant's single eye, and escaped with his men clinging beneath the bellies of sheep. His fatal mistake: shouting his true name as he sailed away, bringing Poseidon's curse down upon him.</p>
+      <p class="zh">接著他們抵達獨眼巨人之島。被困於波呂斐摩斯的洞穴中——巨人將他的六名船手生吞活剝——奧德修斯設下巧計。他將一根燃燒的木樁刺入巨人唯一的眼睛，率眾藏身羊腹之下逃出。然而他犯下了致命的錯誤：離去時高喊出自己的真名，引來了波塞冬的詛咒。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">The Lotus-Eaters' fruit erases the wish to return</span><span class="zh">食蓮者的花果使人忘卻歸鄉之念</span></li>
+          <li><span class="en">Polyphemus devours Odysseus's men</span><span class="zh">獨眼巨人波呂斐摩斯吞噬奧德修斯的船手</span></li>
+          <li><span class="en">"Nobody" — the clever trick with the stake</span><span class="zh">「無人」——以木樁刺眼的巧妙計策</span></li>
+          <li><span class="en">Escape beneath the sheep — and the curse of Poseidon</span><span class="zh">藏身羊腹之下逃出——以及波塞冬的詛咒</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Polyphemus 波呂斐摩斯</span>
+        <span class="char-badge">Poseidon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book VII -->
+<section class="chapter" id="ch7">
+  <div class="chapter-content">
+    <p class="chapter-num">Book VII · 第七卷</p>
+    <h2 class="chapter-title">Aeolus, Laestrygonians & Circe</h2>
+    <p class="chapter-title-zh">風神、萊斯特律戈涅斯人與喀耳刻</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>The wind-king Aeolus gave Odysseus a bag holding all the adverse winds. Home was in sight — when his men, thinking it held gold, opened the bag. The storm roared back, and they were blown far from Ithaca again.</p>
+      <p class="zh">風神埃俄洛斯給了奧德修斯一個裝滿逆風的皮囊。故鄉已近在眼前——此時船手們以為囊中裝的是黃金，竟擅自打開了皮囊。風暴再度呼嘯而起，他們又被吹離了伊塔卡。</p>
+      <p>Then came the Laestrygonians — cannibal giants who destroyed eleven of his twelve ships. Only Odysseus's vessel survived, and it fled to the island of the witch-goddess Circe. She turned half his men into pigs. Warned by Hermes, Odysseus resisted her magic, forced her to restore his crew — and stayed on her island for a full year.</p>
+      <p class="zh">接著遭遇了萊斯特律戈涅斯人——食人的巨人族，毀去了他十二艘船中的十一艘。唯有奧德修斯的船倖存，逃到了女巫女神喀耳刻的島上。她將他半數船手變成了豬。赫密斯事先警告，奧德修斯抵禦了她的魔法，迫使她將船手復原——而在她的島上足足待了一年。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Aeolus's bag of winds — opened too soon</span><span class="zh">風神埃俄洛斯的風袋——過早被打開</span></li>
+          <li><span class="en">The Laestrygonians destroy eleven ships</span><span class="zh">萊斯特律戈涅斯食人族毀去十一艘船</span></li>
+          <li><span class="en">Circe turns Odysseus's men into swine</span><span class="zh">女巫喀耳刻將奧德修斯的船手變成豬</span></li>
+          <li><span class="en">A year passes on Circe's enchanted island</span><span class="zh">在喀耳刻的魔幻島上虛度一年</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Aeolus 埃俄洛斯</span>
+        <span class="char-badge">Circe 喀耳刻</span>
+        <span class="char-badge">Hermes</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book VIII -->
+<section class="chapter" id="ch8">
+  <div class="chapter-content">
+    <p class="chapter-num">Book VIII · 第八卷</p>
+    <h2 class="chapter-title">The Underworld</h2>
+    <p class="chapter-title-zh">冥府之旅 — 向亡者問路</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Circe told Odysseus he must journey to the land of the dead, to consult the blind prophet Tiresias. Sailing to the edge of the world, Odysseus dug a pit, poured offerings of blood, and summoned the shades.</p>
+      <p class="zh">喀耳刻告訴奧德修斯，他必須前往死者之國，向盲先知忒瑞西阿斯求問前程。奧德修斯航至世界的盡頭，掘出一個坑洞，澆奠鮮血祭品，召喚亡靈。</p>
+      <p>There he spoke with his dead mother Anticlea, whom he did not know had died. The great warrior Achilles told him he would rather be a living peasant than king of the dead. Agamemnon warned him of treacherous wives. And Tiresias prophesied the final stretch of his journey home.</p>
+      <p class="zh">在那裡，他與亡母安提克勒亞交談——他竟不知母親已然辭世。偉大的戰士阿基里斯告訴他，他寧願做活著的農夫，也不願做冥府之王。阿伽門農警告他提防不忠的妻子。忒瑞西阿斯則預言了他歸鄉之途的最後一段。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Odysseus descends to the Underworld (Hades)</span><span class="zh">奧德修斯深入冥府（黑帝斯之國）</span></li>
+          <li><span class="en">Consults the blind prophet Tiresias</span><span class="zh">向盲先知忒瑞西阿斯請教前途</span></li>
+          <li><span class="en">Meets his dead mother, Achilles, and Agamemnon</span><span class="zh">與亡母、阿基里斯及阿伽門農相遇</span></li>
+          <li><span class="en">Learns the prophecy of his return and Poseidon's grudge</span><span class="zh">得知歸鄉的預言及波塞冬的怨恨</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Tiresias 忒瑞西阿斯</span>
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Anticlea 安提克勒亞</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book IX -->
+<section class="chapter" id="ch9">
+  <div class="chapter-content">
+    <p class="chapter-num">Book IX · 第九卷</p>
+    <h2 class="chapter-title">Sirens, Scylla & Charybdis</h2>
+    <p class="chapter-title-zh">海妖、斯庫拉與卡律布狄斯</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Back from the dead, Odysseus faced the Sirens — whose song lured sailors to their doom. He plugged his men's ears with wax and had them lash him to the mast, so he alone could hear the unearthly music and survive.</p>
+      <p class="zh">從冥府歸來，奧德修斯面對了海妖塞壬——她們的歌聲引誘水手走向毀滅。他用蠟封住船手的耳朵，命人將自己綁在桅杆上，這樣唯有他能聽見那超凡的歌聲而仍能活命。</p>
+      <p>Then the strait of Scylla and Charybdis: a six-headed monster on one side, a monstrous whirlpool on the other. Scylla seized six of his men — one for each mouth — and he had to sail on, unable to save them. This was the cost of choosing the living path home.</p>
+      <p class="zh">接著是斯庫拉與卡律布狄斯的海峽：一側是六頭怪物，另一側是可怖的漩渦。斯庫拉攫去了他六名船手——每張嘴一名——而他只能繼續前行，無力拯救他們。這便是選擇活路歸鄉的代價。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">The Sirens' song — Odysseus lashed to the mast</span><span class="zh">海妖塞壬的歌聲——奧德修斯被縛於桅杆上</span></li>
+          <li><span class="en">The strait: Scylla (monster) and Charybdis (whirlpool)</span><span class="zh">海峽險境：斯庫拉（六頭怪）與卡律布狄斯（大漩渦）</span></li>
+          <li><span class="en">Six men seized by Scylla's six heads</span><span class="zh">六名船手被斯庫拉的六張嘴各叼走一人</span></li>
+          <li><span class="en">The impossible choice between two deaths</span><span class="zh">兩種死法之間，無法迴避的抉擇</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">The Sirens 塞壬</span>
+        <span class="char-badge">Scylla 斯庫拉</span>
+        <span class="char-badge">Charybdis 卡律布狄斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book X -->
+<section class="chapter" id="ch10">
+  <div class="chapter-content">
+    <p class="chapter-num">Book X · 第十卷</p>
+    <h2 class="chapter-title">The Cattle of the Sun</h2>
+    <p class="chapter-title-zh">太陽神的牛群 — 最後的褻瀆</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Warned by Tiresias never to harm the sacred cattle of the sun-god Helios, Odysseus begged his men to pass the island by. Starving, with winds penned in by storms, the men — led by Eurylochus — slaughtered the finest bull while Odysseus slept.</p>
+      <p class="zh">忒瑞西阿斯曾警告，絕不可傷害太陽神赫利俄斯的聖牛。奧德修斯懇求船手繞島而過。然而饑餓交迫，風暴困頓，船手們在歐律洛科斯的帶領下，趁奧德修斯熟睡時宰殺了最肥美的公牛。</p>
+      <p>Zeus, enraged at the sacrilege, shattered their ship with a thunderbolt the moment they put to sea. Every man drowned. Only Odysseus survived — clinging to the broken mast — and after nine days adrift, he washed up on Calypso's island, where the story began. All his men were gone.</p>
+      <p class="zh">宙斯震怒於這瀆神之罪，在他們出海的瞬間以雷霆擊碎了船隻。所有人盡數溺斃。唯有奧德修斯倖存——緊抱殘破的桅杆——漂流九日後，被沖上了卡呂普索的島嶼，也就是故事開始之處。他的船手，已無一存留。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">The warning: do not touch Helios's cattle</span><span class="zh">警告：不可觸碰太陽神赫利俄斯的聖牛</span></li>
+          <li><span class="en">Starving men slaughter the sacred bull</span><span class="zh">飢餓的船手宰殺了神聖的公牛</span></li>
+          <li><span class="en">Zeus destroys the ship — all crew lost</span><span class="zh">宙斯以雷霆毀船——全員罹難</span></li>
+          <li><span class="en">Odysseus alone drifts to Calypso's island</span><span class="zh">奧德修斯獨自漂流至卡呂普索的島上</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Helios 赫利俄斯</span>
+        <span class="char-badge">Zeus</span>
+        <span class="char-badge">Eurylochus 歐律洛科斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book XI -->
+<section class="chapter" id="ch11">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XI · 第十一卷</p>
+    <h2 class="chapter-title">The Return to Ithaca</h2>
+    <p class="chapter-title-zh">歸返伊塔卡 — 荒島二十年</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>The Phaeacians, moved by his tale, gave Odysseus a ship and treasure and sailed him home by night. He woke on the shores of Ithaca — after twenty years — and did not recognize it, so changed had Athena made the land. The goddess appeared and told him what he must do.</p>
+      <p class="zh">費埃克斯人被他故事感動，贈予船隻與財寶，趁夜將他送回家鄉。他在伊塔卡的海岸醒來——離鄉已二十年——竟認不出故土，因雅典娜將大地變了樣貌。女神現身，告訴他接下來該怎麼做。</p>
+      <p>Disguised as an old beggar, Odysseus went first to the hut of his loyal swineherd Eumaeus. There, by chance, he met his own son Telemachus — returned from his search — and father and son embraced, and wept, and made their plan.</p>
+      <p class="zh">奧德修斯化身為老乞丐，先去到忠心的牧豬人歐邁俄斯的茅屋。在那裡，他恰巧遇見了尋父歸來的兒子忒勒瑪科斯——父子相認，相擁而泣，共商大計。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">The Phaeacians sail Odysseus home to Ithaca</span><span class="zh">費埃克斯人將奧德修斯送回伊塔卡</span></li>
+          <li><span class="en">Athena disguises him as an old beggar</span><span class="zh">雅典娜將他化身為老乞丐</span></li>
+          <li><span class="en">He stays with the loyal swineherd Eumaeus</span><span class="zh">他投靠忠心的牧豬人歐邁俄斯</span></li>
+          <li><span class="en">Father and son — Odysseus and Telemachus — are reunited</span><span class="zh">父子——奧德修斯與忒勒瑪科斯——終於重逢</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Athena</span>
+        <span class="char-badge">Telemachus</span>
+        <span class="char-badge">Eumaeus 歐邁俄斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book XII -->
+<section class="chapter" id="ch12">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XII · 第十二卷</p>
+    <h2 class="chapter-title">The Contest of the Bow</h2>
+    <p class="chapter-title-zh">弓之試煉 — 求婚者的末路</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Still in his beggar's rags, Odysseus entered his own palace. The suitors mocked him. An old dog lying in the dung — Argos, his dog, who had waited twenty years — lifted his ears and tail, recognized his master, and died content.</p>
+      <p class="zh">仍穿著乞丐破衣的奧德修斯走進了自己的宮殿。求婚者們嘲笑他。一條躺在糞堆旁的老狗——阿爾戈斯，他的狗，苦候了二十年——豎起耳朵、搖起尾巴，認出了主人，心滿意足地死去。</p>
+      <p>Penelope, who did not yet know the beggar's identity, set a contest: whoever could string Odysseus's great bow and shoot an arrow through twelve axe-heads would be her husband. The suitors failed. The beggar asked to try. The bow bent easily in his hands.</p>
+      <p class="zh">珀涅羅珀尚不知乞丐的身分，設下了一場比試：誰能拉開奧德修斯的大弓，將箭射穿十二把斧頭的孔眼，便做她的丈夫。求婚者們紛紛失敗。那乞丐請求一試。弓在他手中輕易彎曲。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Odysseus enters his palace in disguise</span><span class="zh">奧德修斯喬裝進入自己的宮殿</span></li>
+          <li><span class="en">His old dog Argos recognizes him — and dies</span><span class="zh">老狗阿爾戈斯認出了他——隨即死去</span></li>
+          <li><span class="en">Penelope's contest: string the bow, shoot through twelve axes</span><span class="zh">珀涅羅珀的試煉：拉開大弓，射穿十二把斧頭</span></li>
+          <li><span class="en">The "beggar" alone succeeds</span><span class="zh">唯有那「乞丐」一試成功</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Penelope</span>
+        <span class="char-badge">Argos 阿爾戈斯</span>
+        <span class="char-badge">Eumaeus</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book XIII -->
+<section class="chapter" id="ch13">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XIII · 第十三卷</p>
+    <h2 class="chapter-title">Slaughter in the Hall</h2>
+    <p class="chapter-title-zh">殿堂血戰 — 復仇與歸位</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>The arrow flew straight through all twelve axes. Odysseus cast off his rags. Telemachus and Eumaeus stood beside him with weapons. The doors were barred. The suitors, trapped and terrified, faced the king they had wronged.</p>
+      <p class="zh">箭矢直直穿過十二把斧頭。奧德修斯甩開破衣。忒勒瑪科斯與歐邁俄斯持械立於他身旁。大門已封。被困的求婚者們驚恐萬分，面對著他們曾經冒犯的國王。</p>
+      <p>One by one, the suitors fell. Antinous first — an arrow through the throat. The hall ran red. When it was over, the maidservants who had betrayed the house were punished, and the great hall was cleansed with fire and sulfur. Twenty years of wrong was paid in a single night.</p>
+      <p class="zh">求婚者們逐一倒下。安提努斯最先——一箭穿喉。殿堂血流成河。塵埃落定後，背叛家室的侍女受到懲處，大廳以火與硫磺淨化。二十年的屈辱，在這一夜償還。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Odysseus reveals himself — the bow is his</span><span class="zh">奧德修斯揭露身分——那弓是他的</span></li>
+          <li><span class="en">The hall is sealed; the suitors cannot escape</span><span class="zh">殿堂被封死；求婚者們無路可逃</span></li>
+          <li><span class="en">Antinous falls first; the slaughter follows</span><span class="zh">安提努斯率先斃命；隨後展開屠殺</span></li>
+          <li><span class="en">The palace is purged and purified</span><span class="zh">宮殿經歷肅清與淨化</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Telemachus</span>
+        <span class="char-badge">Antinous 安提努斯</span>
+        <span class="char-badge">Eumaeus</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Book XIV -->
+<section class="chapter" id="ch14">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XIV · 第十四卷</p>
+    <h2 class="chapter-title">The Reunion</h2>
+    <p class="chapter-title-zh">重逢 — 認出與相擁</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Penelope came down to the hall. She had heard everything — and yet she could not believe. For twenty years she had waited, and grieved, and been deceived. Her heart was cautious. She would not rush into his arms.</p>
+      <p class="zh">珀涅羅珀來到大廳。她什麼都聽說了——然而她無法相信。二十年來她等待、哀傷、受騙。她的心是謹慎的。她不會貿然投入他的懷抱。</p>
+      <p>So she tested him. She told the servant to move their bed out of the bedchamber. And Odysseus, startled, cried out — that the bed could not be moved, for he himself had built it from the root of a living olive tree, around which the whole chamber was constructed. Only the true Odysseus could know this secret. Then Penelope wept, and ran to him, and held him at last.</p>
+      <p class="zh">於是她試探他。她吩咐侍女將他們的床搬出臥室。奧德修斯一驚，脫口喊道——那床無法移動，因為是他親手以一棵活橄欖樹的根基建造而成，整間臥室便是環繞那樹根而造。唯有真正的奧德修斯才知道這個秘密。珀涅羅珀終於落淚，奔向他，緊緊擁住了他。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Penelope cannot bring herself to believe</span><span class="zh">珀涅羅珀遲遲不敢相信</span></li>
+          <li><span class="en">The test of the immovable bed</span><span class="zh">以那張移不動的床作為試探</span></li>
+          <li><span class="en">Odysseus reveals the secret of the olive-tree root</span><span class="zh">奧德修斯道出橄欖樹根的秘密</span></li>
+          <li><span class="en">Husband and wife are reunited after twenty years</span><span class="zh">闊別二十年的夫妻終於重逢</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus</span>
+        <span class="char-badge">Penelope 珀涅羅珀</span>
+        <span class="char-badge">Telemachus</span>
+        <span class="char-badge">Eurycleia 歐律克勒婭</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Finale -->
+<section class="finale" id="finale">
+  <h2>HOME AT LAST</h2>
+  <p class="zh">終歸故里</p>
+  <p>
+    After twenty years — ten at Troy, ten on the sea — Odysseus sat once more by his own hearth, beside the wife who had never stopped waiting. The long wandering was over.
+    <br><br>
+    <span style="color: var(--gold); font-size: 0.9em;">二十年後——十年征戰特洛伊，十年漂泊海上——奧德修斯終於又坐在自己的爐火旁，身旁是那從未放棄等待的妻子。漫長的流浪，至此終結。</span>
+  </p>
+  <div class="char-row" style="justify-content: center; margin-top: 2rem;">
+    <span class="char-badge" style="background: rgba(212,175,55,0.25); border-color: var(--gold); color: var(--gold-soft);">— FIN —</span>
+  </div>
+</section>
+
+<script>
+  // ===== TOC click navigation =====
+  document.querySelectorAll('.toc-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById(item.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ===== Build side nav =====
+  const chapters = document.querySelectorAll('.chapter');
+  const sideNav = document.getElementById('sideNav');
+
+  chapters.forEach((ch, i) => {
+    const num = ch.querySelector('.chapter-num');
+    const title = ch.querySelector('.chapter-title');
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    dot.dataset.target = ch.id;
+    dot.dataset.label = (num ? num.textContent.trim() : '') + '  ' + (title ? title.textContent : '');
+    dot.addEventListener('click', () => {
+      ch.scrollIntoView({ behavior: 'smooth' });
+    });
+    sideNav.appendChild(dot);
+  });
+
+  // ===== Intersection observer for reveal + active dot =====
+  const dots = document.querySelectorAll('.nav-dot');
+  const readingProgress = document.getElementById('readingProgress');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelector('.chapter-content').classList.add('visible');
+
+        // active dot
+        const id = entry.target.id;
+        dots.forEach(d => {
+          d.classList.toggle('active', d.dataset.target === id);
+        });
+
+        // reading progress text
+        const num = entry.target.querySelector('.chapter-num');
+        const title = entry.target.querySelector('.chapter-title');
+        if (num && title) {
+          readingProgress.textContent = num.textContent.trim() + ' · ' + title.textContent;
+          readingProgress.classList.add('show');
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+
+  chapters.forEach(ch => observer.observe(ch));
+
+  // ===== Progress bar =====
+  const progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = (scrollTop / docHeight) * 100;
+    progressBar.style.width = pct + '%';
+  });
+
+  // ===== Hide reading progress at hero/finale =====
+  const heroEl = document.getElementById('hero');
+  const finaleEl = document.getElementById('finale');
+
+  const edgeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+        readingProgress.classList.remove('show');
+      }
+    });
+  }, { threshold: [0.5] });
+
+  edgeObserver.observe(heroEl);
+  edgeObserver.observe(finaleEl);
+
+</script>
+
+</body>
+</html>

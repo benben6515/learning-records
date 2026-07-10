@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Epics — 希臘史詩閱讀之路</title>
+<style>
+  :root {
+    --gold: #d4af37;
+    --gold-soft: #e8d9a0;
+    --wine: #5c1a1b;
+    --wine-deep: #3a0f10;
+    --parchment: #f3e9d2;
+    --parchment-dark: #e0d2b0;
+    --ink: #2a1810;
+    --sea: #1e5a7a;
+    --sea-deep: #0d2f42;
+    --shadow: rgba(0,0,0,0.35);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--parchment);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--sea) 0%, var(--sea-deep) 60%, var(--wine-deep) 100%);
+    color: var(--parchment);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 40px rgba(212,175,55,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 580px;
+    color: var(--parchment-dark);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.8;
+  }
+
+  /* Timeline intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--wine-deep);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--wine);
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: #6b5a42; font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  .book-card.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  }
+
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--wine);
+    color: var(--gold);
+  }
+  .book-step .num {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .book-step .label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    margin-top: 0.3rem;
+    color: var(--gold-soft);
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    display: none;
+  }
+
+  .book-body {
+    flex: 1;
+    padding: 1.5rem 1.8rem;
+  }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--wine-deep);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--wine);
+    opacity: 0.7;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a6850;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a28;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: #7a6850;
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(92,26,27,0.05);
+    font-size: 1.5rem;
+    color: var(--wine);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--gold);
+    color: var(--wine-deep);
+  }
+
+  /* Connector arrow between cards */
+  .connector {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--wine-deep);
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.7; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>GREEK EPICS</h1>
+  <p class="subtitle">希 臘 史 詩 之 路</p>
+  <p class="tagline">
+    A complete reading journey through the ancient Greek mythic universe — from the birth of the gods to the fall of heroes.
+    <span class="zh">一場穿越古希臘神話宇宙的完整閱讀之旅——從諸神的誕生，到英雄的隕落。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order, to experience the full arc of the Greek mythological tradition.</p>
+  <p class="zh">按以下六個階段順序閱讀，體驗希臘神話傳統的完整弧線。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="theogony.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · Foundations</p>
+      <h3>Theogony</h3>
+      <p class="title-zh">神譜</p>
+      <p class="author">Hesiod 赫西俄德 · c. 8th–7th century BC</p>
+      <p class="desc">The origin of everything — the birth of the gods, the overthrow of the Titans, and the rise of Zeus.
+        <span class="zh">一切的起源——諸神的誕生、泰坦的覆滅，與宙斯的崛起。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="iliad.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The War</p>
+      <h3>The Iliad</h3>
+      <p class="title-zh">伊利亞特</p>
+      <p class="author">Homer 荷馬 · c. 8th century BC</p>
+      <p class="desc">The rage of Achilles in the final weeks of the Trojan War — honor, glory, and devastating loss.
+        <span class="zh">特洛伊戰爭最後數週——阿基里斯之怒，榮譽、光榮與毀滅性的喪失。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="odyssey.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The Homecoming</p>
+      <h3>The Odyssey</h3>
+      <p class="title-zh">奧德賽</p>
+      <p class="author">Homer 荷馬 · c. 8th century BC</p>
+      <p class="desc">Ten years of wandering — monsters, gods, sorceresses, and one man's will to return home.
+        <span class="zh">十年漂泊——怪物、神祇、女巫，與一個人的歸鄉意志。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="aeneid.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Roman Sequel</p>
+      <h3>The Aeneid</h3>
+      <p class="title-zh">埃涅阿斯紀</p>
+      <p class="author">Virgil 維吉爾 · 29–19 BC</p>
+      <p class="desc">Troy has fallen. Aeneas flees the burning city, destined to found Rome and an empire without end.
+        <span class="zh">特洛伊已陷落。埃涅阿斯逃出烈火中的城邦，命中注定建立羅馬與永恆帝國。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="modern-retellings.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · Modern Eyes</p>
+      <h3>Circe & The Song of Achilles</h3>
+      <p class="title-zh">喀耳刻 / 阿基里斯之歌</p>
+      <p class="author">Madeline Miller 瑪德琳 ·米勒 · 2011 & 2018</p>
+      <p class="desc">The old stories retold through new eyes — the witch, the warrior, and the love that outlasts war.
+        <span class="zh">以全新視角重述古老故事——女巫、戰士，以及超越戰爭的愛。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="greek-tragedies.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · The Tragic Stage</p>
+      <h3>Greek Tragedies</h3>
+      <p class="title-zh">希臘悲劇</p>
+      <p class="author">Aeschylus · Sophocles · Euripides · 5th century BC</p>
+      <p class="desc">The great dramatists bring the myths to the stage — murder, revenge, fate, and the weight of the gods.
+        <span class="zh">偉大的劇作家將神話搬上舞台——謀殺、復仇、命運，與諸神的重量。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH GREEK MYTH
+  <span class="zh">穿越希臘神話的旅程</span>
+</footer>
+
+<script>
+  // Reveal animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  // Navigate on click
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>

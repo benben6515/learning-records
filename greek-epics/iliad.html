@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Iliad — 伊利亞特</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<!-- ===== Top Nav Bar ===== -->
+<div class="top-nav">
+  <a href="index.html" class="nav-home">← All Epics</a>
+  <span class="nav-center">STAGE 2 · THE WAR</span>
+  <a href="odyssey.html">Next: The Odyssey →</a>
+</div>
+
+<!-- ===== Progress Bar ===== -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ===== Reading Progress Indicator ===== -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="hero">
+  <h1>THE ILIAD</h1>
+  <p class="subtitle">伊　利　亞　特</p>
+  <p class="author">HOMER 荷馬 · c. 8th Century BC</p>
+  <p class="tagline">
+    Sing, O goddess, the anger of Achilles — that ruinous wrath that hurled countless souls to the house of death, and made heroes food for dogs and birds.
+    <span class="zh">歌唱吧，女神，佩琉斯之子阿基里斯的憤怒——那毀滅性的怒火，將無數英魂擲入幽冥，使英雄成為群犬與飛禽的食糧。</span>
+  </p>
+  <p class="scroll-hint">SCROLL TO BEGIN ↓</p>
+</section>
+
+<!-- ===== Table of Contents ===== -->
+<section class="toc" id="toc">
+  <div class="toc-inner">
+    <h2>Contents</h2>
+    <p class="zh">目　錄</p>
+    <ul class="toc-list">
+      <li class="toc-item" data-target="ch1">
+        <span class="toc-num">Book I</span>
+        <span class="toc-text"><span class="en">The Quarrel</span><span class="zh">阿基里斯之怒</span></span>
+      </li>
+      <li class="toc-item" data-target="ch2">
+        <span class="toc-num">Book II</span>
+        <span class="toc-text"><span class="en">The Dream of Agamemnon</span><span class="zh">阿伽門農之夢</span></span>
+      </li>
+      <li class="toc-item" data-target="ch3">
+        <span class="toc-num">Book III</span>
+        <span class="toc-text"><span class="en">The Duel of Paris and Menelaus</span><span class="zh">巴黎與墨涅拉奧斯之決鬥</span></span>
+      </li>
+      <li class="toc-item" data-target="ch4">
+        <span class="toc-num">Book IV</span>
+        <span class="toc-text"><span class="en">Breaking the Truce</span><span class="zh">和平的破裂</span></span>
+      </li>
+      <li class="toc-item" data-target="ch5">
+        <span class="toc-num">Book V</span>
+        <span class="toc-text"><span class="en">Diomedes' Aristeia</span><span class="zh">狄奧墨得斯之神威</span></span>
+      </li>
+      <li class="toc-item" data-target="ch6">
+        <span class="toc-num">Book VI</span>
+        <span class="toc-text"><span class="en">Hector Returns to Troy</span><span class="zh">赫克托歸城</span></span>
+      </li>
+      <li class="toc-item" data-target="ch7">
+        <span class="toc-num">Book IX</span>
+        <span class="toc-text"><span class="en">Embassy to Achilles</span><span class="zh">使者勸阿基里斯</span></span>
+      </li>
+      <li class="toc-item" data-target="ch8">
+        <span class="toc-num">Book VIII</span>
+        <span class="toc-text"><span class="en">The Greeks Fall Back</span><span class="zh">希臘軍潰退</span></span>
+      </li>
+      <li class="toc-item" data-target="ch9">
+        <span class="toc-num">Book X</span>
+        <span class="toc-text"><span class="en">The Night Raid</span><span class="zh">夜襲</span></span>
+      </li>
+      <li class="toc-item" data-target="ch10">
+        <span class="toc-num">Book XI</span>
+        <span class="toc-text"><span class="en">Patroclus Enters Battle</span><span class="zh">帕特羅克洛斯出戰</span></span>
+      </li>
+      <li class="toc-item" data-target="ch11">
+        <span class="toc-num">Book XVI</span>
+        <span class="toc-text"><span class="en">The Death of Patroclus</span><span class="zh">帕特羅克洛斯之死</span></span>
+      </li>
+      <li class="toc-item" data-target="ch12">
+        <span class="toc-num">Book XIX</span>
+        <span class="toc-text"><span class="en">Achilles Returns to War</span><span class="zh">阿基里斯重返戰場</span></span>
+      </li>
+      <li class="toc-item" data-target="ch13">
+        <span class="toc-num">Book XXII</span>
+        <span class="toc-text"><span class="en">The Death of Hector</span><span class="zh">赫克托之死</span></span>
+      </li>
+      <li class="toc-item" data-target="ch14">
+        <span class="toc-num">Book XXIV</span>
+        <span class="toc-text"><span class="en">Priam's Plea and the Funeral</span><span class="zh">普里阿姆之請與葬禮</span></span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== Chapter 1 ===== -->
+<section class="chapter" id="ch1">
+  <div class="chapter-content">
+    <p class="chapter-num">Book I · 第一卷</p>
+    <h2 class="chapter-title">The Quarrel</h2>
+    <p class="chapter-title-zh">阿基里斯之怒</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>In the tenth year of the Trojan War, a plague descends upon the Greek camp — Apollo's arrow, loosed in fury because Agamemnon has dishonored the god's priest. To end the pestilence, the seer Calchas dares speak what all fear: the king must surrender his war-prize, the maiden Chryseis. Agamemnon, blazing with wounded pride, agrees — but only if he may take another's prize in return. He seizes Briseis, the captive woman belonging to Achilles.</p>
+      <p class="zh">特洛伊戰爭第十年，瘟疫降臨希臘營地——阿波羅的箭矢如雨傾瀉，因阿伽門農侮辱了神的祭司。為終結瘟疫，先知卡爾卡斯道出眾人皆懼的真相：王必須交出戰利品少女克律塞伊斯。阿伽門農怒火中燒，屈辱應允——卻強奪阿基里斯的女俘布里塞伊斯以為補償。</p>
+      <p>And so the wrath ignites. Achilles, the greatest of the Achaeans, his honor publicly stripped before the assembled host, draws his blade to kill the king — but Athena, descending unseen, catches him by the hair and stays his hand. She promises triple recompense. Achilles sheaths the blade, withdraws his Myrmidons from the fighting, and calls upon his mother, the sea-goddess Thetis, with a single devastating request: go to Zeus, and beg him to let the Trojans drive the Greeks to the sea — until they learn how lost they are without him.</p>
+      <p class="zh">於是憤怒之火燃起。希臘最偉大的英雄阿基里斯，榮譽在萬軍之前被當眾剝奪，拔劍欲殺其王——雅典娜悄然降臨，揪住他的頭髮阻止了他。她應許三倍的補償。阿基里斯收劍入鞘，撤回他的密爾米東戰士，並向母親海神忒提斯祈求一個毀滅性的心願：請求宙斯讓特洛伊人將希臘軍逼至海邊——直到他們明白，失去阿基里斯是何等致命的錯誤。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Apollo sends a plague upon the Greek camp for the insult to his priest.</span><span class="zh">阿波羅因祭司受辱，降瘟疫於希臘軍營。</span></li>
+          <li><span class="en">Agamemnon claims Briseis from Achilles to replace Chryseis.</span><span class="zh">阿伽門農奪取布里塞伊斯以替代克律塞伊斯。</span></li>
+          <li><span class="en">Athena restrains Achilles from killing Agamemnon.</span><span class="zh">雅典娜阻止阿基里斯殺害阿伽門農。</span></li>
+          <li><span class="en">Thetis persuades Zeus to favor the Trojans in Achilles's absence.</span><span class="zh">忒提斯說服宙斯在阿基里斯缺席時偏袒特洛伊。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Agamemnon 阿伽門農</span>
+        <span class="char-badge">Thetis 忒提斯</span>
+        <span class="char-badge">Athena 雅典娜</span>
+        <span class="char-badge">Calchas 卡爾卡斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 2 ===== -->
+<section class="chapter" id="ch2">
+  <div class="chapter-content">
+    <p class="chapter-num">Book II · 第二卷</p>
+    <h2 class="chapter-title">The Dream of Agamemnon</h2>
+    <p class="chapter-title-zh">阿伽門農之夢</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Twelve days later, Zeus dispatches a Dream — one forged to deceive — down to the sleeping king. "Son of Atreus," it whispers, "the gods are no longer divided. Troy shall fall at last. March now, with all your host." Agamemnon wakes exultant, believing his hour of glory has come. But wily as ever, he resolves first to test the army's spirit: he stands before them and declares, to his own surprise, that they should give up the siege and sail for home.</p>
+      <p class="zh">十二日後，宙斯遣下一場幻夢——一場精心編織的欺瞞——降臨於沉睡的王。「阿特柔斯之子啊，」夢低語道，「諸神不再分裂。特洛伊終將傾覆。此刻率全軍出征吧。」阿伽門農醒來欣喜若狂，以為榮耀之時已至。但他一如既往地狡獪，決定先試探軍心：他站在眾人面前，宣告眾軍應放棄圍城、揚帆歸鄉。</p>
+      <p>The ruse backfires catastrophically. The soldiers, ten years weary, surge toward the ships with wild joy — only the wits of Odysseus and the authority of Nestor turn the tide. The Catalogue of Ships follows: a solemn roll-call of the Greek forces, naming every captain, every city, every fleet. Across the plain, the Trojans too muster behind Hector, and Homer likewise enumerates their allies — a glittering array of peoples gathered for the slaughter. The two great armies face one another across the dust. The war, long stalled by the quarrel, roars back to life.</p>
+      <p class="zh">計謀卻帶來災難性的反效果。厭戰十年的士兵們狂喜地湧向船艦——全賴奧德修斯的機智與涅斯托爾的威望扭轉局勢。隨後是「船隊目錄」：希臘大軍的莊嚴名冊，逐一記載每位將領、每座城邦、每支艦隊。平原另一側，特洛伊人亦在赫克托身後集結，荷馬同樣列舉其盟邦——一幅為殺戮而聚的璀璨群像。兩支大軍隔塵埃相望。因爭執而停滯已久的戰火，再次轟然燃起。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Zeus sends a deceptive Dream promising Agamemnon victory.</span><span class="zh">宙斯遣下虛妄之夢，應許阿伽門農勝利。</span></li>
+          <li><span class="en">Agamemnon's test backfires as troops rush to sail home.</span><span class="zh">阿伽門農的試探失算，士兵爭相登船欲歸。</span></li>
+          <li><span class="en">Odysseus rallies the Greeks back to their posts with thunderous words.</span><span class="zh">奧德修斯以雷霆之辭重整希臘軍心。</span></li>
+          <li><span class="en">The Catalogue of Ships and Trojan Allies lists the great hosts.</span><span class="zh">「船隊目錄」與特洛伊盟軍之名冊羅列群雄。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Agamemnon 阿伽門農</span>
+        <span class="char-badge">Odysseus 奧德修斯</span>
+        <span class="char-badge">Nestor 涅斯托爾</span>
+        <span class="char-badge">Hector 赫克托</span>
+        <span class="char-badge">Zeus 宙斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 3 ===== -->
+<section class="chapter" id="ch3">
+  <div class="chapter-content">
+    <p class="chapter-num">Book III · 第三卷</p>
+    <h2 class="chapter-title">The Duel of Paris and Menelaus</h2>
+    <p class="chapter-title-zh">巴黎與墨涅拉奧斯之決鬥</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Before the armies clash, a proposal: let the woman at the heart of the war be settled by single combat. Paris, the Trojan prince whose abduction of Helen lit the fuse of ten years of blood, struts forward in leopard-skin splendor to face Menelaus, the husband he cuckolded. The two kings — Priam of Troy and Agamemnon of the Greeks — ratify a truce with solemn sacrifices, swearing that whichever man prevails shall keep Helen and her treasure, and the war shall end forever.</p>
+      <p class="zh">兩軍交锋之前，一項提議：以單人決鬥了結戰爭的根源。特洛伊王子巴黎——正是他擄走海倫，點燃十年血戰的導火線——身披豹皮、神氣活現地走出，面對被他奪妻的墨涅拉奧斯。特洛伊王普里阿姆與希臘統帥阿伽門農以莊嚴犧牲締結休戰協議，誓言勝者將擁有海倫及其財寶，戰爭從此終結。</p>
+      <p>From the ramparts, Helen herself is summoned to watch. The elders of Troy, seated beside Priam, murmur that no blame could attach to Greeks and Trojans alike for suffering so long for such a woman — "yet even so," they sigh, "let her go home." The duel is brief and brutal: Menelaus shatters Paris's spear, drags him by the helmet crest toward the Greek lines, and would have won — had not Aphrodite, swift and invisible, snatched her favorite away in a cloud, depositing him safely in Helen's bedchamber. The goddess then commands a bewildered Helen to go to him. The truce, it seems, is broken before the ink dries.</p>
+      <p class="zh">海倫被喚至城牆之上觀戰。特洛伊的長老們坐在普里阿姆身旁，低語道：為這樣一個女人，希臘人與特洛伊人受苦多年，實在難以苛責——「即便如此，」他們嘆息，「讓她回去吧。」決鬥短暫而殘酷：墨涅拉奧斯折斷巴黎的長矛，揪住他的頭盔翎飾將他拖向希臘陣線——若非愛神阿芙蘿黛蒂迅疾無形地將她的寵兒裹入雲霧救走，將他安然置於海倫的寢宮之中。女神隨後命令困惑的海倫去到他身邊。休戰之約，墨跡未乾即已破碎。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Paris and Menelaus agree to settle the war by single combat.</span><span class="zh">巴黎與墨涅拉奧斯同意以單人決鬥了結戰爭。</span></li>
+          <li><span class="en">Helen points out the Greek captains from the walls of Troy.</span><span class="zh">海倫在特洛伊城牆上為長老指認希臘將領。</span></li>
+          <li><span class="en">Menelaus dominates the duel and nearly drags Paris to defeat.</span><span class="zh">墨涅拉奧斯佔盡上風，幾乎將巴黎拖至敗亡。</span></li>
+          <li><span class="en">Aphrodite spirits Paris away to Helen's chamber in a cloud.</span><span class="zh">阿芙蘿黛蒂以雲霧將巴黎救回海倫寢宮。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Paris 巴黎</span>
+        <span class="char-badge">Menelaus 墨涅拉奧斯</span>
+        <span class="char-badge">Helen 海倫</span>
+        <span class="char-badge">Priam 普里阿姆</span>
+        <span class="char-badge">Aphrodite 阿芙蘿黛蒂</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 4 ===== -->
+<section class="chapter" id="ch4">
+  <div class="chapter-content">
+    <p class="chapter-num">Book IV · 第四卷</p>
+    <h2 class="chapter-title">Breaking the Truce</h2>
+    <p class="chapter-title-zh">和平的破裂</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>On Olympus, the gods quarrel over the broken truce. Hera, consumed by hatred for Troy, persuades Zeus to break the very oath he sanctioned. Athena, ever her ally in malice toward the city, descends to the Trojan lines and seeks out the warrior Pandarus — a fool, vain and ambitious. Disguised, she whispers honeyed counsel into his ear: draw your bow, she tells him, loose an arrow at Menelaus, and glory and gifts from Paris shall be yours. The fool bends his bow, prays to Apollo, and lets the shaft fly.</p>
+      <p class="zh">在奧林帕斯山上，諸神為破裂的休戰爭論不休。對特洛伊懷有深仇的赫拉，說服宙斯背棄他親自監誓的約定。雅典娜——她對這座城的惡意從不稍減——降臨特洛伊陣線，尋找戰士潘達羅斯：一個虛榮而野心勃勃的蠢人。女神喬裝打扮，在他耳邊低語甜言：拉開你的弓，向墨涅拉奧斯射出一箭，巴黎的榮耀與賞賜將盡歸於你。那蠢人彎弓搭箭，向阿波羅祈禱，放出了那一矢。</p>
+      <p>The arrow grazes Menelaus — Athena deflecting it just enough to spare his life, yet drawing blood enough to shatter the peace. The truce dies. Agamemnon roars the order, and the two armies crash together with a sound like two great waves meeting in a storm. The full horror of Homeric warfare unfolds: bronze on bronze, the screaming of horses, the reek of dust and blood. The first great set-piece battle of the Iliad has begun — and there will be no stopping it now until the gods themselves grow weary of the slaughter.</p>
+      <p class="zh">箭矢擦傷墨涅拉奧斯——雅典娜稍稍偏轉其軌跡以保其性命，卻足以見血，令和平徹底瓦解。休戰就此終結。阿伽門農怒吼下令，兩軍如暴風中兩股巨浪相撞，轟然交鋒。荷馬式戰爭的全部恐怖隨之展開：銅與銅的撞擊、戰馬的嘶鳴、塵土與血腥的惡臭。《伊利亞特》的第一場大戰正式展開——而此時已無人能阻止，直到諸神自己也對這場屠殺感到厭倦。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Hera and Athena conspire to break the sworn truce.</span><span class="zh">赫拉與雅典娜密謀撕毀盟誓休戰。</span></li>
+          <li><span class="en">Pandarus, urged by Athena, shoots Menelaus with an arrow.</span><span class="zh">潘達羅斯受雅典娜慫恿，以箭射傷墨涅拉奧斯。</span></li>
+          <li><span class="en">Menelaus survives, but the truce is irreparably shattered.</span><span class="zh">墨涅拉奧斯倖存，休戰卻已無可挽回。</span></li>
+          <li><span class="en">Full-scale battle erupts across the plain of Troy.</span><span class="zh">全面戰鬥在特洛伊平原爆發。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Pandarus 潘達羅斯</span>
+        <span class="char-badge">Menelaus 墨涅拉奧斯</span>
+        <span class="char-badge">Agamemnon 阿伽門農</span>
+        <span class="char-badge">Athena 雅典娜</span>
+        <span class="char-badge">Hera 赫拉</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 5 ===== -->
+<section class="chapter" id="ch5">
+  <div class="chapter-content">
+    <p class="chapter-num">Book V · 第五卷</p>
+    <h2 class="chapter-title">Diomedes' Aristeia</h2>
+    <p class="chapter-title-zh">狄奧墨得斯之神威</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>This is the day of Diomedes. The young king of Argos, bolstered by Athena's favor, becomes something more than mortal — his eyes lit with a divine fire, his spear unstoppable. He carves through the Trojan ranks like a river in flood, scattering warriors before him. He wounds Aphrodite in the wrist as she tries to rescue her son Aeneas from the slaughter, and the goddess of love flees howling to Olympus, her immortal blood — ichor, that golden fluid of the gods — dripping from her wound. Never before in the Iliad has a mortal dared to wound a god.</p>
+      <p class="zh">這是狄奧墨得斯之日。這位阿戈斯的年輕國王，蒙雅典娜青睞加持，化身為超越凡人的存在——雙眼燃著神聖之火，長矛勢不可擋。他如洪水般席捲特洛伊陣線，戰士紛紛潰散。當愛神阿芙蘿黛蒂試圖從屠殺中救出其子埃涅阿斯時，他刺傷了她的手腕；掌管愛與美的女神慘叫著逃回奧林帕斯，她不朽的血液——神之靈液，那金色的神血——自傷口滴落。《伊利亞特》中，凡人從未敢於傷害神明。</p>
+      <p>But Diomedes goes further still. Goaded by the war-god Ares, who descends to avenge Aphrodite's wound, the Greek charges even against him. With Athena at his side, riding in his chariot unseen, Diomedes drives his spear into the god's belly. Ares bellows — a cry, Homer tells us, as loud as ten thousand warriors — and limps back to heaven to complain to Zeus. The sheer audacity of it electrifies the poem: for one blazing afternoon, a mortal man has wounded two gods and lived. This is aristeia, the moment of supreme martial glory — and it belongs to Diomedes, not yet to Achilles.</p>
+      <p class="zh">然而狄奧墨得斯更進一步。戰神阿瑞斯降臨，欲為阿芙蘿黛蒂的傷勢報仇，這位希臘英雄竟迎戰戰神。雅典娜隱形坐於其戰車之上，引導他將長矛刺入神之腹部。阿瑞斯發出嘶吼——荷馬告訴我們，那聲音如同萬名戰士齊聲吶喊——跛行返回天界向宙斯告狀。這份膽魄震懾全詩：在一個熾烈的午後，一個凡人竟連傷二神而安然無恙。這便是「神威時刻」——武勇榮耀的巔峰——它屬於狄奧墨得斯，而非阿基里斯。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Athena grants Diomedes strength to see and strike gods.</span><span class="zh">雅典娜賜予狄奧墨得斯辨識並攻擊神明之力。</span></li>
+          <li><span class="en">Diomedes wounds Aphrodite as she rescues Aeneas.</span><span class="zh">狄奧墨得斯在阿芙蘿黛蒂救埃涅阿斯時傷其手腕。</span></li>
+          <li><span class="en">Apollo deflects Diomedes and warns him against challenging gods.</span><span class="zh">阿波羅擋下狄奧墨得斯，警告他勿挑戰神明。</span></li>
+          <li><span class="en">With Athena's aid, Diomedes wounds Ares himself in the belly.</span><span class="zh">狄奧墨得斯在雅典娜相助下，刺傷戰神阿瑞斯。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Diomedes 狄奧墨得斯</span>
+        <span class="char-badge">Athena 雅典娜</span>
+        <span class="char-badge">Aphrodite 阿芙蘿黛蒂</span>
+        <span class="char-badge">Ares 阿瑞斯</span>
+        <span class="char-badge">Aeneas 埃涅阿斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 6 ===== -->
+<section class="chapter" id="ch6">
+  <div class="chapter-content">
+    <p class="chapter-num">Book VI · 第六卷</p>
+    <h2 class="chapter-title">Hector Returns to Troy</h2>
+    <p class="chapter-title-zh">赫克托歸城</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>The battle pauses, and Hector — Troy's greatest warrior, the steady heart of its defense — withdraws to the city. He has errands of love. His mother Hecuba he urges to pray to Athena with offerings; his brother Paris he finds idling in the palace with Helen, polishing his armor, and rebukes him for his cowardice. Helen, ashamed and eloquent, confesses the sorrow of being the woman for whom so many must die. "Brother," she calls Hector, "dear to me, bitter as a serpent am I — would I had died the day I came."</p>
+      <p class="zh">戰鬥稍歇，赫克托——特洛伊最偉大的戰士，城邦防禦的堅定核心——退回城中。他有著愛的使命。他催促母親赫庫芭帶著祭品向雅典娜祈禱；他在宮中發現弟弟巴黎正與海倫閒坐、擦拭鎧甲，痛斥其懦弱。海倫羞愧而雄辯，自陳身為「為之赴死的女人」的悲哀。「兄弟，」她喚赫克托，「我親愛的兄弟，我如毒蛇般可憎——願我來此那日便已死去。」</p>
+      <p>Then comes the most beloved scene in all the Iliad. Hector seeks out his wife Andromache and their infant son, Astyanax, finding them at the Scaean Gate. Andromache, in tears, begs him not to return to the fighting — her father and brothers are already slain by Achilles, and Hector is all she has left. Hector's reply is the poem's most human confession: he knows Troy will fall, he knows Andromache will be enslaved, yet he cannot shrink from battle, for his honor and the shame of his men would destroy him. When he reaches for his child, the boy shrieks at the horsehair plume of his terrifying helmet. Hector laughs, removes it, and prays to Zeus: "Grant this boy, my son, may be as I am — foremost among the Trojans." Then he strokes the child and turns back to war.</p>
+      <p class="zh">隨後便是整部《伊利亞特》中最動人的一幕。赫克托尋至妻子安卓瑪刻與幼子阿斯提阿那克斯身旁，在斯開亞門找到他們。安卓瑪刻淚流滿面，懇求他不要再返戰場——她的父親與兄弟已被阿基里斯所殺，赫克托是她唯一所剩。赫克托的回答是全詩最為人性的告白：他深知特洛伊將傾，深知安卓瑪刻將被為奴，卻無法退縮，因為榮譽的損失與戰友的恥辱將會毀滅他。當他伸手抱起孩子時，幼嬰被他那駭人頭盔上的馬鬃嚇得尖叫。赫克托大笑，摘下頭盔，向宙斯祈禱：「求您讓這孩子，我的兒子，將來如我一般——成為特洛伊人之首。」而後他撫摸嬰孩，轉身重返戰場。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Hector urges his mother Hecuba to pray to Athena.</span><span class="zh">赫克托催促母親赫庫芭向雅典娜祈禱。</span></li>
+          <li><span class="en">He rebukes Paris for lingering in the palace with Helen.</span><span class="zh">他斥責巴黎仍與海倫在宮中流連。</span></li>
+          <li><span class="en">Andromache begs Hector not to fight; he explains his doomed honor.</span><span class="zh">安卓瑪刻懇求赫克托勿戰；他道出註定的榮譽之困。</span></li>
+          <li><span class="en">Baby Astyanax recoils from Hector's terrifying helmet plume.</span><span class="zh">幼子阿斯提阿那克斯被赫克托頭盔上的翎飾嚇哭。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Hector 赫克托</span>
+        <span class="char-badge">Andromache 安卓瑪刻</span>
+        <span class="char-badge">Astyanax 阿斯提阿那克斯</span>
+        <span class="char-badge">Helen 海倫</span>
+        <span class="char-badge">Paris 巴黎</span>
+        <span class="char-badge">Hecuba 赫庫芭</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 7 ===== -->
+<section class="chapter" id="ch7">
+  <div class="chapter-content">
+    <p class="chapter-num">Book IX · 第九卷</p>
+    <h2 class="chapter-title">Embassy to Achilles</h2>
+    <p class="chapter-title-zh">使者勸阿基里斯</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>With the Trojans pressing hard, Agamemnon despairs. At Nestor's counsel, he consents to humble himself: he will return Briseis untouched, and heap upon Achilles a king's ransom — seven tripods, ten talents of gold, seven women of Lesbos, and one of his own daughters as bride, with cities for her dowry. An embassy of three is chosen: Odysseus the cunning, Ajax the mighty, and Phoenix, the old tutor who once helped raise Achilles himself. They come bearing gifts, wine, and desperate hope.</p>
+      <p class="zh">特洛伊人步步緊逼，阿伽門農陷入絕望。在涅斯托爾的建議下，他同意放下身段：他將原封不動歸還布里塞伊斯，並奉上國王級的贖禮——七隻三足鼎、十他連得黃金、七名累斯博斯女子，以及將自己的女兒許配為妻，附贈城邑作為嫁妝。三人使團應運而生：機智的奧德修斯、威武的大埃阿斯，以及曾協助撫養阿基里斯成人的老師傅尼克斯。他們帶著禮物、美酒與絕望的希望而來。</p>
+      <p>They find Achilles in his tent, singing epic verses and playing the lyre, Patroclus beside him. Odysseus makes the formal offer with silver tongue; Phoenix delivers a long, tearful plea of fatherly love, weaving in parables of ancient heroes who yielded their anger; Ajax, blunt soldier, makes the plain appeal of comradeship. Achilles hears them all — and refuses. The speech he delivers is the poem's most radical moment: he declares he may simply sail home, that glory means nothing to a dead man, that no amount of gold can replace the life he will lose. "My mother tells me two fates bear me toward death: if I stay and fight, I lose my homecoming but win eternal glory; if I return, I lose glory but live long." For the first time, a hero questions whether the hero's code is worth dying for.</p>
+      <p class="zh">他們在帳中找到阿基里斯，他正吟唱史詩、撫弄豎琴，帕特羅克洛斯伴其身旁。奧德修斯以如簧巧舌正式陳述條件；傅尼克斯發出長篇含淚的慈父之請，編織古代英雄放下怒火的故事以為勸誡；直率的戰士埃阿斯則以戰友情誼為由坦率相求。阿基里斯一一聆聽——而後拒絕。他的演說是全詩最激進的時刻：他宣告自己可能直接揚帆歸鄉，對一個死人而言，榮耀毫無意義，再多的黃金也換不回他將失去的性命。「我的母親告訴我，兩種命運將我引向死亡：若我留下奮戰，便失去歸鄉之路，卻贏得永恆榮耀；若我歸去，便失去榮耀，卻得以長壽。」有史以來第一次，一位英雄質問：英雄的信條，是否值得為之赴死。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Agamemnon offers lavish gifts and Briseis to appease Achilles.</span><span class="zh">阿伽門農獻上豐厚禮物與布里塞伊斯以安撫阿基里斯。</span></li>
+          <li><span class="en">Odysseus, Ajax, and Phoenix form the embassy to Achilles's tent.</span><span class="zh">奧德修斯、埃阿斯與傅尼克斯組成使團前往阿基里斯營帳。</span></li>
+          <li><span class="en">Phoenix pleads with parables and paternal love to soften Achilles.</span><span class="zh">傅尼克斯以寓言與慈父之情懇求阿基里斯回心轉意。</span></li>
+          <li><span class="en">Achilles refuses all offers and threatens to sail home for Greece.</span><span class="zh">阿基里斯拒絕一切提議，威脅揚帆返回希臘。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Odysseus 奧德修斯</span>
+        <span class="char-badge">Ajax 大埃阿斯</span>
+        <span class="char-badge">Phoenix 傅尼克斯</span>
+        <span class="char-badge">Patroclus 帕特羅克洛斯</span>
+        <span class="char-badge">Agamemnon 阿伽門農</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 8 ===== -->
+<section class="chapter" id="ch8">
+  <div class="chapter-content">
+    <p class="chapter-num">Book VIII · 第八卷</p>
+    <h2 class="chapter-title">The Greeks Fall Back</h2>
+    <p class="chapter-title-zh">希臘軍潰退</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Zeus, mindful of his promise to Thetis, now takes a direct hand. He thunders from Mount Ida, flashing lightning that terrifies the Greeks; he has decreed that they shall not prevail this day. Hector, emboldened, storms across the plain like a blazing star. The Greek line buckles, then breaks. Agamemnon, wounded and panic-stricken, rallies no one; even Diomedes cannot stem the Trojan flood. By nightfall, the Trojans have done the unthinkable — they camp on the plain itself, outside the safety of their walls, their campfires glimmering like the stars of the night sky.</p>
+      <p class="zh">宙斯銘記對忒提斯的承諾，此時親自出手。他在伊達山上雷霆震怒，閃電划過天際令希臘人膽寒；他已裁定希臘軍今日不得取勝。赫克托如一顆燃燒的星辰般士氣大振，席捲平原。希臘陣線先是彎曲，繼而崩潰。負傷而驚惶的阿伽門農無人可整；縱是狄奧墨得斯也擋不住特洛伊的洪流。夜幕降臨之時，特洛伊人做出了不可思議之舉——他們直接在平原上紮營，離開城牆的庇護，營火如夜空繁星般閃爍。</p>
+      <p>In the Greek camp, despair is total. Nestor, whose counsel has steadied the army again and again, rises to propose a desperate night mission: send scouts to spy on the Trojan camp, to learn their plans and their weaknesses. Meanwhile, in his tent, Achilles watches and waits — his refusal holding, yet the eyes of Patroclus betray a growing anguish. Patroclus cannot bear to see his comrades slaughtered while he sits idle. The seed of a fateful decision is planted in his heart this night: perhaps he, wearing Achilles's armor, could rally the Greeks without breaking his friend's vow. The idea has not yet been spoken, but it stirs.</p>
+      <p class="zh">希臘營中，絕望彌漫。屢屢以智謀穩住軍心的涅斯托爾再次起身，提議一項絕望的夜間任務：派遣斥候潛入特洛伊營地，刺探其計劃與弱點。與此同時，在阿基里斯的帳中，他冷眼旁觀、靜候時機——他的拒絕依然堅定，然而帕特羅克洛斯眼中的痛苦卻日益加深。帕特羅克洛斯無法忍受看著戰友被屠戮而自己卻袖手旁觀。一個致命決定的種子，於此夜種在他心中：或許他穿上阿基里斯的鎧甲，便能重振希臘軍心，而不違背好友的誓言。這念頭尚未出口，卻已悄然萌動。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Zeus intervenes directly, terrifying the Greeks with thunder and lightning.</span><span class="zh">宙斯親自出手，以雷霆閃電震懾希臘人。</span></li>
+          <li><span class="en">Hector leads the Trojans to camp on the plain for the first time.</span><span class="zh">赫克托率特洛伊人首次在平原紮營。</span></li>
+          <li><span class="en">Nestor proposes a night reconnaissance of the Trojan camp.</span><span class="zh">涅斯托爾提議夜間偵察特洛伊營地。</span></li>
+          <li><span class="en">Patroclus grows increasingly distraught at the Greeks' suffering.</span><span class="zh">帕特羅克洛斯因希臘軍的苦難而日益焦慮。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Hector 赫克托</span>
+        <span class="char-badge">Zeus 宙斯</span>
+        <span class="char-badge">Nestor 涅斯托爾</span>
+        <span class="char-badge">Patroclus 帕特羅克洛斯</span>
+        <span class="char-badge">Achilles 阿基里斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 9 ===== -->
+<section class="chapter" id="ch9">
+  <div class="chapter-content">
+    <p class="chapter-num">Book X · 第十卷</p>
+    <h2 class="chapter-title">The Night Raid</h2>
+    <p class="chapter-title-zh">夜襲</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Under cover of darkness, Diomedes and Odysseus volunteer for the perilous scouting mission. They arm themselves and slip into the night. Athena, favoring them, sends a heron as a good omen, and the two warriors pray to her before setting out. Almost at once, they encounter Dolon, a Trojan spy — a richly rewarded coward sent to spy on the Greeks in return for Achilles's horses. They catch him easily; he confesses all he knows in terror, including the location of the newly arrived Thracian king Rhesus, who lies sleeping with his magnificent snow-white horses and golden armor.</p>
+      <p class="zh">在黑暗的掩護下，狄奧墨得斯與奧德修斯自願執行這趟危險的偵察任務。他們披甲執兵，悄然沒入夜色。雅典娜青眼有加，遣一隻鷺鷥作為吉兆；兩位戰士臨行前向她祈禱。他們幾乎立即遇上特洛伊間諜多隆——一個受重賞的懦夫，被派去刺探希臘軍情，回報是阿基里斯的駿馬。他們輕易擒獲了他；他在驚恐中供出所知一切，包括新到的色雷斯王瑞索斯所在——他正酣睡於雪白駿馬與黃金鎧甲之間。</p>
+      <p>Diomedes slaughters the sleeping Thracians and their king Rhesus, while Odysseus drags away the famous horses — those horses which, an old prophecy had warned, would spell Troy's doom if they ever drank from the Scamander or grazed upon Trojan pastures. The raid is ruthless, blood-soaked, and triumphant: the two Greeks return to camp at dawn dripping with gore and leading the stolen horses, having averted the prophecy and struck terror into the Trojan heart. It is a brief interlude of cunning and violence — a glimpse of the kind of war that Odysseus, in another poem, will make his own.</p>
+      <p class="zh">狄奧墨得斯屠戮沉睡的色雷斯人及其國王瑞索斯，奧德修斯則將名駒牽走——那些駿馬，一則古老預言曾警告：若它們飲過斯卡曼德河之水，或啃食特洛伊牧場之草，特洛伊必將傾覆。這場夜襲殘酷、血腥而輝煌：兩位希臘人於黎明時分渾身浴血返回營地，牽著盜來的駿馬——他們消除了預言的威脅，並將恐懼深深植入特洛伊人心。這是一段機智與暴力的短暫插曲——一窺那種將在另一部史詩中屬於奧德修斯的戰爭面貌。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Diomedes and Odysseus volunteer to scout the Trojan camp at night.</span><span class="zh">狄奧墨得斯與奧德修斯自願夜探特洛伊營地。</span></li>
+          <li><span class="en">They capture and interrogate the Trojan spy Dolon.</span><span class="zh">他們擒獲並審問特洛伊間諜多隆。</span></li>
+          <li><span class="en">Diomedes kills King Rhesus and twelve Thracians in their sleep.</span><span class="zh">狄奧墨得斯趁色雷斯王瑞索斯及十二人熟睡時將其盡數斬殺。</span></li>
+          <li><span class="en">They steal Rhesus's divine horses, foiling an old prophecy.</span><span class="zh">他們盜走瑞索斯的神駿，破除了一則古老預言。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Odysseus 奧德修斯</span>
+        <span class="char-badge">Diomedes 狄奧墨得斯</span>
+        <span class="char-badge">Dolon 多隆</span>
+        <span class="char-badge">Rhesus 瑞索斯</span>
+        <span class="char-badge">Athena 雅典娜</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 10 ===== -->
+<section class="chapter" id="ch10">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XI · 第十一卷</p>
+    <h2 class="chapter-title">Patroclus Enters Battle</h2>
+    <p class="chapter-title-zh">帕特羅克洛斯出戰</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>The next day dawns in horror. Agamemnon, Diomedes, Odysseus, and Eurypylus are all wounded and carried off the field; the Greeks are overrun, and Hector is hammering at the wall that guards their ships. From his tent, Achilles watches the rout with growing unease. He sends Patroclus to Nestor's tent to learn the wounded man's identity — but Nestor, seizing the moment, plants the fateful idea: let Patroclus wear Achilles's armor and lead the Myrmidons into battle. The Trojans, believing Achilles himself has returned, will break in terror, and the Greeks will be saved.</p>
+      <p class="zh">次日黎明，恐怖降臨。阿伽門農、狄奧墨得斯、奧德修斯、歐里皮魯斯皆負傷被抬離戰場；希臘軍全線潰敗，赫克托正猛攻守護船艦的營牆。阿基里斯在帳中目睹潰逃，焦慮漸生。他派帕特羅克洛斯前往涅斯托爾帳中探查傷者身份——但涅斯托爾抓住時機，種下了那個致命的念頭：讓帕特羅克洛斯穿上阿基里斯的鎧甲，率密爾米東人投入戰場。特洛伊人若以為阿基里斯親自回歸，必將因恐懼而崩潰，希臘軍便能得救。</p>
+      <p>Achilles consents — with one stern condition: Patroclus must drive the Trojans from the ships and then return immediately. He is not to pursue glory, not to storm Troy's walls, not to let the battle-spirit carry him beyond rescue. Achilles pours a libation to Zeus and prays for both their safe returns. Patroclus dons the gleaming armor — though it fits awkwardly, for the great shield is too heavy for a lesser man — and rides into the carnage. The tide turns at once: the Trojans, seeing the armor they dread, scatter like deer before a lion. Patroclus, carried away by the fire of victory, kills Sarpedon, a son of Zeus himself. The warning of Achilles fades from his mind. He presses on toward Troy.</p>
+      <p class="zh">阿基里斯應允——附帶一個嚴苛條件：帕特羅克洛斯必須將特洛伊人逐離船艦，而後立即返回。他不可貪求榮耀，不可猛攻特洛伊城牆，不可讓戰意將他帶入無法救援之地。阿基里斯向宙斯奠酒，祈求兩人皆能平安歸來。帕特羅克洛斯披上閃耀的鎧甲——儘管它穿來有些不合身，因為那面巨盾對一個凡人而言過於沉重——策馬衝入戰場。戰局立時逆轉：特洛伊人見到他們最畏懼的鎧甲，如群鹿見雄獅般四散奔逃。帕特羅克洛斯被勝利之火沖昏了頭，竟殺死了宙斯之子薩爾佩冬。阿基里斯的警告在他心中淡去。他繼續向特洛伊推進。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Agamemnon, Diomedes, and other Greek leaders are wounded.</span><span class="zh">阿伽門農、狄奧墨得斯等希臘將領紛紛負傷。</span></li>
+          <li><span class="en">Nestor suggests Patroclus fight in Achilles's armor to save the Greeks.</span><span class="zh">涅斯托爾建議帕特羅克洛斯穿戴阿基里斯的鎧甲出戰以救希臘軍。</span></li>
+          <li><span class="en">Patroclus drives the Trojans from the ships and kills Sarpedon.</span><span class="zh">帕特羅克洛斯將特洛伊人逐離船艦，並殺死薩爾佩冬。</span></li>
+          <li><span class="en">Achilles warns Patroclus to return after pushing back the Trojans.</span><span class="zh">阿基里斯警告帕特羅克洛斯擊退特洛伊人後須立即返回。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Patroclus 帕特羅克洛斯</span>
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Nestor 涅斯托爾</span>
+        <span class="char-badge">Sarpedon 薩爾佩冬</span>
+        <span class="char-badge">Hector 赫克托</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 11 ===== -->
+<section class="chapter" id="ch11">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XVI · 第十六卷</p>
+    <h2 class="chapter-title">The Death of Patroclus</h2>
+    <p class="chapter-title-zh">帕特羅克洛斯之死</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Patroclus has forgotten the warning. Three times he charges the walls of Troy, and three times Apollo himself — invisible, terrible — shoves him back with a god's vast hand. "Back, glorious Patroclus," the god cries. "It is not your fate to take this city, nor Achilles's either." But the battle-fury, sent by Zeus, blinds the hero. A fourth time he surges forward — and now Apollo strikes him from behind, dazing him, knocking the helmet from his head so that it rolls in the dust. The armor of Achilles falls away. Patroclus stands exposed and staggering.</p>
+      <p class="zh">帕特羅克洛斯已忘記那警告。他三度衝擊特洛伊城牆，阿波羅親自——無形而可畏——以神之巨掌三次將他推回。「退下吧，光榮的帕特羅克洛斯，」神呼道，「這城非你所能攻克，阿基里斯亦不能。」然而宙斯所遣的戰意迷亂了他的心智。他第四次向前衝鋒——此時阿波羅自背後擊打他，令其頭暈目眩，將頭盔自其頭上擊落，滾入塵土之中。阿基里斯的鎧甲紛紛散落。帕特羅克洛斯暴露於敵前，踉蹌欲墜。</p>
+      <p>A Trojan spearman, Euphorbus, strikes him first in the back. Then Hector sees his chance. He drives his spear through Patroclus's belly, and the hero falls with a thunderous crash. "You thought," Hector mocks, "you would sack our city and take our women home as prizes. But the dogs and the birds shall eat you first." With his dying breath, Patroclus foretells Hector's own doom: "You yourself shall not live much longer — death and your fate are already close, at the hands of Achilles." Hector strips the armor from the corpse — Achilles's armor, now worn by his enemy — and the prophecy begins its slow, terrible unfurling. The news will reach Achilles like a blade through the heart.</p>
+      <p class="zh">特洛伊槍兵歐弗爾玻斯首先自背後刺中了他。赫克托隨即看準時機。他將長矛刺入帕特羅克洛斯腹部，英雄轟然倒地。「你以為，」赫克托嘲弄道，「你能攻克我們的城，將我們的婦女擄為戰利品帶回故鄉。然而群犬與飛禽將先享你的血肉。」帕特羅克洛斯臨終之際預言了赫克托自己的結局：「你自己的時日亦不久長——死亡與命運已近在咫尺，將在阿基里斯手中降臨。」赫克托自屍身剝下鎧甲——阿基里斯的鎧甲，如今穿在他的敵人身上——預言開始了它緩慢而可怖的展開。這消息將如利刃穿心般抵達阿基里斯。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Apollo repels Patroclus three times from the walls of Troy.</span><span class="zh">阿波羅三次將帕特羅克洛斯自特洛伊城牆擊退。</span></li>
+          <li><span class="en">Apollo stuns Patroclus and strips away Achilles's armor.</span><span class="zh">阿波羅擊暈帕特羅克洛斯，剝去阿基里斯的鎧甲。</span></li>
+          <li><span class="en">Euphorbus wounds Patroclus; Hector delivers the killing blow.</span><span class="zh">歐弗爾玻斯傷帕特羅克洛斯；赫克托施以致命一擊。</span></li>
+          <li><span class="en">Dying, Patroclus prophesies Achilles will soon kill Hector.</span><span class="zh">帕特羅克洛斯臨終預言阿基里斯將很快殺死赫克托。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Patroclus 帕特羅克洛斯</span>
+        <span class="char-badge">Hector 赫克托</span>
+        <span class="char-badge">Apollo 阿波羅</span>
+        <span class="char-badge">Euphorbus 歐弗爾玻斯</span>
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Zeus 宙斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 12 ===== -->
+<section class="chapter" id="ch12">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XIX · 第十九卷</p>
+    <h2 class="chapter-title">Achilles Returns to War</h2>
+    <p class="chapter-title-zh">阿基里斯重返戰場</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>When the news of Patroclus's death reaches him, Achilles collapses. He tears his hair, he fills his hands with ash and soot and pours it over his face, he lies in the dust and shrieks a sound so raw that his mother, far beneath the sea, hears it and comes. Thetis rises from the gray ocean with her nymphs, cradles her weeping son, and hears his grief: Patroclus is dead, and the armor is lost. "Then you must not go to battle unarmed," she says. "At dawn I will return with new armor, forged by the god Hephaestus himself." She departs, and Achilles, comfortless, cries out that he cares nothing for life now — his only thought is vengeance.</p>
+      <p class="zh">當帕特羅克洛斯陣亡的消息傳至，阿基里斯崩潰倒地。他扯散頭髮，雙手捧滿灰燼塵土，傾覆於臉上，橫臥塵埃發出如此原始的嘶吼——遠在深海之下的母親聽聞此聲，趕來相見。忒提斯與眾海中仙女自灰暗海面升起，擁抱哭泣的兒子，聆聽他的悲慟：帕特羅克洛斯已死，鎧甲亦失。「那麼你不可手無寸鐵地投入戰場，」她說，「黎明時分我將帶著新的鎧甲歸來——由火神赫淮斯托斯親手鍛造。」她離去，阿基里斯無從慰藉，悲號道此時已對性命毫無眷戀——他唯一所念，唯有復仇。</p>
+      <p>Thetis keeps her word. Hephaestus, the lame smith-god, forges the most famous armor in all mythology — and above all, a shield of staggering beauty. On it he hammers the entire cosmos: the earth, the sky, and the sea; the sun, the moon, and the constellations; two cities, one at peace with weddings and dances and courts of law, one at war with sieges and ambushes; fertile fields, vineyards, and dancing floors; the great Ocean ringing the edge of the world. Achilles dons the divine armor, reconciles with Agamemnon — refusing the offered gifts with a wave of his hand, too consumed by grief and fury to care — and rides out to the plain. He does not eat; he does not rest. His horse, Xanthus, granted speech by a god, even prophesies his death. Achilles answers simply: he knows. And still he rides.</p>
+      <p class="zh">忒提斯信守承諾。跛足的鍛冶之神赫淮斯托斯鍛造出全部神話中最著名的鎧甲——尤其是那面美得驚人的盾牌。他在其上錘打出整個宇宙：大地、天空、海洋；太陽、月亮與眾星辰；兩座城邦，一座和平——有婚禮、有舞蹈、有法庭審判；一座戰亂——有圍攻、有伏兵；沃野良田、葡萄園、歌舞之地；環繞世界邊緣的大洋。阿基里斯披上神聖鎧甲，與阿伽門農和解——他揮手拒絕所獻禮物，因悲慟與狂怒交織而無心計較——策馬奔向平原。他不食不歇。他的駿馬克珊托斯蒙神賜能言語，甚至預言了他的死亡。阿基里斯淡然以對：他知道。而他依然前行。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Achilles collapses in grief at the news of Patroclus's death.</span><span class="zh">阿基里斯聞帕特羅克洛斯死訊，悲慟倒地。</span></li>
+          <li><span class="en">Thetis commissions Hephaestus to forge new divine armor.</span><span class="zh">忒提斯請赫淮斯托斯鍛造新的神聖鎧甲。</span></li>
+          <li><span class="en">The Shield of Achilles depicts the entire cosmos and human life.</span><span class="zh">阿基里斯之盾描繪了整個宇宙與人世百態。</span></li>
+          <li><span class="en">Achilles reconciles with Agamemnon and rides to war knowing he will die.</span><span class="zh">阿基里斯與阿伽門農和解，明知必死仍策馬赴戰。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Thetis 忒提斯</span>
+        <span class="char-badge">Hephaestus 赫淮斯托斯</span>
+        <span class="char-badge">Agamemnon 阿伽門農</span>
+        <span class="char-badge">Xanthus 克珊托斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 13 ===== -->
+<section class="chapter" id="ch13">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XXII · 第二十二卷</p>
+    <h2 class="chapter-title">The Death of Hector</h2>
+    <p class="chapter-title-zh">赫克托之死</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>Achilles slaughters his way across the plain until the Trojan army flees in panic behind its walls — all save Hector. He alone stands before the Scaean Gate, waiting. His heart pounds with fear; his better judgment screams at him to retreat within the walls. Three times he debates with himself — to fight, to yield, to seek shelter — and his father Priam and mother Hecuba, watching from the ramparts, tear their hair and beg him to come inside. "Have pity on us, my son," Priam wails, "and save the city." But Hector cannot. When Achilles, blazing in his golden armor like the sun itself, comes charging toward him, Hector's nerve breaks at last. He turns and runs.</p>
+      <p class="zh">阿基里斯一路屠戮橫掃平原，特洛伊軍如驚弓之鳥，紛紛逃入城牆之後——唯獨赫克托。他獨自一人立於斯開亞門前，靜候。恐懼令其心狂跳；理智在他腦中大聲疾呼退入城中。他三次與自己辯論——是戰、是降、是求庇——他的父親普里阿姆與母親赫庫芭在城牆之上目睹此景，扯髮哀求他進城。「可憐可憐我們吧，我的兒子，」普里阿姆哀號，「拯救這座城吧。」然而赫克托不能。當阿基里斯身披金色鎧甲、如烈日般輝煌地向他衝來時，赫克托的意志終於崩潰。他轉身，開始奔逃。</p>
+      <p>And so begins one of the most haunting passages in all of literature: Achilles chasing Hector three times around the walls of Troy. No slow footrace — two divine runners, one driven by grief, one by terror. Zeus weighs their fates on his golden scales: Hector's sinks. Athena descends, disguised as Hector's brother Deiphobus, and tells him to stand and fight — there are two of them now against the one Greek. Heartened, Hector halts and faces Achilles. They make a pact: whoever wins will return the other's body for proper burial. Hector hurls his spear and strikes the shield dead-center — but it glances off. He turns to call for Deiphobus — but the brother is gone, a phantom, a god's deception. He knows then he is dead. "Let me not die without a fight," he cries, and draws his sword, charging Achilles one last, hopeless time. The Greek's spear pierces his throat — the one place his armor leaves bare — and Hector falls. "Spare my body," he gasps with his last words, "give it to my family for burning." Achilles replies with cold fury: "No. The dogs and birds shall eat you." And from the walls above, Andromache hears his death-shriek.</p>
+      <p class="zh">於是文學史上最令人難忘的段落之一展開：阿基里斯追逐赫克托，繞特洛伊城牆三圈。那絕非緩慢的競走——而是兩位神速的奔跑者，一個為悲慟所驅，一個為恐懼所逼。宙斯將二人的命運置於金天平上稱量：赫克托的一側下墜。雅典娜降臨，喬裝成赫克托的兄弟得伊福玻斯，勸他站定應戰——如今有兩人合力對付一個希臘人。赫克托大受鼓舞，停下腳步，面對阿基里斯。他們立下約定：無論誰勝，都將歸還對方的遺體以妥善安葬。赫克托擲出長矛，正中盾牌中心——卻被彈開。他轉身呼喚得伊福玻斯——然而兄弟已不見蹤影，那是幻影，是神的欺瞞。他此時已知自己必死。「讓我不至於不戰而死，」他高呼，拔劍出鞘，以最後無望的一搏衝向阿基里斯。希臘人的長矛刺穿他的喉嚨——那是鎧甲唯一暴露之處——赫克托轟然倒地。「放過我的身體，」他以最後的氣息低語，「將它交還我的家人火化。」阿基里斯以冰冷的怒火回答：「不。群犬與飛禽將享用你。」而在城牆之上，安卓瑪刻聽見了他臨終的嘶吼。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Priam and Hecuba beg Hector from the walls to come inside.</span><span class="zh">普里阿姆與赫庫芭在城牆上懇求赫克托進城。</span></li>
+          <li><span class="en">Achilles chases Hector three times around the walls of Troy.</span><span class="zh">阿基里斯繞特洛伊城牆追逐赫克托三圈。</span></li>
+          <li><span class="en">Athena deceives Hector disguised as his brother Deiphobus.</span><span class="zh">雅典娜喬裝其兄弟得伊福玻斯欺騙赫克托。</span></li>
+          <li><span class="en">Achilles kills Hector and desecrates the body behind his chariot.</span><span class="zh">阿基里斯殺死赫克托，並將其屍身縛於戰車後褻瀆。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Hector 赫克托</span>
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Athena 雅典娜</span>
+        <span class="char-badge">Priam 普里阿姆</span>
+        <span class="char-badge">Andromache 安卓瑪刻</span>
+        <span class="char-badge">Zeus 宙斯</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter 14 ===== -->
+<section class="chapter" id="ch14">
+  <div class="chapter-content">
+    <p class="chapter-num">Book XXIV · 第二十四卷</p>
+    <h2 class="chapter-title">Priam's Plea and the Funeral</h2>
+    <p class="chapter-title-zh">普里阿姆之請與葬禮</p>
+    <div class="divider"></div>
+    <div class="chapter-body">
+      <p>For twelve days, Achilles drags Hector's body around Patroclus's tomb, refusing peace, refusing sleep, his grief curdled into a rage that will not abate. But the gods preserve the corpse from decay — Aphrodite and Apollo keep it unblemished, white as dew. At last, on Olympus, Zeus decrees that the body must be returned. The gods summon Priam, the aged king of Troy, and Hermes — disguised as a young Greek squire — guides the old man by night through the dark camp, past the sleeping guards, to the very tent of his son's killer.</p>
+      <p class="zh">一連十二日，阿基里斯將赫克托的遺體拖繞帕特羅克洛斯的墳墓，不肯休止，不肯入眠，他的悲慟凝結為一團不熄的怒火。然而諸神護佑屍身不腐——阿芙蘿黛蒂與阿波羅令其完好無損，潔白如露。終於，在奧林帕斯山上，宙斯裁定遺體必須歸還。諸神喚來特洛伊的老王普里阿姆，赫密斯——喬裝成一名希臘少年侍從——於黑夜中引導老人穿過幽暗的營地，越過沉睡的衛兵，直抵殺子仇人的帳前。</p>
+      <p>What follows is the most tender scene in all of Homer. Priam enters the tent, kneels before Achilles, and kisses the hands that killed his son — "the hands that have brought such sorrow to my old age." He begs, not as a king, but as a father: "Remember your own father, Achilles, who waits at home for a son who will never return. I have lost fifty sons to this war — Hector was the best of them. For his sake, and for your own father's sake, give him back to me." Achilles is undone. The two men weep together — Priam for Hector, Achilles for Patroclus and for his own doomed father — and the hero yields. Achilles weeps, wraps the body tenderly himself, and grants the king twelve days of truce to hold the funeral rites. In Troy, the women lament: Andromache, Hecuba, and Helen each speak over the body of the man who was, in his quiet decency, the only one who never insulted her. The Iliad ends not with triumph, but with mourning, mercy, and the slow burning of Hector's pyre.</p>
+      <p class="zh">隨之而來的，是全部荷馬之中最為溫柔的一幕。普里阿姆步入帳中，跪倒在阿基里斯面前，親吻那雙殺害他兒子的手——「那雙為我的暮年帶來如此深痛的手。」他不是以王的身份，而是以父親的身份懇求：「想想你自己的父親吧，阿基里斯，他在家中守候著一個永遠不會歸來的兒子。這場戰爭奪走了我五十個兒子——赫克托是他們之中最優秀的。為了他，也為了你自己的父親，將他還給我吧。」阿基里斯崩潰了。兩人相擁而泣——普里阿姆為赫克托而哭，阿基里斯為帕特羅克洛斯、為自己註定不幸的父親而哭——英雄終於讓步。阿基里斯流淚，親手溫柔地包裹遺體，並賜予老王十二天的休戰以舉行葬禮。在特洛伊，婦人們哀悼：安卓瑪刻、赫庫芭、海倫，各在遺體前致辭——而海倫說，那個以其沉靜善良從未侮辱過她的人，正是赫克托。《伊利亞特》不以勝利作結，而以哀悼、慈悲，以及赫克托火葬柴堆的緩緩燃燒收尾。</p>
+      <div class="key-events">
+        <h4>Key Events · 關鍵事件</h4>
+        <ul>
+          <li><span class="en">Achilles drags Hector's body for twelve days, but the gods preserve it.</span><span class="zh">阿基里斯拖拽赫克托遺體十二日，諸神卻護其不腐。</span></li>
+          <li><span class="en">Priam, guided by Hermes, sneaks into Achilles's tent at night.</span><span class="zh">普里阿姆在赫密斯引導下，於夜間潛入阿基里斯營帳。</span></li>
+          <li><span class="en">The old king kisses Achilles's hands; both men weep together.</span><span class="zh">老王親吻阿基里斯之手；兩人相擁而泣。</span></li>
+          <li><span class="en">Achilles returns the body; Troy holds a twelve-day funeral for Hector.</span><span class="zh">阿基里斯歸還遺體；特洛伊為赫克托舉行十二日葬禮。</span></li>
+        </ul>
+      </div>
+      <div class="char-row">
+        <span class="char-badge">Priam 普里阿姆</span>
+        <span class="char-badge">Achilles 阿基里斯</span>
+        <span class="char-badge">Hermes 赫密斯</span>
+        <span class="char-badge">Andromache 安卓瑪刻</span>
+        <span class="char-badge">Helen 海倫</span>
+        <span class="char-badge">Hecuba 赫庫芭</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Side Nav ===== -->
+<div class="side-nav" id="sideNav"></div>
+
+<!-- ===== Finale ===== -->
+<section class="finale" id="finale">
+  <h2>THE FATE OF TROY IS SEALED</h2>
+  <p class="zh">特洛伊的命運已定</p>
+  <p>
+    The Iliad ends with Hector's funeral — not the fall of Troy, nor the death of Achilles. The poem's true subject was never victory, but the cost: the grief that binds killer and killed, father and son, god and mortal, in one great web of sorrow.
+    <br><br>
+    <span style="color: var(--gold-soft); font-size: 0.9em;">《伊利亞特》以赫克托的葬禮作結——既非特洛伊的陷落，亦非阿基里斯之死。這部詩的真正主題從來不是勝利，而是代價：那將殺者與被殺者、父與子、神與凡人，編織進同一張巨大悲慟之網的哀痛。</span>
+  </p>
+</section>
+
+<!-- ===== Script ===== -->
+<script src="shared.js"></script>
+<script>
+  initGreekEpic();
+</script>
+
+</body>
+</html>
