@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tree</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0f1420;
+        color: #e6e9f0;
+      }
+      #toolbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #161c2c;
+        border-bottom: 1px solid #243049;
+      }
+      button {
+        background: #2b6cf6;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      button:hover:not(:disabled) {
+        background: #1f57d6;
+      }
+      button:disabled {
+        background: #2a3450;
+        color: #6b7691;
+        cursor: not-allowed;
+      }
+      #status {
+        font-size: 13px;
+        color: #8b95ad;
+      }
+      #canvas {
+        padding-top: 60px;
+        padding-bottom: 140px;
+        overflow: auto;
+        height: 100vh;
+      }
+      svg {
+        display: block;
+      }
+
+      /* ---- 1D array of all nodes ---- */
+      #arrayPanel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        height: 122px;
+        background: #161c2c;
+        border-top: 1px solid #243049;
+        display: flex;
+        flex-direction: column;
+        padding: 8px 12px;
+      }
+      #arrayPanel h3 {
+        font-size: 12px;
+        color: #8b95ad;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+      #array {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        align-items: stretch;
+      }
+      .cell {
+        flex: 0 0 auto;
+        width: 92px;
+        min-height: 60px;
+        cursor: pointer;
+        border-radius: 8px;
+        border: 1.5px solid #3a4666;
+        background: #1e2640;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 6px 4px;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+        position: relative;
+      }
+      .cell .cname {
+        font-size: 12px;
+        font-weight: 600;
+        color: #e6e9f0;
+        text-align: center;
+      }
+      .cell .cfather {
+        font-size: 9px;
+        color: #ffd24a;
+        margin-top: 3px;
+        text-align: center;
+      }
+      .cell .idx {
+        position: absolute;
+        top: 2px;
+        left: 4px;
+        font-size: 8px;
+        color: #6b7691;
+      }
+      .cell:hover {
+        border-color: #6b9bff;
+      }
+      .cell.active {
+        background: #2b6cf6;
+        border-color: #9ec0ff;
+      }
+      .cell.active .cname {
+        color: #fff;
+      }
+      .cell.ancestor {
+        background: #1f4ab8;
+        border-color: #6b9bff;
+      }
+      .cell.dimmed {
+        background: #161c2e;
+        border-color: #232c46;
+      }
+      .cell.dimmed .cname {
+        color: #4a5377;
+      }
+      .cell.dimmed .cfather {
+        color: #5a5230;
+      }
+      .cell.new {
+        border-color: #ffd24a;
+        border-width: 2.5px;
+      }
+      .cell.new.pulse {
+        animation: pulse 1.6s ease-out 3;
+      }
+
+      .node {
+        cursor: pointer;
+      }
+      .node rect {
+        fill: #1e2640;
+        stroke: #3a4666;
+        stroke-width: 1.5;
+        transition:
+          fill 0.15s,
+          stroke 0.15s;
+      }
+      .node text.label {
+        fill: #e6e9f0;
+        font-size: 13px;
+        text-anchor: middle;
+        pointer-events: none;
+      }
+      .node text.parent {
+        fill: #ffd24a;
+        font-size: 10px;
+        text-anchor: middle;
+        pointer-events: none;
+      }
+      .node:hover rect {
+        stroke: #6b9bff;
+      }
+
+      /* active = clicked node */
+      .node.active rect {
+        fill: #2b6cf6;
+        stroke: #9ec0ff;
+      }
+      /* ancestors on the highlighted path */
+      .node.ancestor rect {
+        fill: #1f4ab8;
+        stroke: #6b9bff;
+      }
+      /* everything not on the path is greyed out */
+      .node.dimmed rect {
+        fill: #161c2e;
+        stroke: #232c46;
+      }
+      .node.dimmed text.label {
+        fill: #4a5377;
+      }
+
+      /* the freshly created node marks its father */
+      .node.new rect {
+        stroke: #ffd24a;
+        stroke-width: 2.5;
+      }
+      .node.new {
+        animation: pulse 1.6s ease-out 3;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 0 rgba(255, 210, 74, 0));
+        }
+        50% {
+          filter: drop-shadow(0 0 10px rgba(255, 210, 74, 0.9));
+        }
+      }
+
+      .edge {
+        stroke: #2a3450;
+        stroke-width: 1.5;
+        fill: none;
+        transition: stroke 0.15s;
+      }
+      .edge.path {
+        stroke: #4a7bff;
+        stroke-width: 2.5;
+      }
+      .edge.dimmed {
+        stroke: #202840;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="toolbar">
+      <button
+        id="addBtn"
+        disabled>
+        + Add child to selected
+      </button>
+      <button
+        id="renameBtn"
+        disabled>
+        Rename
+      </button>
+      <span id="status">Click any node to highlight its path to the root.</span>
+    </div>
+    <div id="canvas"><svg id="tree"></svg></div>
+    <div id="arrayPanel">
+      <h3>1D array (all nodes, newest last) &mdash; highlight is synced with the tree</h3>
+      <div id="array"></div>
+    </div>
+    <script>
+      let nextId = 1
+      const mk = (name, children = []) => ({id: nextId++, name, children})
+      let root = mk('Node', [])
+
+      let activeId = null // currently selected node
+      let pathSet = new Set() // ids of active node + all its ancestors
+      let newId = null // last created node (shows its father)
+
+      const nodeW = 120,
+        nodeH = 46,
+        gapX = 36,
+        gapY = 92,
+        padX = 40,
+        padY = 16
+
+      // ---- layout: leaves left-to-right, parents centered over children ----
+      function layout() {
+        let leafX = 0
+        ;(function rec(n, depth) {
+          n.depth = depth
+          n.y = depth * gapY + padY
+          if (!n.children.length) {
+            n.x = leafX * (nodeW + gapX) + padX + nodeW / 2
+            leafX++
+            return
+          }
+          n.children.forEach((c) => rec(c, depth + 1))
+          n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2
+        })(root, 0)
+      }
+
+      // ---- find ancestor chain (including the node) up to the root ----
+      function ancestors(id) {
+        const set = new Set()
+        ;(function find(n) {
+          if (n.id === id) {
+            set.add(n.id)
+            return true
+          }
+          for (const c of n.children)
+            if (find(c)) {
+              set.add(n.id)
+              return true
+            }
+          return false
+        })(root)
+        return set
+      }
+
+      function findParentName(id) {
+        let name = null
+        ;(function find(n) {
+          for (const c of n.children) {
+            if (c.id === id) {
+              name = n.name
+              return
+            }
+            find(c)
+          }
+        })(root)
+        return name
+      }
+
+      function findByPosition(arr, id) {
+        let target = null,
+          parentArr = null,
+          index = -1
+        ;(function walk(a) {
+          for (let i = 0; i < a.length; i++) {
+            if (a[i].id === id) {
+              target = a[i]
+              parentArr = a
+              index = i
+              return
+            }
+            walk(a[i].children)
+          }
+        })(arr)
+        return {target, parentArr, index}
+      }
+
+      // ---- render ----
+      function render() {
+        layout()
+        let maxX = 0,
+          maxY = 0
+        ;(function walk(n) {
+          maxX = Math.max(maxX, n.x)
+          maxY = Math.max(maxY, n.y)
+          n.children.forEach(walk)
+        })(root)
+        const W = maxX + nodeW / 2 + padX,
+          H = maxY + nodeH + 24
+        const svg = document.getElementById('tree')
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+        svg.setAttribute('width', W)
+        svg.setAttribute('height', H)
+
+        let edges = '',
+          nodes = ''
+        ;(function edgesWalk(n) {
+          n.children.forEach((c) => {
+            const isPath = pathSet.has(n.id) && pathSet.has(c.id)
+            const dim = activeId !== null && !isPath
+            const cls = 'edge' + (isPath ? ' path' : '') + (dim ? ' dimmed' : '')
+            const x1 = n.x,
+              y1 = n.y + nodeH,
+              x2 = c.x,
+              y2 = c.y,
+              my = (y1 + y2) / 2
+            edges += `<path class="${cls}" d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}"/>`
+            edgesWalk(c)
+          })
+        })(root)
+        ;(function nodesWalk(n) {
+          const isActive = n.id === activeId
+          const isAncestor = pathSet.has(n.id) && !isActive
+          const dim = activeId !== null && !pathSet.has(n.id)
+          const isNew = n.id === newId
+          let cls = 'node'
+          if (isActive) cls += ' active'
+          if (isAncestor) cls += ' ancestor'
+          if (dim) cls += ' dimmed'
+          if (isNew) cls += ' new'
+          const parentName = findParentName(n.id)
+          const parentTag = isNew && parentName ? `<text class="parent" x="${nodeW / 2}" y="${nodeH - 6}">↑ ${parentName}</text>` : ''
+          nodes += `<g class="${cls}" data-id="${n.id}" transform="translate(${n.x - nodeW / 2},${n.y})">
+        <rect width="${nodeW}" height="${nodeH}" rx="8"/>
+        <text class="label" x="${nodeW / 2}" y="${nodeH / 2 + 5}">${n.name}</text>
+        ${parentTag}
+      </g>`
+          n.children.forEach(nodesWalk)
+        })(root)
+
+        svg.innerHTML = edges + nodes
+        renderArray()
+      }
+
+      // ---- flat 1D array view ----
+      function renderArray() {
+        const rest = []
+        ;(function w(n) {
+          if (n !== root) rest.push(n)
+          n.children.forEach(w)
+        })(root)
+        rest.sort((a, b) => a.id - b.id) // newest (highest id) at the end
+        const list = [root, ...rest] // root always first
+        const html = list
+          .map((n, i) => {
+            const isActive = n.id === activeId
+            const isAnc = pathSet.has(n.id) && !isActive
+            const dim = activeId !== null && !pathSet.has(n.id)
+            const isNew = n.id === newId
+            let cls = 'cell'
+            if (isActive) cls += ' active'
+            if (isAnc) cls += ' ancestor'
+            if (dim) cls += ' dimmed'
+            if (isNew) cls += ' new pulse'
+            const father = findParentName(n.id)
+            const ftag = father ? `<span class="cfather">↑ ${father}</span>` : ''
+            return `<div class="${cls}" data-id="${n.id}">` + `<span class="idx">${i}</span>` + `<span class="cname">${n.name}</span>` + `${ftag}</div>`
+          })
+          .join('')
+        document.getElementById('array').innerHTML = html
+      }
+
+      function select(id) {
+        activeId = id
+        newId = null // selecting clears the "new node" mark
+        pathSet = ancestors(id)
+        document.getElementById('addBtn').disabled = false
+        document.getElementById('renameBtn').disabled = false
+        const node = findByPosition([root], id).target
+        document.getElementById('status').textContent = `Selected: ${node.name}  ·  path highlighted to root, others greyed.`
+        render()
+      }
+
+      function addChild() {
+        if (activeId === null) return
+        const parent = findByPosition([root], activeId).target
+        const child = mk(parent.name + '.' + (parent.children.length + 1))
+        parent.children.push(child)
+        newId = child.id // new node marks its father (tag + pulse)
+        activeId = child.id // make the new node active -> father path lights up
+        pathSet = ancestors(child.id)
+        document.getElementById('status').textContent = `Created "${child.name}" under "${parent.name}".`
+        render()
+      }
+
+      function rename() {
+        if (activeId === null) return
+        const node = findByPosition([root], activeId).target
+        const v = prompt('New name:', node.name)
+        if (v) {
+          node.name = v
+          render()
+        }
+      }
+
+      document.getElementById('tree').addEventListener('click', (e) => {
+        const g = e.target.closest('.node')
+        if (g) select(+g.dataset.id) // works even on greyed nodes
+      })
+      document.getElementById('array').addEventListener('click', (e) => {
+        const c = e.target.closest('.cell')
+        if (c) select(+c.dataset.id) // array cells mirror tree selection
+      })
+      document.getElementById('addBtn').addEventListener('click', addChild)
+      document.getElementById('renameBtn').addEventListener('click', rename)
+
+      render()
+    </script>
+  </body>
+</html>
