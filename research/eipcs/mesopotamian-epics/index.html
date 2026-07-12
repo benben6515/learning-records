@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesopotamian Epics — 兩河流域神話閱讀之路</title>
+<style>
+  :root {
+    --lapis: #1a4480;
+    --lapis-deep: #0e2a52;
+    --lapis-void: #061730;
+    --azure: #2c6fa6;
+    --gold: #d4af37;
+    --gold-bright: #e8c97a;
+    --gold-soft: #f0dca0;
+    --clay: #c98a5a;
+    --clay-dark: #a06a3e;
+    --sand: #f0e4ca;
+    --sand-dark: #dccba4;
+    --ink: #2d1e12;
+    --shadow: rgba(6,23,48,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--sand);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--azure) 0%, var(--lapis) 45%, var(--lapis-deep) 75%, var(--lapis-void) 100%);
+    color: var(--sand);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent 0 22px, rgba(232,201,122,0.05) 22px 24px),
+      repeating-linear-gradient(-45deg, transparent 0 30px, rgba(232,201,122,0.04) 30px 31px);
+    pointer-events: none;
+  }
+  .hero-emblem {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.8em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(212,175,55,0.5);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 40px rgba(212,175,55,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 600px;
+    color: var(--sand-dark);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--lapis-void);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--lapis);
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: #6b5232; font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--sand) 0%, var(--sand-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(6,23,48,0.12);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(212,175,55,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(6,23,48,0.2);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--lapis-deep);
+    color: var(--gold);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--clay-dark);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--lapis-void);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--lapis);
+    opacity: 0.7;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a24;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(14,42,82,0.05);
+    font-size: 1.5rem;
+    color: var(--lapis);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--gold);
+    color: var(--lapis-void);
+  }
+  .connector {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--lapis-void);
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">✦ ✦ ✦</p>
+  <h1>MESOPOTAMIAN EPICS</h1>
+  <p class="subtitle">兩 河 流 域 神 話 之 路</p>
+  <p class="tagline">
+    From the mud of the Tigris and Euphrates — older than Homer, older than the Bible — the first stories ever written in human hand.
+    <span class="zh">來自底格里斯與幼發拉底河的泥濘——比荷馬更古老，比聖經更古老——人類用手寫下的最早的故事。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the four stages below, in order, to walk from the creation of the world to a king's quest to cheat death — and finally to the day these lost tablets were dug from the earth.</p>
+  <p class="zh">按以下四個階段順序閱讀，從世界的創造，走到一位君王妄圖戰勝死亡的旅程——最後來到這些失傳泥板重見天日的那一天。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="enuma-elish.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · The Creation</p>
+      <h3>Enuma Elish</h3>
+      <p class="title-zh">埃努瑪·埃利什（當在高天之上）</p>
+      <p class="author">Anonymous 無名 · Standard Babylonian, c. 12th century BC</p>
+      <p class="desc">When on high, the waters were one — until young Marduk slew the salt-sea dragon Tiamat and split her body to make sky and earth.
+        <span class="zh">當在高天之時，諸水尚合為一——直到年輕的馬杜克斬殺鹹海巨龍提雅瑪特，將她的身軀劈為天地。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="atrahasis.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The Flood</p>
+      <h3>Atrahasis</h3>
+      <p class="title-zh">阿特拉哈西斯（極智慧者）</p>
+      <p class="author">Anonymous 無名 · Old Babylonian, c. 18th–17th century BC</p>
+      <p class="desc">The gods grow weary of noisy humankind and send a great flood — but one wise man is warned to build a boat. The oldest flood story ever written.
+        <span class="zh">諸神厭倦了喧囂的人類，降下大洪水——唯有一位智者被警告建造方舟。史上最古老的洪水故事。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="gilgamesh.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The Quest</p>
+      <h3>The Epic of Gilgamesh</h3>
+      <p class="title-zh">吉爾伽美什史詩</p>
+      <p class="author">Sin-leqi-unninni 辛·勒奎·烏寧尼（標準版編訂）· c. 1300–1000 BC</p>
+      <p class="desc">A king two-thirds divine, grieving his dead friend, journeys to the world's edge to ask the one man who survived the flood: how did you become immortal?
+        <span class="zh">一位三分之二是神的君王，哀悼亡友，遠行至世界盡頭，向唯一從洪水中生還的人探問：你是如何得到永生的？</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="rediscovery.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Return</p>
+      <h3>The Rediscovery</h3>
+      <p class="title-zh">重見天日</p>
+      <p class="author">Layard · George Smith · 1849–1872 AD</p>
+      <p class="desc">Buried for two thousand years beneath the dust of Nineveh, a library of clay tablets waits — until a self-taught engraver reads one and learns the flood was older than Noah.
+        <span class="zh">被埋藏在尼尼微的塵土之下兩千年，一座泥板圖書館靜靜等待——直到一位自學成才的雕版匠讀懂其中一塊，才發現洪水的故事比挪亞更古老。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH MESOPOTAMIAN MYTH
+  <span class="zh">穿越兩河流域神話的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>
