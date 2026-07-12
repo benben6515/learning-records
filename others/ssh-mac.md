@@ -18,7 +18,7 @@ sudo systemsetup -setremotelogin on
 sudo launchctl list | grep ssh
 ```
 
-確認能登入的使用者帳號（在 Sharing 面板裡的 *Remote Login* 下方的 *Allow full disk access for remote users* 可調整權限）。
+確認能登入的使用者帳號（在 Sharing 面板裡的 _Remote Login_ 下方的 _Allow full disk access for remote users_ 可調整權限）。
 
 ## 二、拿到公司 Mac 的識別資訊
 
@@ -128,6 +128,7 @@ ssh -p 2222 使用者名稱@公司公網IP
 ```
 
 ⚠️ **安全性低**：直接暴露 SSH 到公網，務必：
+
 - 關閉密碼登入、只用金鑰（見下一節）。
 - 改用非標準 port。
 - 安裝 fail2ban 之類的防爆破工具。
@@ -169,13 +170,13 @@ ssh mac
 
 ## 六、常見問題
 
-| 狀況 | 排查 |
-| --- | --- |
-| `Connection refused` | 公司 Mac 的 Remote Login 沒開，或防火牆擋住 22 port |
-| `Connection timed out` | 網路不可達：VPN 沒連、Tailscale 沒上線、或 IP 不對 |
-| `Permission denied (publickey)` | 金鑰沒裝好，或該使用者帳號不允許登入 |
-| 連一下就斷 | 加 `ServerAliveInterval 60`（見上節 config） |
-| 公司 Mac 休眠連不上 | System Settings → Lock Screen / Energy 把睡眠關掉，或用 `caffeinate` |
+| 狀況                            | 排查                                                                 |
+| ------------------------------- | -------------------------------------------------------------------- |
+| `Connection refused`            | 公司 Mac 的 Remote Login 沒開，或防火牆擋住 22 port                  |
+| `Connection timed out`          | 網路不可達：VPN 沒連、Tailscale 沒上線、或 IP 不對                   |
+| `Permission denied (publickey)` | 金鑰沒裝好，或該使用者帳號不允許登入                                 |
+| 連一下就斷                      | 加 `ServerAliveInterval 60`（見上節 config）                         |
+| 公司 Mac 休眠連不上             | System Settings → Lock Screen / Energy 把睡眠關掉，或用 `caffeinate` |
 
 ## 七、讓公司 Mac 不要睡眠
 
