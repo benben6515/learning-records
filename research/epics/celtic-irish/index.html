@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Celtic & Irish Cycle — 凱爾特與愛爾蘭神話閱讀之路</title>
+<style>
+  :root {
+    --heather: #6b3a5a;
+    --heather-deep: #4a2540;
+    --heather-void: #2a1525;
+    --emerald: #2d6a3d;
+    --gold: #c89530;
+    --gold-bright: #e0b54a;
+    --gold-soft: #ecc878;
+    --paper: #f0ead9;
+    --paper-dark: #ddd5bc;
+    --ink: #2a2418;
+    --shadow: rgba(42,21,37,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--heather) 0%, var(--heather-deep) 45%, var(--heather-void) 75%, #160810 100%);
+    color: var(--paper);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent 0 30px, rgba(236,200,120,0.035) 30px 31px),
+      repeating-linear-gradient(-45deg, transparent 0 30px, rgba(236,200,120,0.035) 30px 31px),
+      radial-gradient(circle at 50% 50%, transparent 0 22px, rgba(58,138,142,0.04) 22px 23px, transparent 23px 44px);
+    pointer-events: none;
+  }
+  .hero-emblem {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.8em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(200,149,48,0.5);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 40px rgba(200,149,48,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 680px;
+    color: var(--paper-dark);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--heather-void);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--emerald);
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: var(--ink-2); font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--paper-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(42,21,37,0.12);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(200,149,48,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(42,21,37,0.2);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--heather-deep);
+    color: var(--gold);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--emerald);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--heather-void);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--heather);
+    opacity: 0.85;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a24;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(42,21,37,0.05);
+    font-size: 1.5rem;
+    color: var(--heather);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--gold);
+    color: var(--heather-void);
+  }
+  .connector {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--heather-void);
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">☘ ☘ ☘</p>
+  <h1>THE CELTIC &amp; IRISH CYCLE</h1>
+  <p class="subtitle">凱　爾　特　與　愛　爾　蘭　神　話</p>
+  <p class="tagline">
+    The gods who lost Ireland and went into the hills to become the fairies. A boy who killed a hound and took its name, and who held a whole army alone at a ford. A queen who stole a bull and started a war that ended in nothing. And an island where the Otherworld is always one step through the mist away — where youth is eternal, and where one old warrior came home after three hundred years and crumbled to dust. This is the wildest, saddest, strangest of all the mythic gardens.
+    <span class="zh">那些失去愛爾蘭、走進山丘成為仙靈的神。一個殺了獵犬而取其名的男孩，他獨自在一處渡口擋住了一整支軍隊。一位偷了一頭公牛、發動了一場終歸虛無之戰的王后。還有一座島，那裡異世界永遠只在迷霧一步之外——那裡青春永恆，而一位老戰士在三百年後歸鄉，便化為塵土。這是所有神話之園中最野、最悲、最奇的一座。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order, to walk from the coming of the gods to Ireland, through their defeat and retreat into the síd mounds, into the age of heroes — Cúchulainn and the great cattle raid — and finally to the Fenian cycle and the Otherworld, where time itself runs differently, and to the poets who saved these stories for a nation that would need them.</p>
+  <p class="zh">按以下六個階段順序閱讀，從諸神來到愛爾蘭、經歷敗北而退入妖精之丘，走進英雄時代——庫丘林與那場偉大的奪牛之戰——最後來到芬尼亞循環與異世界，那裡時間以不同方式流逝，以及那些為一個將會需要這些故事之民族而保存它們的詩人。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="tuatha-dedanann.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · The Mythological Cycle</p>
+      <h3>The Coming of the Gods</h3>
+      <p class="title-zh">諸神的到來</p>
+      <p class="author">The Tuatha Dé Danann · the Dagda · Lugh · the Fomorians</p>
+      <p class="desc">A tribe of gods arrives in Ireland in dark clouds, masters of every art. They take the land from the Fir Bolg, and then must defend it against the older, darker powers — the Fomorians — in a great battle whose victory is won when a young god slays his grandfather's terrible eye.
+        <span class="zh">一個神族乘著烏雲抵達愛爾蘭，精通一切技藝。他們從弗莫爾人手中奪取土地，而後必須保衛它，抵禦更古老、更黑暗的力量——弗莫爾人——在一場偉大的戰役中，勝利因一個年輕之神殺了他祖父那隻可怖之眼而贏得。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="sons-of-mil.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The Two Irelands</p>
+      <h3>The Sons of Míl &amp; the Síd</h3>
+      <p class="title-zh">米爾之子與妖精之丘</p>
+      <p class="author">the mortal Gaels · Ériu · the retreat into the mounds</p>
+      <p class="desc">The mortal Gaels arrive, defeat the gods, and divide the island: the land above to humankind, the world below to the gods, who retreat into the burial mounds and become the sídhe, the fairy-folk. From this moment, Ireland is two — one mortal, one hidden, and the mist between them thin.
+        <span class="zh">凡人蓋爾人到來，擊敗諸神，瓜分了這座島：上方之地歸人類，下方世界歸諸神，諸神退入葬丘，成為妖精、仙靈。從此，愛爾蘭是兩個——一個凡人的，一個隱藏的，而它們之間的迷霧很薄。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="cuchulainn-birth.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The Ulster Cycle I</p>
+      <h3>The Birth &amp; Feats of Cúchulainn</h3>
+      <p class="title-zh">庫丘林之生與功業</p>
+      <p class="author">Setanta · the Hound of Culann · the warp-spasm · Scáthach</p>
+      <p class="desc">A boy called Setanta kills a fierce guard-hound with his bare hands and takes its name — the Hound of Culann. He trains under the warrior-woman Scáthach, masters a terrible battle-fury that twists his body into a monster, and becomes the single champion who will, one day soon, hold all of Ireland's enemies alone at a ford.
+        <span class="zh">一個名叫塞坦塔的男孩徒手殺了一頭兇猛的守犬，取其名——庫蘭之犬。他師從女戰士斯卡哈，精通一種將他身軀扭曲成怪獸的可怖戰狂，成為那位有朝一日將獨自在渡口擋住整個愛爾蘭之敵的唯一英雄。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="the-tain.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Ulster Cycle II</p>
+      <h3>The Táin — the Cattle Raid</h3>
+      <p class="title-zh">奪牛長征記</p>
+      <p class="author">Queen Medb · the brown bull of Cooley · Cúchulainn at the ford · Ferdiad</p>
+      <p class="desc">A queen's pride sends an army to steal a bull. All the men of Ulster lie stricken by an ancient curse, and only one champion — Cúchulainn — can stand at the ford and fight Connacht's champions one by one. Until, at last, they send against him the one man he cannot bear to kill: his foster-brother Ferdiad.
+        <span class="zh">一位王后的驕傲派出一支軍隊去偷一頭公牛。阿爾斯特所有的男子都因一個古老詛咒而倒臥不起，唯有一位英雄——庫丘林——能站在渡口，逐一迎戰康諾特的勇士。直到最後，他們派來了他唯一不忍殺之人：他的義兄弟費爾迪亞。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="fenian.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · The Fenian Cycle</p>
+      <h3>The Death of the Hound &amp; Finn's Fianna</h3>
+      <p class="title-zh">獵犬之死與芬恩的菲安納</p>
+      <p class="author">the broken geasa · Cúchulainn's death · Finn mac Cumhaill · the Fianna</p>
+      <p class="desc">Cúchulainn is brought down at last — his sacred taboos broken one by one, he ties himself to a standing stone to die upright, sword in hand. Then the story leaps forward to a later age, to Finn mac Cumhaill and his warrior-band the Fianna, and to the Salmon of Knowledge, and the wisdom that comes by accident.
+        <span class="zh">庫丘林終究倒下了——他的神聖禁忌被一一打破，他把自己綁在一塊立石上，挺立而死，劍握於手。然後故事跳躍到一個較晚的時代，來到芬恩·麥克·庫梅爾與他的戰士團菲安納，以及那條知識之鮭，以及那份意外得來的智慧。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="otherworld.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · The Otherworld &amp; the Revival</p>
+      <h3>Tír na nÓg &amp; the Living Myth</h3>
+      <p class="title-zh">青春之地與活的神話</p>
+      <p class="author">Tír na nÓg · Oisín's return · Yeats &amp; Lady Gregory · the Celtic Revival</p>
+      <p class="desc">An eternal Land of Youth, a step through the mist away, where three hundred years pass like a dream — and the old warrior Oisín returns to find his people gone and crumbles to dust. And then, in the nineteenth century, the poets gathered the old stories back, and gave them to a nation that would need them to remember who it was.
+        <span class="zh">一片永恆的青春之地，只在迷霧一步之外，那裡三百年如一夢——而老戰士奧伊辛歸來，發現他的族人已逝，便化為塵土。然後，在十九世紀，詩人們重新採集那些古老的故事，交給一個需要它們來記住自己是誰的民族。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH THE CELTIC &amp; IRISH CYCLE
+  <span class="zh">穿越凱爾特與愛爾蘭神話的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Arthurian Cycle — 亞瑟王傳奇閱讀之路</title>
+<style>
+  :root {
+    --forest: #2d5a3d;
+    --forest-deep: #1a3d27;
+    --forest-void: #0d2415;
+    --mist: #8a9b97;
+    --mist-pale: #b8c4c0;
+    --blood: #7a1f1f;
+    --blood-deep: #4a0f0f;
+    --gold: #a8842f;
+    --gold-bright: #c8922a;
+    --gold-soft: #d4b06a;
+    --vellum: #f0ead8;
+    --vellum-dark: #ddd5bc;
+    --ink: #2a2418;
+    --shadow: rgba(13,36,21,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--vellum);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--forest) 0%, var(--forest-deep) 45%, var(--forest-void) 75%, #050f08 100%);
+    color: var(--vellum);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, rgba(184,196,192,0.08) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 70%, rgba(184,196,192,0.06) 0%, transparent 45%),
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(184,196,192,0.03) 38px 39px),
+      repeating-linear-gradient(90deg, transparent 0 38px, rgba(184,196,192,0.03) 38px 39px);
+    pointer-events: none;
+  }
+  .hero-emblem {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.8em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(168,132,47,0.5);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 40px rgba(168,132,47,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 660px;
+    color: var(--mist-pale);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--forest-void);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--blood);
+    opacity: 0.85;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: var(--ink-2); font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--vellum) 0%, var(--vellum-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(13,36,21,0.12);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(168,132,47,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(13,36,21,0.2);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--forest-deep);
+    color: var(--gold);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blood);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--forest-void);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--forest);
+    opacity: 0.85;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a24;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13,36,21,0.05);
+    font-size: 1.5rem;
+    color: var(--forest);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--gold);
+    color: var(--forest-void);
+  }
+  .connector {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--forest-void);
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">✠ ✠ ✠</p>
+  <h1>THE ARTHURIAN CYCLE</h1>
+  <p class="subtitle">亞　瑟　王　傳　奇</p>
+  <p class="tagline">
+    A king pulled a sword from a stone and made, for one shining generation, a court of perfect justice. Then a love he could not forgive, and a son he could not avoid, brought it all down in a single battle. This is the dream of Camelot — born in old magic, proved by a holy cup, and undone by the very perfection that made it great.
+    <span class="zh">一位君王從石中拔出寶劍，在一代閃亮的時光裡，造就了一個完美正義的宮廷。而後，一段他無法寬恕的愛，與一個他無法迴避的兒子，在一場戰役中將之全數摧毀。這便是卡美洛之夢——生於古老魔法，由一隻聖杯所證，並被那造就其偉大的完美本身所傾覆。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order, to walk from the old magic that made the king, through the founding of Camelot and the great knightly quests, to the holy Grail, the betrayal, the last battle — and the strange, beautiful truth that Arthur never quite died, but waits, sleeping, to return.</p>
+  <p class="zh">按以下六個階段順序閱讀，從造就這位君王的古老魔法，走過卡美洛的締造與偉大的騎士遠征，來到聖杯、背叛、最後一戰——以及那個奇異而美麗的真相：亞瑟從未真正死去，只是沉睡，等待歸來。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="old-magic.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · The Old Magic</p>
+      <h3>The Making of a King</h3>
+      <p class="title-zh">君王之造</p>
+      <p class="author">Merlin · Uther · the sword in the stone</p>
+      <p class="desc">A half-demon prophet arranges the begetting of a king in trickery and disguise, hides the boy, and lets a stone decide. Whoever draws the sword from it is the true king of Britain.
+        <span class="zh">一位半魔的先知，以詭計與偽裝安排了一位君王的孕育，藏起那個男孩，並讓一塊石頭來決定。誰能從中拔出那把劍，誰便是布列顛真正的君王。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="camelot.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The Golden Court</p>
+      <h3>The Founding of Camelot</h3>
+      <p class="title-zh">卡美洛的締造</p>
+      <p class="author">Excalibur · Guinevere · the Round Table</p>
+      <p class="desc">A sword from a lake. A queen, and a marriage that seals the kingdom — and sows its ruin. A table made round so no knight could sit above another. And in the shadows, a sister with a grudge, and a seer who foresees his own doom.
+        <span class="zh">一把來自湖中的劍。一位王后，一場鞏固了王國——也埋下其毀滅——的婚姻。一張圓桌，使無一騎士能坐於另一人之上。而在陰影中，一位懷恨的姊妹，以及一位預見自己終局的先知。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="knights.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The Knights</p>
+      <h3>Adventures &amp; the Code</h3>
+      <p class="title-zh">騎士、冒險與法則</p>
+      <p class="author">Lancelot · Gawain · the Green Knight · Tristan &amp; Iseult</p>
+      <p class="desc">The greatest knight falls secretly in love with his queen. Another accepts a beheading-game from a green giant. A third drinks a love-potion and dooms two kingdoms. The age of adventure — and the cracks that adventure cannot mend.
+        <span class="zh">最偉大的騎士暗暗愛上了他的王后。另一位接受了一個綠色巨人的斬首之戲。第三位飲下愛情靈藥，毀了兩個王國。冒險的時代——以及冒險所無法彌補的裂痕。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="grail.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Holy Quest</p>
+      <h3>The Quest for the Grail</h3>
+      <p class="title-zh">聖杯之尋</p>
+      <p class="author">Perceval · Galahad · the Fisher King · the wounded land</p>
+      <p class="desc">A covered cup appears at the Round Table, and the knights scatter across the world to find it. Only the sinless can achieve it. And the quest that finds the Grail also breaks the Table — for perfection, once seen, cannot stay in a mortal court.
+        <span class="zh">一隻覆著布的杯出現在圓桌之上，騎士們散布世界各地去尋找它。唯有無罪者方能成就。而那尋得聖杯的遠征，也同時打碎了圓桌——因為完美一旦得見，便無法留在一個凡人的宮廷裡。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="the-fall.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · The Unmaking</p>
+      <h3>The Fall of Camelot</h3>
+      <p class="title-zh">卡美洛之傾</p>
+      <p class="author">Lancelot &amp; Guinevere · Mordred · the crown seized</p>
+      <p class="desc">The love that could not be hidden is exposed. The queen is condemned to burn; the greatest knight rescues her, and kills the king's nephews in the doing. The Table splits. And while Arthur is away, his son takes his throne and his queen.
+        <span class="zh">那段無法隱藏的愛被揭發了。王后被判火刑；最偉大的騎士救了她，並在過程中殺了君王的姪兒們。圓桌分裂。而當亞瑟遠去之時，他的兒子奪走了他的王座與他的王后。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="avalon.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · The Dying &amp; the Dream</p>
+      <h3>Avalon &amp; the Once and Future King</h3>
+      <p class="title-zh">阿瓦隆與未來之王</p>
+      <p class="author">Camlann · Excalibur returned · Malory · Tennyson · T.H. White</p>
+      <p class="desc">On a misty field, father and son destroy each other. A dying king orders his sword thrown back to the lake — and a hand rises to catch it. He is borne to an island in the west to heal. And for six hundred years, the storytellers have refused to let him stay dead.
+        <span class="zh">在一片迷霧的戰場上，父子彼此毀滅。一位垂死的君王下令將他的劍擲回湖中——而一隻手升起接住它。他被送往西方一座島嶼去療傷。而六百年來，說故事的人不肯讓他死去。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH THE ARTHURIAN CYCLE
+  <span class="zh">穿越亞瑟王傳奇的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>

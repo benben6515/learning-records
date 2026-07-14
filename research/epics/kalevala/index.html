@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Kalevala — 卡勒瓦拉閱讀之路</title>
+<style>
+  :root {
+    --lake: #1e5a7a;
+    --lake-deep: #0f3a52;
+    --lake-void: #062430;
+    --birch: #b8b0a0;
+    --pine: #3a5a3a;
+    --amber: #c4862a;
+    --amber-bright: #e0a83a;
+    --amber-soft: #e8c878;
+    --paper: #f2ede0;
+    --paper-dark: #ddd6c4;
+    --ink: #2a2418;
+    --shadow: rgba(6,36,48,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--lake) 0%, var(--lake-deep) 45%, var(--lake-void) 75%, #020e15 100%);
+    color: var(--paper);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      repeating-radial-gradient(circle at 50% 100%, transparent 0 60px, rgba(232,200,120,0.04) 60px 61px),
+      repeating-linear-gradient(90deg, transparent 0 48px, rgba(184,176,160,0.03) 48px 49px);
+    pointer-events: none;
+  }
+  .hero-emblem {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--amber);
+    letter-spacing: 0.8em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(196,134,42,0.5);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+    color: var(--amber);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 40px rgba(196,134,42,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--amber-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 660px;
+    color: var(--birch);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--lake-void);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--pine);
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: var(--ink-2); font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--paper-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(6,36,48,0.12);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(196,134,42,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(6,36,48,0.2);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--lake-deep);
+    color: var(--amber);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pine);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--lake-void);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--lake-deep);
+    opacity: 0.85;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a24;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6,36,48,0.05);
+    font-size: 1.5rem;
+    color: var(--lake-deep);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--amber);
+    color: var(--lake-void);
+  }
+  .connector {
+    text-align: center;
+    color: var(--amber);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--lake-void);
+    color: var(--amber-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">♪ ♪ ♪</p>
+  <h1>THE KALEVALA</h1>
+  <p class="subtitle">卡　勒　瓦　拉</p>
+  <p class="tagline">
+    A song, chanted for a thousand winters around the fires of the Northern forests — of an ancient singer born of the air, a magic mill that grinds gold from stone, a mother who fetched her son piece by piece from the river of death, and a wonder-harp whose music made the stones themselves weep. Gathered at last from the lips of the last singers by one country doctor, and given to a people who had almost forgotten who they were.
+    <span class="zh">一首歌，在北方森林的火堆旁詠唱了千年——關於一位生於空氣的古老歌者、一座能從石中磨出黃金的魔法磨、一位將她兒子從死亡之河中一塊塊撈回的母親，以及一把其樂音令石頭也為之泣的奇蹟之琴。最終由一位鄉村醫生從最後的歌者唇間採集，交給一個幾乎已忘記自己是誰的民族。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order, to walk from the world's birth on the primeval sea, through the forging of the Sampo and the rash adventures of the heroes, to the theft and breaking of the wonder-mill, the darkest tragedy of Kullervo, and the coming of a new faith — and finally to the country doctor who saved the whole thing from silence.</p>
+  <p class="zh">按以下六個階段順序閱讀，從太初之海上的世界誕生，走過桑波的鍛造與英雄們的莽撞冒險，來到奇蹟之磨的盜取與碎裂、庫勒沃最黑暗的悲劇，以及一個新信仰的到來——最終來到那位將這一切從沉寂中拯救出來的鄉村醫生。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="creation.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · The Beginning</p>
+      <h3>The World &amp; the Ancient Singer</h3>
+      <p class="title-zh">世界與古老的歌者</p>
+      <p class="author">Ilmatar · the world-egg · Väinämöinen's birth</p>
+      <p class="desc">A maiden floats on the cosmic sea for seven hundred years. A duck lays its eggs on her knee. The eggs shatter, and the fragments become the sky, the earth, the sun, the moon. And from the same maiden is born the ancient singer, whose songs are older than the hills.
+        <span class="zh">一位少女在太初之海上漂浮了七百年。一隻鴨子在她膝上產卵。卵碎裂，碎片成了天、地、日、月。而從同一位少女身上，誕生了那位古老的歌者，他的歌，比山丘更古老。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="sampo-forging.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The Wonder-Mill</p>
+      <h3>The Forging of the Sampo</h3>
+      <p class="title-zh">桑波的鍛造</p>
+      <p class="author">Ilmarinen · the eternal smith · the magic mill</p>
+      <p class="desc">The Mistress of the frozen North demands a wonder — a mill that grinds out salt and gold and flour without end — and will give her daughter only to the man who makes it. So the smith who forged the sky himself descends to the rock of Pohjola, and builds the thing the whole epic will turn upon.
+        <span class="zh">冰封北境的女主人要求一件奇物——一座無盡磨出鹽、金、麵粉的磨——而只肯將女兒許給造出它的人。於是那位曾鍛造蒼穹的鐵匠，降臨到波赫尤拉的岩石上，建造出整部史詩將圍繞其轉的那件物。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="lemminkainen.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The Rash Hero</p>
+      <h3>The Death &amp; Restoration of Lemminkäinen</h3>
+      <p class="title-zh">勒明蓋寧之死與復生</p>
+      <p class="author">the rash warrior · the river of Tuonela · the mother's rake</p>
+      <p class="desc">A handsome reckless hero rides to woo the maiden of the North, is given three impossible tasks, and is shot dead and chopped to pieces in the black river of death. And his mother walks into the land of the dead, and rakes the river for every piece of him, and sings him back to life.
+        <span class="zh">一位俊美而魯莽的英雄前去向北境的少女求親，被指派三項不可能的任務，在黑暗的死亡之河中被射殺、剁成碎片。而他的母親走入死者之國，用耙將河中的每一塊碎片撈起，以歌將他唱回人間。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="sampo-theft.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Theft</p>
+      <h3>The Sampo Stolen &amp; Broken</h3>
+      <p class="title-zh">桑波之盜與碎裂</p>
+      <p class="author">the great voyage · the kantele · the battle at sea</p>
+      <p class="desc">The heroes sail North to take back the wonder-mill. From the jaw of a giant fish, the ancient singer makes a harp whose music makes all living things weep. The Sampo is seized — and in the battle over the black water, it shatters. Its fragments wash to the southern shore, and grind wealth there still.
+        <span class="zh">英雄們航向北方，要奪回那座奇蹟之磨。古老歌者從一條巨魚的頷骨，造出一把其樂音令萬物皆泣的豎琴。桑波被奪——而在黑色水面之上的爭奪中，它碎裂了。碎片沖上南方的海岸，至今仍在彼處磨出財富。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="kullervo.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · The Tragedy</p>
+      <h3>The Ruin of Kullervo</h3>
+      <p class="title-zh">庫勒沃的毀滅</p>
+      <p class="author">the wronged slave · the broken knife · incest · the sword's question</p>
+      <p class="desc">Born of a massacred family, raised a slave, treated with a stone baked into his bread, his only inheritance — his father's knife — snaps on the stone. He takes a terrible revenge, flees, and seduces a maiden on the road who turns out to be his sister. He asks his sword what blood it would drink. It answers.
+        <span class="zh">生於一個被屠滅的家族，被養為奴隸，被人以烘進麵包的石頭欺凌，他唯一的遺產——父親的刀——在石上折斷。他展開可怖的報復，逃亡，並在路上勾引了一個少女，那少女竟是自己的妹妹。他問他的劍，它願飲何人之血。劍回答了。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="new-faith.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · The Saving of the Song</p>
+      <h3>The New Faith &amp; the Country Doctor</h3>
+      <p class="title-zh">新信仰與鄉村醫生</p>
+      <p class="author">Marjatta's child · Väinämöinen's departure · Elias Lönnrot · 1835</p>
+      <p class="desc">A virgin bears a child; the ancient singer is rebuked by an infant and departs in a copper boat, leaving his songs behind. And then a thousand winters pass, and the songs are nearly forgotten — until a country doctor named Lönnrot walks the forests with a notebook, and gathers them, and gives them back to a people as their own.
+        <span class="zh">一位童貞女生下一子；古老的歌者被一個嬰孩所折，乘著一艘銅船離去，留下他的歌。然後一千個冬天過去，那些歌幾近被遺忘——直到一位名叫倫洛特的鄉村醫生，帶著筆記本走遍森林，將它們採集起來，交還給一個民族，作為他們自己的史詩。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH THE FINNISH KALEVALA
+  <span class="zh">穿越芬蘭《卡勒瓦拉》的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>

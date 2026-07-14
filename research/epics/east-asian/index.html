@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The East Asian Cycle — 東亞神話與史詩閱讀之路</title>
+<style>
+  :root {
+    --ink: #1a1814;
+    --ink-deep: #0d0c0a;
+    --ink-void: #050504;
+    --seal: #a82828;
+    --seal-deep: #6b1a1a;
+    --jade: #4a7a5a;
+    --gold: #b8902f;
+    --gold-bright: #d4a838;
+    --gold-soft: #e0c878;
+    --paper: #f5f0e6;
+    --paper-dark: #e8e0d0;
+    --shadow: rgba(5,5,4,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--seal-deep) 0%, var(--ink) 38%, var(--ink-deep) 70%, var(--ink-void) 100%);
+    color: var(--paper);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(115deg, transparent 0 80px, rgba(224,200,120,0.035) 80px 82px),
+      repeating-linear-gradient(65deg, transparent 0 120px, rgba(224,200,120,0.025) 120px 121px),
+      radial-gradient(ellipse at 30% 40%, rgba(168,40,40,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero-emblem {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--seal);
+    letter-spacing: 0.8em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(168,40,40,0.5);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+    color: var(--gold-soft);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 40px rgba(212,168,56,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 680px;
+    color: var(--paper-dark);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--seal);
+    opacity: 0.85;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: var(--ink-2); font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--paper-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(5,5,4,0.12);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(184,144,47,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(5,5,4,0.2);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink-deep);
+    color: var(--seal);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--jade);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--ink);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--seal);
+    opacity: 0.85;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a24;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5,5,4,0.05);
+    font-size: 1.5rem;
+    color: var(--seal);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--seal);
+    color: var(--gold-soft);
+  }
+  .connector {
+    text-align: center;
+    color: var(--seal);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--ink-void);
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">❂ ❂ ❂</p>
+  <h1>THE EAST ASIAN CYCLE</h1>
+  <p class="subtitle">東　亞　神　話　與　史　詩</p>
+  <p class="tagline">
+    A monkey born from a stone who rebelled against Heaven and was crushed beneath a mountain for five hundred years. A sun-goddess who hid in a cave and plunged the world into dark. And the sound of a temple bell that echoes the impermanence of all things — the rise and the drowning of a great clan, the beauty that is beautiful because it must fade. Here are the two great East Asian teachings, set side by side: the persistence of the Journey, and the transience of the wave.
+    <span class="zh">一隻由石頭所生、反叛天庭而被壓在山下五百年的猴子。一位躲進洞穴、使世界陷入黑暗的太陽女神。以及一座寺院鐘聲，迴響著萬物之無常——一個大族的崛起與沉沒，那份因其必將消逝而美麗的美。這裡是東亞兩大教誨並陳：旅程的堅毅，與浪潮的無常。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order, to walk from the shared foundations of the East Asian imagination — Chinese cosmogony and Japanese kami — through the great Chinese journey of the Monkey King, into the Japanese Age of the Gods, and finally to the Tale of the Heike, where the sound of a bell teaches the deepest truth these traditions share: that the only permanence is impermanence, and the only beauty is the beauty that fades.</p>
+  <p class="zh">按以下六個階段順序閱讀，從東亞想像的共同根基——中國的創世與日本的 神——走過中國那場偉大的猴王西行之旅，進入日本的神代，最終來到《平家物語》，那裡一座鐘聲傳授著這些傳統所共享的最深真理：唯一的永恆即是無常，唯一的美即是將逝之美。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="foundations.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · The Foundations</p>
+      <h3>The Dao, the Kami, &amp; the Dharma</h3>
+      <p class="title-zh">道、神、與佛法</p>
+      <p class="author">Pangu · Nüwa · Izanagi &amp; Izanami · the Buddha</p>
+      <p class="desc">Before the stories, the worldview: a Chinese cosmos that separates itself out of chaos, a Japanese archipelago birthed by the first gods, and a teaching from India that meets them both with the law of impermanence. Three streams that will shape everything that follows.
+        <span class="zh">在故事之前，是世界觀：一個從混沌中自行分離出來的中國宇宙，一個由最初之神所生的日本列島，以及一個來自印度的、以無常之法與兩者相遇的教誨。三股將塑造其後一切的潮流。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="monkey-rebellion.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · Journey to the West I</p>
+      <h3>The Stone Monkey's Rebellion</h3>
+      <p class="title-zh">石猴的反叛</p>
+      <p class="author">Sun Wukong · Wu Cheng'en · 16th century</p>
+      <p class="desc">A monkey is born from a stone egg, learns the seventy-two transformations, names himself Great Sage Equal to Heaven, crashes the Peach Banquet, defeats the armies of the gods — and is finally crushed, by the weight of the Buddha's palm, beneath a mountain, to wait five hundred years for the monk who will free him.
+        <span class="zh">一隻猴子由石卵所生，習得七十二變，自封齊天大聖，大鬧蟠桃宴，擊敗天兵天將——最終被佛祖掌中之壓，鎮於山下，等待五百年後那位將釋放他的僧人。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="westward-pilgrimage.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · Journey to the West II</p>
+      <h3>The Pilgrimage &amp; the Scriptures</h3>
+      <p class="title-zh">西行取經</p>
+      <p class="author">Tang Sanzang · Pigsy · Sandy · 81 trials</p>
+      <p class="desc">The monk and his reformed demons journey west for the true scriptures, surviving eighty-one trials — each a test, each a demon hungry for the monk's flesh. Through the White Bone Demon and the Flaming Mountains, the band of sinners walks the long road to redemption, and the monkey becomes a Buddha.
+        <span class="zh">那位僧人與他改過的妖魔西行求取真經，熬過八十一難——每一難都是試煉，每一難都有覬覦僧肉之妖。穿過白骨精與火焰山，這群罪人走過通往救贖的漫長之路，而那猴子成了佛。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="kojiki-kami.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Kojiki</p>
+      <h3>The Age of the Gods</h3>
+      <p class="title-zh">神代紀</p>
+      <p class="author">Izanagi &amp; Izanami · Amaterasu · Susano-o · 712 AD</p>
+      <p class="desc">The first gods stand on the floating bridge and stir the sea with a jeweled spear, and the islands of Japan form. The sun-goddess Amaterasu is born from her father's eye — and when her wild brother Susano-o outrages her, she hides in a cave, and the world goes dark, until the gods make her laugh.
+        <span class="zh">最初的神站在天之浮橋上，以瓊矛攪動大海，日本諸島遂成。太陽女神天照大神由其父之目所生——而當她的狂弟素盞嗚尊激怒了她，她躲進洞中，世界陷入黑暗，直到諸神使她發笑。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="heike-bell.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · The Tale of the Heike</p>
+      <h3>The Sound of the Bell</h3>
+      <p class="title-zh">平家物語·祇園精舍</p>
+      <p class="author">Taira no Kiyomori · the Genji War · Dan-no-ura · 1371</p>
+      <p class="desc">"The sound of the Gion bells echoes the impermanence of all things; the proud do not endure, they are like a dream on a spring night." So begins the tale of the Taira clan — their rise to absolute power, their arrogance, their war with the Minamoto, and their final drowning, with a child-emperor, in the sea.
+        <span class="zh">「祇園精舍之鐘聲，響諸行無常之響；驕者不持久，宛如春夜一夢。」平家物語如此開始——平氏一族升至絕對權力、其驕傲、與源氏之戰，以及他們最終連同一個幼帝一同沉於大海的結局。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="impermanence.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · The Closing</p>
+      <h3>Impermanence &amp; the Garden's End</h3>
+      <p class="title-zh">無常與花園之終</p>
+      <p class="author">mujō 無常 · the cherry blossom · the oldest living myths</p>
+      <p class="desc">The shared East Asian teaching — that all things pass, that the beautiful is beautiful because it fades — set beside the Chinese teaching of the long persistent road. And then the whole garden looks back: nine civilizations, the same questions, and the East Asian answer that closes them all — the only permanence is change.
+        <span class="zh">東亞共享的教誨——萬物皆逝，美因其消逝而美——置於中國那條堅毅長路之旁。然後整座花園回望：九個文明，同一個問題，而東亞的答案將之全部收束——唯一的永恆，即是變易。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH THE EAST ASIAN CYCLE
+  <span class="zh">穿越東亞神話與史詩的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>

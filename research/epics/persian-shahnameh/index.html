@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Persian Shahnameh — 波斯《列王紀》閱讀之路</title>
+<style>
+  :root {
+    --turq: #2a9d8f;
+    --turq-deep: #0d5e6e;
+    --turq-void: #053a44;
+    --turq-pale: #6fc4b8;
+    --crimson: #8b2635;
+    --crimson-deep: #5f1721;
+    --gold: #c19a2e;
+    --gold-bright: #e8c25a;
+    --gold-soft: #f0d690;
+    --paper: #f5ecd7;
+    --paper-dark: #e8dab8;
+    --ink: #2a1810;
+    --shadow: rgba(13,94,110,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--turq-pale) 0%, var(--turq) 42%, var(--turq-deep) 72%, var(--turq-void) 100%);
+    color: var(--paper);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(60deg, transparent 0 28px, rgba(232,194,90,0.05) 28px 30px),
+      repeating-linear-gradient(-60deg, transparent 0 28px, rgba(232,194,90,0.05) 28px 30px);
+    pointer-events: none;
+  }
+  .hero-emblem {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.8em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(193,154,46,0.5);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 40px rgba(193,154,46,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 620px;
+    color: var(--paper-dark);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--turq-void);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--crimson);
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: var(--ink-2); font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--paper-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(13,94,110,0.12);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(193,154,46,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(13,94,110,0.2);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--turq-deep);
+    color: var(--gold);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--crimson);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--turq-void);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--crimson);
+    opacity: 0.8;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a24;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13,94,110,0.05);
+    font-size: 1.5rem;
+    color: var(--turq-deep);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--gold);
+    color: var(--turq-void);
+  }
+  .connector {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--turq-void);
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">❖ ❖ ❖</p>
+  <h1>THE SHAHNAMEH</h1>
+  <p class="subtitle">波 斯 列 王 紀</p>
+  <p class="tagline">
+    Sixty thousand couplets, thirty years of a poet's life — the Book of Kings, in which Ferdowsi saved an entire civilization's memory by writing it down in pure Persian, that the old stories of kings and demons and the world's first heroes might never be lost.
+    <span class="zh">六萬聯詩句，一位詩人三十年的生命——《列王紀》，菲爾多西以純粹的波斯語寫下整個文明的記憶，讓列王、惡魔與世界第一代英雄的古老故事，永不湮沒。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order, to walk from the first dawn on the mountain of the first king, through the tyranny of a serpent-shouldered demon and the seven trials of the world's greatest hero, to the day an old poet sat down and refused to let his people's story die.</p>
+  <p class="zh">按以下六個階段順序閱讀，從第一代君王山巔的第一道曙光，走過肩生雙蛇的暴政與世界第一英雄的七項試煉，直到一位老詩人坐下，拒絕讓自己民族的故事死去。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="first-kings.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · The Mythic Age</p>
+      <h3>The First Kings</h3>
+      <p class="title-zh">最初的列王</p>
+      <p class="author">Pishdadian dynasty · the age of the world's first kings</p>
+      <p class="desc">From a mountain at the dawn of time, the first king clothed in leopard-skin teaches his children to kindle fire and to bury their dead. Here begin kingship, law, and the endless war against the dark.
+        <span class="zh">在時間之初的一座山上，身披豹皮的第一代君王教導他的子民取火、埋葬死者。王權、律法，以及與黑暗永無止境的戰爭，皆始於此。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="zahhak.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The Tyrant</p>
+      <h3>Zahhak &amp; Kaveh</h3>
+      <p class="title-zh">蛇肩暴君扎哈克與鐵匠卡維</p>
+      <p class="author">The serpent king · the blacksmith's revolt</p>
+      <p class="desc">A king kisses the shoulders of a stranger, and two serpents grow from the wound, hungry for human brains. A thousand years of terror — until a blacksmith raises his leather apron on a lance.
+        <span class="zh">一位君王親吻了陌生人的雙肩，傷口便長出兩條貪嗜人腦的黑蛇。千年的恐怖——直到一個鐵匠將他的皮圍裙掛上長矛。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="rostam-labors.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The Seven Labors</p>
+      <h3>Rostam &amp; Rakhsh</h3>
+      <p class="title-zh">羅斯塔姆與神駒拉赫什</p>
+      <p class="author">The hero of Sistan · the champion of Iran</p>
+      <p class="desc">The greatest hero Iran ever knew rides his great horse Rakhsh across a desert and a mountain and a sea, fighting a lion, a dragon, a witch, and the White Demon himself, to save a blinded king.
+        <span class="zh">伊朗有史以來最偉大的英雄，騎著他的神駒拉赫什穿越沙漠、高山與大海，搏殺雄獅、惡龍、女巫與白魔本身，拯救一位雙目失明的君王。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="sohrab.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Tragedy</p>
+      <h3>The Death of Sohrab</h3>
+      <p class="title-zh">索拉布之死</p>
+      <p class="author">The most famous tragedy in Persian literature</p>
+      <p class="desc">A son sets out across the world to find the father he has never seen, and a father does not know the young champion he meets in battle. They fight. The story does not end well.
+        <span class="zh">一個兒子橫越世界，去尋找他從未見過的父親；一位父親不知他在戰場上遇見的年輕勇士是誰。他們搏鬥。故事的結局，並不圓滿。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="sikandar.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · The World-Conqueror</p>
+      <h3>Sikandar the Just</h3>
+      <p class="title-zh">公正的征服者亞歷山大</p>
+      <p class="author">Alexander, told as Persia's own king</p>
+      <p class="desc">In Ferdowsi's hands Alexander is no foreign invader but a Persian-speaking king who rides to the world's very edge to seek the Water of Life — and learns that no king may drink of it.
+        <span class="zh">在菲爾多西筆下，亞歷山大不是外族入侵者，而是一位說波斯語的君王，他騎馬奔馳到世界的盡頭去尋找長生之水——卻得知沒有哪個君王配飲。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="the-saving.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · The Saving of the Book</p>
+      <h3>Ferdowsi &amp; the Book That Survives</h3>
+      <p class="title-zh">菲爾多西與不朽之書</p>
+      <p class="author">Abu'l-Qasim Ferdowsi of Tus · c. 940–1020 AD</p>
+      <p class="desc">An empire falls, a language begins to die — and one old poet decides that a people who lose their stories have lost themselves. He gives thirty years and 60,000 verses to keep Iran alive. He succeeds.
+        <span class="zh">一個帝國傾覆，一種語言開始死去——而一位老詩人決定：一個失去故事的民族，便已失去了自身。他用三十年與六萬行詩，讓波斯活下去。他做到了。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH THE PERSIAN BOOK OF KINGS
+  <span class="zh">穿越波斯《列王紀》的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>
