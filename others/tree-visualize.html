@@ -253,7 +253,12 @@
     </div>
     <script>
       let nextId = 1
-      const mk = (name, children = []) => ({id: nextId++, name, children})
+      const nodeMap = new Map() // id -> node, O(1) lookup
+      const mk = (name, children = []) => {
+        const n = {id: nextId++, name, children, parent: null}
+        nodeMap.set(n.id, n)
+        return n
+      }
       let root = mk('Node', [])
 
       let activeId = null // currently selected node
@@ -284,53 +289,21 @@
       }
 
       // ---- find ancestor chain (including the node) up to the root ----
+      // O(depth) via parent pointers instead of O(n) tree DFS
       function ancestors(id) {
         const set = new Set()
-        ;(function find(n) {
-          if (n.id === id) {
-            set.add(n.id)
-            return true
-          }
-          for (const c of n.children)
-            if (find(c)) {
-              set.add(n.id)
-              return true
-            }
-          return false
-        })(root)
+        let n = nodeMap.get(id)
+        while (n) {
+          set.add(n.id)
+          n = n.parent
+        }
         return set
       }
 
+      // O(1) via parent pointer instead of O(n) tree DFS
       function findParentName(id) {
-        let name = null
-        ;(function find(n) {
-          for (const c of n.children) {
-            if (c.id === id) {
-              name = n.name
-              return
-            }
-            find(c)
-          }
-        })(root)
-        return name
-      }
-
-      function findByPosition(arr, id) {
-        let target = null,
-          parentArr = null,
-          index = -1
-        ;(function walk(a) {
-          for (let i = 0; i < a.length; i++) {
-            if (a[i].id === id) {
-              target = a[i]
-              parentArr = a
-              index = i
-              return
-            }
-            walk(a[i].children)
-          }
-        })(arr)
-        return {target, parentArr, index}
+        const n = nodeMap.get(id)
+        return n && n.parent ? n.parent.name : null
       }
 
       // ---- render ----
@@ -424,15 +397,16 @@
         pathSet = ancestors(id)
         document.getElementById('addBtn').disabled = false
         document.getElementById('renameBtn').disabled = false
-        const node = findByPosition([root], id).target
+        const node = nodeMap.get(id)
         document.getElementById('status').textContent = `Selected: ${node.name}  ·  path highlighted to root, others greyed.`
         render()
       }
 
       function addChild() {
         if (activeId === null) return
-        const parent = findByPosition([root], activeId).target
+        const parent = nodeMap.get(activeId)
         const child = mk(parent.name + '.' + (parent.children.length + 1))
+        child.parent = parent
         parent.children.push(child)
         newId = child.id // new node marks its father (tag + pulse)
         activeId = child.id // make the new node active -> father path lights up
@@ -443,7 +417,7 @@
 
       function rename() {
         if (activeId === null) return
-        const node = findByPosition([root], activeId).target
+        const node = nodeMap.get(activeId)
         const v = prompt('New name:', node.name)
         if (v) {
           node.name = v
