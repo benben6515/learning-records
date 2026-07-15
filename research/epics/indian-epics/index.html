@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Epics — 印度史詩閱讀之路</title>
+<style>
+  :root {
+    --sindoor: #b8341f;
+    --sindoor-deep: #7a1f12;
+    --sindoor-void: #4a0f08;
+    --indigo: #2a3a7a;
+    --indigo-deep: #18224f;
+    --indigo-void: #0d1535;
+    --gold: #c8922a;
+    --gold-bright: #e8b850;
+    --gold-soft: #f0d27a;
+    --turmeric: #d9762a;
+    --peacock: #1a6b6b;
+    --paper: #f6ecd6;
+    --paper-dark: #e8d9b8;
+    --ink: #2a1810;
+    --shadow: rgba(42,58,122,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at top, var(--indigo) 0%, var(--indigo-deep) 45%, var(--sindoor-deep) 75%, var(--sindoor-void) 100%);
+    color: var(--paper);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 50% 50%, transparent 0 18px, rgba(232,184,80,0.05) 18px 19px, transparent 19px 38px, rgba(232,184,80,0.04) 38px 39px),
+      repeating-linear-gradient(45deg, transparent 0 40px, rgba(232,184,80,0.04) 40px 41px),
+      repeating-linear-gradient(-45deg, transparent 0 40px, rgba(232,184,80,0.04) 40px 41px);
+    pointer-events: none;
+  }
+  .hero-emblem {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.8em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(200,146,42,0.5);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 40px rgba(200,146,42,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--gold-soft);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 640px;
+    color: var(--paper-dark);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--sindoor-deep);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--indigo);
+    opacity: 0.85;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: var(--ink-2); font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--paper-dark) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(42,58,122,0.12);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(200,146,42,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(42,58,122,0.2);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--indigo-deep);
+    color: var(--gold);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sindoor);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--sindoor-deep);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--indigo);
+    opacity: 0.85;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #7a5a38;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #4a3a24;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(42,58,122,0.05);
+    font-size: 1.5rem;
+    color: var(--indigo);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--gold);
+    color: var(--sindoor-deep);
+  }
+  .connector {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--indigo-void);
+    color: var(--gold-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">❀ ❀ ❀</p>
+  <h1>INDIAN EPICS</h1>
+  <p class="subtitle">印　度　史　詩　之　路</p>
+  <p class="tagline">
+    The longest stories ever told — in which a god-king is exiled for a promise, a princess is stolen across the sea, and a great war is fought over a kingdom, while a charioteer teaches a warrior that the soul can never be slain. This is the journey through the Ramayana and the Mahabharata, two epics that still shape a fifth of humankind.
+    <span class="zh">人類講過最長的故事——一位神王因一個承諾而被流放，一位公主被劫往海的那一邊，一場為王國而起的大戰之間，一位御者教導一位武士：靈魂永不能被殺。這是一場穿越《羅摩衍那》與《摩訶婆羅多》的旅程——兩部至今仍塑造著人類五分之一心靈的史詩。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order, to walk from the cosmic foundations of the Indian imagination — the gods, the avatars, the endless wheel of time — through the two great epics, to the living afterlife of these stories in the world today.</p>
+  <p class="zh">按以下六個階段順序閱讀，從印度想像的宇宙根基——諸神、化身、無盡的時間之輪——穿越兩大史詩，來到這些故事在當今世界的生生不息。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="foundations.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · The Cosmic Stage</p>
+      <h3>The Foundations</h3>
+      <p class="title-zh">宇宙根基</p>
+      <p class="author">The Vedas · the trimurti · the avatars of Vishnu</p>
+      <p class="desc">Before the stories, the worldview: a cosmos that creates, preserves, and dissolves itself; a god who descends as fish and boar and man whenever order decays; and time as a wheel, not a line.
+        <span class="zh">在故事之前，是世界觀：一個創造、護持、又自我消解的宇宙；一位每當秩序衰敗便化作魚、化作野豬、化作人而降臨的神；以及時間——不是一條線，而是一個輪。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="ramayana-exile.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The Ramayana I</p>
+      <h3>The Exile of Rama</h3>
+      <p class="title-zh">羅摩的流放</p>
+      <p class="author">Valmiki · Treta Yuga · the seventh avatar of Vishnu</p>
+      <p class="desc">A king's old promise to his queen banishes the perfect prince to the forest for fourteen years — and his wife and brother follow him gladly. Then the demon-king of Lanka casts his eye on Sita.
+        <span class="zh">老王對王后的一個舊諾，將完美的王子放逐山林十四年——而他的妻子與弟弟甘願相隨。然後，楞伽的魔王盯上了悉多。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="ramayana-war.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The Ramayana II</p>
+      <h3>The War &amp; the Return</h3>
+      <p class="title-zh">大戰與歸鄉</p>
+      <p class="author">Hanuman · the bridge to Lanka · the death of Ravana</p>
+      <p class="desc">A monkey leaps the ocean. A bridge is built to the demon-isle. The ten-headed Ravana falls. And Rama returns in triumph — to a reign that is golden, and then, in its last chapter, heartbreakingly just.
+        <span class="zh">一隻猴子躍過大海。一座橋通往魔島。十首魔王羅波那倒下。羅摩凱旋而歸——回到一個黃金般的治世，而後，在最後一章，令人心碎地公正。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="mahabharata-exile.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Mahabharata I</p>
+      <h3>The Dice &amp; the Exile</h3>
+      <p class="title-zh">骰子與流放</p>
+      <p class="author">Vyasa · Dvapara Yuga · the eighth avatar of Vishnu</p>
+      <p class="desc">Cousins become enemies for a kingdom. A loaded dice-game gambles away a queen. A woman's question goes unanswered for three thousand years. And Krishna comes as a peacemaker — and is refused.
+        <span class="zh">表兄弟為一個王國反目。一場作弊的骰子戲輸掉了一位王后。一個女子的問題三千年無人能答。而黑天以和平使者之姿前來——卻被拒絕。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="mahabharata-war.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · The Mahabharata II</p>
+      <h3>The Gita &amp; the Great War</h3>
+      <p class="title-zh">薄伽梵歌與大戰</p>
+      <p class="author">The Bhagavad Gita · Kurukshetra · the heart of the epic</p>
+      <p class="desc">On the field of dharma, a warrior throws down his bow and will not fight his own kin. And his charioteer — who is God — teaches him, in seven hundred verses, how to act in a world where every choice is stained.
+        <span class="zh">在正法之野，一位武士擲下神弓，不願與自己的親族作戰。而他的御者——即是神——在七百頌之中教導他：在一個每一個選擇都沾染污點的世界裡，如何行動。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="echoes.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · The Living Epic</p>
+      <h3>The Epics in the World</h3>
+      <p class="title-zh">史詩在世間</p>
+      <p class="author">Ramlila · Tulsidas · Sagar's Ramayan · the still-unfolding argument</p>
+      <p class="desc">These are not dead books. They are sung, danced, performed, argued, and reimagined in every village and every century — a civilization that has never stopped telling itself who it is.
+        <span class="zh">這些不是死去的書。它們在每一個村莊、每一個世紀被傳唱、被起舞、被搬演、被爭辯、被重新想像——一個從未停止訴說自己是誰的文明。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH THE INDIAN EPICS
+  <span class="zh">穿越印度史詩的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>

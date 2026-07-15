@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Norse Mythology — 北歐神話閱讀之路</title>
+<style>
+  :root {
+    --iron: #3a4754;
+    --iron-deep: #232b34;
+    --iron-void: #12181e;
+    --blood: #9a3030;
+    --blood-bright: #c0392b;
+    --aurora: #4a8f7b;
+    --aurora-bright: #6fb89e;
+    --ice-bright: #eaf2f8;
+    --snow: #eef1f4;
+    --frost: #dde4eb;
+    --silver: #c9d4dd;
+    --ink: #232a31;
+    --shadow: rgba(18,24,30,0.45);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--snow);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 74vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(74,143,123,0.25) 0%, transparent 45%),
+      linear-gradient(180deg, var(--iron-deep) 0%, var(--iron-void) 100%);
+    color: var(--snow);
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; top: -10%; left: -20%;
+    width: 140%; height: 75%;
+    background:
+      radial-gradient(ellipse 60% 40% at 30% 50%, rgba(74,143,123,0.55), transparent 70%),
+      radial-gradient(ellipse 50% 35% at 60% 40%, rgba(111,184,158,0.45), transparent 70%),
+      radial-gradient(ellipse 40% 30% at 75% 55%, rgba(154,48,48,0.2), transparent 70%);
+    filter: blur(20px);
+    animation: aurora 14s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes aurora {
+    0%   { transform: translateX(-4%) skewX(-6deg); opacity: 0.7; }
+    50%  { transform: translateX(6%) skewX(4deg); opacity: 1; }
+    100% { transform: translateX(-2%) skewX(-3deg); opacity: 0.8; }
+  }
+  .hero-emblem {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--silver);
+    letter-spacing: 0.9em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 30px rgba(74,143,123,0.6);
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 6.5vw, 4.6rem);
+    color: var(--silver);
+    letter-spacing: 0.14em;
+    text-shadow: 0 0 40px rgba(154,48,48,0.3), 2px 4px 8px var(--shadow);
+    z-index: 2;
+  }
+  .hero .subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--aurora-bright);
+    margin-top: 0.5rem;
+    letter-spacing: 0.25em;
+    z-index: 2;
+  }
+  .hero .tagline {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    max-width: 620px;
+    color: var(--ice-bright);
+    z-index: 2;
+  }
+  .hero .tagline .zh {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  /* Intro */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--iron-void);
+    margin-bottom: 0.3rem;
+  }
+  .intro h2 + .zh {
+    color: var(--blood);
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+  }
+  .intro p { margin-bottom: 1rem; }
+  .intro p.zh { color: #4a5663; font-size: 0.88em; font-style: italic; }
+
+  /* Book cards */
+  .books {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .book-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, var(--snow) 0%, var(--frost) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(18,24,30,0.13);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    border: 1px solid rgba(74,143,123,0.3);
+  }
+  .book-card.visible { opacity: 1; transform: translateX(0); }
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(18,24,30,0.22);
+  }
+  .book-step {
+    flex-shrink: 0;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--iron-void);
+    color: var(--aurora-bright);
+  }
+  .book-step .num { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .book-body { flex: 1; padding: 1.5rem 1.8rem; }
+  .book-body .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blood);
+    font-weight: 600;
+  }
+  .book-body h3 {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--iron-void);
+    margin: 0.2rem 0;
+  }
+  .book-body .title-zh {
+    font-size: 0.95rem;
+    color: var(--iron);
+    opacity: 0.8;
+    margin-bottom: 0.6rem;
+  }
+  .book-body .author {
+    font-size: 0.82rem;
+    color: #5a6673;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .book-body .desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #36414c;
+  }
+  .book-body .desc .zh {
+    display: block;
+    font-size: 0.82rem;
+    color: #5a6673;
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .book-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(18,24,30,0.05);
+    font-size: 1.5rem;
+    color: var(--blood);
+    transition: all 0.3s;
+  }
+  .book-card:hover .book-arrow {
+    background: var(--blood);
+    color: var(--ice-bright);
+  }
+  .connector {
+    text-align: center;
+    color: var(--aurora);
+    font-size: 1.2rem;
+    margin: -0.5rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    background: var(--iron-void);
+    color: var(--aurora-bright);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+  }
+  .footer .zh { display: block; margin-top: 0.3rem; font-size: 0.85em; opacity: 0.75; }
+
+  @media (max-width: 600px) {
+    .book-arrow { display: none; }
+    .book-step { width: 55px; }
+    .book-body { padding: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-emblem">❄ ❄ ❄</p>
+  <h1>NORSE MYTHOLOGY</h1>
+  <p class="subtitle">北　歐　神　話　之　路</p>
+  <p class="tagline">
+    A pantheon that knows it will burn. The gods of the frozen north build their shining hall, knowing that one day the wolf will swallow the sun and fire will consume the world — and they fight anyway.
+    <span class="zh">一個明知自己將被烈火吞噬的萬神殿。冰封北境的諸神建造著他們的閃耀殿堂，明知有朝一日巨狼將吞噬太陽、烈焰將焚盡世界——而他們，依然奮戰到底。</span>
+  </p>
+</section>
+
+<!-- INTRO -->
+<div class="intro">
+  <h2>The Reading Path</h2>
+  <p class="zh">閱讀之路</p>
+  <p>Follow the six stages below, in order — from the ice and fire of creation, through the deeds of Odin and Thor, to the doom of the gods and the humans who remembered them.</p>
+  <p class="zh">按以下六個階段順序閱讀——從冰與火的創世，經奧丁與索爾的事蹟，到諸神的黃昏，以及記住他們的人類。</p>
+</div>
+
+<!-- BOOKS -->
+<div class="books">
+
+  <a class="book-card" data-target="creation.html">
+    <div class="book-step"><span class="num">1</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 1 · Ice &amp; Fire</p>
+      <h3>The Beginning</h3>
+      <p class="title-zh">創世 · 金倫加鴻溝</p>
+      <p class="author">Völuspá · Gylfaginning (Snorri Sturluson)</p>
+      <p class="desc">In the gap between the realm of ice and the realm of fire, the first giant Ymir formed from thawing rime — and Odin and his brothers slew him, building the world from his body.
+        <span class="zh">在冰之國與火之國之間的鴻溝裡，最初的神巨人尤彌爾自融冰中成形——奧丁與兄弟們將其斬殺，以他的身軀建造了世界。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="aesir.html">
+    <div class="book-step"><span class="num">2</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 2 · The Aesir</p>
+      <h3>Gods of Asgard</h3>
+      <p class="title-zh">阿斯加德的諸神</p>
+      <p class="author">Poetic &amp; Prose Edda · c. 9th–13th century</p>
+      <p class="desc">One-eyed Odin, who traded an eye for wisdom and hung nine nights to win the runes. Thor and his hammer. Loki the trickster, father of monsters. Freya, Tyr, Heimdall.
+        <span class="zh">獨眼的奧丁，以一目換取智慧，懸於樹上九夜以贏得盧恩。索爾與他的鐵鎚。騙子洛基，怪物之父。弗蕾雅、提爾、海姆達爾。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="baldr.html">
+    <div class="book-step"><span class="num">3</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 3 · The First to Fall</p>
+      <h3>The Death of Baldr</h3>
+      <p class="title-zh">巴德爾之死</p>
+      <p class="author">Völuspá · Gylfaginning</p>
+      <p class="desc">The most beloved of gods dreams of his own death. His mother extracts an oath from all things — save one, the mistletoe. And Loki finds the blind god who will throw it.
+        <span class="zh">最受敬愛的神夢見自己的死亡。他的母親向萬物索誓——唯獨漏了一物，槲寄生。而洛基找到了那個會投出它的盲神。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="ragnarok.html">
+    <div class="book-step"><span class="num">4</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 4 · The Doom</p>
+      <h3>Ragnarök</h3>
+      <p class="title-zh">諸神的黃昏</p>
+      <p class="author">Völuspá · c. 10th–13th century</p>
+      <p class="desc">Three winters without summer. The wolf devours the sun. Odin is swallowed by the Fenris-wolf, Thor and the World Serpent slay each other — and the world drowns in fire, to be born again.
+        <span class="zh">三個沒有夏天的寒冬。巨狼吞噬太陽。奧丁被芬里爾狼吞噬，索爾與塵世巨蛇同歸於盡——世界在烈焰中沉沒，又將重生。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="volsungs.html">
+    <div class="book-step"><span class="num">5</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 5 · The Heroes</p>
+      <h3>The Völsunga Saga</h3>
+      <p class="title-zh">沃爾松格薩迦</p>
+      <p class="author">Anonymous · Iceland, c. 13th century</p>
+      <p class="desc">Sigurd slays the dragon Fafnir, claims a cursed ring, and awakens a Valkyrie from a wall of fire — a tale of gold, blood, and doomed love that Wagner would one day make into a ring cycle.
+        <span class="zh">齊格菲斬殺惡龍法夫納，奪取受詛咒的戒指，從火牆中喚醒一名女武神——一個關於黃金、鮮血與註定毀滅之愛的故事，日後華格納將之譜成指環。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+  <div class="connector">↓</div>
+
+  <a class="book-card" data-target="modern.html">
+    <div class="book-step"><span class="num">6</span></div>
+    <div class="book-body">
+      <p class="step-label">Stage 6 · Modern Echoes</p>
+      <h3>Wagner · Tolkien · Gaiman</h3>
+      <p class="title-zh">現代迴響</p>
+      <p class="author">Wagner 1848–74 · Tolkien · Gaiman 2017</p>
+      <p class="desc">The doomed gods refused to die. Wagner turned their descendants into opera, Tolkien built Middle-earth from their bones, and Neil Gaiman retold them for a new age.
+        <span class="zh">註定毀滅的諸神拒絕死去。華格納將他們的後裔譜成歌劇，托爾金以他們的骨骼建造了中土大陸，而尼爾·蓋曼為新時代重述了他們。</span>
+      </p>
+    </div>
+    <div class="book-arrow">→</div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  THE JOURNEY THROUGH NORSE MYTH
+  <span class="zh">穿越北歐神話的旅程</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 150);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
+
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = card.dataset.target;
+    });
+  });
+</script>
+
+</body>
+</html>

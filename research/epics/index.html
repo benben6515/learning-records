@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epics · 世界神話之旅 — A Journey Through the World's Myths</title>
+<style>
+  /* ============================================================
+     EPICS PORTAL — see DESIGN.md
+     An illuminated atlas of myth: aged parchment, gold-leaf, sepia ink.
+     Never a dark screen. Gold is the only chrome accent.
+     Per-culture colour lives only inside that culture's card.
+     ============================================================ */
+
+  /* ---------- 2 · Colour tokens ---------- */
+  :root {
+    --paper: #f3e9d2;
+    --paper-2: #ead9b8;
+    --paper-3: #dcc796;
+    --paper-edge: #c4a86a;
+    --surface: rgba(90,60,20,0.045);
+    --surface-hi: rgba(90,60,20,0.08);
+    --border: rgba(90,60,20,0.20);
+    --border-hi: rgba(90,60,20,0.34);
+    --ink: #2a1810;
+    --ink-2: #5a4530;
+    --ink-3: #7a6850;
+    --gold: #9e7b1e;
+    --gold-bright: #c19a2e;
+    --gold-soft: #b8983e;
+    --c-greek: #5c1a1b;
+    --c-meso:  #1a4480;
+    --c-norse: #3a4754;
+    --c-persian: #2a9d8f;
+    --c-indian: #b8341f;
+    --c-arthurian: #2d5a3d;
+    --c-kalevala: #1e5a7a;
+    --c-celtic: #6b3a5a;
+    --c-east-asian: #1a1814;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    overflow-x: hidden;
+    position: relative;
+  }
+  /* paper-fibre texture overlay, body-wide, very faint */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.25  0 0 0 0 0.1  0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    background-size: 220px 220px;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+  }
+  body > * { position: relative; z-index: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- 3 · Type helpers ---------- */
+  .label {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; line-height: 1.4;
+  }
+  .zh { color: var(--ink-3); font-style: italic; font-size: 0.85em; }
+
+  /* ============================================================
+     NAV (fixed, paper, blur, scroll-spy)
+     ============================================================ */
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+    z-index: 1001; transition: width 0.1s;
+  }
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(243,233,210,0.85);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    height: 60px; padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand {
+    display: flex; align-items: baseline; gap: 0.7rem;
+    text-decoration: none; color: var(--ink);
+  }
+  .brand .word { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.22em; }
+  .brand .glyph { font-size: 0.7rem; letter-spacing: 0.3em; color: var(--gold); }
+  .nav-links { display: flex; align-items: center; gap: 0.2rem; }
+  .nav-links a {
+    position: relative;
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.74rem; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-2); text-decoration: none;
+    padding: 0.5rem 0.8rem; transition: color 0.18s ease;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 0.8rem; right: 0.8rem; bottom: 0.15rem;
+    height: 2px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left; transition: transform 0.22s ease;
+  }
+  .nav-links a.active { color: var(--gold); }
+  .nav-links a.active::after { transform: scaleX(1); }
+  @media (max-width: 860px) {
+    .nav-inner { padding: 0 1.2rem; }
+    .nav-links a { padding: 0.5rem 0.5rem; font-size: 0.66rem; letter-spacing: 0.12em; }
+    .nav-links a::after { left: 0.5rem; right: 0.5rem; }
+    .brand .glyph { display: none; }
+  }
+  @media (max-width: 560px) {
+    .nav-links a span.cn { display: none; }
+  }
+
+  /* ============================================================
+     HERO — warm parchment vignette + gold emblems
+     ============================================================ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 7rem 2rem 4rem;
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--paper-2) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 100%, var(--paper-3) 0%, transparent 45%),
+      radial-gradient(ellipse at 20% 50%, rgba(196,168,106,0.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(196,168,106,0.22) 0%, transparent 50%),
+      var(--paper);
+    overflow: hidden;
+  }
+  /* subtle illuminated corner flourishes (gold) */
+  .hero::after {
+    content: "✦  ◆  ❄  ❖   ·   ❖  ❄  ◆  ✦";
+    position: absolute; bottom: 5.5rem; left: 0; right: 0;
+    text-align: center;
+    font-size: 0.7rem; letter-spacing: 0.5em;
+    color: var(--gold); opacity: 0.45;
+  }
+  .hero-emblem {
+    position: relative; z-index: 2;
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
+    color: var(--gold-bright); letter-spacing: 1em;
+    margin-bottom: 1.1rem;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    animation: fadeUp 1.4s ease-out;
+  }
+  .hero h1 {
+    position: relative; z-index: 2;
+    font-size: clamp(2.8rem, 9vw, 6.5rem);
+    font-weight: 700; letter-spacing: 0.18em;
+    color: var(--ink);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+    animation: fadeUp 1.4s ease-out 0.15s both;
+  }
+  .hero .subtitle {
+    position: relative; z-index: 2;
+    font-size: clamp(1.1rem, 2.6vw, 1.7rem);
+    color: var(--gold);
+    margin-top: 0.6rem; letter-spacing: 0.3em;
+    animation: fadeUp 1.4s ease-out 0.3s both;
+  }
+  .hero .tagline {
+    position: relative; z-index: 2;
+    margin: 1.8rem auto 0; max-width: 640px;
+    font-style: italic; font-size: clamp(0.98rem, 1.8vw, 1.18rem);
+    color: var(--ink-2);
+    animation: fadeUp 1.4s ease-out 0.5s both;
+  }
+  .hero .tagline .zh { display: block; margin-top: 0.6rem; color: var(--ink-3); }
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem; z-index: 2;
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.74rem; letter-spacing: 0.2em; color: var(--ink-3);
+    animation: bounce 2.2s infinite;
+  }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ============================================================
+     SECTION SHELL + editorial header
+     ============================================================ */
+  .section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+  .section-head { max-width: 760px; margin-bottom: 3rem; }
+  .section-head .eyebrow { color: var(--gold); margin-bottom: 0.7rem; }
+  .section-head h2 {
+    font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+    font-weight: 600; letter-spacing: 0.06em; color: var(--ink);
+    line-height: 1.2;
+  }
+  .section-head .lead { margin-top: 0.9rem; color: var(--ink-2); max-width: 620px; }
+  .section-head .lead.zh { font-style: italic; color: var(--ink-3); font-size: 0.88em; margin-top: 0.3rem; }
+
+  /* ============================================================
+     §01 WORLDS — three civilisation cards
+     ============================================================ */
+  .worlds {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem;
+  }
+  @media (max-width: 860px) { .worlds { grid-template-columns: 1fr; } }
+
+  .world {
+    position: relative; display: flex; flex-direction: column;
+    padding: 2.2rem 1.8rem 1.8rem;
+    border-radius: 14px;
+    text-decoration: none; color: inherit;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    opacity: 0; transform: translateY(30px);
+  }
+  .world.visible { opacity: 1; transform: translateY(0); }
+  .world::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--accent);
+  }
+  .world::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at top, var(--accent), transparent 65%);
+    opacity: 0; transition: opacity 0.35s ease;
+  }
+  .world:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(90,60,20,0.18);
+  }
+  .world:hover::after { opacity: 0.06; }
+
+  .world.greek { --accent: var(--c-greek); }
+  .world.meso  { --accent: var(--c-meso); }
+  .world.norse { --accent: var(--c-norse); }
+  .world.persian { --accent: var(--c-persian); }
+  .world.indian { --accent: var(--c-indian); }
+  .world.arthurian { --accent: var(--c-arthurian); }
+  .world.kalevala { --accent: var(--c-kalevala); }
+  .world.celtic { --accent: var(--c-celtic); }
+  .world.east-asian { --accent: var(--c-east-asian); }
+
+  .world .emblem {
+    font-size: 2rem; color: var(--accent); letter-spacing: 0.2em;
+    margin-bottom: 0.6rem;
+  }
+  .world .culture-num {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--accent); opacity: 0.92;
+  }
+  .world h3 {
+    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    font-weight: 600; color: var(--ink);
+    margin: 0.3rem 0 0.1rem; line-height: 1.15;
+  }
+  .world .name-zh {
+    font-size: 1.05rem; color: var(--ink-2); letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  .world .essence {
+    font-size: 0.9rem; line-height: 1.55; color: var(--ink-2); flex: 1;
+  }
+  .world .essence .zh {
+    display: block; margin-top: 0.4rem; color: var(--ink-3);
+  }
+  .stages { display: flex; gap: 4px; margin: 1.3rem 0 0.5rem; }
+  .stage-dot {
+    flex: 1; height: 4px; border-radius: 2px;
+    background: var(--accent); opacity: 0.4;
+    transition: opacity 0.3s ease;
+  }
+  .world:hover .stage-dot { opacity: 0.85; }
+  .world .stats {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.74rem; letter-spacing: 0.14em; color: var(--ink-3);
+    margin-bottom: 1rem;
+  }
+  .world .enter {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent);
+    transition: gap 0.3s ease;
+  }
+  .world:hover .enter { gap: 0.9rem; }
+
+  /* ============================================================
+     §02 MIRROR — comparison table
+     ============================================================ */
+  #mirror .section { max-width: 1000px; }
+  .mirror-table {
+    width: 100%; border-collapse: collapse;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .mirror-table th, .mirror-table td {
+    padding: 1rem 1.1rem; text-align: left; vertical-align: top;
+    border-bottom: 1px solid var(--border); font-size: 0.9rem;
+  }
+  .mirror-table thead th {
+    background: var(--paper-3);
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink);
+  }
+  .mirror-table thead th.greek { color: var(--c-greek); }
+  .mirror-table thead th.meso  { color: var(--c-meso); }
+  .mirror-table thead th.norse { color: var(--c-norse); }
+  .mirror-table thead th.persian { color: var(--c-persian); }
+  .mirror-table thead th.indian { color: var(--c-indian); }
+  .mirror-table thead th.arthurian { color: var(--c-arthurian); }
+  .mirror-table thead th.kalevala { color: var(--c-kalevala); }
+  .mirror-table thead th.celtic { color: var(--c-celtic); }
+  .mirror-table thead th.east-asian { color: var(--c-east-asian); }
+  .mirror-table tbody th {
+    width: 22%; color: var(--gold);
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.76rem; font-weight: 700; letter-spacing: 0.08em;
+    background: rgba(196,168,106,0.12);
+  }
+  .mirror-table td { color: var(--ink-2); line-height: 1.5; }
+  .mirror-table td .zh, .mirror-table tbody th .zh {
+    display:block; color: var(--ink-3); margin-top: 0.15rem; font-style: italic;
+    font-family: "Iowan Old Style", Georgia, serif;
+  }
+  .mirror-table tr:last-child td, .mirror-table tr:last-child th { border-bottom: none; }
+  @media (max-width: 700px) {
+    .mirror-table thead { display: none; }
+    .mirror-table, .mirror-table tbody, .mirror-table tr, .mirror-table td, .mirror-table th { display: block; width: 100%; }
+    .mirror-table tr { border-bottom: 1px solid var(--border-hi); padding: 0.6rem 0; }
+    .mirror-table tbody th { width: 100%; padding: 0.4rem 1.1rem 0.2rem; }
+    .mirror-table td { padding: 0.2rem 1.1rem 0.7rem; border: none; }
+  }
+
+  /* ============================================================
+     §03 TIMELINE — culture wash bands on parchment
+     ============================================================ */
+  #timeline .section { max-width: 1000px; }
+  .timeline {
+    display: flex; gap: 0; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .tl-band {
+    flex: 1; padding: 1.4rem 1.2rem; position: relative;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    min-height: 130px;
+    transition: transform 0.3s ease;
+  }
+  .tl-band:hover { transform: translateY(-4px); }
+  .tl-band .era {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.72rem; letter-spacing: 0.14em; font-weight: 700;
+    opacity: 0.9;
+  }
+  .tl-band .name { font-size: 1.02rem; margin-top: 0.2rem; line-height: 1.2; }
+  .tl-band .tl-zh { font-size: 0.8rem; opacity: 0.75; margin-top: 0.15rem; font-style: italic; }
+  .tl-band.greek { background: linear-gradient(180deg, rgba(92,26,27,0.04), rgba(92,26,27,0.2));  color: var(--c-greek); }
+  .tl-band.meso  { background: linear-gradient(180deg, rgba(26,68,128,0.04), rgba(26,68,128,0.2)); color: var(--c-meso); }
+  .tl-band.norse { background: linear-gradient(180deg, rgba(58,71,84,0.04), rgba(58,71,84,0.2));   color: var(--c-norse); }
+  .tl-band.persian { background: linear-gradient(180deg, rgba(42,157,143,0.04), rgba(42,157,143,0.2)); color: var(--c-persian); }
+  .tl-band.indian { background: linear-gradient(180deg, rgba(184,52,31,0.04), rgba(184,52,31,0.2)); color: var(--c-indian); }
+  .tl-band.arthurian { background: linear-gradient(180deg, rgba(45,90,61,0.04), rgba(45,90,61,0.2)); color: var(--c-arthurian); }
+  .tl-band.kalevala { background: linear-gradient(180deg, rgba(30,90,122,0.04), rgba(30,90,122,0.2)); color: var(--c-kalevala); }
+  .tl-band.celtic { background: linear-gradient(180deg, rgba(107,58,90,0.04), rgba(107,58,90,0.2)); color: var(--c-celtic); }
+  .tl-band.east-asian { background: linear-gradient(180deg, rgba(168,40,40,0.04), rgba(168,40,40,0.2)); color: var(--c-east-asian); }
+  @media (max-width: 700px) { .timeline { flex-direction: column; } .tl-band { min-height: auto; } }
+
+  /* ============================================================
+     §04 FUTURE — dashed "not yet built" cards
+     ============================================================ */
+  #future .section { max-width: 1000px; }
+  .coming-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;
+  }
+  .next-card {
+    padding: 1.3rem 1.2rem; border-radius: 10px;
+    border: 1px dashed var(--border-hi);
+    background: rgba(196,168,106,0.06); text-align: center;
+    opacity: 0.8; transition: opacity 0.3s ease, border-color 0.3s ease;
+  }
+  .next-card:hover { opacity: 1; border-color: var(--gold); }
+  .next-card .dash { font-size: 1rem; color: var(--gold); opacity: 0.6; letter-spacing: 0.3em; margin-bottom: 0.4rem; }
+  .next-card .nm { font-size: 1rem; color: var(--ink); }
+  .next-card .nc-zh { font-size: 0.82rem; color: var(--ink-3); margin-top: 0.15rem; }
+  .next-card .note { font-size: 0.72rem; color: var(--ink-3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  .footer {
+    text-align: center; padding: 2.5rem 2rem 3rem;
+    background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+    color: var(--ink-3);
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    border-top: 1px solid var(--border);
+  }
+  .footer .stars { color: var(--gold); letter-spacing: 0.6em; margin-bottom: 0.8rem; opacity: 0.7; }
+  .footer .f-zh { display: block; margin-top: 0.4rem; font-size: 0.85em; }
+
+  /* ============================================================
+     BACK TO TOP
+     ============================================================ */
+  .to-top {
+    position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 999;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--paper); border: 1px solid var(--gold); color: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(90,60,20,0.18);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .to-top.show { opacity: 1; pointer-events: auto; }
+  .to-top:hover { transform: translateY(-3px); }
+</style>
+</head>
+<body>
+
+<!-- progress + nav -->
+<div class="progress-bar" id="progressBar"></div>
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="word">EPICS</span>
+      <span class="glyph">✦ ◆ ❄ ❖ ❀ ✠ ♪ ☘ ❂</span>
+    </a>
+    <div class="nav-links">
+      <a href="#worlds">Worlds<span class="cn"> · 世界</span></a>
+      <a href="#mirror">Mirror<span class="cn"> · 對照</span></a>
+      <a href="#timeline">Timeline<span class="cn"> · 年代</span></a>
+      <a href="#future">Future<span class="cn"> · 未來</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<header class="hero" id="top">
+  <p class="hero-emblem">✦  ◆  ❄  ❖  ❀  ✠  ♪  ☘  ❂</p>
+  <h1>EPICS</h1>
+  <p class="subtitle">世　界　神　話　之　旅</p>
+  <p class="tagline">
+    Every civilization, in its own tongue, asked the same questions — where did the world come from, why must we die, and what stands against the dark. This is a journey through the answers they wrote down.
+    <span class="zh">每一個文明，都以自己的語言問過同樣的問題——世界從何而來、我們為何必須死去、什麼能對抗黑暗。這是一場穿越他們所寫下之答案的旅程。</span>
+  </p>
+  <p class="scroll-hint">↓ NINE WORLDS AWAIT · 九個世界在等待 ↓</p>
+</header>
+
+<!-- ============================================================
+     §01  WORLDS
+     ============================================================ -->
+<section class="section" id="worlds">
+  <div class="section-head">
+    <p class="label eyebrow">§01 — THE WORLDS</p>
+    <h2>Nine Civilizations, Nine Reading Paths</h2>
+    <p class="lead zh">九個文明，九條閱讀之路</p>
+    <p class="lead">Nine mythic universes are built so far — each with its own colours, its own gods, and its own staged path from creation to catastrophe. Walk into any of them below.</p>
+    <p class="lead zh">目前為止，三個神話宇宙已在此園中落成——各自有其色彩、其神祇、其從創世到災變的階段之路。任意步入其中之一。</p>
+  </div>
+
+  <div class="worlds">
+    <!-- GREEK -->
+    <a class="world greek" href="greek-epics/index.html">
+      <p class="emblem">◆</p>
+      <p class="culture-num">Civilization I · 已完成</p>
+      <h3>GREEK EPICS</h3>
+      <p class="name-zh">希臘史詩</p>
+      <p class="essence">
+        From Chaos to Olympus, from the wrath of Achilles to the homecoming of Odysseus — the myths that built the West, where order triumphs over the monstrous and heroes seek glory that outlasts the grave.
+        <span class="zh">從混沌到奧林帕斯，從阿基里斯之怒到奧德修斯的歸鄉——塑造了西方的神話，秩序戰勝怪物，英雄追尋超越墳墓的榮光。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 79 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- MESOPOTAMIAN -->
+    <a class="world meso" href="mesopotamian-epics/index.html">
+      <p class="emblem">✦</p>
+      <p class="culture-num">Civilization II · 已完成</p>
+      <h3>MESOPOTAMIAN EPICS</h3>
+      <p class="name-zh">兩河流域神話</p>
+      <p class="essence">
+        Older than Homer, older than the Bible — the first stories ever set in clay. A dragon split in two to make the world; the oldest flood; a king who crossed the world to learn that no man escapes death.
+        <span class="zh">比荷馬更古老，比聖經更古老——人類最初寫入泥板的故事。巨龍被劈為兩半以造世界；最古老的洪水；一位君王穿越世界，方知無人能逃脫死亡。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">4 STAGES · 33 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- NORSE -->
+    <a class="world norse" href="norse-mythology/index.html">
+      <p class="emblem">❄</p>
+      <p class="culture-num">Civilization III · 已完成</p>
+      <h3>NORSE MYTHOLOGY</h3>
+      <p class="name-zh">北歐神話</p>
+      <p class="essence">
+        A pantheon that knows it will burn. The gods of the frozen north build their shining halls, knowing the wolf will one day swallow the sun — and they ride out to meet the doom anyway, armed and unafraid.
+        <span class="zh">一個明知自己將被烈火吞噬的萬神殿。冰封北境的諸神建造閃耀殿堂，明知巨狼終將吞噬太陽——卻依然全副武裝、無所畏懼地奔赴毀滅。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 41 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- PERSIAN -->
+    <a class="world persian" href="persian-shahnameh/index.html">
+      <p class="emblem">❖</p>
+      <p class="culture-num">Civilization IV · 已完成</p>
+      <h3>THE PERSIAN SHAHNAMEH</h3>
+      <p class="name-zh">波斯《列王紀》</p>
+      <p class="essence">
+        Sixty thousand couplets, thirty years of a poet's life — the Book of Kings, where Ferdowsi saved a civilization's memory in pure Persian. A serpent tyrant, a blacksmith's apron turned flag, a hero's seven trials, and a father who slew the son he did not know.
+        <span class="zh">六萬聯詩句，一位詩人三十年的生命——《列王紀》，菲爾多西以純粹波斯語搶救了一個文明的記憶。蛇肩暴君、化為旗幟的鐵匠圍裙、英雄的七項試煉，以及一位殺了不知是己之子的父親。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 34 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- INDIAN -->
+    <a class="world indian" href="indian-epics/index.html">
+      <p class="emblem">❀</p>
+      <p class="culture-num">Civilization V · 已完成</p>
+      <h3>INDIAN EPICS</h3>
+      <p class="name-zh">印度史詩</p>
+      <p class="essence">
+        The longest stories ever told. A god-king exiled for a promise, a princess stolen across the sea, a warrior who throws down his bow before a war he must fight — and his charioteer, who is God, teaching him in seven hundred verses how to act in a world where every choice is stained.
+        <span class="zh">人類講過最長的故事。一位神王因一個承諾而被流放，一位公主被劫往海的那一邊，一位武士在大戰前擲下神弓——而他的御者，即是神，在七百頌中教他如何在每一個選擇都沾染污點的世界裡行動。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 34 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- ARTHURIAN -->
+    <a class="world arthurian" href="arthurian-cycle/index.html">
+      <p class="emblem">✠</p>
+      <p class="culture-num">Civilization VI · 已完成</p>
+      <h3>THE ARTHURIAN CYCLE</h3>
+      <p class="name-zh">亞瑟王傳奇</p>
+      <p class="essence">
+        A king pulled a sword from a stone and built, for one shining generation, a court of perfect justice — undone by a love he could not forgive and a son he could not avoid. Merlin's old magic, the Round Table, the Holy Grail, the last battle, and the strange beautiful promise that Arthur never quite died but waits, sleeping, to return.
+        <span class="zh">一位君王從石中拔出寶劍，在一代閃亮的時光裡，造就了一個完美正義的宮廷——被一段他無法寬恕的愛、與一個他無法迴避的兒子所傾覆。梅林的古老魔法、圓桌、聖杯、最後一戰，以及那個奇異而美麗的許諾：亞瑟從未真正死去，只是沉睡，等待歸來。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 35 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- KALEVALA -->
+    <a class="world kalevala" href="kalevala/index.html">
+      <p class="emblem">♪</p>
+      <p class="culture-num">Civilization VII · 已完成</p>
+      <h3>THE KALEVALA</h3>
+      <p class="name-zh">卡勒瓦拉</p>
+      <p class="essence">
+        A song, chanted for a thousand winters around the fires of the Northern forests. A wonder-mill that grinds gold from stone. A mother who raked her son piece by piece from the river of death. And a magic harp whose music made the stones weep. Gathered at last by one country doctor from the lips of the last singers, and given back to a people who had almost forgotten who they were.
+        <span class="zh">一首在北方森林火堆旁詠唱了千年的歌。一座能從石中磨出黃金的奇蹟之磨。一位將她兒子從死亡之河中一塊塊撈回的母親。一把其樂音令石頭也為之泣的魔法豎琴。最終由一位鄉村醫生從最後的歌者唇間採集，交還給一個幾乎已忘記自己是誰的民族。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 34 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- CELTIC & IRISH -->
+    <a class="world celtic" href="celtic-irish/index.html">
+      <p class="emblem">☘</p>
+      <p class="culture-num">Civilization VIII · 已完成</p>
+      <h3>THE CELTIC &amp; IRISH CYCLE</h3>
+      <p class="name-zh">凱爾特與愛爾蘭神話</p>
+      <p class="essence">
+        Gods who lost Ireland and went under the hills to become the fairies. A boy who killed a hound and took its name, and held an army alone at a ford. A queen's pride that started a cattle raid ending in nothing. And a Land of Youth one step through the mist away, where three hundred years pass like a dream — and an old warrior came home and crumbled to dust.
+        <span class="zh">那些失去愛爾蘭、走進山丘成為仙靈的神。一個殺了獵犬而取其名的男孩，獨自在渡口擋住一支軍隊。一位王后的驕傲，發動了一場終歸虛無的奪牛之征。還有一座只在迷霧一步之外的青春之地，那裡三百年如一夢——而一位老戰士歸鄉便化為塵土。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 35 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+
+    <!-- EAST ASIAN -->
+    <a class="world east-asian" href="east-asian/index.html">
+      <p class="emblem">❂</p>
+      <p class="culture-num">Civilization IX · 已完成</p>
+      <h3>THE EAST ASIAN CYCLE</h3>
+      <p class="name-zh">東亞神話與史詩</p>
+      <p class="essence">
+        A monkey born from a stone who became a Buddha. A sun-goddess who hid in a cave. And the sound of a bell that echoes the impermanence of all things — the rise and drowning of a great clan, the cherry blossom that is most beautiful in its falling. Here are the two great East Asian teachings: the persistence of the Journey, and the transience of the wave.
+        <span class="zh">一隻由石頭所生而成為佛的猴子。一位躲入洞中的太陽女神。以及一口迴響著萬物無常的鐘——一個大族的崛起與沉沒，那份在凋落之時最美的櫻花。此處是東亞兩大教誨：旅程的堅毅，與浪潮的無常。</span>
+      </p>
+      <div class="stages">
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+        <span class="stage-dot"></span><span class="stage-dot"></span><span class="stage-dot"></span>
+      </div>
+      <p class="stats">6 STAGES · 35 CHAPTERS</p>
+      <p class="enter">ENTER THE PATH →</p>
+    </a>
+  </div>
+</section>
+
+<!-- ============================================================
+     §02  MIRROR
+     ============================================================ -->
+<section class="section" id="mirror">
+  <div class="section-head">
+    <p class="label eyebrow">§02 — THE MIRROR</p>
+    <h2>The Same Questions, Different Answers</h2>
+    <p class="lead zh">同樣的問題，不同的答案</p>
+    <p class="lead">Set the nine traditions side by side, and the deep kinship emerges — and the deep differences.</p>
+    <p class="lead zh">將九個傳統並置，深刻的親緣便浮現——以及深刻的差異。</p>
+  </div>
+
+  <table class="mirror-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="greek">GREEK 希臘</th>
+        <th class="meso">MESOPOTAMIAN 兩河流域</th>
+        <th class="norse">NORSE 北歐</th>
+        <th class="persian">PERSIAN 波斯</th>
+        <th class="indian">INDIAN 印度</th>
+        <th class="arthurian">ARTHURIAN 亞瑟王</th>
+        <th class="kalevala">KALEVALA 卡勒瓦拉</th>
+        <th class="celtic">CELTIC 凱爾特</th>
+        <th class="east-asian">EAST ASIAN 東亞</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Before all<span class="zh">萬物之前</span></th>
+        <td>Chaos — a yawning void, then Gaia.<span class="zh">混沌，豁裂的虛空，而後大地。</span></td>
+        <td>Apsu &amp; Tiamat — sweet &amp; salt water mingling.<span class="zh">阿普蘇與提雅瑪特——甘鹹諸水交融。</span></td>
+        <td>Ginnungagap — where ice meets fire.<span class="zh">金倫加鴻溝——冰與火交會之處。</span></td>
+        <td>Ormazd &amp; Ahriman — light &amp; dark, twin principles at war.<span class="zh">奧爾馬茲德與阿赫里曼——光與暗，交戰的雙生原理。</span></td>
+        <td>Not made once — a cosmos that breathes, creating and dissolving forever.<span class="zh">非一次性造——一個會呼吸的宇宙，創造又消解，永遠。</span></td>
+        <td>No creation myth — a wounded land awaits its true king.<span class="zh">無創世神話——一片受傷的大地等待其真王。</span></td>
+        <td>A maiden floats on the cosmic sea for seven hundred years.<span class="zh">一位少女在太初之海上漂浮了七百年。</span></td>
+        <td>An empty island settled by five waves; the gods come last.<span class="zh">一座空島，五波人所居；諸神最後而來。</span></td>
+        <td>A giant splits an egg; his body becomes the world.<span class="zh">巨人裂卵；其身軀成世界。</span></td>
+      </tr>
+      <tr>
+        <th>The world made<span class="zh">世界之造</span></th>
+        <td>Order imposed; Titans caged in Tartarus.<span class="zh">秩序被加諸；泰坦囚於深淵。</span></td>
+        <td>Marduk splits the dragon's corpse in two.<span class="zh">馬杜克將巨龍屍骸劈為兩半。</span></td>
+        <td>Odin makes the world from the giant Ymir's body.<span class="zh">奧丁以巨人尤彌爾之身造世界。</span></td>
+        <td>A king discovers fire; order is made by human act, not gift.<span class="zh">一位君王發現了火；秩序由人之作為而成，非由神賜。</span></td>
+        <td>Churned from the ocean of milk by gods and demons together.<span class="zh">由神與魔一同從乳海中攪出。</span></td>
+        <td>A round table, that no knight sit above another.<span class="zh">一張圓桌，使無一騎士高於他人。</span></td>
+        <td>Eggs shatter on the water — shells become earth and sky.<span class="zh">卵碎於水——殼成天地。</span></td>
+        <td>Craft is the highest power — the gods master every art.<span class="zh">技藝是最高的力量——諸神精通萬藝。</span></td>
+        <td>The Dao flows; yin and yang turn; nothing stays the same.<span class="zh">道流轉；陰陽轉；無物不變。</span></td>
+      </tr>
+      <tr>
+        <th>Humans born<span class="zh">人之造生</span></th>
+        <td>Prometheus moulds clay; fire stolen for them.<span class="zh">普羅米修斯揉泥；為人盜火。</span></td>
+        <td>Clay + a slain god's blood, made to labour.<span class="zh">黏土揉以被殺之神的血，為勞作。</span></td>
+        <td>Ask &amp; Embla, driftwood given breath by three gods.<span class="zh">阿斯克與恩布拉，浮木受三神賜息。</span></td>
+        <td>Descended from Gayumars, the first king, upon a mountain.<span class="zh">傳承自山上的第一代君王蓋尤瑪爾斯。</span></td>
+        <td>Descended from Manu, saved from the flood by the fish-avatar.<span class="zh">傳承自摩奴，由魚之化身從洪水中救出。</span></td>
+        <td>An unselfconscious boy pulls a sword from a stone.<span class="zh">一個不假思索的男孩從石中拔劍。</span></td>
+        <td>Born of the air-maiden; the singer comes before the tribe.<span class="zh">生於空氣少女；歌者在部族之前而來。</span></td>
+        <td>The mortal Gaels arrive, defeat the gods, take the land.<span class="zh">凡人蓋爾人到來，擊敗諸神，奪取土地。</span></td>
+        <td>A goddess shapes humans from clay; a stone hatches a monkey.<span class="zh">女神以泥塑人；石卵孵猴。</span></td>
+      </tr>
+      <tr>
+        <th>The great flood<span class="zh">大洪水</span></th>
+        <td>Deucalion &amp; Pyrrha throw stones.<span class="zh">丟卡利翁與皮拉擲石成人。</span></td>
+        <td>Atrahasis / Utnapishtim builds a boat — the oldest of all.<span class="zh">阿特拉哈西斯造方舟——最古老的版本。</span></td>
+        <td>No flood — but Lif &amp; Lifthrasir survive the fire to renew the world.<span class="zh">無洪水——但利弗與利弗斯萊希爾於烈火中倖存以更新世界。</span></td>
+        <td>No flood — a serpent-shouldered tyrant rules a thousand years.<span class="zh">無洪水——一位肩生雙蛇的暴君統治千年。</span></td>
+        <td>Manu's boat is towed by the fish Matsya — the first avatar.<span class="zh">摩奴之舟由魚摩蹉拖引——第一個化身。</span></td>
+        <td>No flood — a civil war of father against son.<span class="zh">無洪水——一場父對子的內戰。</span></td>
+        <td>No flood — a mother rakes her son from the river of death.<span class="zh">無洪水——一位母親從死亡之河中耙出她的兒子。</span></td>
+        <td>No flood — the gods are defeated, go under the hills.<span class="zh">無洪水——諸神被擊敗，走入山丘之下。</span></td>
+        <td>No flood — a bell rings the impermanence of all things.<span class="zh">無洪水——一口鐘響萬物之無常。</span></td>
+      </tr>
+      <tr>
+        <th>The hero's truth<span class="zh">英雄所學</span></th>
+        <td>Glory (kleos) outlives the mortal body.<span class="zh">榮光（kleos）比凡人之軀更長壽。</span></td>
+        <td>No man escapes death; only your works remain.<span class="zh">無人能逃死亡；唯有你所建之物留存。</span></td>
+        <td>Defy a known doom; that defiance is the glory.<span class="zh">迎向已知的毀滅；那抗拒本身即是榮光。</span></td>
+        <td>Do the impossible alone, then go home and ask for nothing.<span class="zh">獨力成就不可能之事，而後歸家，一無所求。</span></td>
+        <td>Act without attachment to the fruit; the Self can never be slain.<span class="zh">無執於果而行動；真我永不能被殺。</span></td>
+        <td>The just king sleeps; the dream of him refuses to die.<span class="zh">公正之君沉睡；關於他的夢拒絕死去。</span></td>
+        <td>The song is stronger than the sword; the deepest power is memory.<span class="zh">歌比劍更強；最深的力量是記憶。</span></td>
+        <td>Die standing, tied to a stone — glory that burns you up.<span class="zh">挺立而死，綁於一石——燃盡你的榮光。</span></td>
+        <td>Walk the road, and love the falling petals — impermanence.<span class="zh">走那條路，並愛凋落之花——無常。</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================
+     §03  TIMELINE
+     ============================================================ -->
+<section class="section" id="timeline">
+  <div class="section-head">
+    <p class="label eyebrow">§03 — THE TIMELINE</p>
+    <h2>When They Were Written</h2>
+    <p class="lead zh">成書年代</p>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-band meso">
+      <span class="era">c. 2100 BC 起</span>
+      <span class="name">Gilgamesh · Enuma Elish</span>
+      <span class="tl-zh">兩河流域 — 最古老</span>
+    </div>
+    <div class="tl-band indian">
+      <span class="era">c. 1500 BC – 400 AD</span>
+      <span class="name">Vedas → Ramayana &amp; Mahabharata</span>
+      <span class="tl-zh">印度史詩</span>
+    </div>
+    <div class="tl-band greek">
+      <span class="era">c. 8th c. BC</span>
+      <span class="name">Homer · Hesiod</span>
+      <span class="tl-zh">希臘史詩</span>
+    </div>
+    <div class="tl-band greek">
+      <span class="era">c. 5th c. BC</span>
+      <span class="name">Greek Tragedies</span>
+      <span class="tl-zh">希臘悲劇 · 羅馬</span>
+    </div>
+    <div class="tl-band arthurian">
+      <span class="era">c. 5th–6th c. AD</span>
+      <span class="name">King Arthur · Malory 1485</span>
+      <span class="tl-zh">亞瑟王傳奇</span>
+    </div>
+    <div class="tl-band norse">
+      <span class="era">c. 9th–13th c. AD</span>
+      <span class="name">Poetic &amp; Prose Edda</span>
+      <span class="tl-zh">北歐 — 最晚成文</span>
+    </div>
+    <div class="tl-band persian">
+      <span class="era">c. 1010 AD</span>
+      <span class="name">Ferdowsi · the Shahnameh</span>
+      <span class="tl-zh">波斯《列王紀》</span>
+    </div>
+    <div class="tl-band celtic">
+      <span class="era">11th–12th c. AD</span>
+      <span class="name">Táin &amp; Fenian cycles (manuscripts)</span>
+      <span class="tl-zh">凱爾特/愛爾蘭</span>
+    </div>
+    <div class="tl-band kalevala">
+      <span class="era">1835</span>
+      <span class="name">Lönnrot compiles the Kalevala</span>
+      <span class="tl-zh">芬蘭《卡勒瓦拉》— 最年輕</span>
+    </div>
+    <div class="tl-band east-asian">
+      <span class="era">712 / 1592 / 1371</span>
+      <span class="name">Kojiki · Journey to the West · Heike</span>
+      <span class="tl-zh">東亞三國</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     §04  FUTURE
+     ============================================================ -->
+<section class="section" id="future">
+  <div class="section-head">
+    <p class="label eyebrow">§04 — COMPLETE</p>
+    <h2>The Garden Is Complete</h2>
+    <p class="lead zh">花園已成</p>
+    <p class="lead">Nine civilizations. Three hundred and sixty chapters. The same questions, asked across three thousand years, answered in nine different voices. The garden is whole.</p>
+    <p class="lead zh">九個文明。三百六十章。同一個問題，跨越三千年，以九種不同的聲音回答。花園已成。</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="stars">✦  ◆  ❄  ❖  ❀  ✠  ♪  ☘  ❂</div>
+  EPICS · A GARDEN OF THE WORLD'S MYTHS
+  <span class="f-zh">史詩 · 一座世界神話之園</span>
+</footer>
+
+<!-- back to top -->
+<button class="to-top" id="toTop" aria-label="Back to top">↑</button>
+
+<script>
+  /* ---- reveal world cards ---- */
+  const rev = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 120);
+        rev.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.world').forEach((w, i) => {
+    w.style.transitionDelay = (i * 0.15) + 's';
+    rev.observe(w);
+  });
+
+  /* ---- progress bar + back-to-top ---- */
+  const progressBar = document.getElementById('progressBar');
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    progressBar.style.width = pct + '%';
+    toTop.classList.toggle('show', window.scrollY > window.innerHeight * 0.6);
+  }, { passive: true });
+
+  /* ---- scroll-spy for nav ---- */
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const sections = ['worlds','mirror','timeline','future']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+  sections.forEach(s => spy.observe(s));
+
+  /* ---- back to top ---- */
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+
+</body>
+</html>
