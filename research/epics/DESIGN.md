@@ -1,7 +1,9 @@
-# DESIGN.md — EPICS Portal (`eipcs/index.html`)
+# DESIGN.md — EPICS Portal (`epics/index.html`)
 
 > Design system for the **world-of-myth portal** — the front door to the
-> `greek-epics`, `mesopotamian-epics`, and `norse-mythology` reading-path sub-sites.
+> nine reading-path sub-sites: `greek-epics`, `mesopotamian-epics`, `norse-mythology`,
+> `persian-shahnameh`, `indian-epics`, `arthurian-cycle`, `kalevala`, `celtic-irish`,
+> and `east-asian`.
 > Read this before touching `index.html`. It is the single source of truth for how
 > the portal looks and feels. The three sub-sites keep their own palettes; this
 > document governs only the **unified entry page** and any future portal-level chrome.
@@ -14,10 +16,10 @@
 The feel of a medieval manuscript that has catalogued the world's stories. Warm, paper,
 hand-touched — *not* a dark screen.
 
-**Why parchment:** the portal is the parent of the three reading-path sub-sites, two of
-which (`greek-epics`, `mesopotamian-epics`) are already warm parchment/sand surfaces.
-A parchment portal makes the whole family belong together; only `norse-mythology` keeps
-its cold iron theme *inside its own sub-site*, by design.
+**Why parchment:** the portal is the parent of the nine reading-path sub-sites, most of
+which are warm parchment/sand surfaces. A parchment portal makes the whole family belong
+together; those that keep a darker theme (`norse-mythology`, `east-asian`) do so only
+*inside their own sub-site*, by design.
 
 **Philosophy:** the portal is an index, not a content page. It must orient instantly
 (sticky nav, numbered sections), stay calm (generous negative space, one accent), and
@@ -261,4 +263,4 @@ not heavy black drop-shadows.
 `paper #f3e9d2 · ink #2a1810 · gold #9e7b1e · greek #5c1a1b · meso #1a4480 · norse #3a4754 · persian #2a9d8f · indian #b8341f · arthurian #2d5a3d · kalevala #1e5a7a · celtic #6b3a5a · east-asian #1a1814`
 
 **Section map (information architecture):**
-`Hero → §01 Worlds (3 cards) → §02 Mirror (comparison table) → §03 Timeline → §04 Future → Footer`
+`Hero → §01 Worlds (9 cards) → §02 Mirror (comparison table) → §03 Timeline → §04 Complete → Footer`
