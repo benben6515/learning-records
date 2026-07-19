@@ -5,7 +5,7 @@ source: 薩滿呼吸完整指南
 date: 2026-05
 related:
   - breathing-science.md
-  - chakra-research.md
+  - ../spirituality/chakra-research.md
 ---
 
 # 薩滿呼吸（Shamanic Breathwork）完整指南
