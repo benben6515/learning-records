@@ -67,7 +67,7 @@
   </div>
 
   <h2>How it publishes</h2>
-  <p><code>to-tickets</code> writes one ticket per item, in dependency order (blockers first). The shape of the edges depends on what <a href="file:///Users/benbenweng/.agents/skills/setup-matt-pocock-skills/SKILL.md"><code>setup-matt-pocock-skills</code></a> configured for your repo:</p>
+  <p><code>to-tickets</code> writes one ticket per item, in dependency order (blockers first). The shape of the edges depends on what <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md"><code>setup-matt-pocock-skills</code></a> configured for your repo:</p>
   <ul>
     <li><strong>Local files</strong> → one file per ticket under <code>.scratch/&lt;feature&gt;/issues/NN-slug.md</code>, "Blocked by" as text. (Your repo is on GitHub, so this isn't you — but it's the solo/no-remote path.)</li>
     <li><strong>Real tracker (GitHub, Linear…)</strong> → one issue per ticket, using the platform's <em>native</em> blocking / sub-issue links. This is your path. Each ticket gets the <code>ready-for-agent</code> label — agent-grabbable by construction, <strong>no triage</strong>.</li>
@@ -87,7 +87,7 @@
 
   <h2>Go deeper</h2>
   <ul>
-    <li><strong>Primary source (read):</strong> <a href="file:///Users/benbenweng/ai/skills/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a> — the vertical-slice rules, the frontier, the wide-refactor exception, and both publish templates. The authoritative source.</li>
+    <li><strong>Primary source (read):</strong> <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a> — the vertical-slice rules, the frontier, the wide-refactor exception, and both publish templates. The authoritative source.</li>
     <li><strong>The map:</strong> <a href="../reference/spec-driven-workflow.html">Workflow Map &amp; Glossary</a> — see where <code>to-tickets</code> sits and how the frontier hands off to <code>implement</code>.</li>
     <li><strong>Reference card:</strong> <a href="../reference/tickets-anatomy.html">Ticket Anatomy</a> — the vertical-slice rules, the frontier, expand–contract, and both publish templates. Bookmark.</li>
   </ul>
@@ -100,7 +100,7 @@
   <p class="nav-next">Next lesson → <strong>How <code>improve-codebase-architecture</code> consumes the docs.</strong> You've built the glossary and ADRs (Lessons 3–4). This is the skill that reads them to find <em>deepening opportunities</em> — turning shallow modules into deep ones. The last piece of the spec-driven picture.</p>
 
   <div class="footer">
-    <p>Lesson 6 of the <em>Matt Pocock Skills</em> workspace · <a href="0005-to-spec-anatomy.html">← Lesson 5</a> · <a href="../MISSION.md">Mission</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
+    <p>Lesson 6 of the <em>Matt Pocock Skills</em> workspace · <a href="0005-to-spec-anatomy.html">← Lesson 5</a> · <a href="../index.html">Mission</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
   </div>
 
 </div>
