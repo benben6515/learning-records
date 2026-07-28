@@ -63,6 +63,13 @@ body {
   color: var(--muted);
   margin: 0 0 0.5rem;
 }
+.back-nav {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  margin: 0 0 1.5rem;
+}
+.back-nav a { color: var(--accent); border-bottom: none; }
+.back-nav a:hover { border-bottom-color: var(--accent); }
 h1 {
   font-size: 2.1rem;
   line-height: 1.18;

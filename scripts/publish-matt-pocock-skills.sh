@@ -21,8 +21,8 @@ set -euo pipefail
 
 SRC="${SRC:-$HOME/learning/matt-pocock-skills}"
 REPO="${REPO:-$HOME/Documents/learning-records}"
-DST="$REPO/matt-pocock-skills"
-PAGES_URL="https://benben6515.github.io/learning-records/matt-pocock-skills/"
+DST="$REPO/s/matt-pocock-skills"
+PAGES_URL="https://benben6515.github.io/learning-records/s/matt-pocock-skills/"
 
 [ -d "$SRC" ]        || { echo "✗ source workspace not found: $SRC"      >&2; exit 1; }
 [ -d "$REPO/.git" ]  || { echo "✗ learning-records repo not found: $REPO" >&2; exit 1; }
@@ -43,7 +43,7 @@ done
 touch "$REPO/.nojekyll"
 
 cd "$REPO"
-git add matt-pocock-skills/ .nojekyll
+git add s/matt-pocock-skills/ .nojekyll
 if git diff --cached --quiet; then
   echo "→ no changes to publish"
 else
