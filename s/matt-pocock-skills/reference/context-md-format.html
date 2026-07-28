@@ -101,7 +101,7 @@ _Avoid_: Client, buyer, account</code></pre>
 
   <h2 id="layout">Single vs multi-context</h2>
   <ul>
-    <li><strong>Single context (most repos):</strong> one <code>CONTEXT.md</code> at the repo root. <code>dashboard_frontend</code> is this.</li>
+    <li><strong>Single context (most repos):</strong> one <code>CONTEXT.md</code> at the repo root. A typical project is this.</li>
     <li><strong>Multi-context:</strong> a root <code>CONTEXT-MAP.md</code> lists the contexts, where each lives, and how they relate; each context gets its own <code>CONTEXT.md</code>. The skill infers which applies — if unclear, it asks.</li>
   </ul>
   <p>For a monorepo with genuinely separate bounded contexts (e.g. <code>ordering/</code>, <code>billing/</code>), reach for the map. For one cohesive app, a single root file is correct — don't invent contexts.</p>
