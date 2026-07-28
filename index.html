@@ -157,73 +157,57 @@
   .cards {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding-bottom: 96px;
+    gap: 12px;
+    padding-bottom: 80px;
   }
 
   .card {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
     background: var(--surface);
     border: 1px solid var(--hairline);
     border-radius: var(--r-lg);
-    padding: 28px;
-    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    padding: 16px 18px;
+    transition: background .2s ease, border-color .2s ease;
   }
   .card:hover {
     background: var(--surface-elevated);
     border-color: var(--hairline-strong);
-    transform: translateY(-2px);
   }
   .card-icon {
-    width: 48px; height: 48px;
+    width: 38px; height: 38px;
+    flex-shrink: 0;
     border-radius: var(--r-md);
     background: var(--surface-card);
     border: 1px solid var(--hairline);
     display: grid;
     place-items: center;
-    margin-bottom: 22px;
     color: var(--ink);
   }
-  .card-icon svg { width: 22px; height: 22px; display: block; }
+  .card-icon svg { width: 18px; height: 18px; display: block; }
+  .card-body { min-width: 0; flex: 1; }
   .card-title {
     color: var(--ink);
-    font-size: 19px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: -0.01em;
-    margin-bottom: 8px;
+    margin-bottom: 3px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .card-desc {
     color: var(--body);
-    font-size: 14.5px;
-    line-height: 1.55;
-    margin-bottom: 24px;
-    flex: 1;
+    font-size: 13.5px;
+    line-height: 1.5;
   }
-  .card-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--on-dark);
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-  }
-  .card-cta .arrow {
-    display: inline-block;
-    transition: transform .2s ease;
-  }
-  .card:hover .card-cta .arrow { transform: translateX(3px); }
   .card-host {
     font-family: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--mute);
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--hairline);
+    margin-top: 6px;
     word-break: break-all;
   }
 
@@ -289,20 +273,22 @@
           <div class="card-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
           </div>
-          <h2 class="card-title">GitHub Repo</h2>
-          <p class="card-desc">Source code, notes &amp; code examples across courses, languages, tools, and research.</p>
-          <span class="card-cta">View repository <span class="arrow">→</span></span>
-          <span class="card-host">github.com/benben6515/learning-records</span>
+          <div class="card-body">
+            <h2 class="card-title">GitHub Repo</h2>
+            <p class="card-desc">Source code, notes &amp; code examples across courses, languages, tools, and research.</p>
+            <p class="card-host">github.com/benben6515/learning-records</p>
+          </div>
         </a>
 
         <a class="card" href="/s/matt-pocock-skills/">
           <div class="card-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4"/><path d="M8 20h8"/></svg>
           </div>
-          <h2 class="card-title">Matt Pocock Skills</h2>
-          <p class="card-desc">A slides deck walking through the engineering skills workspace and its workflows.</p>
-          <span class="card-cta">Open slides <span class="arrow">→</span></span>
-          <span class="card-host">learning.benben.me/s/matt-pocock-skills</span>
+          <div class="card-body">
+            <h2 class="card-title">Matt Pocock Skills</h2>
+            <p class="card-desc">A slides deck walking through the engineering skills workspace and its workflows.</p>
+            <p class="card-host">learning.benben.me/s/matt-pocock-skills</p>
+          </div>
         </a>
 
       </div>
