@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matt Pocock 技能課程 · Matt Pocock Skills</title>
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .entries { display:flex; gap:1.25rem; flex-wrap:wrap; margin:1.75rem 0 0.5rem; }
+  .entries a {
+    flex:1 1 14rem; display:block; border:1.5px solid var(--ink-soft); border-radius:8px;
+    padding:1.3rem 1.4rem; background:var(--paper-edge); border-bottom:none;
+    text-decoration:none; transition: border-color .15s, transform .15s;
+  }
+  .entries a:hover { border-color:var(--accent); transform: translateY(-2px); }
+  .entries a .lang { font-family:var(--sans); font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); }
+  .entries a .t { display:block; font-size:1.5rem; color:var(--ink); font-weight:600; margin:0.3rem 0 0.35rem; line-height:1.2; }
+  .entries a .s { font-size:0.92rem; color:var(--muted); font-style:italic; }
+  .entries a .go { display:block; margin-top:0.7rem; font-family:var(--sans); font-size:0.78rem; color:var(--accent); }
+  .quick { margin-top:1.6rem; font-family:var(--sans); font-size:0.88rem; color:var(--ink-soft); }
+  .quick a { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Course · 公開版</p>
+  <h1>Matt Pocock 技能課程</h1>
+  <p class="subtitle">Spec-driven development, from idea to ship. 規格驅動開發，從想法到交付。</p>
+
+  <p class="lead">七堂課，一條路徑：<code>grill-with-docs → to-spec → to-tickets → implement</code>，全程由 <code>CONTEXT.md</code> ＋ ADR 撰寫。課程內容已去識別化，植基於 Matt Pocock 的 <a href="https://github.com/mattpocock/skills">官方技能 repo</a>。</p>
+
+  <div class="entries">
+    <a href="lessons-tw/0000-table-of-contents.html">
+      <span class="lang">繁體中文</span>
+      <span class="t">課程目錄</span>
+      <span class="s">七堂課的繁中版，從心智地圖開始。</span>
+      <span class="go">進入目錄 →</span>
+    </a>
+    <a href="lessons/0000-table-of-contents.html">
+      <span class="lang">English</span>
+      <span class="t">Course Index</span>
+      <span class="s">The same seven lessons in English.</span>
+      <span class="go">Open index →</span>
+    </a>
+  </div>
+
+  <h2>快速參考</h2>
+  <ul>
+    <li><a href="reference/skills-catalog.html">技能目錄（Skills Catalog）</a>——所有 Matt Pocock 技能的繁中譯名與一句話說明。</li>
+    <li><a href="reference/spec-driven-workflow.html">規格驅動流程圖與詞彙表</a>——每個階段、規格解剖、<code>CONTEXT.md</code>／ADR 規則。</li>
+  </ul>
+
+  <div class="footer">
+    <p>本課程為個人學習用途，內容植基於 <a href="https://github.com/mattpocock/skills">mattpocock/skills</a>（MIT 授權之技能集）。見 <a href="https://github.com/benben6515/learning-records">learning-records repo</a>。</p>
+  </div>
+
+</div>
+</body>
+</html>

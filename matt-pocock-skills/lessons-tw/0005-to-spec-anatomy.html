@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 課 — to-spec，規格解剖</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .contrast { margin: 1.5rem 0; font-family: var(--sans); }
+  .contrast .pair { display:flex; gap: 0.75rem; flex-wrap: wrap; }
+  .contrast .side { flex: 1 1 14rem; border: 1px solid var(--rule); border-radius: 6px; padding: 0.8rem 0.95rem; background: var(--paper-edge); }
+  .contrast .side.ask { border-left: 3px solid var(--accent); }
+  .contrast .side.write { border-left: 3px solid var(--note); }
+  .contrast .side .h { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+  .contrast .side .n { font-size: 0.95rem; color: var(--ink); }
+  .contrast .vs { text-align:center; color: var(--muted); font-size: 0.78rem; margin: 0.4rem 0; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0005 課 · 約 7 分鐘</p>
+  <h1><code>to-spec</code> — 規格解剖</h1>
+  <p class="subtitle">它凍結對話。它不訪談。</p>
+
+  <p class="lead">你現在已經備齊規格所依據的兩份產物——<a href="0003-context-md-glossary.html">詞彙表</a>與<a href="0004-adrs-the-gate.html">ADR</a>。<code>to-spec</code> 就是它們匯流之處：它把你在 <code>grill-with-docs</code> 已經談過的對話，凍結成一份固定形狀的規格（PRD），讓 <code>implement</code> 可以照著施工。整個技能就活在這一組對比裡：</p>
+
+  <h2>一個核心觀念</h2>
+  <div class="contrast">
+    <div class="pair">
+      <div class="side ask">
+        <div class="h">grill-with-docs</div>
+        <div class="n"><strong>訪談。</strong>一次一題。決策歸你。建立詞彙表 + ADR。</div>
+      </div>
+      <div class="side write">
+        <div class="h">to-spec</div>
+        <div class="n"><strong>綜合。</strong>零個問題。只把你已談定的東西寫下來。凍結成規格。</div>
+      </div>
+    </div>
+    <div class="vs">同一場對話 · 截然不同的職責</div>
+  </div>
+
+  <div class="principle">如果 <code>to-spec</code> 開始問你問題，就是上游出了問題——你跳過了、或沒把盤問煮夠。停下來去盤問；別在規格裡捏造一個決策。</div>
+
+  <h2>解剖（固定形狀）</h2>
+  <p>每份規格都有相同的段落。你不是在發明結構——你是在填它：</p>
+  <ul>
+    <li><strong>問題陳述</strong>與<strong>解決方案</strong>——都從<em>使用者</em>的觀點出發，用詞彙表的用語。</li>
+    <li><strong>使用者故事</strong>——一份<em>冗長</em>的編號清單：「作為一個 &lt;角色&gt;，我想要 &lt;功能&gt;，以便 &lt;效益&gt;」。要涵蓋所有面向。</li>
+    <li><strong>實作決策</strong>——模組、介面、結構描述（schema）、API 合約。<strong>不含檔案路徑或程式碼片段</strong>（它們會腐朽）。</li>
+    <li><strong>測試決策</strong>——只測外部行為、不測內部細節；測哪些模組；前例。</li>
+    <li><strong>不在範圍內</strong>與<strong>補充說明</strong>。</li>
+  </ul>
+
+  <h2>接縫規則 — 那條違反直覺的</h2>
+  <p>動手寫之前，<code>to-spec</code> 會先勾勒<strong>接縫（seam）</strong>——也就是這個功能將被測試的施力點。接縫就是測試的插入點。那條令人意外的規則：</p>
+  <div class="callout accent">
+    <span class="label">接縫規則</span>
+    優先用既有接縫，而非新接縫。盡可能用<strong>最高</strong>（最外部）的接縫。<strong>接縫越少越好——理想值是一個。</strong>
+  </div>
+  <p>直覺大喊「測越多越安全」時，為什麼「越少越好」？因為每個接縫都是一個耦合點。從<em>一個</em>高層邊界測整個功能（例如完整的請求→回應流程，或渲染後的 UI），能用最少的脆弱度換來信心。五個釘在內部函式上的單元測試，每次重構都會壞——而「介面就是測試面」。一個高接縫，勝過多個低接縫。</p>
+
+  <div class="checklist">
+    <h3>你的具體收穫 — 找出被破壞的規則</h3>
+    <p style="margin-top:0;">每個片段都破了三條規則之一。說出是哪一條。</p>
+    <ol>
+      <li>規格開頭：<em>「在我寫下來之前——當位元遮罩溢位時該發生什麼事？」</em></li>
+      <li>一則實作決策寫著：<em>「修改 <code>src/utils/permissions.js</code> 裡的 <code>parsePermissionBits()</code>，讓它回傳各個位元的位置。」</em></li>
+      <li>一則測試決策寫著：<em>「單獨對內部的 <code>bitPositions()</code> 幫手函式做單元測試。」</em></li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">答案：#1 破了<em>綜合而非訪談</em>（它是個問題 → 那是盤問的活）。#2 破了<em>不含檔案路徑／程式碼</em>。#3 破了<em>接縫規則</em>——它在測一個低階的內部函式，而不是透過一個高接縫測外部行為。推理過程見<a href="../reference/spec-anatomy.html#rules">參考文件</a>。</p>
+  </div>
+
+  <h2>它在流程裡的位置</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">grill-with-docs</span>
+      <span class="arrow">→</span>
+      <span class="stage accent">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage ghost">議題 · <code>ready-for-agent</code></span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+    </div>
+  </div>
+  <p><code>to-spec</code> 會把規格連同 <code>ready-for-agent</code> 標籤一起發布——<strong>不再額外分級</strong>（第 1 課：別分級你自己的產出）。從這裡起，多回合的建構會先跑 <code>to-tickets</code>；單回合的建構則直接進 <code>implement</code>。</p>
+
+  <h2>深入了解</h2>
+  <ul>
+    <li><strong>主要來源（讀）：</strong><a href="file:///Users/benbenweng/.agents/skills/to-spec/SKILL.md"><code>to-spec/SKILL.md</code></a>——流程、範本、接縫規則，全文照錄。五分鐘。</li>
+    <li><strong>參考卡：</strong><a href="../reference/spec-anatomy.html">規格解剖</a>——完整範本、三條規則、以及 <code>ready-for-agent</code> 的交棒。加入書籤。</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    挑一題：<em>「對於一個同時碰到 API、授權位元遮罩、側邊欄過濾的儀表板功能——我會透過的『那一個高接縫』是什麼？」</em>（接縫規則的實戰）· <em>「技能說使用者故事要『冗長』——我怎麼判斷是夠長了，還是在鍍金？」</em> · <em>「如果某個決策在規格階段真的未定，它到底在哪裡被解決——回 grill，還是變成一張票？」</em>
+  </div>
+
+  <p class="nav-next">下一課 → <strong><code>to-tickets</code> — 曳光彈與阻塞邊</strong>（認識層級）。規格驅動主幹的最後一站：一份規格如何變成一套依阻塞排序、讓代理能在新視窗中施工的票。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 5 課 · <a href="0004-adrs-the-gate.html">← 第 4 課</a> · <a href="../MISSION.md">任務</a> · <a href="../reference/spec-anatomy.html">參考</a></p>
+  </div>
+
+</div>
+</body>
+</html>

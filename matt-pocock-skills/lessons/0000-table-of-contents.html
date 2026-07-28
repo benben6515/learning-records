@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0000 — Table of Contents</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  /* ---- Index-only styles ---- */
+  .index { list-style: none; padding: 0; margin: 1.75rem 0; }
+  .index li { margin: 0; border-bottom: 1px solid var(--rule); }
+  .index li:first-child { border-top: 1px solid var(--ink-soft); }
+  .index li.capstone { background: var(--paper-edge); }
+  .index a {
+    display: flex; gap: 1.1rem; padding: 1rem 0.6rem; align-items: baseline;
+    border-bottom: none; border-left: 3px solid transparent;
+  }
+  .index a:hover { border-left-color: var(--accent); background: var(--paper-edge); }
+  .index .num {
+    font-family: var(--sans); font-size: 1.55rem; font-weight: 300;
+    color: var(--accent); flex: 0 0 2.7rem; letter-spacing: -0.02em; line-height: 1;
+  }
+  .index .meta { display: flex; flex-direction: column; gap: 0.18rem; }
+  .index .t { font-size: 1.16rem; color: var(--ink); font-weight: 600; line-height: 1.3; }
+  .index .t code { font-size: 0.98rem; }
+  .index .s { font-size: 0.92rem; color: var(--muted); font-style: italic; line-height: 1.45; }
+  .index .d {
+    font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-top: 0.15rem;
+  }
+  .index .d .lvl { color: var(--note); }
+  .index .d .cap { color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0000 · Table of Contents</p>
+  <h1>The <em>Matt Pocock Skills</em> Course Index</h1>
+  <p class="subtitle">Seven lessons, one route: from idea to ship, driven by a spec.</p>
+
+  <p class="lead">This course isn't a box of disconnected commands. It's a single route that almost every piece of work travels — <strong>mental map → entry point → two artefacts → spec → tickets → the architecture consumer</strong>. Each lesson is a stage on that route. Read them in order and you'll hold the shape of the whole system.</p>
+
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">grill-with-docs</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-tickets</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+      <span class="arrow">→</span>
+      <span class="stage">code-review</span>
+    </div>
+    <div class="under">idea &nbsp;⟶&nbsp; ship &nbsp;·&nbsp; written with <code>CONTEXT.md</code> + ADRs, then consumed by <code>improve-codebase-architecture</code></div>
+  </div>
+
+  <h2>All lessons</h2>
+
+  <ol class="index">
+    <li>
+      <a href="0001-the-mental-map.html">
+        <span class="num">01</span>
+        <span class="meta">
+          <span class="t">The Mental Map</span>
+          <span class="s">Before the loop, the map. One idea you can hold in your head.</span>
+          <span class="d">~6 min</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0002-the-entry-point.html">
+        <span class="num">02</span>
+        <span class="meta">
+          <span class="t">The Entry Point: <code>grill-with-docs</code></span>
+          <span class="s">Every spec-driven journey starts here. It's three skills, nested.</span>
+          <span class="d">~6 min</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0003-context-md-glossary.html">
+        <span class="num">03</span>
+        <span class="meta">
+          <span class="t"><code>CONTEXT.md</code> — The Glossary</span>
+          <span class="s">Four rules. One load-bearing sentence. The thing every later skill reads first.</span>
+          <span class="d">~6 min</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0004-adrs-the-gate.html">
+        <span class="num">04</span>
+        <span class="meta">
+          <span class="t">ADRs — The Three-Criteria Gate</span>
+          <span class="s">Where the glossary holds terms, ADRs hold decisions — almost none of them.</span>
+          <span class="d">~6 min</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0005-to-spec-anatomy.html">
+        <span class="num">05</span>
+        <span class="meta">
+          <span class="t"><code>to-spec</code> — The Spec Anatomy</span>
+          <span class="s">It freezes the conversation. It does not interview.</span>
+          <span class="d">~7 min</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0006-to-tickets-tracer-bullets.html">
+        <span class="num">06</span>
+        <span class="meta">
+          <span class="t"><code>to-tickets</code> — Tracer Bullets &amp; the Frontier</span>
+          <span class="s">The last stop of the spec-driven spine. One spec becomes a set of tickets an agent can work fresh.</span>
+          <span class="d">~7 min · <span class="lvl">awareness level</span></span>
+        </span>
+      </a>
+    </li>
+    <li class="capstone">
+      <a href="0007-improve-architecture-consumes-the-docs.html">
+        <span class="num">07</span>
+        <span class="meta">
+          <span class="t">How <code>improve-codebase-architecture</code> Consumes the Docs</span>
+          <span class="s">The skill that reads everything you've built — and finds where the code wants deepening.</span>
+          <span class="d">~8 min · <span class="cap">capstone</span></span>
+        </span>
+      </a>
+    </li>
+  </ol>
+
+  <div class="callout note">
+    <span class="label">How to start</span>
+    If this is your first time through, start with <strong>Lesson 1</strong> and go in order — it hands you the map, and every later lesson fills in a station on it. If you just need to look something up, jump straight to any lesson above.
+  </div>
+
+  <h2>Further reading</h2>
+  <ul>
+    <li><strong>Workflow map &amp; glossary:</strong> <a href="../reference/spec-driven-workflow.html">The spec-driven workflow reference</a> — every stage, the spec anatomy, the <code>CONTEXT.md</code>/ADR rules, and best-practice principles. Bookmark this; you'll come back.</li>
+    <li><strong>The mission:</strong> <a href="../MISSION.md">Mission</a> — why this course exists and where it's taking you.</li>
+    <li><strong>The sources:</strong> <a href="../RESOURCES.md">Resources</a> — primary sources, videos, and further material.</li>
+  </ul>
+
+  <div class="footer">
+    <p>Course index for <em>Matt Pocock Skills</em> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — ADR Format & Gate</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .gate { margin: 1.75rem 0; font-family: var(--sans); text-align: center; }
+  .gate .crit {
+    display: inline-block; border: 1.5px solid var(--ink-soft); border-radius: 6px;
+    padding: 0.55rem 0.8rem; font-size: 0.82rem; background: var(--paper); line-height: 1.25;
+    vertical-align: middle; max-width: 11rem;
+  }
+  .gate .and { display:inline-block; color: var(--accent); font-weight:700; margin: 0 0.35rem; font-size: 0.85rem; vertical-align: middle; }
+  .gate .yields { display:block; color: var(--muted); margin: 0.7rem 0 0.4rem; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .gate .result { display:inline-block; background: var(--accent-fill); color:#fff; border-radius: 6px; padding: 0.5rem 1rem; font-size: 0.85rem; }
+  .gate .skip { display:block; margin-top: 0.7rem; font-size: 0.8rem; color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · v1</p>
+  <h1>ADRs — Format &amp; the Three-Criteria Gate</h1>
+  <p class="subtitle">Architectural Decision Records. Offered sparingly. The discipline is restraint.</p>
+
+  <div class="principle">Offer an ADR only when <strong>all three</strong> are true. Miss one — skip. The gate is AND, not OR.</div>
+
+  <p>Where <code>CONTEXT.md</code> holds <em>terms</em>, ADRs hold <em>decisions</em> — but only the rare decision that a future explorer genuinely needs explained. Ground truth: <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/ADR-FORMAT.md"><code>ADR-FORMAT.md</code></a> and the <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/SKILL.md"><code>domain-modeling</code> skill</a>.</p>
+
+  <hr class="rule">
+
+  <h2 id="gate">The three-criteria gate</h2>
+  <div class="gate">
+    <span class="crit"><strong>1. Hard to reverse</strong><br><span style="color:var(--muted);font-size:0.74rem;">changing your mind later costs</span></span>
+    <span class="and">AND</span>
+    <span class="crit"><strong>2. Surprising without context</strong><br><span style="color:var(--muted);font-size:0.74rem;">a future reader asks "why?"</span></span>
+    <span class="and">AND</span>
+    <span class="crit"><strong>3. Real trade-off</strong><br><span style="color:var(--muted);font-size:0.74rem;">genuine alternatives existed</span></span>
+    <span class="yields">all three ⇒</span>
+    <span class="result">ADR</span>
+    <span class="skip">miss any one ⇒ skip it</span>
+  </div>
+  <ul>
+    <li><strong>Easy to reverse?</strong> You'll just reverse it — skip.</li>
+    <li><strong>Not surprising?</strong> Nobody will wonder why — skip.</li>
+    <li><strong>No real alternative?</strong> There's nothing to record beyond "we did the obvious thing" — skip.</li>
+  </ul>
+
+  <h2 id="format">The format</h2>
+  <p>Live in <code>docs/adr/</code>, sequentially numbered: <code>0001-slug.md</code>, <code>0002-slug.md</code>. Created <strong>lazily</strong> — the directory appears when the first ADR is needed.</p>
+  <pre><code># {Short title of the decision}
+
+{1-3 sentences: what's the context, what did we decide, and why.}</code></pre>
+  <p>That's the whole template. An ADR can be a single paragraph. The value is recording <em>that</em> a decision was made and <em>why</em> — not filling out sections.</p>
+  <p><strong>Optional sections</strong> (only when they add genuine value): <code>Status</code> frontmatter (<code>proposed | accepted | deprecated | superseded by ADR-NNNN</code>), <strong>Considered Options</strong> (when rejected alternatives are worth remembering), <strong>Consequences</strong> (when non-obvious downstream effects need calling out).</p>
+
+  <h2 id="qualifies">What qualifies</h2>
+  <ul>
+    <li><strong>Architectural shape.</strong> "We're a monorepo." "The write model is event-sourced; the read model projects into Postgres."</li>
+    <li><strong>Integration patterns between contexts.</strong> "Ordering and Billing talk via domain events, not synchronous HTTP."</li>
+    <li><strong>Technology choices that carry lock-in.</strong> Database, message bus, auth provider, deployment target — <em>not every library</em>, just the ones that'd take a quarter to swap.</li>
+    <li><strong>Boundary &amp; scope decisions.</strong> "Customer data is owned by the Customer context; others reference it by ID only." The explicit <em>no</em>-s are as valuable as the <em>yes</em>-s.</li>
+    <li><strong>Deliberate deviations from the obvious path.</strong> "Manual SQL instead of an ORM because X." Stops the next engineer "fixing" something deliberate.</li>
+    <li><strong>Constraints not visible in the code.</strong> "Can't use AWS because of compliance." "Response times must be under 200ms because of the partner API contract."</li>
+    <li><strong>Non-obvious rejected alternatives.</strong> Considered GraphQL, picked REST for subtle reasons — otherwise someone suggests GraphQL again in six months.</li>
+  </ul>
+
+  <h2 id="not-qualifies">What does NOT qualify</h2>
+  <ul>
+    <li>Anything easily reversible (lint config, a utility function's shape, a variable name).</li>
+    <li>Anything obvious from reading the code (the framework in <code>package.json</code>).</li>
+    <li>Decisions with no real alternative ("we used the standard library").</li>
+    <li>Ephemeral reasons ("not worth it right now") — those won't help a future explorer.</li>
+  </ul>
+
+  <h2 id="contrast">Terms vs decisions — where it goes</h2>
+  <table>
+    <thead><tr><th>Artefact</th><th>Holds</th><th>Gate</th></tr></thead>
+    <tbody>
+      <tr><td><code>CONTEXT.md</code></td><td><strong>Terms</strong> (the ubiquitous language)</td><td>Is it a project-specific concept? Then yes.</td></tr>
+      <tr><td><code>docs/adr/*.md</code></td><td><strong>Decisions</strong> (load-bearing choices)</td><td>All 3 criteria of the gate.</td></tr>
+    </tbody>
+  </table>
+  <p>Not sure where something belongs? If it answers <em>"what do we call this?"</em> → glossary. If it answers <em>"why did we choose this?"</em> → ADR (if it clears the gate).</p>
+
+  <h2 id="when">When skills offer an ADR</h2>
+  <ul>
+    <li><strong><code>domain-modeling</code></strong> — inline, the moment a decision clears the gate during a session. Offered, not imposed.</li>
+    <li><strong><code>improve-codebase-architecture</code></strong> — when you <em>reject</em> a deepening candidate with a load-bearing reason, it offers: <em>"Want me to record this as an ADR so future reviews don't re-suggest it?"</em> Only when the reason would actually help a future explorer.</li>
+  </ul>
+  <p>And the flip side: if a candidate <em>contradicts</em> an existing ADR, that's surfaced explicitly (<em>"contradicts ADR-0007 — but worth reopening because…"</em>) rather than silently overridden. ADRs are respected, not re-litigated — unless the friction is real.</p>
+
+  <div class="footer">
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/ADR-FORMAT.md"><code>domain-modeling/ADR-FORMAT.md</code></a>. See also <a href="context-md-format.html"><code>CONTEXT.md</code> Format</a> · <a href="spec-driven-workflow.html">Workflow Map</a> · <a href="../lessons/0004-adrs-the-gate.html">Lesson 4</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>

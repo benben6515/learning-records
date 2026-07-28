@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — CONTEXT.md Format</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · v1</p>
+  <h1><code>CONTEXT.md</code> — Format &amp; Rules</h1>
+  <p class="subtitle">The glossary. Opinionated, tight, project-specific, and devoid of implementation.</p>
+
+  <div class="principle"><code>CONTEXT.md</code> is a glossary and nothing else. Not a spec, not a scratchpad, not a decision log.</div>
+
+  <p>This is the project's <strong>ubiquitous language</strong> — the canonical names every other skill uses in issue titles, specs, test names, and refactor proposals. Ground truth: <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/CONTEXT-FORMAT.md"><code>CONTEXT-FORMAT.md</code></a> and the <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/SKILL.md"><code>domain-modeling</code> skill</a>.</p>
+
+  <hr class="rule">
+
+  <h2 id="rules">The four rules</h2>
+  <table>
+    <thead><tr><th>Rule</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Be opinionated</strong></td>
+        <td>When several words name one concept, pick the <em>best</em> one and list the rest under <code>_Avoid_:</code>. Don't list synonyms as equals — choose.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Keep it tight</strong></td>
+        <td>One or two sentences max. Define what it <em>is</em>, not what it <em>does</em>.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Project-specific only</strong></td>
+        <td>General programming concepts (timeouts, error types, utility patterns) don't belong — even if the project uses them heavily. Test: <em>is this unique to this context, or a general concept?</em> Only the former belongs.</td>
+      </tr>
+      <tr>
+        <td><strong>4. Devoid of implementation</strong></td>
+        <td>No file paths, no class names, no tech choices, no "how it works." If it's a decision or a behaviour, it goes in a spec or an ADR — not here.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="template">The template</h2>
+  <pre><code># {Context Name}
+
+{One or two sentence description of what this context is and why it exists.}
+
+## Language
+
+**Order**:
+{A one or two sentence description of the term}
+_Avoid_: Purchase, transaction
+
+**Invoice**:
+A request for payment sent to a customer after delivery.
+_Avoid_: Bill, payment request
+
+**Customer**:
+A person or organization that places orders.
+_Avoid_: Client, buyer, account</code></pre>
+  <p>Group terms under subheadings when natural clusters emerge; a flat list is fine when terms form one cohesive area.</p>
+
+  <h2 id="good">A good entry (authoritative example)</h2>
+  <div class="callout note">
+    <span class="label">Good</span>
+    <strong>Customer</strong> — A person or organization that places orders. <em>Avoid:</em> Client, buyer, account.<br>
+    <span style="font-size:0.86rem;color:var(--muted);">One sentence. What it <em>is</em>. Synonyms banished to <code>_Avoid_</code>. No implementation. Project-specific.</span>
+  </div>
+
+  <h2 id="bad">Anti-patterns — spot the broken rule</h2>
+
+  <div class="callout warn">
+    <span class="label">Bad — breaks Rule 4 (implementation)</span>
+    <strong>OrderService</strong> — A class in <code>src/services/</code> that handles order creation, in the ordering module. Uses PostgreSQL and emits domain events.<br>
+    <span style="font-size:0.86rem;color:var(--muted);">File path, class name, tech stack, behaviour — all implementation. This belongs in code + maybe an ADR, never the glossary.</span>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Bad — breaks Rule 3 (not project-specific)</span>
+    <strong>Timeout</strong> — The maximum time to wait for a response before failing.<br>
+    <span style="font-size:0.86rem;color:var(--muted);">A general programming concept. Even if the project uses timeouts everywhere, it's not unique to this domain.</span>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Bad — breaks Rules 1 &amp; 2 (not opinionated / not tight)</span>
+    <strong>Account</strong> — Used for various things in the system, like logins and billing.<br>
+    <span style="font-size:0.86rem;color:var(--muted);">Vague ("various things"), describes what it <em>does</em> not what it <em>is</em>, and lists no <code>_Avoid_</code> synonyms. Probably two concepts mashed together — split it.</span>
+  </div>
+
+  <h2 id="discipline">The inline discipline (from <code>domain-modeling</code>)</h2>
+  <p>The glossary isn't written in a batch at the end. It's maintained <strong>inline, as terms resolve</strong> — usually during a <code>grill-with-docs</code> session:</p>
+  <ul>
+    <li><strong>Challenge conflicts.</strong> When someone uses a term that clashes with the glossary, call it out immediately: <em>"Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"</em></li>
+    <li><strong>Sharpen fuzzy language.</strong> When a vague/overloaded term appears, propose the precise canonical term.</li>
+    <li><strong>Update inline, don't batch.</strong> The moment a term resolves, write it. Don't collect them for later.</li>
+    <li><strong>Create lazily.</strong> No <code>CONTEXT.md</code> until the first term actually resolves. Don't scaffold an empty one.</li>
+  </ul>
+
+  <h2 id="layout">Single vs multi-context</h2>
+  <ul>
+    <li><strong>Single context (most repos):</strong> one <code>CONTEXT.md</code> at the repo root. <code>dashboard_frontend</code> is this.</li>
+    <li><strong>Multi-context:</strong> a root <code>CONTEXT-MAP.md</code> lists the contexts, where each lives, and how they relate; each context gets its own <code>CONTEXT.md</code>. The skill infers which applies — if unclear, it asks.</li>
+  </ul>
+  <p>For a monorepo with genuinely separate bounded contexts (e.g. <code>ordering/</code>, <code>billing/</code>), reach for the map. For one cohesive app, a single root file is correct — don't invent contexts.</p>
+
+  <div class="footer">
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/CONTEXT-FORMAT.md"><code>domain-modeling/CONTEXT-FORMAT.md</code></a>. See also <a href="spec-driven-workflow.html">the Workflow Map</a> · <a href="../lessons/0003-context-md-glossary.html">Lesson 3</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>

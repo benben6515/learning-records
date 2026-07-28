@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Matt Pocock Skills — Workflow Map & Glossary</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · v1</p>
+  <h1>The Matt Pocock Skills — Workflow Map &amp; Glossary</h1>
+  <p class="subtitle">One system, one main flow, a spec-driven spine, and a shared vocabulary underneath.</p>
+
+  <p class="lead">These skills are not a pile of isolated commands. They form <strong>one main flow — idea → ship</strong> — with two on-ramps that merge onto it, and a documentation layer that runs underneath the whole thing. This page is the compressed map. Every claim traces back to the skills' own <code>SKILL.md</code> files (the ground truth) and the <a href="https://github.com/mattpocock/skills">public repo</a>.</p>
+
+  <hr class="rule">
+
+  <h2 id="main-flow">The main flow: idea → ship</h2>
+  <p>The route most work travels. You have an idea and want it built. The authoritative description lives in <a href="file:///Users/benbenweng/.agents/skills/ask-matt/SKILL.md"><code>ask-matt</code></a>, the router skill.</p>
+
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">grill-with-docs</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-tickets</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+      <span class="arrow">→</span>
+      <span class="stage">code-review</span>
+    </div>
+    <div class="under">underneath, the whole way: <code>domain-modeling</code> writes <code>CONTEXT.md</code> + ADRs</div>
+  </div>
+
+  <ol>
+    <li><strong><code>/grill-with-docs</code></strong> — sharpen the idea by relentless interview. <em>Start here when you have a codebase.</em> It is stateful: it retains what it learns in <code>CONTEXT.md</code> and ADRs. No codebase? Use <code>/grill-me</code> (same <code>/grilling</code> primitive, no paper trail).</li>
+    <li><strong>Branch — does a question need a runnable answer?</strong> If a question needs state, business logic, or a UI you must see, detour through a prototype, bridged both ways by <code>/handoff</code>: out → fresh session → <code>/prototype</code> → <code>/handoff</code> back.</li>
+    <li><strong>Branch — is this a multi-session build?</strong>
+      <ul>
+        <li><strong>Yes</strong> → <code>/to-spec</code> (turn the thread into a spec), then <code>/to-tickets</code> to split it into <em>tracer-bullet</em> tickets each declaring its <em>blocking edges</em>. Then <code>/implement</code> per ticket, <strong>clearing context between each one</strong>.</li>
+        <li><strong>No</strong> → <code>/implement</code> right here, in the same context window.</li>
+      </ul>
+    </li>
+    <li>Either way, <strong><code>/implement</code></strong> builds each issue by driving <code>/tdd</code> internally (one red-green slice at a time), then closes with <code>/code-review</code> — a two-axis review (<em>Standards</em> + <em>Spec</em>) of the diff — before committing.</li>
+  </ol>
+
+  <div class="callout accent">
+    <span class="label">Context hygiene — the rule that breaks most people</span>
+    Keep steps 1–3 (grill → spec → tickets) in <strong>one unbroken context window</strong>. Don't compact or clear until after <code>/to-tickets</code> — the grilling, spec, and tickets must all build on the same thinking. Each <code>/implement</code> then starts <em>fresh</em>, working from its ticket alone. The limit is the <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">smart zone</a> (~120k tokens). If a session nears it <em>before</em> <code>/to-tickets</code>, don't push on degraded reasoning — <code>/handoff</code> and continue fresh.
+  </div>
+
+  <h2 id="on-ramps">The two on-ramps</h2>
+  <p>Starting situations that generate work, then merge onto the main flow.</p>
+  <ul>
+    <li><strong>Bugs and requests piling up → <code>/triage</code>.</strong> It moves issues through the five triage roles and produces <em>agent-ready</em> issues, which <code>/implement</code> later picks up.</li>
+  </ul>
+
+  <div class="callout warn">
+    <span class="label">Don't triage your own tickets</span>
+    Triage is only for issues <strong>you didn't create</strong> — bug reports, incoming feature requests, anything raw. Tickets that <code>/to-tickets</code> produced are <em>already agent-ready</em>. Running them through <code>/triage</code> is wasted work.
+  </div>
+
+  <h2 id="spec-driven-spine">The spec-driven spine (your focus)</h2>
+  <p>Spec-driven development is the stretch of the main flow from a sharpened idea to an agent-ready ticket. Four skills, one supporting discipline:</p>
+
+  <table>
+    <thead><tr><th>Skill</th><th>What it does</th><th>Produces</th><th>When</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>grill-with-docs</code></td>
+        <td>Relentless interview that sharpens a plan/design.</td>
+        <td>Edits to <code>CONTEXT.md</code> + ADRs as terms/decisions crystallise.</td>
+        <td>Start of the flow, with a codebase.</td>
+      </tr>
+      <tr>
+        <td><code>to-spec</code></td>
+        <td><strong>Synthesizes</strong> the conversation into a spec/PRD. No interview — just writes what's already discussed.</td>
+        <td>A spec published to the issue tracker, labelled <code>ready-for-agent</code>.</td>
+        <td>When the idea is settled &amp; multi-session.</td>
+      </tr>
+      <tr>
+        <td><code>to-tickets</code></td>
+        <td>Splits the spec into tracer-bullet tickets with blocking edges.</td>
+        <td>Agent-ready tickets, ordered blockers-first.</td>
+        <td>Multi-session builds, after the spec.</td>
+      </tr>
+      <tr>
+        <td><code>implement</code></td>
+        <td>Builds one ticket, driving <code>tdd</code> internally, then <code>code-review</code>.</td>
+        <td>Committed, reviewed code.</td>
+        <td>Per ticket, in a fresh context.</td>
+      </tr>
+      <tr>
+        <td><code>domain-modeling</code> <em>(underneath)</em></td>
+        <td>The active discipline of building the glossary + recording decisions.</td>
+        <td><code>CONTEXT.md</code> terms; ADRs in <code>docs/adr/</code>.</td>
+        <td>Inline, whenever a term or decision resolves.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="spec-anatomy">Anatomy of a <code>to-spec</code> spec</h3>
+  <p>From <a href="file:///Users/benbenweng/.agents/skills/to-spec/SKILL.md"><code>to-spec/SKILL.md</code></a>. A spec has a fixed shape:</p>
+  <ul>
+    <li><strong>Problem Statement</strong> — the problem from the user's perspective.</li>
+    <li><strong>Solution</strong> — the solution from the user's perspective.</li>
+    <li><strong>User Stories</strong> — a <em>long</em>, numbered list: "As an &lt;actor&gt;, I want &lt;feature&gt;, so that &lt;benefit&gt;." Extensive — cover all aspects.</li>
+    <li><strong>Implementation Decisions</strong> — modules, interfaces, schema, API contracts, interactions. <strong>No file paths or code snippets</strong> (they go stale). Exception: a prototype snippet that encodes a decision (state machine, schema, type shape) better than prose.</li>
+    <li><strong>Testing Decisions</strong> — what makes a good test (external behaviour, not internals), which modules, prior art.</li>
+    <li><strong>Out of Scope</strong> &amp; <strong>Further Notes</strong>.</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">The test-seam rule</span>
+    Before writing the spec, sketch the <em>seams</em> at which you'll test the feature. <strong>Prefer existing seams to new ones. Use the highest seam possible. Fewest seams across the codebase — the ideal number is one.</strong> Confirm them with the user first.
+  </div>
+
+  <h2 id="domain-docs">The documentation layer (the backbone)</h2>
+  <p>Two artefacts live underneath every spec-driven skill. They are created <strong>lazily</strong> — only when there's something to write — and every skill reads them before exploring.</p>
+
+  <h3 id="context-md"><code>CONTEXT.md</code> — the glossary</h3>
+  <p>From <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/CONTEXT-FORMAT.md"><code>CONTEXT-FORMAT.md</code></a>. It is the project's <strong>ubiquitous language</strong> and nothing else.</p>
+  <ul>
+    <li><strong>Opinionated.</strong> When several words name one concept, pick the best and list the rest under <code>_Avoid_:</code>.</li>
+    <li><strong>Tight.</strong> One or two sentences. Define what it <em>is</em>, not what it <em>does</em>.</li>
+    <li><strong>Project-specific only.</strong> General programming concepts (timeouts, error types) don't belong, even if heavily used.</li>
+    <li><strong>Devoid of implementation.</strong> Not a spec, not a scratchpad, not a place for decisions.</li>
+  </ul>
+
+  <h3 id="adr">ADRs — architectural decision records</h3>
+  <p>From <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/ADR-FORMAT.md"><code>ADR-FORMAT.md</code></a>. Live in <code>docs/adr/</code>, sequentially numbered (<code>0001-slug.md</code>). Can be a single paragraph.</p>
+  <div class="principle">Offer an ADR only when all three are true: hard to reverse · surprising without context · the result of a real trade-off. If any is missing, skip it.</div>
+  <p>What qualifies: architectural shape, integration patterns between contexts, lock-in-bearing tech choices, boundary/scope decisions, deliberate deviations from the obvious path, constraints not visible in code, non-obvious rejected alternatives.</p>
+
+  <h2 id="principles">Best-practice principles</h2>
+  <ol>
+    <li><strong>One window for grill → spec → tickets; fresh per implement.</strong> The thinking must be continuous; the building is compartmentalised.</li>
+    <li><strong>Respect the smart zone.</strong> Near ~120k tokens before <code>to-tickets</code>? Handoff, don't push.</li>
+    <li><strong><code>CONTEXT.md</code> is a glossary, not a spec.</strong> Keep implementation out.</li>
+    <li><strong>Use the ubiquitous language everywhere.</strong> Every output (issue title, spec, test name) uses <code>CONTEXT.md</code> terms. Don't drift to synonyms.</li>
+    <li><strong>ADRs sparingly.</strong> Only the three criteria. Don't record the obvious or the easily reversible.</li>
+    <li><strong>Create docs lazily.</strong> No <code>CONTEXT.md</code> until a term resolves; no <code>docs/adr/</code> until a decision earns one.</li>
+    <li><strong>Respect ADRs — don't re-litigate.</strong> Only reopen when the friction is real enough to warrant it, and say so explicitly.</li>
+    <li><strong>Fewest test seams; ideal = 1.</strong> Prefer existing seams; use the highest one.</li>
+    <li><strong>No file paths or code in specs</strong> (except decision-encoding prototypes). They go stale.</li>
+    <li><strong>Don't triage your own tickets.</strong> <code>to-tickets</code> output is already agent-ready.</li>
+    <li><strong>Use <code>ask-matt</code> as the router.</strong> When you forget which skill fits, ask the router instead of guessing.</li>
+  </ol>
+
+  <h2 id="glossary">Glossary</h2>
+  <table>
+    <thead><tr><th>Term</th><th>Meaning in this system</th></tr></thead>
+    <tbody>
+      <tr><td><code>flow</code></td><td>A path through the skills. Most work travels the <em>main flow</em>.</td></tr>
+      <tr><td><code>main flow</code></td><td>idea → ship: <code>grill-with-docs → to-spec → to-tickets → implement → code-review</code>.</td></tr>
+      <tr><td><code>on-ramp</code></td><td>A starting situation that generates work then merges onto the main flow (e.g. <code>triage</code>).</td></tr>
+      <tr><td><code>spec / PRD</code></td><td>The fixed-shape document <code>to-spec</code> synthesizes from the conversation.</td></tr>
+      <tr><td><code>ubiquitous language</code></td><td>The project's agreed domain vocabulary, captured in <code>CONTEXT.md</code>.</td></tr>
+      <tr><td><code>CONTEXT.md</code></td><td>The glossary. Opinionated, tight, project-specific, devoid of implementation.</td></tr>
+      <tr><td><code>ADR</code></td><td>Architectural Decision Record, in <code>docs/adr/</code>. Earned only via the 3 criteria.</td></tr>
+      <tr><td><code>seam</code></td><td>A point at which a feature is tested. Use the fewest, highest ones.</td></tr>
+      <tr><td><code>deep / shallow module</code></td><td>A deep module has a simple interface hiding substantial complexity (the goal of <code>improve-codebase-architecture</code>).</td></tr>
+      <tr><td><code>deletion test</code></td><td>"Would deleting it concentrate complexity, or just move it?" Concentrates = keep looking; it may be shallow.</td></tr>
+      <tr><td><code>tracer bullet</code></td><td>A ticket that drives a thin end-to-end slice through the system.</td></tr>
+      <tr><td><code>blocking edge</code></td><td>A native dependency between tickets; a ticket is unblocked when all its blockers close.</td></tr>
+      <tr><td><code>smart zone</code></td><td>The ~120k-token window within which the model still reasons sharply. Drives context hygiene.</td></tr>
+      <tr><td><code>grilling</code></td><td>The relentless interview primitive. <code>grill-with-docs</code> = <code>grilling</code> + <code>domain-modeling</code>.</td></tr>
+      <tr><td><code>model-invoked / user-invoked</code></td><td>Whether a skill can fire autonomously (pays context load) or only by typing its name (pays cognitive load).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <p>Reference for the <em>Matt Pocock Skills</em> learning workspace. Ground truth: the skills' own <code>SKILL.md</code> files + <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a>. Start with <a href="../lessons/0001-the-mental-map.html">Lesson 1 — The Mental Map</a>. See also the companion cards: <a href="spec-anatomy.html">Spec Anatomy</a> · <a href="tickets-anatomy.html">Ticket Anatomy</a> · <a href="context-md-format.html"><code>CONTEXT.md</code></a> · <a href="adr-format.html">ADR Format</a> · <a href="skills-catalog.html">Skills Catalog</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>

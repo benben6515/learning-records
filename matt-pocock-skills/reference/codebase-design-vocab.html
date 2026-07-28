@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — The Deep-Module Vocabulary (codebase-design)</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .ds { display:flex; gap:1.75rem; flex-wrap:wrap; margin:1.5rem 0 0.5rem; font-family: var(--sans); }
+  .ds .mod { flex:1 1 13rem; text-align:center; }
+  .ds .mod .cap { font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; }
+  .ds .mod .iface, .ds .mod .body { border:1.5px solid var(--ink-soft); border-radius:6px; padding:0.45rem 0.5rem; margin:0 auto 0.4rem; font-size:0.78rem; }
+  .ds .mod .iface { background:var(--accent-fill); color:#fff; border-color:var(--accent-fill); }
+  .ds .mod .body { background:var(--paper-edge); color:var(--ink-soft); }
+  .ds .mod.deep .iface { width:48%; }
+  .ds .mod.deep .body { width:100%; min-height:5.5rem; display:flex; align-items:center; justify-content:center; }
+  .ds .mod.shallow .iface { width:100%; }
+  .ds .mod.shallow .body { width:48%; min-height:1.4rem; display:flex; align-items:center; justify-content:center; }
+  .ds .note { font-size:0.78rem; color:var(--muted); margin-top:0.4rem; }
+</style>
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · v1</p>
+  <h1>The Deep-Module Vocabulary — <code>codebase-design</code></h1>
+  <p class="subtitle">The shared architecture language every designing skill speaks. Use these terms exactly.</p>
+
+  <div class="principle">Design <strong>deep modules</strong>: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface. Leverage for callers, locality for maintainers, testability for everyone.</div>
+
+  <p>Ground truth: <a href="file:///Users/benbenweng/ai/skills/codebase-design/SKILL.md"><code>codebase-design/SKILL.md</code></a> and <a href="file:///Users/benbenweng/ai/skills/codebase-design/DEEPENING.md"><code>DEEPENING.md</code></a>. This is the vocabulary <code>improve-codebase-architecture</code> is built on, and it must be used <em>exactly</em> — don't drift to "component," "service," "API," or "boundary."</p>
+
+  <hr class="rule">
+
+  <h2 id="deep-vs-shallow">Deep vs shallow</h2>
+  <div class="ds">
+    <div class="mod deep">
+      <div class="cap">Deep module — aim here</div>
+      <div class="iface">small interface</div>
+      <div class="body">deep implementation<br><span style="font-size:0.72rem;">complex logic hidden</span></div>
+      <div class="note">few methods, simple params · lots behind it</div>
+    </div>
+    <div class="mod shallow">
+      <div class="cap">Shallow module — avoid</div>
+      <div class="iface">large interface</div>
+      <div class="body">thin impl</div>
+      <div class="note">many methods, complex params · just passes through</div>
+    </div>
+  </div>
+  <p>When designing an interface, ask: <em>Can I reduce the methods? Simplify the parameters? Hide more complexity inside?</em></p>
+
+  <h2 id="glossary">Glossary</h2>
+  <table>
+    <thead><tr><th>Term</th><th>Meaning</th><th>Avoid</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Module</strong></td><td>Anything with an interface and an implementation. Scale-agnostic: a function, class, package, or tier-spanning slice.</td><td>unit, component, service</td></tr>
+      <tr><td><strong>Interface</strong></td><td>Everything a caller must know to use the module correctly — type signature <em>and</em> invariants, ordering, error modes, config, performance. (Broader than the TS <code>interface</code> keyword.)</td><td>API, signature</td></tr>
+      <tr><td><strong>Implementation</strong></td><td>What's inside a module — its body of code.</td><td>—</td></tr>
+      <tr><td><strong>Adapter</strong></td><td>A concrete thing that satisfies an interface at a seam. Describes <em>role</em> (what slot it fills), not substance. (A small adapter can have a large implementation, e.g. a Postgres repo.)</td><td>—</td></tr>
+      <tr><td><strong>Depth</strong></td><td>Leverage at the interface: behaviour a caller/test can exercise per unit of interface they must learn. <strong>Deep</strong> = much behaviour behind a small interface; <strong>shallow</strong> = interface nearly as complex as the implementation.</td><td>—</td></tr>
+      <tr><td><strong>Seam</strong></td><td><em>(Michael Feathers)</em> A place where you can alter behaviour without editing in that place — the <em>location</em> where a module's interface lives. Where the seam goes is its own design decision.</td><td>boundary (overloaded with DDD's bounded context)</td></tr>
+      <tr><td><strong>Leverage</strong></td><td>What <em>callers</em> get from depth: more capability per unit of interface learned. One implementation pays back across N call sites and M tests.</td><td>—</td></tr>
+      <tr><td><strong>Locality</strong></td><td>What <em>maintainers</em> get from depth: change, bugs, knowledge, and verification concentrate in one place. Fix once, fixed everywhere.</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="principles">Principles</h2>
+  <ul>
+    <li><strong>Depth is a property of the interface, not the implementation.</strong> A deep module can be internally composed of small, mockable parts — they just aren't part of the interface. Internal seams (private, used by the module's own tests) are fine alongside the external seam.</li>
+    <li><strong>The deletion test.</strong> Imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.</li>
+    <li><strong>The interface is the test surface.</strong> Callers and tests cross the same seam. If you need to test <em>past</em> the interface, the module is probably the wrong shape.</li>
+    <li><strong>One adapter = a hypothetical seam. Two adapters = a real one.</strong> Don't introduce a seam unless something actually varies across it. A single-adapter seam is just indirection.</li>
+  </ul>
+
+  <h2 id="categories">Deepening by dependency category</h2>
+  <p>From <a href="file:///Users/benbenweng/ai/skills/codebase-design/DEEPENING.md"><code>DEEPENING.md</code></a>. When you deepen a cluster of shallow modules, the category of its dependencies decides how the deepened module is tested across its seam:</p>
+  <table>
+    <thead><tr><th>Category</th><th>Example</th><th>How to deepen / test</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1. In-process</strong></td><td>Pure computation, in-memory state</td><td>Always deepenable. Merge and test through the new interface. No adapter needed.</td></tr>
+      <tr><td><strong>2. Local-substitutable</strong></td><td>PGLite for Postgres, in-memory FS</td><td>Deepenable if a stand-in exists. Test with the stand-in in-suite. Seam stays internal.</td></tr>
+      <tr><td><strong>3. Remote but owned</strong> (Ports &amp; Adapters)</td><td>Your own services across a network</td><td>Define a <em>port</em> at the seam. Deep module owns the logic; transport is an injected adapter. In-memory adapter for tests, HTTP/gRPC/queue for prod.</td></tr>
+      <tr><td><strong>4. True external</strong> (Mock)</td><td>Stripe, Twilio — third-party</td><td>Take the dependency as an injected port; tests provide a mock adapter.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout note">
+    <span class="label">Replace, don't layer — when testing a deepened module</span>
+    Old unit tests on the shallow modules become waste once tests at the deepened interface exist — <strong>delete them</strong>. Write new tests at the interface; assert on observable outcomes, not internal state. Tests should survive internal refactors — if a test changes when the implementation changes, it was testing past the interface.
+  </div>
+
+  <h2 id="relationships">How the terms relate</h2>
+  <ul>
+    <li>A <strong>module</strong> has exactly one <strong>interface</strong>.</li>
+    <li><strong>Depth</strong> is a property of a <strong>module</strong>, measured against its <strong>interface</strong>.</li>
+    <li>A <strong>seam</strong> is where a module's <strong>interface</strong> lives; an <strong>adapter</strong> sits there and satisfies it.</li>
+    <li><strong>Depth</strong> produces <strong>leverage</strong> (callers) and <strong>locality</strong> (maintainers).</li>
+  </ul>
+
+  <div class="footer">
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative: <a href="file:///Users/benbenweng/ai/skills/codebase-design/SKILL.md"><code>codebase-design/SKILL.md</code></a> · <a href="file:///Users/benbenweng/ai/skills/codebase-design/DEEPENING.md"><code>DEEPENING.md</code></a>. See also <a href="spec-driven-workflow.html">Workflow Map</a> · <a href="../lessons/0007-improve-architecture-consumes-the-docs.html">Lesson 7</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>

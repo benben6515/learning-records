@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 1 — The Mental Map</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0001 · ~6 min</p>
+  <h1>The Mental Map</h1>
+  <p class="subtitle">Before the loop, the map. One idea you can hold in your head.</p>
+
+  <p class="lead">Your mission is to drive your own project's work from a fuzzy idea all the way to a shipped change. Before any single skill, you need the <strong>shape of the whole system</strong> — because every skill is just a stage on one route.</p>
+
+  <h2>The one idea</h2>
+  <p>The Matt Pocock skills are <strong>not a toolbox of disconnected commands</strong>. They form a single path that almost all work travels:</p>
+
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">grill-with-docs</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-tickets</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+      <span class="arrow">→</span>
+      <span class="stage">code-review</span>
+    </div>
+    <div class="under">idea &nbsp;⟶&nbsp; ship &nbsp;·&nbsp; with <code>domain-modeling</code> writing <code>CONTEXT.md</code> + ADRs the whole way</div>
+  </div>
+
+  <p>Read it left to right. You start with an idea, sharpen it by interview (<code>grill-with-docs</code>), freeze it into a spec (<code>to-spec</code>), split it into buildable tickets (<code>to-tickets</code>), build each one (<code>implement</code>), and review before you commit (<code>code-review</code>). <strong>Spec-driven development is the middle stretch</strong> — <code>grill-with-docs → to-spec → to-tickets</code> — and that is what we're learning first.</p>
+
+  <div class="callout accent">
+    <span class="label">The rule that breaks most people</span>
+    Keep <code>grill-with-docs → to-spec → to-tickets</code> in <strong>one unbroken context window</strong>. The grilling, the spec, and the tickets must build on the same thinking — so don't compact or clear the conversation until the tickets exist. Then each <code>implement</code> starts <em>fresh</em>, working from its ticket alone. If you near the <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">smart zone</a> (~120k tokens) <em>before</em> the tickets, hand off — don't grind on degraded reasoning.
+  </div>
+
+  <h2>Why this matters for you</h2>
+  <p>You're already comfortable driving an agent. The skill that separates people who fumble these tools from people who ship with them isn't knowing what each command does — it's knowing <strong>where you are on the route</strong>, and the single discipline of <em>one continuous window, then compartmentalised builds</em>. Hold the map and that rule, and the rest is detail you can look up.</p>
+
+  <div class="checklist">
+    <h3>Your tangible win — say these out loud</h3>
+    <ol>
+      <li>Name the five stages of the main flow, in order.</li>
+      <li>Point to which stretch counts as "spec-driven."</li>
+      <li>State the one context-hygiene rule and <em>when</em> you're allowed to clear context.</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">If you can answer all three without checking, you've got the map. The rest of this course fills in the stages — starting with the entry point, <code>grill-with-docs</code>.</p>
+  </div>
+
+  <h2>Go deeper</h2>
+  <ul>
+    <li><strong>Primary source (read):</strong> the <a href="file:///Users/benbenweng/.agents/skills/ask-matt/SKILL.md"><code>ask-matt</code> skill</a> — it <em>is</em> the map, written by the author. Five minutes.</li>
+    <li><strong>Primary source (watch):</strong> Matt's <a href="https://www.youtube.com/watch?v=6BB6exR8Zd8">intro to <code>/grill-with-docs</code></a> — the entry stage, in his own words.</li>
+    <li><strong>The full reference:</strong> <a href="../reference/spec-driven-workflow.html">Workflow Map &amp; Glossary</a> — every stage, the spec anatomy, the <code>CONTEXT.md</code>/ADR rules, the best-practice principles, and a glossary. Bookmark this; you'll return to it.</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    I'm your teacher for this — ask me anything that's fuzzy. Good follow-ups right now: <em>"Why must the window be unbroken — what concretely breaks if I compact early?"</em> or <em>"How do I know if my build is 'multi-session' and needs tickets, vs. just <code>implement</code>?"</em>
+  </div>
+
+  <p class="nav-next">Next lesson → <strong>The entry point: <code>grill-with-docs</code></strong> (coming up). It's where every spec-driven journey starts — and where the glossary begins.</p>
+
+  <div class="footer">
+    <p>Lesson 1 of the <em>Matt Pocock Skills</em> workspace · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
+  </div>
+
+</div>
+</body>
+</html>

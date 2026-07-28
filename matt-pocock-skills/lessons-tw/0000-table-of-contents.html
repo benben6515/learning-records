@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0000 課 — 課程目錄</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  /* ---- Index-only styles ---- */
+  .index { list-style: none; padding: 0; margin: 1.75rem 0; }
+  .index li { margin: 0; border-bottom: 1px solid var(--rule); }
+  .index li:first-child { border-top: 1px solid var(--ink-soft); }
+  .index li.capstone { background: var(--paper-edge); }
+  .index a {
+    display: flex; gap: 1.1rem; padding: 1rem 0.6rem; align-items: baseline;
+    border-bottom: none; border-left: 3px solid transparent;
+  }
+  .index a:hover { border-left-color: var(--accent); background: var(--paper-edge); }
+  .index .num {
+    font-family: var(--sans); font-size: 1.55rem; font-weight: 300;
+    color: var(--accent); flex: 0 0 2.7rem; letter-spacing: -0.02em; line-height: 1;
+  }
+  .index .meta { display: flex; flex-direction: column; gap: 0.18rem; }
+  .index .t { font-size: 1.16rem; color: var(--ink); font-weight: 600; line-height: 1.3; }
+  .index .t code { font-size: 0.98rem; }
+  .index .s { font-size: 0.92rem; color: var(--muted); font-style: italic; line-height: 1.45; }
+  .index .d {
+    font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-top: 0.15rem;
+  }
+  .index .d .lvl { color: var(--note); }
+  .index .d .cap { color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0000 課 · 課程目錄</p>
+  <h1>《Matt Pocock 技能》課程目錄</h1>
+  <p class="subtitle">七堂課，一條路徑：從想法到交付，全程由規格驅動。</p>
+
+  <p class="lead">這門課不是一盒互不相干的指令。它是一條幾乎所有工作都會走過的路徑——<strong>心智地圖 → 入口 → 兩份產物 → 規格 → 票 → 架構消費</strong>。每一堂課，都是這條路線上的一個階段。從頭讀到尾，你就能握住整個系統的形狀。</p>
+
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">grill-with-docs</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-tickets</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+      <span class="arrow">→</span>
+      <span class="stage">code-review</span>
+    </div>
+    <div class="under">想法 &nbsp;⟶&nbsp; 交付 &nbsp;·&nbsp; 全程由 <code>CONTEXT.md</code> + ADR 撰寫，再由 <code>improve-codebase-architecture</code> 消化</div>
+  </div>
+
+  <h2>全部課程</h2>
+
+  <ol class="index">
+    <li>
+      <a href="0001-the-mental-map.html">
+        <span class="num">01</span>
+        <span class="meta">
+          <span class="t">心智地圖</span>
+          <span class="s">在動手跑流程之前，先有一張地圖。一個你能在腦中握住的核心觀念。</span>
+          <span class="d">約 6 分鐘</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0002-the-entry-point.html">
+        <span class="num">02</span>
+        <span class="meta">
+          <span class="t">入口：<code>grill-with-docs</code></span>
+          <span class="s">每一段規格驅動的旅程都從這裡開始。它是三個技能，層層相套。</span>
+          <span class="d">約 6 分鐘</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0003-context-md-glossary.html">
+        <span class="num">03</span>
+        <span class="meta">
+          <span class="t"><code>CONTEXT.md</code> — 詞彙表</span>
+          <span class="s">四條規則。一句關鍵話。每個後續技能最先讀的東西。</span>
+          <span class="d">約 6 分鐘</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0004-adrs-the-gate.html">
+        <span class="num">04</span>
+        <span class="meta">
+          <span class="t">ADR — 三條件的閘門</span>
+          <span class="s">詞彙表收用語，ADR 收決策——而且幾乎不收。</span>
+          <span class="d">約 6 分鐘</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0005-to-spec-anatomy.html">
+        <span class="num">05</span>
+        <span class="meta">
+          <span class="t"><code>to-spec</code> — 規格解剖</span>
+          <span class="s">它凍結對話。它不訪談。</span>
+          <span class="d">約 7 分鐘</span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0006-to-tickets-tracer-bullets.html">
+        <span class="num">06</span>
+        <span class="meta">
+          <span class="t"><code>to-tickets</code> — 曳光彈與前緣</span>
+          <span class="s">規格驅動主幹的最後一站。一份規格變成一套讓代理能在全新視窗中施工的票。</span>
+          <span class="d">約 7 分鐘 · <span class="lvl">認識層級</span></span>
+        </span>
+      </a>
+    </li>
+    <li class="capstone">
+      <a href="0007-improve-architecture-consumes-the-docs.html">
+        <span class="num">07</span>
+        <span class="meta">
+          <span class="t"><code>improve-codebase-architecture</code> 如何消化這些文件</span>
+          <span class="s">這個技能讀進你一路建立的所有東西——並找出程式碼想要深化之處。</span>
+          <span class="d">約 8 分鐘 · <span class="cap">總結</span></span>
+        </span>
+      </a>
+    </li>
+  </ol>
+
+  <div class="callout note">
+    <span class="label">怎麼開始</span>
+    若你是第一次讀，從<strong>第 1 課</strong>開始按順序走——它會給你那張地圖，其餘各課都是在填滿地圖上的各站。若只想查某個階段，直接點上面任何一堂。
+  </div>
+
+  <h2>延伸閱讀</h2>
+  <ul>
+    <li><strong>流程圖與詞彙表：</strong><a href="../reference/spec-driven-workflow.html">規格驅動流程參考</a>——每個階段、規格解剖、<code>CONTEXT.md</code>／ADR 規則、最佳實踐原則。加入書籤，你會一再回來。</li>
+    <li><strong>技能目錄：</strong><a href="../reference/skills-catalog.html">Matt Pocock 技能目錄</a>——所有 Matt Pocock 技能的繁中譯名與一句話說明，依官方 repo 分類。</li>
+    <li><strong>任務說明：</strong><a href="../MISSION.md">任務</a>——這門課為何存在、要帶你到哪裡。</li>
+    <li><strong>資源清單：</strong><a href="../RESOURCES.md">資源</a>——主要來源、影片與延伸材料。</li>
+  </ul>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》課程目錄 · <a href="../MISSION.md">任務</a> · <a href="../RESOURCES.md">資源</a> · <a href="../reference/spec-driven-workflow.html">參考</a></p>
+  </div>
+
+</div>
+</body>
+</html>

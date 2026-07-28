@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 5 — to-spec, the Spec Anatomy</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .contrast { margin: 1.5rem 0; font-family: var(--sans); }
+  .contrast .pair { display:flex; gap: 0.75rem; flex-wrap: wrap; }
+  .contrast .side { flex: 1 1 14rem; border: 1px solid var(--rule); border-radius: 6px; padding: 0.8rem 0.95rem; background: var(--paper-edge); }
+  .contrast .side.ask { border-left: 3px solid var(--accent); }
+  .contrast .side.write { border-left: 3px solid var(--note); }
+  .contrast .side .h { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+  .contrast .side .n { font-size: 0.95rem; color: var(--ink); }
+  .contrast .vs { text-align:center; color: var(--muted); font-size: 0.78rem; margin: 0.4rem 0; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0005 · ~7 min</p>
+  <h1><code>to-spec</code> — The Spec Anatomy</h1>
+  <p class="subtitle">It freezes the conversation. It does not interview.</p>
+
+  <p class="lead">You've now got the two artefacts a spec is built on — the <a href="0003-context-md-glossary.html">glossary</a> and <a href="0004-adrs-the-gate.html">ADRs</a>. <code>to-spec</code> is where they come together: it takes the conversation you already had in <code>grill-with-docs</code> and freezes it into a fixed-shape spec (a PRD) that <code>implement</code> can build from. The whole skill lives in one contrast:</p>
+
+  <h2>The one idea</h2>
+  <div class="contrast">
+    <div class="pair">
+      <div class="side ask">
+        <div class="h">grill-with-docs</div>
+        <div class="n"><strong>Interviews.</strong> One question at a time. Decisions are yours. Builds the glossary + ADRs.</div>
+      </div>
+      <div class="side write">
+        <div class="h">to-spec</div>
+        <div class="n"><strong>Synthesizes.</strong> Zero questions. Just writes what you already settled. Freezes it into a spec.</div>
+      </div>
+    </div>
+    <div class="vs">same conversation · opposite jobs</div>
+  </div>
+
+  <div class="principle">If <code>to-spec</code> starts asking you questions, something went wrong upstream — you skipped or under-cooked the grilling. Stop and grill; don't fake a decision into the spec.</div>
+
+  <h2>The anatomy (fixed shape)</h2>
+  <p>Every spec has the same sections. You don't invent the structure — you fill it:</p>
+  <ul>
+    <li><strong>Problem Statement</strong> &amp; <strong>Solution</strong> — both from the <em>user's</em> perspective, in glossary vocabulary.</li>
+    <li><strong>User Stories</strong> — a <em>long</em> numbered list: "As an &lt;actor&gt;, I want &lt;feature&gt;, so that &lt;benefit&gt;." Cover all aspects.</li>
+    <li><strong>Implementation Decisions</strong> — modules, interfaces, schema, API contracts. <strong>No file paths or code snippets</strong> (they rot).</li>
+    <li><strong>Testing Decisions</strong> — external behaviour only, not internals; which modules; prior art.</li>
+    <li><strong>Out of Scope</strong> &amp; <strong>Further Notes</strong>.</li>
+  </ul>
+
+  <h2>The test-seam rule — the counterintuitive one</h2>
+  <p>Before writing, <code>to-spec</code> sketches the <strong>seams</strong> at which the feature will be tested. A seam is a testing insertion point. The rule that surprises people:</p>
+  <div class="callout accent">
+    <span class="label">The seam rule</span>
+    Prefer existing seams over new ones. Use the <strong>highest</strong> (most external) seam possible. <strong>The fewer seams, the better — the ideal number is one.</strong>
+  </div>
+  <p>Why "fewer is better" when instinct screams "more tests = safer"? Because each seam is a coupling point. Testing a feature through <em>one</em> high boundary (say, the full request→response flow, or the rendered UI) gives you confidence with minimal brittleness. Five unit tests pinned to internal functions break every time you refactor — and "the interface is the test surface." One high seam &gt; many low ones.</p>
+
+  <div class="checklist">
+    <h3>Your tangible win — spot the broken rule</h3>
+    <p style="margin-top:0;">Each snippet breaks one of the three rules. Name which.</p>
+    <ol>
+      <li>The spec opens: <em>"Before I write this up — what should happen when the bitmask overflows?"</em></li>
+      <li>An Implementation Decision reads: <em>"Modify <code>parsePermissionBits()</code> in <code>src/utils/permissions.js</code> to return the bit positions."</em></li>
+      <li>A Testing Decision reads: <em>"Unit-test the internal <code>bitPositions()</code> helper in isolation."</em></li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">Answers: #1 breaks <em>synthesize-don't-interview</em> (it's a question → that's grilling's job). #2 breaks <em>no file paths/code</em>. #3 breaks the <em>seam rule</em> — it's testing a low internal function instead of external behaviour through one high seam. Reason through them in the <a href="../reference/spec-anatomy.html#rules">reference</a>.</p>
+  </div>
+
+  <h2>Where this sits in the flow</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">grill-with-docs</span>
+      <span class="arrow">→</span>
+      <span class="stage accent">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage ghost">issue · <code>ready-for-agent</code></span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+    </div>
+  </div>
+  <p><code>to-spec</code> publishes the spec with the <code>ready-for-agent</code> label — <strong>no extra triage</strong> (Lesson 1: don't triage your own output). From here, a multi-session build runs <code>to-tickets</code> first; a single-session build goes straight to <code>implement</code>.</p>
+
+  <h2>Go deeper</h2>
+  <ul>
+    <li><strong>Primary source (read):</strong> <a href="file:///Users/benbenweng/.agents/skills/to-spec/SKILL.md"><code>to-spec/SKILL.md</code></a> — the process, the template, the seam rule, verbatim. Five minutes.</li>
+    <li><strong>The reference card:</strong> <a href="../reference/spec-anatomy.html">Spec Anatomy</a> — the full template, the three rules, and the <code>ready-for-agent</code> hand-off. Bookmark.</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Try one: <em>"For a dashboard feature that touches the API, the auth bitmask, and the sidebar filter — what's the 'one high seam' I'd test through?"</em> (real practice with the seam rule) · <em>"The skill says user stories should be a LONG list — how do I know when it's long enough vs. gold-plating?"</em> · <em>"If a decision is genuinely undecided at spec time, where exactly does it get resolved — back in grill, or as a ticket?"</em>
+  </div>
+
+  <p class="nav-next">Next lesson → <strong><code>to-tickets</code> — tracer bullets &amp; blocking edges</strong> (awareness level). The last stop of the spec-driven spine: how one spec becomes a blocker-ordered set of tickets an agent can work fresh.</p>
+
+  <div class="footer">
+    <p>Lesson 5 of the <em>Matt Pocock Skills</em> workspace · <a href="0004-adrs-the-gate.html">← Lesson 4</a> · <a href="../MISSION.md">Mission</a> · <a href="../reference/spec-anatomy.html">Reference</a></p>
+  </div>
+
+</div>
+</body>
+</html>

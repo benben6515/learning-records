@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — Ticket Anatomy (to-tickets)</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · v1</p>
+  <h1>Ticket Anatomy — <code>to-tickets</code></h1>
+  <p class="subtitle">Break a spec into tracer-bullet tickets that declare their blocking edges.</p>
+
+  <div class="principle">A <strong>ticket</strong> is a <em>tracer bullet</em>: a narrow but complete vertical slice that an agent can build in one fresh context window. Every ticket declares which other tickets <strong>block</strong> it. You always work the <strong>frontier</strong> — the tickets whose blockers are all done.</div>
+
+  <p>Ground truth: <a href="file:///Users/benbenweng/ai/skills/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a>. This is the last stop of the spec-driven spine: it takes a published spec and fans it out into tickets each labelled <code>ready-for-agent</code> — no further triage.</p>
+
+  <hr class="rule">
+
+  <h2 id="process">The process — five steps</h2>
+  <ol>
+    <li><strong>Gather context.</strong> Work from what's in the conversation, plus any passed reference (spec path, issue, URL). Read its full body and comments.</li>
+    <li><strong>Explore the codebase (optional).</strong> Use the <code>CONTEXT.md</code> vocabulary in titles; respect ADRs in the area you touch. Look for a chance to <em>prefactor</em> — "make the change easy, then make the easy change."</li>
+    <li><strong>Draft vertical slices.</strong> Break the work into tracer-bullet tickets, each with its blocking edges (see rules below).</li>
+    <li><strong>Quiz the user.</strong> Present a numbered list: each ticket's title, what it delivers, and what it's blocked by. Ask if granularity, edges, and merges/splits feel right. Iterate to approval.</li>
+    <li><strong>Publish to the configured tracker</strong> in dependency order (blockers first). Form depends on the tracker — see below.</li>
+  </ol>
+
+  <h2 id="slice">Vertical-slice rules — the tracer bullet</h2>
+  <div class="callout accent">
+    <span class="label">A tracer bullet is vertical</span>
+    <ul style="margin:0.3rem 0 0;">
+      <li>Cuts a narrow but <strong>complete</strong> path through every layer — schema, API, UI, tests. Vertical, <em>not</em> a horizontal slice of one layer.</li>
+      <li>Completed slice is <strong>demoable / verifiable on its own</strong>.</li>
+      <li>Sized to <strong>fit one fresh context window</strong>.</li>
+      <li>Any <strong>prefactoring is done first</strong>, as its own leading ticket(s).</li>
+    </ul>
+  </div>
+  <table>
+    <thead><tr><th>Horizontal slice — avoid</th><th>Vertical slice / tracer bullet — aim</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>"Build the whole schema."<br><span style="color:var(--muted);font-size:0.86rem;">Not demoable alone.</span></td>
+        <td>"User can log in and see one protected page, end-to-end."<br><span style="color:var(--muted);font-size:0.86rem;">Demoable the moment it lands.</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="frontier">Blocking edges &amp; the frontier</h2>
+  <p>Each ticket declares its <strong>blocking edges</strong> — the tickets that must finish before it can start. A ticket with no blockers starts immediately. The set of currently-unblocked tickets is the <strong>frontier</strong>, and that is always what you work:</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">T1 · login end-to-end</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ blocks</div>
+    <div class="row">
+      <span class="stage">T2 · menu filters by permissionBits</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ blocks</div>
+    <div class="row">
+      <span class="stage">T3 · per-role menu management</span>
+    </div>
+    <div class="under">start: frontier = {T1} · after T1 closes: {T2} · after T2: {T3}</div>
+  </div>
+  <p>Because tickets are independent slices with <em>explicit</em> edges, each <code>implement</code> can run fresh, read only its ticket, and work the frontier without clobbering other sessions. This is precisely why the unbroken-window rule (grill → spec → <strong>tickets</strong>) captures the edges while the thinking is warm.</p>
+
+  <h2 id="exception">The exception — wide refactor → expand–contract</h2>
+  <p>A <strong>wide refactor</strong> is one mechanical change — rename a column, retype a shared symbol — whose <strong>blast radius</strong> spans the whole codebase. A single edit breaks thousands of call sites at once, so <em>no vertical slice can land green</em>. Don't tracer-bullet it. Sequence it as <strong>expand–contract</strong>:</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">expand</span>
+      <span class="arrow">→</span>
+      <span class="stage">migrate (batched)</span>
+      <span class="arrow">→</span>
+      <span class="stage">contract</span>
+    </div>
+    <div class="under">add the new form beside the old (nothing breaks) · migrate call sites in batches, each its own ticket blocked by the expand, CI green batch-to-batch · delete the old form once no caller remains</div>
+  </div>
+  <div class="callout warn">
+    <span class="label">Last-resort variant</span>
+    When even a batch can't stay green alone, keep the sequence but let batches share an <strong>integration branch</strong> that all block a final <strong>integrate-and-verify</strong> ticket — green is promised only there.
+  </div>
+
+  <h2 id="publish">How it publishes — two shapes</h2>
+  <p>The tickets are the same either way; only the shape of the blocking edges changes, based on what <code>setup-matt-pocock-skills</code> configured:</p>
+  <ul>
+    <li><strong>Local files</strong> → one file per ticket under <code>.scratch/&lt;feature&gt;/issues/&lt;NN&gt;-&lt;slug&gt;.md</code>, numbered from <code>01</code> in dependency order. "Blocked by" as text. One ticket per file — never a combined file.</li>
+    <li><strong>Real tracker (GitHub, Linear…)</strong> → one issue per ticket in dependency order, using the platform's <em>native</em> blocking / sub-issue links. Apply the <code>ready-for-agent</code> label — agent-grabbable by construction, <strong>no triage</strong>.</li>
+  </ul>
+  <pre><code># &lt;NN&gt; — &lt;Ticket title&gt;
+
+What to build: the end-to-end behaviour this ticket makes work,
+from the user's perspective — NOT a layer-by-layer implementation list.
+
+Blocked by: the numbers/titles that gate this one, or
+"None — can start immediately".
+
+Status: ready-for-agent
+
+- [ ] Acceptance criterion 1
+- [ ] Acceptance criterion 2</code></pre>
+
+  <h2 id="rules">The four rules that get broken most</h2>
+  <table>
+    <thead><tr><th>Rule</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Slice vertically, not horizontally</strong></td>
+        <td>"Do all the schema, then all the API" is a horizontal slice — nothing is demoable until the last layer lands. A tracer bullet goes end-to-end through <em>all</em> layers for a <em>thin</em> sliver of behaviour.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Every ticket declares its blockers</strong></td>
+        <td>The frontier depends on it. Without explicit edges, sessions can't run independently or pick safe work. The edge list is the whole point of capturing this in the warm window.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Don't tracer-bullet a wide refactor</strong></td>
+        <td>One mechanical change with a codebase-wide blast radius can't land green in a vertical slice. Use expand–contract: add new form → migrate in batches → delete old form. Forcing it into a tracer bullet just produces a broken build.</td>
+      </tr>
+      <tr>
+        <td><strong>4. No file paths or code in tickets</strong></td>
+        <td>Same rule as the spec — they rot. Record <em>behaviour</em> from the user's perspective. Only exception: a prototype snippet that encodes a decision better than prose (state machine, schema), trimmed to the decision-rich parts.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="bridge">The handoff</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage accent">to-tickets</span>
+      <span class="arrow">→</span>
+      <span class="stage ghost">frontier · ready-for-agent</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement (fresh window)</span>
+    </div>
+  </div>
+  <ul>
+    <li>Single-session build? <code>implement</code> can take the spec directly — <code>to-tickets</code> is optional.</li>
+    <li>Multi-session build? <code>to-tickets</code> splits the spec into frontier tickets; each <code>implement</code> starts fresh and reads its ticket.</li>
+    <li>Never close or modify the parent issue.</li>
+  </ul>
+
+  <div class="footer">
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="file:///Users/benbenweng/ai/skills/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a>. See also <a href="spec-anatomy.html">Spec Anatomy</a> · <a href="spec-driven-workflow.html">Workflow Map</a> · <a href="../lessons/0006-to-tickets-tracer-bullets.html">Lesson 6</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>

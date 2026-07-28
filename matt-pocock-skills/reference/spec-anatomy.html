@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — Spec Anatomy (to-spec)</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · v1</p>
+  <h1>Spec Anatomy — <code>to-spec</code></h1>
+  <p class="subtitle">Synthesize the conversation into a fixed-shape spec. No interviewing.</p>
+
+  <div class="principle"><code>to-spec</code> takes what was <em>already discussed</em> and freezes it. The thinking happened in <code>grill-with-docs</code>; this skill just captures it. If you're interviewing here, you skipped the grilling.</div>
+
+  <p>Ground truth: <a href="file:///Users/benbenweng/.agents/skills/to-spec/SKILL.md"><code>to-spec/SKILL.md</code></a>. The spec (you may know it as a PRD) is published to the issue tracker labelled <code>ready-for-agent</code> — no further triage.</p>
+
+  <hr class="rule">
+
+  <h2 id="process">The process — three steps</h2>
+  <ol>
+    <li><strong>Explore</strong> the repo (if you haven't). Use the <code>CONTEXT.md</code> vocabulary throughout; respect any ADRs in the area you're touching.</li>
+    <li><strong>Sketch the test seams first.</strong> Prefer existing seams to new ones; use the <em>highest</em> seam possible; the fewer seams the better — <strong>the ideal number is one</strong>. Confirm the seams with the user before writing.</li>
+    <li><strong>Write the spec</strong> from the template below and publish it to the issue tracker with the <code>ready-for-agent</code> label.</li>
+  </ol>
+
+  <h2 id="anatomy">The anatomy</h2>
+  <pre><code>## Problem Statement
+The problem, from the user's perspective.
+
+## Solution
+The solution, from the user's perspective.
+
+## User Stories
+A LONG, numbered list. Each:
+  "As an &lt;actor&gt;, I want &lt;feature&gt;, so that &lt;benefit&gt;."
+Extensive — cover all aspects of the feature.
+
+## Implementation Decisions
+- Modules built/modified, and their interfaces
+- Schema changes, API contracts, specific interactions
+- Architectural decisions, technical clarifications
+NO file paths or code snippets (they go stale). Exception: a prototype
+snippet that encodes a decision better than prose (state machine, reducer,
+schema, type shape) — inline it, trimmed to the decision-rich parts.
+
+## Testing Decisions
+- What makes a good test: external behaviour only, not implementation details
+- Which modules will be tested
+- Prior art: similar tests already in the codebase
+
+## Out of Scope
+What is explicitly not in this spec.
+
+## Further Notes
+Anything else.</code></pre>
+
+  <h2 id="rules">The three rules that get broken most</h2>
+  <table>
+    <thead><tr><th>Rule</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Synthesize — don't interview</strong></td>
+        <td><code>to-spec</code> has <code>disable-model-invocation</code> energy: it writes what's settled, it doesn't reopen it. Questions belong to <code>grill-with-docs</code>. If something is genuinely undecided, stop and go grill it — don't fake a decision in the spec.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Fewest seams; ideal = 1</strong></td>
+        <td>Each seam is a coupling point that makes tests brittle. Test through the <em>highest</em> (most external) boundary you can — one seam covering the whole feature beats five unit tests at internal functions. "The interface is the test surface."</td>
+      </tr>
+      <tr>
+        <td><strong>3. No file paths or code</strong></td>
+        <td>Paths and snippets rot the moment the codebase moves. Record <em>decisions</em> (interfaces, contracts, schemas) in prose — stable. Only a decision-encoding prototype (e.g. a state machine) survives, because it says something prose can't.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="bridge">The <code>ready-for-agent</code> bridge</h2>
+  <p>This is where the spec-driven spine hands off to the build phase:</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage ghost">publishes issue, label</span>
+      <span class="arrow">→</span>
+      <span class="stage accent">ready-for-agent</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+    </div>
+  </div>
+  <ul>
+    <li>The spec is published with the <code>ready-for-agent</code> triage label — <strong>no additional triage</strong>. (Recall Lesson 1: don't triage your own output.)</li>
+    <li>For a multi-session build, <code>to-tickets</code> then splits this spec into tracer-bullet tickets; each <code>implement</code> runs fresh, reading the ticket.</li>
+    <li>For a single-session build, <code>implement</code> can take the spec directly.</li>
+  </ul>
+
+  <h2 id="vocab">Vocabulary note</h2>
+  <p>Every term in the spec's Problem/Solution/Stories must come from <code>CONTEXT.md</code>. If you reach for a word the glossary doesn't define, that's a signal — either coin it (run <code>domain-modeling</code>) or you're drifting from the ubiquitous language. See <a href="context-md-format.html">the <code>CONTEXT.md</code> reference</a>.</p>
+
+  <div class="footer">
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="file:///Users/benbenweng/.agents/skills/to-spec/SKILL.md"><code>to-spec/SKILL.md</code></a>. See also <a href="spec-driven-workflow.html">Workflow Map</a> · <a href="context-md-format.html"><code>CONTEXT.md</code></a> · <a href="../lessons/0005-to-spec-anatomy.html">Lesson 5</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>

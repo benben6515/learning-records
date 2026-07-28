@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 2 — The Entry Point: grill-with-docs</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  /* nested-boxes diagram for the composition */
+  .nest { margin: 1.75rem 0; font-family: var(--sans); }
+  .nest .layer {
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 8px;
+    padding: 0.9rem 1rem 1rem;
+    margin: 0;
+    background: var(--paper);
+  }
+  .nest .layer + .layer { margin-top: 0; }
+  .nest .layer.outer  { border-color: var(--accent); background: var(--accent-soft); }
+  .nest .layer.mid    { background: var(--paper); }
+  .nest .layer.inner  { border-style: dashed; background: var(--paper-edge); }
+  .nest .layer .lbl {
+    font-size: 0.8rem; font-weight: 600; color: var(--ink);
+    display: flex; justify-content: space-between; gap: 0.5rem; align-items: baseline;
+    margin-bottom: 0.35rem;
+  }
+  .nest .layer .lbl .tag {
+    font-weight: 400; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.04em;
+  }
+  .nest .layer code { font-size: 0.78rem; }
+  .nest .pad { padding-left: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0002 · ~6 min</p>
+  <h1>The Entry Point: <code>grill-with-docs</code></h1>
+  <p class="subtitle">Every spec-driven journey starts here. It's three skills, nested.</p>
+
+  <p class="lead">In <a href="0001-the-mental-map.html">Lesson 1</a> you saw the map: the main flow starts with <code>grill-with-docs</code>. Now zoom in. When you bring a fuzzy project idea — "I want to rethink the onboarding flow" — this is the skill that sharpens it into something you can actually spec. The surprise: it isn't one skill. It's <strong>three, nested like Russian dolls</strong>.</p>
+
+  <h2>The one idea: a composition</h2>
+  <p>At the centre is a single primitive. Two wrappers sit around it, identical in <em>how</em> they interview you, different only in <em>what they leave behind</em>:</p>
+
+  <div class="nest">
+    <div class="layer outer">
+      <div class="lbl"><span><code>grill-with-docs</code></span><span class="tag">with a codebase · writes <code>CONTEXT.md</code> + ADRs</span></div>
+      <div class="pad">
+        <div class="layer mid">
+          <div class="lbl"><span><code>grill-me</code></span><span class="tag">no codebase · no paper trail</span></div>
+          <div class="pad">
+            <div class="layer inner">
+              <div class="lbl"><span><code>grilling</code> — the primitive</span><span class="tag">the interview itself</span></div>
+              <div style="font-size:0.82rem; line-height:1.5; color:var(--ink-soft);">
+                one question at a time · looks up <em>facts</em> itself · <em>decisions</em> are yours · won't act until you both agree
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p>Read it inside-out. <code>grilling</code> is the relentless interview. <code>grill-me</code> is that interview with no memory. <code>grill-with-docs</code> is that interview <em>plus</em> <code>domain-modeling</code> — so every term you settle and every decision you reach gets written to <code>CONTEXT.md</code> and (rarely) an ADR as you go. Same questions, different aftermath.</p>
+
+  <div class="callout note">
+    <span class="label">Which wrapper do I reach for?</span>
+    <strong>Have a codebase?</strong> <code>grill-with-docs</code> — always. The paper trail it leaves is exactly what <code>to-spec</code>, <code>implement</code>, and <code>improve-codebase-architecture</code> will read later. <strong>No codebase yet</strong> (greenfield idea, no repo)? <code>grill-me</code> — same sharpening, nothing to write to.
+  </div>
+
+  <h2>The four rules of a good grilling</h2>
+  <p>These come straight from the <a href="file:///Users/benbenweng/.agents/skills/grilling/SKILL.md"><code>grilling</code> skill</a>. They set your expectations — and tell you when a session is going off the rails:</p>
+  <ol>
+    <li><strong>One question at a time.</strong> It waits for your answer before asking the next. A burst of five questions at once is a bug, not a feature — it's "bewildering" by design.</li>
+    <li><strong>It looks up facts; you own decisions.</strong> If something can be found by reading the filesystem or code, it should <em>look it up</em> rather than ask you. Only genuine <em>decisions</em> (trade-offs only you can make) get put to you.</li>
+    <li><strong>Every question comes with a recommended answer.</strong> You're never staring at a blank — you're approving, rejecting, or adjusting a suggestion.</li>
+    <li><strong>It will not act until you confirm shared understanding.</strong> Grilling produces <em>alignment</em>, not code. Nothing gets built in this stage.</li>
+  </ol>
+
+  <div class="principle">Facts get looked up. Decisions get put to you. Nothing happens until you both agree.</div>
+
+  <h2>Why this is the entry point — and why the window must stay whole</h2>
+  <p>Recall Lesson 1's context-hygiene rule. Now you can see <em>why</em> it exists: <code>grill-with-docs</code> is where the shared thinking and the first glossary entries accumulate. If you compact or clear the conversation here, you throw away the very state the rest of the flow depends on. The unbroken window isn't a superstition — it's protecting the output of <em>this</em> stage.</p>
+
+  <div class="checklist">
+    <h3>Your tangible win — say these out loud</h3>
+    <ol>
+      <li>Name the three nested skills, inside-out, and what each <em>leaves behind</em>.</li>
+      <li>State the four rules of a good grilling (the one-question-at-a-time rule is the one people forget).</li>
+      <li>Finish this sentence: "<code>grill-with-docs</code> is the stateful choice because ______."</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">If you can, you understand the entry point. Notice we haven't touched the <em>rules</em> of <code>CONTEXT.md</code> yet — that's deliberate. This lesson is about the interview; the next is about the glossary it writes.</p>
+  </div>
+
+  <h2>Go deeper</h2>
+  <ul>
+    <li><strong>Primary source (read):</strong> the <a href="file:///Users/benbenweng/.agents/skills/grilling/SKILL.md"><code>grilling</code> skill</a> — six lines, the entire primitive. Then <a href="file:///Users/benbenweng/.agents/skills/grill-with-docs/SKILL.md"><code>grill-with-docs</code></a> (one line) and <a href="file:///Users/benbenweng/.agents/skills/domain-modeling/SKILL.md"><code>domain-modeling</code></a> to see the "docs" half.</li>
+    <li><strong>The full reference:</strong> <a href="../reference/spec-driven-workflow.html">Workflow Map &amp; Glossary</a> — see where the entry point sits and what <code>domain-modeling</code> does inline.</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Try me with one of these, or your own: <em>"If it looks up facts itself, how do I stop it from going off and reading my whole repo for one tiny question?"</em> · <em>"What's the signal that grilling is <strong>done</strong> and I should move to <code>to-spec</code>?"</em> · <em>"Can I run grill-with-docs on a half-formed idea, or do I need to prepare first?"</em>
+  </div>
+
+  <p class="nav-next">Next lesson → <strong><code>CONTEXT.md</code> — the glossary rules.</strong> The interview settles terms; this lesson is the discipline of <em>writing them down well</em> (opinionated, tight, project-specific, no implementation).</p>
+
+  <div class="footer">
+    <p>Lesson 2 of the <em>Matt Pocock Skills</em> workspace · <a href="0001-the-mental-map.html">← Lesson 1</a> · <a href="../MISSION.md">Mission</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
+  </div>
+
+</div>
+</body>
+</html>
