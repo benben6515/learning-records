@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0014 — Wayfinder: Fog &amp; Decision Tickets</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0014 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Wayfinder: Fog &amp; Decision Tickets</h1>
+  <p class="subtitle">The on-ramp for foggy, multi-session efforts. It plans; it doesn’t build.</p>
+
+<p class="lead">An <strong>on-ramp</strong> for the hardest cases: an effort too big for one agent session, wrapped in fog, where the way from here to the destination isn't visible yet. <code>/wayfinder</code> <em>plans, it doesn't build</em>.</p>
+
+<h2>When to reach for it — and when not</h2>
+<ul>
+<li><strong>Yes</strong> — greenfield project, huge feature build, too big to hold in one session, route still foggy. You can feel the shape of the work but can't yet write it down as a spec or plan.</li>
+<li><strong>No</strong> — a well-scoped feature. Where <code>/grill-with-docs</code> sharpens an idea you <em>can</em> hold in one session, wayfinder is for the idea you <em>can't</em>. It's slower and denser — save it for exactly that.</li>
+</ul>
+
+<h2>The map is an index, fog is the frontier</h2>
+<p>The <strong>map</strong> is a single <code>wayfinder:map</code> issue whose tickets are its child issues — one shared URL the whole team can watch. It's an <strong>index, not a store</strong>: each decision lives in exactly one place (its ticket); the map only gists and links, never restates.</p>
+<p>Beyond the live tickets lies the <strong>fog of war</strong> — decisions you can tell are coming but can't yet pin down. The test for whether something is a ticket or still fog: can you <em>state the question precisely now</em>, not whether you can answer it.</p>
+<p>Resolving a ticket clears the fog ahead of it, <strong>graduating</strong> whatever's now specifiable into fresh tickets. The <strong>frontier</strong> is the open, unblocked, unclaimed tickets — the edge of the known. Fog only gathers <em>toward the destination</em>; work past it is ruled <strong>out of scope</strong>, closed, never graduating.</p>
+
+<h2>Decisions, not deliverables</h2>
+<p>Every ticket resolves a <strong>decision</strong> — a question to settle, not a slice of a build to execute. The map is done when nothing is left to decide before someone goes and builds the thing. That's the defining move: <em>wayfinder produces decisions, not deliverables</em>.</p>
+
+<h2>HITL vs AFK</h2>
+<p>Every ticket is <strong>HITL</strong> (human in the loop — grilling, prototype) or <strong>AFK</strong> (agent alone — research). A HITL ticket only resolves through a live exchange, so the agent never answers its own questions. Research stays a real ticket — a shared blocker downstream decisions hang on — but because it's AFK, a session fires a <code>/research</code> subagent to burn it down in parallel, keeping the frontier fast.</p>
+
+<h2>It hands off, it doesn't build</h2>
+<div class="callout note">
+<span class="label">The handoff rule</span>
+When the map clears, wayfinder <strong>hands off</strong> to <code>/to-spec</code>, which collapses the map's linked decisions into a buildable plan — then <code>/to-tickets</code> and <code>/implement</code> as usual. Looping the map straight into <code>/implement</code> skips that collapse and throws the linked detail away.
+</div>
+<p>If the opening grill surfaces <strong>no fog</strong>, it stops and tells you the journey is small enough to skip the map — go straight to <code>/to-spec</code> or even <code>/implement</code> if it turned out genuinely small.</p>
+
+<h2>One session resolves at most one ticket</h2>
+<p>(Research tickets excepted.) It records the answer as a resolution comment, closes the ticket, and appends a one-line pointer to <em>Decisions so far</em>. Naming the <strong>destination</strong> is the first act, before any ticket exists — because it fixes the scope every ticket is measured against.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "When is wayfinder the right tool?",
+  "options": [
+    "A well-scoped one-session feature",
+    "A foggy multi-session effort",
+    "A bug you need to reproduce",
+    "A finished spec to split up"
+  ],
+  "answer": 1,
+  "explainRight": "Foggy + too big for one session. Save it for exactly that — never a well-scoped feature.",
+  "explainWrong": "A well-scoped feature is grill-with-docs, not wayfinder. Wayfinder is for the foggy, multi-session case."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What does a wayfinder ticket resolve to?",
+  "options": [
+    "A slice of shipped code",
+    "A decision, not a deliverable",
+    "A merged pull request",
+    "A new CONTEXT.md file"
+  ],
+  "answer": 1,
+  "explainRight": "Each ticket resolves a decision. The map produces decisions, not deliverables.",
+  "explainWrong": "Wayfinder plans; it does not build. Tickets settle questions, not slices of code."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "The map clears. Where does wayfinder hand off to?",
+  "options": [
+    "Straight to implement, skip spec",
+    "To to-spec, then the main flow",
+    "To triage for sorting",
+    "To grill-me for another pass"
+  ],
+  "answer": 1,
+  "explainRight": "Hand off to to-spec, which collapses the decisions into a buildable plan.",
+  "explainWrong": "Going straight to implement throws the linked detail away. to-spec collapses the map first."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "A HITL ticket can only resolve through:",
+  "options": [
+    "A live exchange with you",
+    "An agent answering alone",
+    "A background research run",
+    "Closing it without comment"
+  ],
+  "answer": 0,
+  "explainRight": "HITL = human in the loop. The agent never answers its own questions on a HITL ticket.",
+  "explainWrong": "AFK tickets resolve agent-alone. HITL requires a live exchange with you."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0015-prototype-and-research.html">Prototype & Research</a> — the red-green loop that gives the agent eyes.</p>
+
+  <div class="footer">
+    <p>Lesson 14 of the <em>Matt Pocock Skills</em> course · <a href="0013-improve-architecture-consumes-the-docs.html">← Deep Modules & Improve Architecture</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-wayfinder" target="_blank" rel="noopener">wayfinder docs</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

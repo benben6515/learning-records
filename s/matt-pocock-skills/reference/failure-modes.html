@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Four Failure Modes — Matt Pocock Skills</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference</p>
+  <p class="back-nav"><a href="../index.html">↑ Course home</a></p>
+  <h1>The Four Failure Modes</h1>
+  <p class="subtitle">The spine of the whole skills set. Every skill is a fix for one of these.</p>
+
+  <p class="lead">Every skill in the Matt Pocock set is a fix for one of four ways an AI coding session goes wrong. Classify the situation and you know the skill. From the <a href="https://github.com/mattpocock/skills/blob/main/README.md" target="_blank" rel="noopener">README — “Why These Skills Exist”</a>.</p>
+
+  <table>
+    <thead><tr><th>#</th><th>Failure mode</th><th>Root cause</th><th>Fix (skill)</th><th>Anchored in</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>Misalignment</strong><br>The agent didn’t do what you want.</td>
+        <td>“No-one knows exactly what they want.” You think the dev understands; you see what’s built and realize it didn’t. Communication gap.</td>
+        <td><code>/grill-me</code> (no codebase, stateless)<br><code>/grill-with-docs</code> (has codebase, stateful)</td>
+        <td>The Pragmatic Programmer — Thomas &amp; Hunt</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>Verbosity / no shared language</strong><br>The agent uses 20 words where 1 will do.</td>
+        <td>The agent is dropped in and told to figure out jargon as it goes. No ubiquitous language to anchor on.</td>
+        <td><code>/grill-with-docs</code> builds <code>CONTEXT.md</code> + ADRs as it grills. <code>/domain-modeling</code> sharpens terms.</td>
+        <td>Domain-Driven Design — Eric Evans</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>The code doesn’t work</strong><br>Aligned on what to build, but it still produces crap.</td>
+        <td>No feedback loop. Without feedback on how code actually runs, the agent flies blind.</td>
+        <td><code>/tdd</code> — red-green-refactor, one vertical slice at a time. <code>/diagnosing-bugs</code> — tight feedback loop first, then hypothesize.</td>
+        <td>The Pragmatic Programmer — “the rate of feedback is your speed limit”</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>A ball of mud</strong><br>Codebase is complex and hard to change; entropy accelerates.</td>
+        <td>Agents can radically speed up coding, so they also accelerate software entropy. No one’s investing in design.</td>
+        <td><code>/to-spec</code> quizzes your module choices first. <code>/improve-codebase-architecture</code> for periodic upkeep. <code>/codebase-design</code> vocabulary (deep modules).</td>
+        <td>Extreme Programming — Kent Beck (“invest in design every day”)<br>A Philosophy of Software Design — Ousterhout (“the best modules are deep”)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>The pattern</h2>
+  <p>Each failure mode is a <em>communication or feedback</em> problem, not a cleverness problem. The fixes are not “use a better prompt” — they’re <strong>disciplines</strong> (interview relentlessly, write the language down, run the code, invest in design) borrowed from decades of software engineering, made repeatable as skills.</p>
+
+  <p>When you can classify any situation into one of these four, you know which skill to reach for.</p>
+
+  <p style="margin-top:2rem;font-size:0.85rem;color:var(--muted);">See also: <a href="spec-driven-workflow.html">Workflow Map &amp; Glossary</a> · <a href="glossary.html">Glossary</a> · <a href="skills-catalog.html">Skills Catalog</a>.</p>
+
+</div>
+</body>
+</html>

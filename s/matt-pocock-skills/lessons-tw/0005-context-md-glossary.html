@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 7 課 — CONTEXT.md，詞彙表</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0005 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1><code>CONTEXT.md</code> — 詞彙表</h1>
+  <p class="subtitle">四條規則。一句關鍵話。每個後續技能最先讀的東西。</p>
+
+  <p class="lead">在<a href="0004-the-entry-point.html">第 4 課</a>你看到 <code>grill-with-docs</code> 邊訪談邊寫詞彙表。現在的問題是：那個詞彙表<em>是</em>什麼，怎樣算寫得好？這份產物是你整個規格驅動流程的基石——<code>to-spec</code> 用它的用語，<code>implement</code> 動手前會讀它，<code>improve-codebase-architecture</code> 用它來命名模組。規則搞錯，下游每個技能都會跟著偏。</p>
+
+  <h2>一個核心觀念</h2>
+  <div class="principle"><code>CONTEXT.md</code> 就是詞彙表，除此無他。不是規格、不是草稿、不是決策紀錄。</div>
+  <p>這一句就是整課。其餘都是推論。最常見的破壞方式：開始把實作塞進去——檔案路徑、類別名稱、「它怎麼運作」。你一這麼做，它就不再是詞彙表，而變成一坨半程式碼半散文、沒人敢信的爛泥。</p>
+
+  <h2>四條規則</h2>
+  <ol>
+    <li><strong>要有定見。</strong>當好幾個詞指同一個概念，挑<em>最好</em>的那個，其餘流放到 <code>_Avoid_:</code>。不要把同義詞並列——要<em>選</em>。</li>
+    <li><strong>要精簡。</strong>一到兩句。定義它<em>是</em>什麼，而不是它<em>做</em>什麼。</li>
+    <li><strong>只放專屬於本專案的。</strong>一般程式設計概念（逾時、錯誤型別）不該出現，即使專案到處在用。自問：<em>這是我這個領域獨有的嗎？</em></li>
+    <li><strong>不可含實作。</strong>沒有路徑、沒有類別、沒有技術選型。決策與行為屬於規格和 ADR——不屬於這裡。</li>
+  </ol>
+
+  <p>這是一則正確條目，直接取自技能本身的範例：</p>
+  <div class="callout note">
+    <span class="label">正確</span>
+    <strong>Customer</strong> — A person or organization that places orders. <em>Avoid:</em> Client, buyer, account.<br>
+    <span style="font-size:0.86rem;color:var(--muted);">（<strong>顧客</strong>——下訂單的個人或組織。<em>避免：</em>Client、buyer、account。一句話。說它<em>是</em>什麼。同義詞逐入 <code>_Avoid_</code>。不含實作。專屬於本專案。）</span>
+  </div>
+
+  <h2>它是邊走邊寫的，不是最後一次寫</h2>
+  <p>詞彙表不是你最後坐下來補寫的文件。<code>domain-modeling</code> 是在<em>用語談定的當下</em>維護它，通常就在訪談中間：當你和代理確定了「Customer」是什麼意思，它就<em>立刻</em>被寫進去。而且它是<strong>延遲建立</strong>的——不立空骨架；第一個用語結晶時，檔案才出現。（這正好解釋了為什麼你的專案還沒有這個檔——沒有任何用語被逼著定下來。你跑的第一場 <code>grill-with-docs</code> 會把它生下來。）</p>
+
+  <div class="checklist">
+    <h3>你的具體收穫 — 找出被破壞的規則</h3>
+    <p style="margin-top:0;">對每一則條目，說出它破了<em>哪一條</em>規則。（答案在<a href="../reference/context-md-format.html#bad">參考文件的反模式段落</a>——之後再對。）</p>
+    <ol>
+      <li><strong>OrderService</strong> — A class in <code>src/services/</code> handling order creation; uses PostgreSQL.</li>
+      <li><strong>Timeout</strong> — The maximum time to wait before failing a request.</li>
+      <li><strong>Account</strong> — Used for various things like logins and billing.</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">如果說得出每一則破了哪條規則，你就內化了這套紀律——而你第一場真正的 <code>grill-with-docs</code> 就會寫出乾淨的詞彙表。</p>
+  </div>
+
+  <h2>深入了解</h2>
+  <ul>
+    <li><strong>主要來源（讀）：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>domain-modeling/CONTEXT-FORMAT.md</code></a>——格式全文。三分鐘。</li>
+    <li><strong>參考卡：</strong><a href="../reference/context-md-format.html"><code>CONTEXT.md</code> 格式與規則</a>——四條規則、範本、正確／錯誤範例、單一 vs 多情境、以及邊走邊寫的紀律。加入書籤。</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    挑一題：<em>「你的專案裡有像 <code>permissionBits</code> 位元遮罩（bitmask）這樣的東西，還有一些領域專屬的詞——哪些該進 <code>CONTEXT.md</code>？」</em> · <em>「該進詞彙表、還是該進 ADR？它們感覺很近。」</em>（這正好鋪陳第 6 課）· <em>「如果詞彙表不能含實作，那『我們用位元遮罩做授權』要記在哪？」</em>
+  </div>
+
+  <p class="nav-next">下一課 → <strong>ADR — 三條件的閘門。</strong>詞彙表收<em>用語</em>，ADR 收<em>決策</em>——但只有通過高標的決策。你以為該寫成 ADR 的大多數事情……其實都不必。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 5 課 · <a href="0004-the-entry-point.html">← 第 4 課</a> · <a href="../MISSION.md">任務</a> · <a href="../reference/context-md-format.html">參考</a></p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0012 — Resolving Merge Conflicts</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0012 · ~5 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Resolving Merge Conflicts</h1>
+  <p class="subtitle">Resolve by intent, never by text — and never abort.</p>
+
+<p class="lead">A reach-for-it-anytime standalone for the moment a merge or rebase stalls. <code>/resolving-merge-conflicts</code> works through the conflict hunk by hunk and finishes the operation — resolved, checked, committed.</p>
+
+<h2>Resolve by intent, not by text</h2>
+<p>The trap in a conflict is treating it as a <em>text</em> problem — picking "ours" or "theirs" to make the markers go away. This skill treats it as an <em>intent</em> problem.</p>
+<div class="callout note">
+<span class="label">The rule</span>
+Each side of a hunk exists because someone <em>wanted</em> something. The resolution has to honour both wants where it can, and where they're genuinely incompatible, pick the one that matches the merge's stated goal and <strong>note the trade-off out loud</strong>. It never invents new behaviour to paper over a clash.
+</div>
+
+<h2>Primary sources first</h2>
+<p>You can't preserve an intent you haven't read, so the work starts in the <em>history</em> — not in the diff. Before touching a hunk, trace each side back to its <strong>primary source</strong>: the commit message, the PR, the original issue. Understand <em>why</em> the change was made, then preserve both intents where they're compatible.</p>
+
+<h2>Never <code>--abort</code></h2>
+<p>The merge always gets finished. <code>--abort</code> is never reached for. Resolving is the point — the skill hands you back a clean, committed tree.</p>
+
+<h2>It's working if</h2>
+<ul>
+<li>Each resolved hunk keeps both sides' behaviour, or names the trade-off where it couldn't.</li>
+<li>No new behaviour appears that wasn't on either branch.</li>
+<li>The project's own checks — typecheck, tests, format — are found and run green <em>before</em> the commit.</li>
+<li>The merge or rebase is carried all the way to a finished commit, never aborted.</li>
+</ul>
+
+<h2>Where it fits</h2>
+<p>Natural neighbour is <code>/diagnosing-bugs</code>: a merge that resolves cleanly but <em>misbehaves afterwards</em> is a diagnosis problem, not a conflict one. <code>resolving-merge-conflicts</code> is for the conflict <em>in front of you</em> — not for planning the merge or debugging behaviour that broke afterwards.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What does resolving-merge-conflicts treat a conflict as?",
+  "options": [
+    "A text-picking problem",
+    "An intent problem, both sides",
+    "A type-checking problem",
+    "A test-coverage problem"
+  ],
+  "answer": 1,
+  "explainRight": "Each side wanted something. Honour both where possible; note trade-offs where not.",
+  "explainWrong": "Picking ours/theirs to make markers go away is the trap. Intent, not text."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Where does the skill start before touching a hunk?",
+  "options": [
+    "In the diff, line by line",
+    "In the history, primary sources",
+    "In the test suite, running it",
+    "In the git config, checking it"
+  ],
+  "answer": 1,
+  "explainRight": "Commits, PRs, tickets — the primary sources. You cannot preserve an intent you have not read.",
+  "explainWrong": "The diff is the symptom. The intent lives in the history — primary sources first."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "When is --abort the right move?",
+  "options": [
+    "Never, the merge finishes",
+    "When conflicts exceed ten files",
+    "Only on rebase, not merge",
+    "When the agent gets confused"
+  ],
+  "answer": 0,
+  "explainRight": "Never. The merge always gets finished — resolved, checked, committed.",
+  "explainWrong": "--abort is never reached for. Finishing the operation is the whole point."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "A merge resolves cleanly but the app now misbehaves. Which skill?",
+  "options": [
+    "resolving-merge-conflicts again",
+    "diagnosing-bugs, it is broken",
+    "improve-codebase-architecture",
+    "to-spec, rewrite the plan"
+  ],
+  "answer": 1,
+  "explainRight": "A clean merge that misbehaves is a diagnosis problem, not a conflict one.",
+  "explainWrong": "The conflict is gone. diagnosing-bugs handles behaviour that broke afterwards."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0013-improve-architecture-consumes-the-docs.html">Deep Modules & Improve Architecture</a> — the meta-skill that names when to reach for which.</p>
+
+  <div class="footer">
+    <p>Lesson 12 of the <em>Matt Pocock Skills</em> course · <a href="0011-diagnosing-bugs.html">← Diagnosing Bugs</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-resolving-merge-conflicts" target="_blank" rel="noopener">resolving-merge-conflicts docs</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

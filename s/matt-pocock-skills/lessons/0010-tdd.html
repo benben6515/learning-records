@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0010 — TDD: Red-Green, One Slice</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0010 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>TDD: Red-Green, One Slice</h1>
+  <p class="subtitle">Red-green, one vertical slice at a time — the loop that gives the agent eyes.</p>
+
+<p class="lead">The fix for failure mode #3 (the code doesn't work). Without a feedback loop telling the agent what its code actually does, it flies blind. <code>/tdd</code> gives it eyes.</p>
+
+<h2>The leading idea: red-green, one slice at a time</h2>
+<ol>
+<li>Write <strong>one</strong> failing test (red).</li>
+<li>Add just enough code to pass it (green).</li>
+<li>Repeat for the next behaviour — each cycle informed by what the last one taught you.</li>
+</ol>
+<p>Refactor only once the suite is green; <strong>never while red</strong>.</p>
+
+<div class="callout note">
+<span class="label">Why one at a time, not batched</span>
+Batching the tests first ("horizontal slicing") produces tests of <em>imagined</em> behaviour — they check the shape of things and go numb to real changes. <code>tdd</code> takes <strong>vertical slices</strong>: one test, then just enough code, then the next. Because you just wrote the code, you know exactly which behaviour matters and how to verify it — you never outrun your headlights.
+</div>
+
+<h2>The tracer bullet</h2>
+<p>The very first cycle is a <strong>tracer bullet</strong>: one test that proves a single path works end-to-end, before you build outward from it. A thin vertical slice through every layer (schema, API, UI, tests) — demoable on its own.</p>
+
+<h2>Two rules that keep tests honest</h2>
+<ol>
+<li><strong>Tests read like a specification</strong> — "user can checkout with valid cart" — and exercise real code paths <em>through the public API</em>. Renaming an internal function never breaks a test. Tests target the <strong>seam</strong>, chosen before any code is written.</li>
+<li><strong>Expected values come from an independent source of truth</strong> — a known-good literal, a worked example, the spec — <em>never</em> recomputed the way the code computes them. That recomputation is how a <strong>tautological</strong> test passes by construction and tells you nothing.</li>
+</ol>
+
+<h2>Where it sits</h2>
+<p><code>tdd</code> is the engine <em>inside</em> <code>/implement</code>, not a step of its own. <code>implement</code> drives it to build each ticket test-first, then hands to <code>/code-review</code>. You can also reach for <code>tdd</code> directly when there's a concrete behaviour to build without a full spec. Its neighbour is <code>/codebase-design</code>, which it leans on to place a seam <em>before</em> writing the test.</p>
+
+<p>If the behaviour isn't pinned down yet, settle the spec first — for that, use <code>/to-spec</code>.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What is the red-green loop's order?",
+  "options": [
+    "Refactor, write test, write code",
+    "Write test, write code, refactor",
+    "Write code, write test, refactor",
+    "Write tests, write code, refactor"
+  ],
+  "answer": 1,
+  "explainRight": "One failing test (red), just enough code to pass (green), then refactor while green.",
+  "explainWrong": "Tests come first — one at a time. Refactor only when green, never while red."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Why does tdd forbid batching all tests up front?",
+  "options": [
+    "It is slower than writing code",
+    "Tests of imagined behaviour go numb",
+    "The agent runs out of tokens",
+    "It breaks the type checker"
+  ],
+  "answer": 1,
+  "explainRight": "Batched tests check shapes, not real behaviour, and go numb to real changes.",
+  "explainWrong": "Batched tests are tests of imagined behaviour — they go numb. One at a time is the fix."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What makes a test tautological (and useless)?",
+  "options": [
+    "It tests the public API only",
+    "Expected values match the code",
+    "It uses a known-good literal",
+    "It reads like a specification"
+  ],
+  "answer": 1,
+  "explainRight": "Recomputing expected values the same way the code does means it passes by construction.",
+  "explainWrong": "Expected values must come from an independent source, not recomputed the way the code does."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "When can you refactor under tdd?",
+  "options": [
+    "Only when the suite is green",
+    "Anytime, even while red",
+    "Only before writing tests",
+    "Only after committing code"
+  ],
+  "answer": 0,
+  "explainRight": "Refactor only when green. Never while red — you lose the safety net.",
+  "explainWrong": "Refactoring while red means no passing tests to catch regressions. Green only."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0011-diagnosing-bugs.html">Diagnosing Bugs</a> — the hard-bug version of the feedback loop.</p>
+
+  <div class="footer">
+    <p>Lesson 10 of the <em>Matt Pocock Skills</em> course · <a href="0009-implement-and-review.html">← Implement & Code Review</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-tdd" target="_blank" rel="noopener">tdd docs</a>. Anchored in <a href="https://www.amazon.co.uk/Pragmatic-Programmer-Anniversary-Journey-Mastery/dp/B0833F1T3V" target="_blank" rel="noopener">The Pragmatic Programmer</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

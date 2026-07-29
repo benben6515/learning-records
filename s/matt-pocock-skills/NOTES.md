@@ -1,37 +1,57 @@
 # Notes
 
 ## Preferences
-- Conceptual / reference-first — favour maps and reference docs over heavy drills (for now).
-- Comfortable with agent harnesses; skip invocation basics.
-- Teacher sets the pace and session length.
-- **Dark theme preferred** — the shared stylesheet (`assets/styles.css`) is dark-themed. Keep all future lessons/reference docs dark-friendly: use the CSS variables from `styles.css`, avoid hardcoded light-only colours (especially white text on accent fills — use dark text on the light-teal accent). Print media stays light (set in the `@media print` block).
-- **Generic running example.** Lessons reference no specific real project. The shared illustrative example is a **permission bitmask** for auth (symbol: `permissionBits`), a **new/old coexistence migration**, and neutral domain terms like "Order" — not any real codebase's symbols. Keep new lessons generic the same way.
-- **`0000` table of contents** exists in both `lessons/` (EN) and `lessons-tw/` (TW), linking all seven lessons. Keep it in sync when adding lessons.
+- Conceptual / reference-first for the spec-driven spine; quiz-based retrieval for the breadth tour.
+- **Dark theme preferred** — the shared stylesheet (`assets/styles.css`) is dark-themed. Keep all lessons/reference docs dark-friendly: use the CSS variables, avoid hardcoded light-only colours. Print media stays light (set in the `@media print` block).
+- **Dual language:** EN throughout; 繁中 for the spec-driven spine (Lessons 03–08, 13). The other 12 lessons are EN-only for now — 繁中 translation deferred.
+- **Generic running example.** Lessons reference no specific real project — the shared examples are a `permissionBits` auth bitmask, a new/old coexistence migration, and neutral domain terms like "Order".
+- **Quizzes:** the 12 breadth lessons (01, 02, 09–12, 14–19) carry multiple-choice quizzes via `assets/quiz.js` (`.quiz` blocks + `<script type="application/json">`). The 7 spine lessons (03–08, 13) are quiz-free for now — quizzes can be added later.
 
 ## Working context
-- Teaching workspace: `~/Documents/learning-records/s/matt-pocock-skills/` (this repo — public)
-- Target for eventual practice: a real codebase of the learner's choice, configured via `setup-matt-pocock-skills`.
+- Teaching workspace: `learning-records/s/matt-pocock-skills/` (public repo, GitHub Pages).
+- Origin of the breadth tour: a prior standalone workspace (`~/learning/mp-skills/`) — its 12 breadth lessons were re-skinned and merged in here; that source dir is now redundant.
 
-## Curriculum sketch (spec-driven spine, conceptual-first)
-1. ✅ The Mental Map (main flow; where spec-driven sits; context hygiene)
-2. ✅ The entry point: `grill-with-docs` (nested composition: grilling ⊂ grill-me ⊂ grill-with-docs; the 4 grilling rules)
-3. ✅ `CONTEXT.md` — the glossary rules (4 rules; "glossary, nothing else"; spot-the-violation) + reference card built
-4. ✅ ADRs — the 3-criteria gate (AND gate; terms-vs-decisions) + reference card built
-5. ✅ `to-spec` — the spec anatomy + the test-seam rule (synthesize-don't-interview; fewest seams ideal=1; no file paths) + reference card built
-6. ✅ `to-tickets` — tracer bullets & the frontier (vertical vs horizontal slices; blocking edges; wide-refactor expand–contract exception) — awareness level; ✅ reference card built (`reference/tickets-anatomy.html`)
-7. ✅ How `improve-codebase-architecture` consumes the docs (deep/shallow modules, deletion test, codebase-design vocab) + reference card built
-   → **Conceptual tour of the spec-driven spine COMPLETE** (lessons 1–7, EN + TW; `0000` index in both).
+## Curriculum — 19 lessons, three phases
+**Phase A — The map & the spec-driven spine**
+1. The Four Failure Modes *(EN, quiz)*
+2. The Main Flow: idea → ship *(EN, quiz)*
+3. The Mental Map — where spec-driven sits, the smart zone, handoff vs compact *(EN + 繁中)*
+4. The Entry Point: `grill-with-docs` *(EN + 繁中)*
+5. `CONTEXT.md` — the glossary *(EN + 繁中)*
+6. ADRs — the three-criteria gate *(EN + 繁中)*
+7. `to-spec` — the spec anatomy *(EN + 繁中)*
+8. `to-tickets` — tracer bullets & the frontier *(EN + 繁中; awareness level)*
 
-## Next phase (when the learner is ready to go conceptual → practical)
-- Run a real `grill-with-docs` on one real idea from your project; watch `CONTEXT.md` get born. This converts awareness → evidence (and earns the first real learning records).
-- Deferred deep-dives (on-ramps the learner now has the map for): issue/triage pipeline (`to-tickets` deep, `triage`, `qa`); AFK loop (`wayfinder`, `handoff`, `prototype`); authoring (`writing-great-skills`).
-- Keep new lessons dual EN + TW (繁中).
+**Phase B — Build, verify & design**
+9. Implement & Code Review *(EN, quiz)*
+10. TDD: red-green, one slice *(EN, quiz)*
+11. Diagnosing bugs *(EN, quiz)*
+12. Resolving merge conflicts *(EN, quiz)*
+13. How `improve-codebase-architecture` consumes the docs *(EN + 繁中)*
 
-Reference docs (all built): ✅ Workflow Map & Glossary; ✅ Spec anatomy; ✅ CONTEXT.md/ADR templates; ✅ Ticket anatomy (`reference/tickets-anatomy.html`).
+**Phase C — On-ramps, standalone tools & the router**
+14. Wayfinder *(EN, quiz)*
+15. Prototype & Research *(EN, quiz)*
+16. Setup & Triage *(EN, quiz)*
+17. Ask Matt & Routers *(EN, quiz)*
+18. The Meta Skills: teach & writing-great-skills *(EN, quiz)*
+19. The Full Routing Drill — capstone *(EN, quiz)*
+
+Reference shelf (9): Workflow Map & Glossary · Four Failure Modes · Glossary · Skills Catalog · Spec Anatomy · CONTEXT.md Format · ADR Format · Ticket Anatomy · Deep-Module Vocabulary.
+
+## How the merge was done (2026-07)
+- Merged the prior `~/learning/mp-skills/` breadth tour INTO this (published) workspace: re-skinned 12 lessons to the teal template, unified numbering 0000→0019, ported `quiz.js` + quiz CSS.
+- Folded overlaps: A's `context-hygiene` (handoff vs compact) → into Lesson 03; A's `deep-modules` → already covered by Lesson 13.
+- Folded reference docs: A's `main-flow` + `skill-map` → already covered by `spec-driven-workflow.html`; added `failure-modes.html` + `glossary.html` as new reference pages.
+- All internal links re-pointed; global link audit passes (zero broken local links).
+
+## Verification plan
+- Each breadth lesson's MC quiz passed → write a `learning-records/NNNN-*.md` capturing demonstrated understanding (with "Evidence" per the format).
+- Lesson 19 (the full routing drill) is the capstone — 5 scenarios, route each to the right skill(s) in order. 5/5 = mission's "success looks like" met.
 
 ## Publishing — this workspace IS the public repo
-- This workspace lives inside the public `benben6515/learning-records` repo at `s/matt-pocock-skills/` and renders on GitHub Pages (`.nojekyll` at repo root, source = `main` / root).
+- Lives in `benben6515/learning-records` at `s/matt-pocock-skills/`; renders on GitHub Pages (`.nojekyll` at repo root, source = `main` / root).
 - Live URL: https://benben6515.github.io/learning-records/s/matt-pocock-skills/
-- **To publish: just `git add` + `commit` + `push`** from `~/Documents/learning-records/`. No build step, no script.
-- Skill `SKILL.md` links are GitHub URLs (`github.com/mattpocock/skills/blob/main/skills/<cat>/<name>/SKILL.md`) — work locally and on the web. Do **not** revert them to `file://`.
-- State files (MISSION/NOTES/RESOURCES/learning-records/) are scrubbed of personal context and also public; keep them generic when editing.
+- **To publish: just `git add` + `commit` + `push`** from the `learning-records` repo. No build step, no script.
+- Skill `SKILL.md` links are GitHub URLs — work locally and on the web. Do **not** revert them to `file://`.
+- State files (MISSION/NOTES/RESOURCES/learning-records/) are scrubbed of personal context and public; keep them generic when editing.

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 13 課 — improve-codebase-architecture 消化這些文件</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .ds { display:flex; gap:1.5rem; flex-wrap:wrap; margin:1.4rem 0 0.4rem; font-family: var(--sans); }
+  .ds .mod { flex:1 1 11rem; text-align:center; }
+  .ds .mod .cap { font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:0.45rem; }
+  .ds .mod .iface, .ds .mod .body { border:1.5px solid var(--ink-soft); border-radius:6px; padding:0.4rem 0.5rem; margin:0 auto 0.35rem; font-size:0.76rem; }
+  .ds .mod .iface { background:var(--accent-fill); color:#fff; border-color:var(--accent-fill); }
+  .ds .mod .body { background:var(--paper-edge); color:var(--ink-soft); }
+  .ds .mod.deep .iface { width:46%; } .ds .mod.deep .body { width:100%; min-height:4.6rem; display:flex; align-items:center; justify-content:center; }
+  .ds .mod.shallow .iface { width:100%; } .ds .mod.shallow .body { width:46%; min-height:1.3rem; display:flex; align-items:center; justify-content:center; }
+  .ds .note { font-size:0.76rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0013 課 · 約 8 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1><code>improve-codebase-architecture</code> 如何消化這些文件</h1>
+  <p class="subtitle">這個技能讀進你一路建立的所有東西——並找出程式碼想要深化之處。</p>
+
+  <p class="lead">這是最後一塊，而且它把迴圈關上。較早各課的每一份產物都餵進它：<code>CONTEXT.md</code>（<a href="0005-context-md-glossary.html">L5</a>）為好的接縫命名；ADR（<a href="0006-adrs-the-gate.html">L6</a>）記錄下不要重新爭論的決策。<code>improve-codebase-architecture</code> 讀這兩份，掃描摩擦，並提出<strong>深化機會（deepening opportunities）</strong>——也就是把淺模組變成深模組的重構。目標：可測性與 AI 可導航性。</p>
+
+  <h2>一個核心觀念：深 vs 淺</h2>
+  <div class="principle">一個<strong>深模組（deep module）</strong>把大量行為藏在一個小介面背後。一個<strong>淺（shallow）</strong>模組的介面，幾乎和它的實作一樣複雜。把淺的那些深化。</div>
+
+  <div class="ds">
+    <div class="mod deep">
+      <div class="cap">深 — 以此為目標</div>
+      <div class="iface">小介面</div>
+      <div class="body">深的實作<br><span style="font-size:0.7rem;">複雜度被藏起</span></div>
+      <div class="note">槓桿 + 局部性</div>
+    </div>
+    <div class="mod shallow">
+      <div class="cap">淺 — 避免</div>
+      <div class="iface">大介面</div>
+      <div class="body">薄的實作</div>
+      <div class="note">只是穿過去</div>
+    </div>
+  </div>
+  <p>深度用兩種方式賺回它的代價：對呼叫者的<strong>槓桿（leverage）</strong>（一份實作、N 個呼叫點、M 個測試）與對維護者的<strong>局部性（locality）</strong>（修一次，處處都修好）。「這個到底淺不淺？」的快測：</p>
+  <div class="callout accent">
+    <span class="label">刪除測試</span>
+    想像把這個模組刪掉。如果複雜度就這麼<em>消失</em>了，那它只是個穿遞性的東西（淺——深化或移除的候選）。如果複雜度<em>重新出現在 N 個呼叫者身上</em>，那它是有賺回代價的。「對，它把東西集中起來」就是你要的訊號。
+  </div>
+  <p>這套詞彙——<strong>模組、介面、深度、接縫（seam）、轉接器（adapter）、槓桿、局部性</strong>——出自 <a href="../reference/codebase-design-vocab.html"><code>codebase-design</code> 參考文件</a>。請精確使用這些詞；別漂移成「元件（component）」或「服務（service）」。（你在<a href="0007-to-spec-anatomy.html">第 7 課</a>已見過的一條規則——「介面就是測試面」——正是一條 <code>codebase-design</code> 原則。同一套詞彙，再次出現。）</p>
+
+  <h2>流程</h2>
+  <ol>
+    <li><strong>探索 — 先界定範圍（YAGNI）。</strong>掃描<em>之前</em>，先讀 <code>CONTEXT.md</code> 與相關的 ADR。把你的注意力加權在最近變動過的程式碼上（<code>git log</code> 的熱點）——深化在未來可能變動之處才划得來。自然而然地記下摩擦：那些逼你在許多小模組之間跳來跳去的概念；介面和它的實作一樣複雜；純粹函式只是為了可測而被抽出來，而真正的 bug 卻藏在它們<em>被呼叫的方式</em>裡。</li>
+    <li><strong>以 HTML 報告呈現候選項。</strong>每張卡片：檔案、問題、解法、效益（以局部性／槓桿／可測性來表達）、一個前／後視覺化，以及一個強度徽章（強／值得探索／推測性）。它此刻<strong>還不</strong>提介面——它問的是：「你想探索哪一個？」</li>
+    <li><strong>盤問你挑中的那一個。</strong>跑 <code>/grilling</code>（那個 L4 的基本工具）來走一遍決策樹——限制、相依、深化後模組的形狀、什麼留在接縫背後。<strong>隨著決策結晶，文件就地更新</strong>，透過 <code>/domain-modeling</code>。</li>
+  </ol>
+
+  <h2>它如何尊重並刷新你的文件</h2>
+  <ul>
+    <li><strong>領域用詞彙表的詞彙，架構用設計詞彙。</strong>如果 <code>CONTEXT.md</code> 定義了「訂單」，它就講「訂單收件模組」——而不是「FooBarHandler」。</li>
+    <li><strong>尊重 ADR——不重新爭論。</strong>某個候選若與一則 ADR 牴觸，只有當摩擦真實到值得重開時才浮現，而且會被明確標記（「與 ADR-0007 牴觸——但值得重開，因為……」）。</li>
+    <li><strong>回寫。</strong>用詞彙表裡沒有的概念為深化後的模組命名？補進去。在盤問途中把一個模糊的詞磨利？就地更新 <code>CONTEXT.md</code>。你用一個具決定性分量的理由否決了一個候選？提一則 ADR，讓未來的審查別再建議它。</li>
+  </ul>
+
+  <div class="checklist">
+    <h3>你的具體收穫 — 把這些說出口</h3>
+    <ol>
+      <li>定義深模組 vs 淺模組（介面大小相對於實作）。</li>
+      <li>說出刪除測試，以及哪個答案代表「淺」。</li>
+      <li>說出深度的兩個回報（槓桿、局部性），以及各自是給誰的。</li>
+      <li>這個技能如何<em>使用</em> <code>CONTEXT.md</code> 和 ADR——又如何<em>回寫</em>它們？</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">若你能答出這些，你就完成了規格驅動主幹的概念導覽。</p>
+  </div>
+
+  <h2>深入了解</h2>
+  <ul>
+    <li><strong>主要來源（讀）：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/improve-codebase-architecture/SKILL.md"><code>improve-codebase-architecture/SKILL.md</code></a>（掃描 → 報告 → 盤問 的流程）與 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/SKILL.md"><code>codebase-design/SKILL.md</code></a>（詞彙）。</li>
+    <li><strong>參考卡：</strong><a href="../reference/codebase-design-vocab.html">深模組詞彙</a>——完整詞彙表、原則、深化的四種相依類別，以及「替換而非疊加」的測試。加入書籤。</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    挑一題：<em>「在你的專案裡，授權位元遮罩的邏輯散落各處——那是個淺叢集嗎？把它深化會長什麼樣子？」</em> · <em>「我們『為了可測性』抽了一堆純工具函式——技能警告真正的 bug 藏在它們被呼叫的方式裡。我怎麼判斷我們是不是那種情況？」</em> · <em>「為什麼深度是<em>介面</em>的性質，而不是實作的？深模組難道不能由許多小部件組成嗎？」</em>
+  </div>
+
+  <hr class="rule">
+  <h2 style="margin-top:0;">規格驅動主幹 —— 完成</h2>
+  <p>你現在已經把整條規格驅動主幹，當成一個心智模型走過一遍了：</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">grill-with-docs</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage">to-tickets</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+    </div>
+    <div class="under">底下：<code>CONTEXT.md</code> + ADR（L5–6）· 被 <code>improve-codebase-architecture</code> 消化（L13）</div>
+  </div>
+  <p>那就是地圖、入口、兩份產物、規格、票，以及架構消費者——整套技能的紀律核心。但技能集比這條主幹更大：接下來的課程涵蓋掛上去的<em>入口坡道與獨立工具</em>——AFK 探索迴圈、拋棄式原型、議題管線，以及把它們全部裝進你腦中的路由器。</p>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？問一個後續問題——任何不清楚的都可以問。
+  </div>
+
+  <p class="nav-next">繁中版至此告一段落（其後課程目前為英文版）→ <a href="../lessons/0014-wayfinder.html">Wayfinder（EN）</a>——給太大、無法塞進單一 session 的迷霧多回合工作的入口坡道。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 13 課 · <a href="0008-to-tickets-tracer-bullets.html">← to-tickets</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/codebase-design-vocab.html">參考</a></p>
+  </div>
+
+</div>
+</body>
+</html>

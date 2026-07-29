@@ -17,8 +17,18 @@ Curated trusted sources for this workspace. Knowledge is drawn from here, not fr
 
 ### Primary: public home & catalog
 - [mattpocock/skills (GitHub)](https://github.com/mattpocock/skills) — the canonical repo. Read the root `CONTEXT.md` as a real example of a glossary done right.
+- [README — "Why These Skills Exist"](https://github.com/mattpocock/skills/blob/main/README.md) — the thesis: the four failure modes and the skill that fixes each. The spine of the whole set.
 - [AI Skills for Real Engineers — catalog](https://www.aihero.dev/skills-catalog) — Matt's human-facing index of the skills, with rationale. Best browsable entry point.
 - [AI Coding Dictionary: "smart zone"](https://www.aihero.dev/ai-coding-dictionary/smart-zone) — defines the ~120k-token reasoning window that drives the context-hygiene rule.
+
+### The four cited books (the philosophy the skills operationalize)
+- [The Pragmatic Programmer — Thomas & Hunt](https://www.amazon.co.uk/Pragmatic-Programmer-Anniversary-Journey-Mastery/dp/B0833F1T3V) — "No-one knows exactly what they want" (→ grilling); "the rate of feedback is your speed limit" (→ TDD, diagnosing-bugs). The misalignment + feedback-loop failure modes.
+- [Domain-Driven Design — Eric Evans](https://www.amazon.co.uk/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215) — ubiquitous language. Why `CONTEXT.md` + ADRs cut tokens and align the agent (the verbosity failure mode).
+- [Extreme Programming Explained — Kent Beck](https://www.amazon.co.uk/Extreme-Programming-Explained-Embrace-Change/dp/0321278658) — "Invest in the design of the system every day." The ball-of-mud failure mode and `improve-codebase-architecture` as upkeep.
+- [A Philosophy of Software Design — John Ousterhout](https://www.amazon.co.uk/Philosophy-Software-Design-2nd/dp/173210221X) — "The best modules are deep." The deep-module vocabulary in `codebase-design` and `to-spec`.
+
+### Reference pages in this workspace (`reference/`)
+Workflow Map &amp; Glossary (`spec-driven-workflow.html`) · Four Failure Modes (`failure-modes.html`) · Glossary (`glossary.html`) · Skills Catalog (`skills-catalog.html`) · Spec Anatomy (`spec-anatomy.html`) · CONTEXT.md Format (`context-md-format.html`) · ADR Format (`adr-format.html`) · Ticket Anatomy (`tickets-anatomy.html`) · Deep-Module Vocabulary (`codebase-design-vocab.html`).
 
 ### Watchable
 - [Intro to `/grill-with-docs` (YouTube)](https://www.youtube.com/watch?v=6BB6exR8Zd8) — Matt walking through the entry skill. Good for the conceptual-first style of this workspace.

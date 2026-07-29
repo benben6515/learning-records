@@ -27,6 +27,9 @@
   --note-soft: #2a2f1d;
   --code-bg: #242228;
   --highlight: #3c371d;
+  --quiz-bg: #23211d;          /* interactive quiz panel */
+  --correct: #7cc091;          /* semantic green — right answer */
+  --incorrect: #e09472;        /* warm clay — wrong answer (matches --warn) */
   --serif: "Iowan Old Style", "Charter", "Georgia", "Cambria", "Times New Roman", serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --mono: "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
@@ -183,6 +186,51 @@ li::marker { color: var(--muted); }
 }
 .checklist h3 { margin-top: 0; color: var(--ink); }
 
+/* ---- Interactive MC quiz (assets/quiz.js) ---- */
+.quiz {
+  background: var(--quiz-bg);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 5px;
+  padding: 1.2rem 1.35rem;
+  margin: 1.9rem 0;
+}
+.quiz-q { font-weight: 600; margin-bottom: 0.85rem; line-height: 1.45; }
+.quiz-opts { display: flex; flex-direction: column; gap: 0.45rem; }
+.quiz-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.quiz-opt:hover { background: rgba(111, 180, 198, 0.10); }
+.quiz-opt input { margin-top: 0.35rem; accent-color: var(--accent); }
+.quiz-marker {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 1.1rem;
+}
+.quiz-text { flex: 1; line-height: 1.5; }
+.quiz-opt.correct  { background: rgba(124, 192, 145, 0.14); border-color: var(--correct); }
+.quiz-opt.incorrect { background: rgba(224, 148, 114, 0.14); border-color: var(--incorrect); }
+.quiz-opt.dim { opacity: 0.45; }
+.quiz-feedback {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+.quiz-feedback.right  { color: var(--correct); }
+.quiz-feedback.wrong  { color: var(--incorrect); }
+.quiz-feedback[hidden] { display: none; }
+
 /* ---- Flow diagram (pure CSS, no deps) ---- */
 .flow {
   margin: 1.75rem 0;
@@ -296,10 +344,14 @@ td code { white-space: nowrap; }
     --note: #4a5a2f;
     --note-soft: #eef0e3;
     --code-bg: #f3efe5;
+    --quiz-bg: #f4f0e7;
+    --correct: #2f6b3f;
+    --incorrect: #9a4a2a;
   }
   body { background: #fff; font-size: 11pt; }
   .container { max-width: 100%; padding: 0; }
   a { border-bottom: 0; color: var(--accent); }
   .callout, .checklist { break-inside: avoid; }
+  .quiz { break-inside: avoid; }
   .footer { border-top: 1px solid #999; }
 }

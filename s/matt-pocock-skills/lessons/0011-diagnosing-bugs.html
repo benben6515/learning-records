@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0011 — Diagnosing Bugs: The Tight Loop</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0011 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Diagnosing Bugs: The Tight Loop</h1>
+  <p class="subtitle">The tight-loop discipline for bugs that resist a first glance.</p>
+
+<p class="lead">The hard-bug version of the feedback loop. <code>/diagnosing-bugs</code> runs a disciplined diagnosis loop for the bugs that resist a first glance — the intermittent flake, the regression that crept in between two known-good states.</p>
+
+<h2>The tight loop is the skill</h2>
+<p>Everything else — bisection, hypothesis-testing, instrumentation — is mechanical once you have the signal. So <code>diagnosing-bugs</code> spends disproportionate effort on Phase 1: constructing a <strong>pass/fail command that drives the actual bug code path and asserts the user's exact symptom</strong>, then <strong>tightening</strong> it until it's fast, deterministic, and agent-runnable.</p>
+
+<div class="callout note">
+<span class="label">The refusal</span>
+It refuses to hypothesise before you have a tight feedback loop — <strong>one runnable command that already goes red on this bug</strong>. Reading code to build a theory before that command exists is the exact failure this skill prevents. No red-capable loop, no diagnosis.
+</div>
+
+<p>A 30-second flaky loop is barely better than none; a 2-second deterministic one is a debugging superpower.</p>
+
+<h2>The ladder of loops</h2>
+<p>It gives you a ladder of ways to build that loop, in rough order of preference:</p>
+<ul>
+<li>Failing test</li>
+<li><code>curl</code> script</li>
+<li>CLI diff</li>
+<li>Headless browser</li>
+<li>Replayed trace</li>
+<li>Throwaway harness</li>
+<li>Fuzz loop</li>
+<li><code>git bisect run</code></li>
+<li>Differential run</li>
+<li>Human-in-the-loop bash script — only as a <strong>last resort</strong></li>
+</ul>
+
+<h2>Non-deterministic bugs</h2>
+<p>For flakes, the goal isn't a clean repro but a <strong>higher reproduction rate</strong>: loop the trigger, parallelise, add stress until the flake is debuggable.</p>
+
+<h2>It's working if</h2>
+<ul>
+<li>It builds and runs a repro command <em>before</em> theorising — and pastes the invocation and its red output.</li>
+<li>The loop asserts the symptom you actually reported, not a nearby failure.</li>
+<li>Hypotheses arrive as a ranked, falsifiable list shown to you <em>before</em> any are tested.</li>
+<li>Debug instrumentation is tagged (<code>[DEBUG-...]</code>) and grepped away before it declares done.</li>
+</ul>
+
+<h2>Where it hands off</h2>
+<p>A reach-for-it-anytime standalone — drop in when something's broken, drop out once the fix and its regression test are in. Its <strong>post-mortem</strong> hands off to <code>/improve-codebase-architecture</code> when the real finding is that there's <em>no good seam to lock the bug down</em> — the code, not the bug, is the problem.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What must exist before diagnosing-bugs will hypothesise?",
+  "options": [
+    "A written theory of the bug",
+    "A tight red-capable loop",
+    "A failing type check",
+    "A merged regression test"
+  ],
+  "answer": 1,
+  "explainRight": "One runnable command that already goes red on this bug. No loop, no diagnosis.",
+  "explainWrong": "Theorising before the loop exists is the exact failure this skill prevents."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "The bug only flakes sometimes. What is the goal?",
+  "options": [
+    "A clean one-shot repro",
+    "A higher reproduction rate",
+    "Skip straight to git bisect",
+    "Rewrite the whole module"
+  ],
+  "answer": 1,
+  "explainRight": "Loop the trigger, parallelise, add stress — until the flake is debuggable.",
+  "explainWrong": "A clean repro may be impossible for a flake. Aim for a higher reproduction rate."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What does the loop need to assert?",
+  "options": [
+    "A nearby, easier failure",
+    "The exact symptom you reported",
+    "Any failing test will do",
+    "A passing type check"
+  ],
+  "answer": 1,
+  "explainRight": "The loop asserts the symptom you actually reported — not a nearby failure.",
+  "explainWrong": "A nearby failure sends you after the wrong bug. Assert the exact symptom."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "The post-mortem says there's no good seam to lock the bug down. Hand off to:",
+  "options": [
+    "improve-codebase-architecture",
+    "to-spec, to rewrite it",
+    "triage, to label it wontfix",
+    "wayfinder, to map it out"
+  ],
+  "answer": 0,
+  "explainRight": "When the code, not the bug, is the problem, hand off to improve-codebase-architecture.",
+  "explainWrong": "No good seam means the code is the problem. improve-codebase-architecture deepens it."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0012-resolving-merge-conflicts.html">Resolving Merge Conflicts</a> — the build step and its two-axis review.</p>
+
+  <div class="footer">
+    <p>Lesson 11 of the <em>Matt Pocock Skills</em> course · <a href="0010-tdd.html">← TDD: Red-Green, One Slice</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-diagnosing-bugs" target="_blank" rel="noopener">diagnosing-bugs docs</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

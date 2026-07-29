@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0009 — Implement &amp; Code Review</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0009 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Implement &amp; Code Review</h1>
+  <p class="subtitle">The last two steps: implement builds, code-review judges on two axes.</p>
+
+<p class="lead">The last two steps of the main flow: <code>/implement</code> builds, <code>/code-review</code> judges. They close the loop.</p>
+
+<h2><code>/implement</code> — the hands, not the head</h2>
+<p>It builds the work described by a spec or set of tickets — driving it through <code>/tdd</code>, typechecking, and the full test suite, then handing to review and committing to the current branch.</p>
+
+<div class="callout note">
+<span class="label">It does not decide what to build</span>
+The spec is already settled and the seams are already agreed. <code>implement</code> executes that plan rather than reopening it. The thinking happened upstream — in <code>grill-with-docs</code> and <code>to-spec</code>. If the spec doesn't exist yet, write it first.
+</div>
+
+<h3>Pre-agreed seams</h3>
+<p>The idea <code>implement</code> runs on is the <strong>seam</strong> — the stable interface a feature is tested at, chosen <em>before any code is written</em> (during <code>to-spec</code>). It doesn't invent seams mid-build; it uses the ones already picked and writes tests against them via <code>tdd</code>. Working at pre-agreed seams is what keeps the implementation honest: tests target something durable, so the code underneath can move without the tests moving.</p>
+
+<p>Around that core it keeps the loop tight — typecheck often, run single test files as it goes, run the whole suite once at the end — then closes out with a review pass and a commit.</p>
+
+<h2><code>/code-review</code> — two axes, never merged</h2>
+<p>Reviews the diff between <code>HEAD</code> and a fixed point you supply (commit, branch, tag, merge-base) along <strong>two separate axes</strong>, run as parallel sub-agents so neither pollutes the other's context:</p>
+
+<table>
+<thead><tr><th>Axis</th><th>Question</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td><strong>Standards</strong></td><td>Is it built right? Does it follow how this repo writes code?</td><td><code>CODING_STANDARDS.md</code> / <code>CONTRIBUTING.md</code> + a fixed baseline of ~12 Fowler code smells (Mysterious Name, Duplicated Code, Feature Envy, Data Clumps, …)</td></tr>
+<tr><td><strong>Spec</strong></td><td>Is it the right thing? Does it do what the issue/spec asked?</td><td>The originating issue or spec (issue-tracker wiring from setup)</td></tr>
+</tbody>
+</table>
+
+<div class="callout note">
+<span class="label">Why never merged</span>
+A change can pass one axis and fail the other. A single blended verdict lets one mask the other. So the report presents them under separate <code>## Standards</code> and <code>## Spec</code> headings with a per-axis summary. There is deliberately no single winner across axes.
+</div>
+
+<h3>Two rules keep the Standards baseline safe</h3>
+<ul>
+<li>A documented repo standard always overrides the Fowler baseline.</li>
+<li>Every smell is a judgement call, never a hard violation.</li>
+</ul>
+
+<h3>No spec → Spec axis skips</h3>
+<p>The Spec axis needs somewhere to find the originating spec — an issue reference in the commit messages, a path you pass in, or a spec under <code>docs/</code>/<code>specs/</code>. Without one, it reports "no spec available" instead of inventing requirements. The Standards axis needs nothing set up — it always carries the built-in Fowler smell baseline.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What does implement do if the spec doesn't exist yet?",
+  "options": [
+    "Invents one as it builds",
+    "Stops, you write it first",
+    "Skips straight to code review",
+    "Reopens the grilling phase"
+  ],
+  "answer": 1,
+  "explainRight": "implement is the hands, not the head. No spec, no build — go write one first.",
+  "explainWrong": "implement does not decide what to build. The spec must exist first."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What does code-review's two axes split on?",
+  "options": [
+    "Frontend code vs backend code",
+    "Standards vs Spec, parallel",
+    "Tests vs implementation",
+    "Commit size vs file count"
+  ],
+  "answer": 1,
+  "explainRight": "Standards (built right?) and Spec (right thing?), parallel sub-agents, never merged.",
+  "explainWrong": "The two axes are Standards and Spec — run as parallel sub-agents so neither pollutes the other."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Why are the two axes never merged into one verdict?",
+  "options": [
+    "It is slower to merge them",
+    "One can mask the other",
+    "The agent cannot merge text",
+    "They run on different models"
+  ],
+  "answer": 1,
+  "explainRight": "A change can pass one and fail the other. Merging lets one mask the other.",
+  "explainWrong": "Merging the axes lets a pass on one hide a fail on the other. Keep them separate."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "No spec can be found for the diff. What does the Spec axis do?",
+  "options": [
+    "Invents reasonable requirements",
+    "Reports no spec available",
+    "Fails the review by default",
+    "Falls back to Standards only"
+  ],
+  "answer": 1,
+  "explainRight": "It reports 'no spec available' instead of inventing requirements.",
+  "explainWrong": "Inventing requirements would be fiction. The Spec axis says so and skips."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0010-tdd.html">TDD: Red-Green, One Slice</a> — the fix for the ball of mud.</p>
+
+  <div class="footer">
+    <p>Lesson 9 of the <em>Matt Pocock Skills</em> course · <a href="0008-to-tickets-tracer-bullets.html">← to-tickets — Tracer Bullets</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-implement" target="_blank" rel="noopener">implement</a>, <a href="https://aihero.dev/skills-code-review" target="_blank" rel="noopener">code-review</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

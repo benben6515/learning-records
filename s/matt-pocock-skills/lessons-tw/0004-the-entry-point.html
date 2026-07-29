@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 6 課 — 入口：grill-with-docs</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .nest { margin: 1.75rem 0; font-family: var(--sans); }
+  .nest .layer { border: 1.5px solid var(--ink-soft); border-radius: 8px; padding: 0.9rem 1rem 1rem; margin: 0; background: var(--paper); }
+  .nest .layer + .layer { margin-top: 0; }
+  .nest .layer.outer  { border-color: var(--accent); background: var(--accent-soft); }
+  .nest .layer.mid    { background: var(--paper); }
+  .nest .layer.inner  { border-style: dashed; background: var(--paper-edge); }
+  .nest .layer .lbl { font-size: 0.8rem; font-weight: 600; color: var(--ink); display: flex; justify-content: space-between; gap: 0.5rem; align-items: baseline; margin-bottom: 0.35rem; }
+  .nest .layer .lbl .tag { font-weight: 400; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.04em; }
+  .nest .layer code { font-size: 0.78rem; }
+  .nest .pad { padding-left: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0004 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>入口：<code>grill-with-docs</code></h1>
+  <p class="subtitle">每一段規格驅動的旅程都從這裡開始。它是三個技能，層層相套。</p>
+
+  <p class="lead">在<a href="0003-the-mental-map.html">第 3 課</a>你看到了地圖：主流程從 <code>grill-with-docs</code> 開始。現在拉近來看。當你帶著一個模糊的專案想法——「我想重新思考使用者入門的流程」——把它磨利成可以寫成規格的東西的，就是這個技能。令人意外的是：它不是一個技能，而是<strong>三個，像俄羅斯娃娃那樣層層相套</strong>。</p>
+
+  <h2>一個核心觀念：一個組合</h2>
+  <p>最內層是一個原語（primitive）。外面包了兩層外殼，<em>訪談方式</em>完全相同，差別只在於<em>留下了什麼</em>：</p>
+
+  <div class="nest">
+    <div class="layer outer">
+      <div class="lbl"><span><code>grill-with-docs</code></span><span class="tag">有程式庫 · 撰寫 <code>CONTEXT.md</code> + ADR</span></div>
+      <div class="pad">
+        <div class="layer mid">
+          <div class="lbl"><span><code>grill-me</code></span><span class="tag">無程式庫 · 不留紀錄</span></div>
+          <div class="pad">
+            <div class="layer inner">
+              <div class="lbl"><span><code>grilling</code> — 原語</span><span class="tag">訪談本身</span></div>
+              <div style="font-size:0.82rem; line-height:1.5; color:var(--ink-soft);">
+                一次只問一題 · 自己去查<em>事實</em> · <em>決策</em>歸你 · 在雙方達成共識前不行動
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p>由內往外讀。<code>grilling</code> 是那場不留情面的盤問。<code>grill-me</code> 是不帶記憶的同一場盤問。<code>grill-with-docs</code> 則是那場盤問<em>再加上</em> <code>domain-modeling</code>——於是你談定的每一個用語、達成的每一個決策，都會邊談邊寫進 <code>CONTEXT.md</code>，偶爾寫成一則 ADR。同樣的問題，不同的後續。</p>
+
+  <div class="callout note">
+    <span class="label">我該選哪個外層？</span>
+    <strong>有程式庫嗎？</strong>一律用 <code>grill-with-docs</code>。它留下的紀錄，正是 <code>to-spec</code>、<code>implement</code>、<code>improve-codebase-architecture</code> 之後要讀的東西。<strong>還沒有程式庫</strong>（全新想法、沒有 repo）？用 <code>grill-me</code>——一樣的磨利過程，只是無處可寫。
+  </div>
+
+  <h2>一場好的盤問，四條規則</h2>
+  <p>以下直接引自 <a href="https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md"><code>grilling</code> 技能</a>。它們設定你的期待——也告訴你一場訪談何時走偏了：</p>
+  <ol>
+    <li><strong>一次只問一題。</strong>它等你答完才問下一題。一次拋出五個問題是 bug、不是 feature——設計上就把那種情況稱為「令人無所適從」。</li>
+    <li><strong>事實它自己查；決策歸你。</strong>只要能從檔案系統或程式碼查到的，它就該<em>自己去查</em>，而不是問你。只有真正的<em>決策</em>（只有你能取捨的）才會丟給你。</li>
+    <li><strong>每題都附上建議答案。</strong>你永遠不會面對空白——你是在核准、否決或調整一個建議。</li>
+    <li><strong>在你確認雙方已達共識前，它不會動手。</strong>盤問產出的是<em>對齊</em>，不是程式碼。這個階段什麼都不會被建造。</li>
+  </ol>
+
+  <div class="principle">事實自己去查。決策丟給你。雙方沒達成共識前，什麼都不動。</div>
+
+  <h2>為什麼它是入口——以及為什麼視窗必須完整</h2>
+  <p>回想第 3 課的視窗紀律。現在你看得見<em>為什麼</em>它存在：<code>grill-with-docs</code> 正是共享思考與最初詞彙條目累積之處。如果你在這裡壓縮或清空對話，就丟掉了整個流程所依賴的狀態。那個不中斷的視窗不是迷信——它是在保護<em>這個</em>階段的產出。</p>
+
+  <div class="checklist">
+    <h3>你的具體收穫 — 把這些說出口</h3>
+    <ol>
+      <li>由內往外，說出三個相套的技能，以及各自<em>留下什麼</em>。</li>
+      <li>說出一場好盤問的四條規則（「一次只問一題」是最常被忘記的）。</li>
+      <li>把這句話說完：「<code>grill-with-docs</code> 是有狀態的選擇，因為 ______。」</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">如果答得出來，你就懂了入口。注意我們還沒碰到 <code>CONTEXT.md</code> 的<em>規則</em>——這是刻意的。這課談的是訪談；下一課談的是它寫出來的詞彙表。</p>
+  </div>
+
+  <h2>深入了解</h2>
+  <ul>
+    <li><strong>主要來源（讀）：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md"><code>grilling</code> 技能</a>——六行，就是整個原語。接著讀 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/SKILL.md"><code>grill-with-docs</code></a>（一行）與 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/SKILL.md"><code>domain-modeling</code></a>，看看「文件」那一半。</li>
+    <li><strong>完整參考：</strong><a href="../reference/spec-driven-workflow.html">流程圖與詞彙表</a>——看看入口在哪、以及 <code>domain-modeling</code> 邊走邊做些什麼。</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    挑一題試試，或問你自己的：<em>「如果它會自己查事實，我怎麼阻止它為了一個小問題就跑去讀我整個 repo？」</em> · <em>「盤問什麼時候算<strong>結束</strong>、我該進到 <code>to-spec</code>？訊號是什麼？」</em> · <em>「我能在半成形的想法上跑 grill-with-docs 嗎，還是要先準備？」</em>
+  </div>
+
+  <p class="nav-next">下一課 → <strong><code>CONTEXT.md</code> — 詞彙表規則。</strong>訪談會談定用語；這課談的是<em>把它們寫好</em>的紀律（要有定見、要精簡、要專屬於專案、不可含實作）。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 4 課 · <a href="0003-the-mental-map.html">← 第 3 課</a> · <a href="../MISSION.md">任務</a> · <a href="../reference/spec-driven-workflow.html">參考</a></p>
+  </div>
+
+</div>
+</body>
+</html>
