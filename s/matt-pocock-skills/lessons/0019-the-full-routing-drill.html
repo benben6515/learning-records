@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0019 — The Full Routing Drill</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0019 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>The Full Routing Drill</h1>
+  <p class="subtitle">Five scenarios. Route each to the right skill(s), in order.</p>
+
+<p class="lead">Five realistic scenarios. For each, pick the skill(s) to reach for and the order. This is the whole course compressed into one drill — get all five and the mission's <em>success looks like</em> is met.</p>
+
+<h2>Scenario 1</h2>
+<p>You have a codebase. A feature request is fuzzy in your head — you can feel the shape but three or four decisions are unresolved, and the project's vocabulary for it isn't settled yet. You want to build it.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which skill, first?",
+  "options": [
+    "to-spec, write the spec now",
+    "grill-with-docs, interview first",
+    "implement, start building it",
+    "triage, sort the request"
+  ],
+  "answer": 1,
+  "explainRight": "Fuzzy + has a codebase + vocabulary unsettled = grill-with-docs. It writes CONTEXT.md + ADRs as it goes.",
+  "explainWrong": "The plan is fuzzy and the language isn't settled. Grill first — to-spec synthesizes AFTER alignment."
+}
+</script></div>
+
+<h2>Scenario 2</h2>
+<p>An intermittent test flakes about one in twenty CI runs. Nobody can reproduce it locally. It's been green for two days and just failed again.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which skill, and what is its first move?",
+  "options": [
+    "tdd, rewrite the test green",
+    "diagnosing-bugs, build a loop",
+    "prototype, reproduce the state",
+    "research, read about flakes"
+  ],
+  "answer": 1,
+  "explainRight": "diagnosing-bugs. First move: build a tight red-capable loop (here, raise the reproduction rate by looping/stress).",
+  "explainWrong": "Hard bug + intermittent = diagnosing-bugs. It refuses to theorize until a tight loop exists."
+}
+</script></div>
+
+<h2>Scenario 3</h2>
+<p>Your issue tracker has 30 unreviewed bug reports and external PRs from contributors. Two are duplicates, one is already fixed, and several lack reproduction steps.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which skill, and what must it do before any ready-for-agent label?",
+  "options": [
+    "triage, verify each claim first",
+    "to-tickets, split them all up",
+    "implement, pick the easy ones",
+    "wayfinder, map the reports"
+  ],
+  "answer": 0,
+  "explainRight": "triage. It reproduces bugs / runs PR tests, checks redundancy and prior rejection, before any brief.",
+  "explainWrong": "Raw incoming issues = triage. It verifies before it briefs — never labels blind."
+}
+</script></div>
+
+<h2>Scenario 4</h2>
+<p>You're starting a greenfield project that will take months. You can feel the shape but cannot yet write it down as a spec — there are too many unknowns, and the route to the destination is foggy.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which skill, and where does it hand off when the map clears?",
+  "options": [
+    "grill-with-docs, then to-spec",
+    "wayfinder, then to-spec",
+    "to-spec, then to-tickets",
+    "prototype, then implement"
+  ],
+  "answer": 1,
+  "explainRight": "wayfinder charts decision tickets until the fog clears, then hands off to to-spec (never straight to implement).",
+  "explainWrong": "Too foggy + multi-session = wayfinder. It plans, then hands to to-spec to collapse the map."
+}
+</script></div>
+
+<h2>Scenario 5</h2>
+<p>You're mid-grilling a feature and the session is at ~110k tokens — still sharp, but you're only halfway through the decision tree and approaching the smart zone. You don't want to lose the thread.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which move, and why?",
+  "options": [
+    "Compact mid-phase to save room",
+    "Handoff, fork a fresh session",
+    "Push on, hope it stays sharp",
+    "Skip to-spec, jump to implement"
+  ],
+  "answer": 1,
+  "explainRight": "Approaching the smart zone before to-tickets = handoff. Fork fresh; don't push on degraded or compact mid-phase.",
+  "explainWrong": "Compacting mid-phase loses the thread; pushing on degrades reasoning. Handoff forks to a fresh session."
+}
+</script></div>
+
+<h2>Bonus — the two-axis review</h2>
+<div class="quiz"><script type="application/json">
+{
+  "question": "code-review finds the diff passes Standards but fails Spec. What does the report show?",
+  "options": [
+    "A single merged verdict, pass",
+    "Two separate blocks, no winner",
+    "Spec failure only, Standards hidden",
+    "Standards override Spec always"
+  ],
+  "answer": 1,
+  "explainRight": "Two axes, never merged. Each block cites its source; there is deliberately no single winner across axes.",
+  "explainWrong": "Merging lets one mask the other. The report keeps them separate — Standards and Spec side by side."
+}
+</script></div>
+
+<hr class="rule">
+
+<h2>You've finished the course</h2>
+<p>Fifteen lessons covering all 22 promoted skills. If you routed all five scenarios correctly, you can reach for the right skill at the right moment — the mission is met.</p>
+
+<p>The two things to keep doing:</p>
+<ul>
+<li><strong>Revisit the reference docs</strong> — <a href="../reference/spec-driven-workflow.html">Skill Map</a>, <a href="../reference/spec-driven-workflow.html">Main Flow</a>, <a href="../reference/failure-modes.html">Four Failure Modes</a>, <a href="../reference/glossary.html">Glossary</a>. They are the compressed essence; lessons fade, references stay.</li>
+<li><strong>Type <code>/ask-matt</code> in the real moment</strong> — the router is the cure for cognitive load. You don't have to hold all 22 skills in your head; the router does.</li>
+</ul>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  
+
+  <div class="footer">
+    <p>Lesson 19 of the <em>Matt Pocock Skills</em> course · <a href="0018-meta-skills.html">← The Meta Skills</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> </p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

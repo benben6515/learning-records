@@ -1,24 +1,33 @@
-# Mission: Matt Pocock Skills — Best Practices (Spec-Driven Focus)
+# Mission: Use the Matt Pocock Skills Set Effectively Day-to-Day
 
 ## Why
-The learner wants to drive their own project's work end-to-end through the Matt Pocock skill set — from a fuzzy idea to a shipped change — without needing someone else to drive the agent. Already comfortable with agent harnesses. The gap is *fluency in the workflow*: knowing which skill to reach for, when, and how they chain into one disciplined loop. They've chosen **spec-driven development** as the spine to learn first, because that's where the highest-leverage, most repeatable work lives.
+The skills are already installed. The gap isn't installation — it's fluency in the workflow: knowing which skill to reach for at which moment, in what order, and the discipline (context hygiene, blocking edges, deep modules, grilling before building) that makes the set compound. This workspace teaches the set as **one course with two layers**: a deep **spec-driven spine** (the highest-leverage, most repeatable route from idea to ship) sitting inside a broader **full tour** (the four failure modes, the on-ramps, the standalone tools, and the router that holds it all in your head). When the skill is acquired, AI coding sessions stop being vibes-driven and run a repeatable, well-engineered process that produces better code.
 
 ## Success looks like
-- Can draw the **main flow (idea → ship)** from memory and point to where spec-driven sits within it.
-- Can take one real feature idea from their own project and move it through `grill-with-docs → to-spec` (→ `to-tickets`) producing a spec that respects `CONTEXT.md` + ADRs.
-- Knows the **best-practice principles** cold: one unbroken context window for grill→spec→tickets; `CONTEXT.md` is a glossary not a spec; ADRs are offered sparingly; respect don't re-litigate.
-- Knows when *not* to use a skill (e.g. don't triage your own `to-tickets` output; don't push past the smart zone).
-- Reaches for the authoritative source (the skill's own `SKILL.md` / `ask-matt` router) instead of guessing.
+- Classify any situation into one of the **four failure modes** (misalignment, verbosity/no shared language, broken code, ball of mud) and reach for the corresponding fix.
+- Recite the **main flow (idea → ship)** from memory, including the prototype branch and the `to-spec` / `to-tickets` split; point to where spec-driven sits within it.
+- Drive one real feature idea end-to-end: `grill-with-docs → to-spec → to-tickets → implement`, producing a spec that respects `CONTEXT.md` + ADRs.
+- State the **context-hygiene rule** (one unbroken window through `to-tickets`; each `implement` fresh) and decide **`handoff` vs `compact`** correctly with the smart-zone reasoning.
+- Know the best-practice principles cold: `CONTEXT.md` is a glossary not a spec; ADRs are offered sparingly (the 3-criteria gate); respect don't re-litigate.
+- Know when **not** to use a skill: don't triage your own `to-tickets` output; don't reach for `wayfinder` on a well-scoped feature; don't push past the smart zone.
+- Reason in the **deep-module** vocabulary (module, interface, depth, seam, adapter, leverage, locality) and run `improve-codebase-architecture` as periodic upkeep.
+- Reach for **`ask-matt`** (the router) when you can't remember which skill fits — the cure for cognitive load.
 
 ## Constraints
-- **Conceptual / reference-first** — favour clear mental models, maps, and reference docs over heavy hands-on drills (for now).
-- Learner is **comfortable** with agent harnesses and skill workflows — skip basics like "what is a skill / how to invoke."
-- Pace set by the teacher; sessions kept short (one tight idea + one tangible win each).
-- Teaching workspace lives inside the public `learning-records` repo at `s/matt-pocock-skills/` and renders on GitHub Pages.
+- **Self-taught via the `teach` skill**; no instructor, no schedule. Pace and session length set by the learner.
+- **Conceptual / reference-first for the spine** (favour clear mental models and reference cards); **quiz-based retrieval** for the breadth tour (multiple-choice, equal-length options, immediate feedback).
+- **Primary sources** are the skills repo itself (README, `ask-matt` router, per-skill `SKILL.md`, `CONTEXT.md`) plus the four books it cites. Parametric knowledge is not trusted — every claim cites a source.
+- **Dark theme preferred** — the shared stylesheet (`assets/styles.css`) is dark-themed (light via OS `prefers-color-scheme`). Print stays light.
+- **Dual language:** the **spec-driven spine (7 lessons)** is in EN + 繁中; the **other 12 lessons** (failure modes, main flow, build/verify, on-ramps, router, meta, capstone) are EN-only for now — 繁中 translation is a deferred follow-up.
+- **Generic running example** — lessons reference no specific real project (the shared example is a `permissionBits` auth bitmask, a new/old coexistence migration, and neutral terms like "Order").
 
-## Out of scope (for now — protects the zone of proximal development)
-- Deep dives into the **issue/triage pipeline** (`to-tickets`, `triage`, `qa`) beyond how they connect to the map.
-- Deep dives into the **AFK exploration loop** (`wayfinder`, `handoff`, `prototype`) beyond awareness.
-- **Authoring** custom skills (`writing-great-skills`) — adjacent, revisit later.
-- Hands-on implementation drills (`tdd`, `code-review`) — these are *consumers* of the spec, learned when the learner actually ships their first spec.
-- Non-Matt-Pocock skill families installed alongside in the same skills directory.
+## Publishing
+- This workspace lives inside the public `benben6515/learning-records` repo at `s/matt-pocock-skills/` and renders on GitHub Pages (`.nojekyll` at repo root, source = `main` / root).
+- Live URL: https://benben6515.github.io/learning-records/s/matt-pocock-skills/
+- **To publish: just `git add` + `commit` + `push`** from the `learning-records` repo. No build step, no script.
+- Skill `SKILL.md` links are GitHub URLs — work locally and on the web.
+
+## Out of scope
+- The **plugin / marketplace** mechanics, `.claude-plugin/` manifest, versioning, `scripts/link-skills.sh`.
+- The `personal/`, `misc/`, `in-progress/`, `deprecated/` skill buckets — only the promoted `engineering/` and `productivity/` sets.
+- **Authoring** custom skills (`writing-great-skills`) beyond awareness — it is the subject of Lesson 18, not a hands-on drill.

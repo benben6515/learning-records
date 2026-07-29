@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006 — ADRs, the Three-Criteria Gate</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .gate { margin: 1.5rem 0; font-family: var(--sans); text-align: center; }
+  .gate .crit { display: inline-block; border: 1.5px solid var(--ink-soft); border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.78rem; background: var(--paper); line-height: 1.2; vertical-align: middle; max-width: 9.5rem; }
+  .gate .and { display:inline-block; color: var(--accent); font-weight:700; margin: 0 0.25rem; font-size: 0.8rem; vertical-align: middle; }
+  .gate .yields { display:block; color: var(--muted); margin: 0.6rem 0 0.35rem; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .gate .result { display:inline-block; background: var(--accent-fill); color:#fff; border-radius: 6px; padding: 0.4rem 0.9rem; font-size: 0.82rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0006 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>ADRs — The Three-Criteria Gate</h1>
+  <p class="subtitle">Where the glossary holds terms, ADRs hold decisions — almost none of them.</p>
+
+  <p class="lead">In <a href="0005-context-md-glossary.html">Lesson 5</a> you asked the perfect follow-up: <em>"if the glossary is devoid of implementation, where do I record that we use a bitmask for auth?"</em> That's an ADR's job — <strong>if</strong> it clears a high bar. The whole skill of ADRs is <strong>restraint</strong>: most decisions you think deserve one… don't.</p>
+
+  <h2>The one idea: an AND gate</h2>
+  <div class="principle">Offer an ADR only when <strong>all three</strong> are true. The gate is AND, not OR.</div>
+
+  <div class="gate">
+    <span class="crit"><strong>Hard to reverse</strong></span>
+    <span class="and">AND</span>
+    <span class="crit"><strong>Surprising without context</strong></span>
+    <span class="and">AND</span>
+    <span class="crit"><strong>Real trade-off</strong></span>
+    <span class="yields">all three ⇒</span>
+    <span class="result">ADR</span>
+  </div>
+
+  <p>Miss <em>any one</em> and you skip. Easy to reverse? You'll just reverse it — skip. Not surprising? Nobody will wonder why — skip. No real alternative? There's nothing to record beyond "we did the obvious thing" — skip. This is the antidote to ADR-sprawl: folders full of records nobody reads because they documented the obvious and the reversible.</p>
+
+  <p>The format itself is deliberately tiny — a title and 1–3 sentences:</p>
+  <pre><code># Auth permissions as a bitmask
+
+permissionBits encodes each feature's access as a bit, so the menu
+filter is a single bitwise AND instead of N role-membership lookups.
+Chosen over a role list for O(1) filtering; the cost is that
+adding a feature requires a reserved bit.</code></pre>
+  <p>That's a real ADR. One paragraph. It exists so the next person doesn't "refactor" the bitmask into roles and quietly break the menu filter.</p>
+
+  <div class="checklist">
+    <h3>Your tangible win — does it clear the gate?</h3>
+    <p style="margin-top:0;">Two of these are <em>situations many projects run into</em>. For each, judge: ADR, or skip? Name which criterion fails if you'd skip.</p>
+    <ol>
+      <li><strong>Auth is a bitmask</strong> (<code>permissionBits</code>), not a role list — because the menu filter is a bitwise AND.</li>
+      <li><strong>Auth moved to the new approach, the rest is still on the old one</strong> — old and new coexist, the migration isn't finished.</li>
+      <li><strong>We lint with <code>eslint-config-standard</code>.</strong></li>
+      <li><strong>Router uses hash mode</strong> (<code>createWebHashHistory</code>), not history mode.</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">Hints: ask of each — <em>would a future reader be surprised? is it costly to reverse? was there a real alternative?</em> Reasoning in the <a href="../reference/adr-format.html#gate">reference's gate section</a>; compare your calls after.</p>
+  </div>
+
+  <h2>Terms vs decisions — the clean split</h2>
+  <p>This closes the loop with Lesson 5. Two artefacts, two questions:</p>
+  <ul>
+    <li><strong>"What do we <em>call</em> this?"</strong> → <code>CONTEXT.md</code> (a term).</li>
+    <li><strong>"<em>Why</em> did we choose this?"</strong> → an ADR <em>(if it clears the gate)</em>.</li>
+  </ul>
+  <p>So: "we call it <code>permissionBits</code>" is a term (glossary). "we made it a <em>bitmask</em>" is a decision (ADR). Same concept, two homes — and the bitmask decision only earns an ADR because it's hard to reverse, surprising, and a real trade-off.</p>
+
+  <h2>Go deeper</h2>
+  <ul>
+    <li><strong>Primary source (read):</strong> <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/ADR-FORMAT.md"><code>domain-modeling/ADR-FORMAT.md</code></a> — the gate, the format, and the full "what qualifies" list. Four minutes.</li>
+    <li><strong>The reference card:</strong> <a href="../reference/adr-format.html">ADR Format &amp; Gate</a> — the visual gate, what qualifies vs what doesn't, terms-vs-decisions, and when skills offer ADRs. Bookmark alongside the <code>CONTEXT.md</code> card.</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Try one: <em>"For #2 (new/old coexistence) — is that 'surprising' enough, or is it just unfinished migration that I shouldn't immortalise in an ADR?"</em> (this is a genuinely hard judgment call — exactly where the skill lives) · <em>"What's the difference between an ADR's <code>Considered Options</code> and just writing prose?"</em> · <em>"If an ADR later turns out wrong, do I delete it?"</em>
+  </div>
+
+  <p class="nav-next">Next lesson → <strong><code>to-spec</code> — the spec anatomy &amp; the test-seam rule.</strong> You've now got the two artefacts a spec is built on (glossary + ADRs). Time to write the spec itself — and the one rule about test seams that most people get backwards.</p>
+
+  <div class="footer">
+    <p>Lesson 6 of the <em>Matt Pocock Skills</em> workspace · <a href="0005-context-md-glossary.html">← Lesson 5</a> · <a href="../MISSION.md">Mission</a> · <a href="../reference/adr-format.html">Reference</a></p>
+  </div>
+
+</div>
+</body>
+</html>

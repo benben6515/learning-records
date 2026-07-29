@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0008 — to-tickets, Tracer Bullets &amp; the Frontier</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0008 · ~7 min · awareness level</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1><code>to-tickets</code> — Tracer Bullets &amp; the Frontier</h1>
+  <p class="subtitle">The last stop of the spec-driven spine. One spec becomes a set of tickets an agent can work fresh.</p>
+
+  <p class="lead">In <a href="0007-to-spec-anatomy.html">Lesson 7</a> you turned the conversation into a spec. <code>to-tickets</code> takes that spec and breaks it into <strong>tickets</strong> — each one a self-contained, demoable slice that a fresh <code>implement</code> session can build on its own. This is awareness level: you won't drill it until your first real multi-session build. But the mental model is small and worth holding now, because it's <em>why</em> Lesson 3's "fresh context per implement" rule actually works.</p>
+
+  <h2>The one idea: a tracer bullet is a <em>vertical</em> slice</h2>
+  <div class="principle">Each ticket cuts a narrow but <strong>complete</strong> path through every layer — schema, API, UI, tests. Vertical, not horizontal. Demoable on its own. Sized to one context window.</div>
+
+  <p>The word that breaks people is <strong>vertical</strong>. The instinct is to slice by layer — "do all the schema, then all the API, then all the UI." That's a <em>horizontal</em> slice, and it's wrong here: nothing is demoable until the very last layer lands. A tracer bullet instead goes end-to-end through <em>all</em> layers for a <em>thin</em> sliver of behaviour:</p>
+
+  <table>
+    <thead><tr><th>Horizontal slice (avoid)</th><th>Vertical slice / tracer bullet (aim for)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>"Build the whole auth schema."<br><span style="color:var(--muted);font-size:0.86rem;">Not demoable alone.</span></td>
+        <td>"User can log in and see one protected page, end-to-end."<br><span style="color:var(--muted);font-size:0.86rem;">Demoable the moment it lands.</span></td>
+      </tr>
+      <tr>
+        <td>"Build the whole sidebar UI."</td>
+        <td>"The menu filters its items by the <code>permissionBits</code> bitmask, end-to-end."</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout note">
+    <span class="label">Prefactor first</span>
+    While slicing, look for a chance to <em>prefactor</em> — "make the change easy, then make the easy change." Any prefactoring becomes its own leading ticket(s) that the slices depend on.
+  </div>
+
+  <h2>Blocking edges &amp; the frontier</h2>
+  <p>Each ticket declares its <strong>blocking edges</strong> — the other tickets that must finish before it can start. A ticket with no blockers can start immediately. The set of currently-unblocked tickets is called the <strong>frontier</strong>, and that's always what you work:</p>
+
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">T1 · login end-to-end</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ blocks</div>
+    <div class="row">
+      <span class="stage">T2 · menu filters by permissionBits</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ blocks</div>
+    <div class="row">
+      <span class="stage">T3 · per-role menu management</span>
+    </div>
+    <div class="under">start: frontier = {T1} · after T1 closes: {T2} · after T2: {T3}</div>
+  </div>
+
+  <p>This is the bridge back to Lesson 3. Because tickets are independent vertical slices with <em>explicit</em> blockers, each <code>implement</code> can start fresh, read only its ticket, and work the frontier without clobbering other sessions. The unbroken-window rule (grill → spec → <strong>tickets</strong>) exists precisely so these edges are captured while the thinking is still warm — then the building fans out into clean, separate contexts.</p>
+
+  <h2>The exception you should at least recognise</h2>
+  <p>Not everything is a tracer bullet. A <strong>wide refactor</strong> — one mechanical change whose blast radius spans the whole codebase (rename a column, retype a shared symbol) — can't land green in a single vertical slice, because one edit breaks thousands of call sites at once. Forcing it into a tracer bullet just produces a broken build.</p>
+  <div class="callout warn">
+    <span class="label">Wide refactor → expand–contract</span>
+    Don't tracer-bullet it. Sequence it: <strong>expand</strong> (add the new form beside the old, nothing breaks) → <strong>migrate</strong> the call sites in batches, each its own ticket, CI staying green because the old form still exists → <strong>contract</strong> (delete the old form once no caller remains). You only need to <em>recognise</em> this case for now; the mechanics come when you hit one.
+  </div>
+
+  <h2>How it publishes</h2>
+  <p><code>to-tickets</code> writes one ticket per item, in dependency order (blockers first). The shape of the edges depends on what <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md"><code>setup-matt-pocock-skills</code></a> configured for your repo:</p>
+  <ul>
+    <li><strong>Local files</strong> → one file per ticket under <code>.scratch/&lt;feature&gt;/issues/NN-slug.md</code>, "Blocked by" as text. (Your repo is on GitHub, so this isn't you — but it's the solo/no-remote path.)</li>
+    <li><strong>Real tracker (GitHub, Linear…)</strong> → one issue per ticket, using the platform's <em>native</em> blocking / sub-issue links. This is your path. Each ticket gets the <code>ready-for-agent</code> label — agent-grabbable by construction, <strong>no triage</strong>.</li>
+  </ul>
+  <p>Same rule as the spec: no file paths or code snippets in tickets (they rot) — except a decision-encoding prototype.</p>
+
+  <div class="checklist">
+    <h3>Your tangible win — say these out loud</h3>
+    <ol>
+      <li>Define a tracer bullet in one sentence (the four properties: vertical, complete-through-all-layers, demoable, one context window).</li>
+      <li>Why is a <em>horizontal</em> slice wrong here?</li>
+      <li>What is the <strong>frontier</strong>, and why does making blocking edges explicit let each <code>implement</code> run fresh?</li>
+      <li>Name the one case that is <em>not</em> a tracer bullet, and the pattern that handles it.</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">Awareness level — if you can answer these, you've got the model. The drill comes when you run your first real multi-session build on your own project.</p>
+  </div>
+
+  <h2>Go deeper</h2>
+  <ul>
+    <li><strong>Primary source (read):</strong> <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a> — the vertical-slice rules, the frontier, the wide-refactor exception, and both publish templates. The authoritative source.</li>
+    <li><strong>The map:</strong> <a href="../reference/spec-driven-workflow.html">Workflow Map &amp; Glossary</a> — see where <code>to-tickets</code> sits and how the frontier hands off to <code>implement</code>.</li>
+    <li><strong>Reference card:</strong> <a href="../reference/tickets-anatomy.html">Ticket Anatomy</a> — the vertical-slice rules, the frontier, expand–contract, and both publish templates. Bookmark.</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Try one: <em>"Take a real feature from your project — say, adding a new reporting chart. What would the tracer bullets be, and what would block what?"</em> (this is the move from awareness to practice) · <em>"How thin is 'thin enough' for a vertical slice before it's just gold-plating?"</em> · <em>"That new/old coexistence migration we talked about — is that a tracer bullet or an expand–contract?"</em>
+  </div>
+
+  <p class="nav-next">Next lesson → <strong>How <code>improve-codebase-architecture</code> consumes the docs.</strong> You've built the glossary and ADRs (Lessons 5–6). This is the skill that reads them to find <em>deepening opportunities</em> — turning shallow modules into deep ones. The last piece of the spec-driven picture.</p>
+
+  <div class="footer">
+    <p>Lesson 8 of the <em>Matt Pocock Skills</em> workspace · <a href="0007-to-spec-anatomy.html">← Lesson 7</a> · <a href="../MISSION.md">Mission</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 8 課 — to-tickets，曳光彈與前緣</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0008 課 · 約 7 分鐘 · 認識層級</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1><code>to-tickets</code> — 曳光彈與前緣</h1>
+  <p class="subtitle">規格驅動主幹的最後一站。一份規格變成一套讓代理能在全新視窗中施工的票。</p>
+
+  <p class="lead">在<a href="0007-to-spec-anatomy.html">第 7 課</a>裡，你把對話凍結成了一份規格。<code>to-tickets</code> 接手這份規格，把它拆成<strong>票（tickets）</strong>——每一張都是一個獨立、可展示的切片，讓一個全新的 <code>implement</code> 工作階段能靠自己的力量把它蓋起來。這是認識層級：你要等到第一次真正的多工作階段建構時，才會真正演練它。但這個心智模型很小，現在就值得握住，因為它正是第 3 課那條「每個 <code>implement</code> 用全新視窗」規則之所以行得通的原因。</p>
+
+  <h2>一個核心觀念：曳光彈是一道<em>垂直</em>切片</h2>
+  <div class="principle">每一張票都切出一條窄但<strong>完整</strong>、貫穿每一層的路徑——結構描述（schema）、API、UI、測試。垂直，不是水平。自己就能展示。大小塞進一個上下文視窗。</div>
+
+  <p>讓人卡住的字是<strong>垂直（vertical）</strong>。直覺會想按層來切——「先把所有結構描述做完，再把所有 API 做完，再把所有 UI 做完。」那是一道<em>水平（horizontal）</em>切片，在這裡是錯的：沒有任何東西能展示，直到最後一層落地才行。曳光彈（tracer bullet）則相反，它針對一小條薄的行為，端到端貫穿<em>所有</em>層：</p>
+
+  <table>
+    <thead><tr><th>水平切片（避免）</th><th>垂直切片／曳光彈（以此為目標）</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>「把整個授權結構描述蓋出來。」<br><span style="color:var(--muted);font-size:0.86rem;">無法單獨展示。</span></td>
+        <td>「使用者能登入並看到一個受保護的頁面，端到端。」<br><span style="color:var(--muted);font-size:0.86rem;">一落地就能展示。</span></td>
+      </tr>
+      <tr>
+        <td>「把整個側邊欄 UI 蓋出來。」</td>
+        <td>「選單依 <code>permissionBits</code> 位元遮罩過濾其項目，端到端。」</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout note">
+    <span class="label">先預重構</span>
+    切票時，留意是否有機會<em>預重構（prefactor）</em>——「先讓變更容易，再做那個容易的變更」。任何預重構都會變成它自己的一張（或多張）前置票，讓後面的切片依附其上。
+  </div>
+
+  <h2>阻塞邊與前緣</h2>
+  <p>每一張票都會宣告它的<strong>阻塞邊（blocking edges）</strong>——也就是必須先完成、它才能開工的其他票。沒有阻塞的票可以立刻開工。所有目前未被阻塞的票所成的集合，稱為<strong>前緣（frontier）</strong>，而你永遠只做前緣上的票：</p>
+
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">T1 · 登入端到端</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ 阻塞</div>
+    <div class="row">
+      <span class="stage">T2 · 選單依 permissionBits 過濾</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ 阻塞</div>
+    <div class="row">
+      <span class="stage">T3 · 依角色的選單管理</span>
+    </div>
+    <div class="under">開工：前緣 = {T1} · T1 收掉後：{T2} · T2 收掉後：{T3}</div>
+  </div>
+
+  <p>這正是接回第 3 課的橋樑。因為票是各自獨立的垂直切片，而且帶有<em>明確</em>的阻塞邊，所以每一個 <code>implement</code> 都能全新開始、只讀自己的那張票、做前緣上的事，而不會打亂其他工作階段。那條「不中斷視窗」規則（grill → spec → <strong>tickets</strong>）之所以存在，正是為了在思考還熱的時候把這些邊捕捉下來——之後再讓施工扇出到一個個乾淨、各自獨立的視窗。</p>
+
+  <h2>你至少該認得的例外</h2>
+  <p>並非所有東西都是曳光彈。一次<strong>大範圍重構（wide refactor）</strong>——一個機械性的變更，其爆炸半徑橫跨整個程式庫（改一個欄位名、改一個共用符號的型別）——沒辦法用單一一條垂直切片就讓它綠燈落地，因為一次編輯會同時弄壞成千上萬個呼叫點。硬把它塞進曳光彈，只會做出一個壞掉的建構。</p>
+  <div class="callout warn">
+    <span class="label">大範圍重構 → 擴充–收縮</span>
+    別把它做成曳光彈。把它排成序列：<strong>擴充</strong>（expand：在舊形式旁邊加上新形式，什麼都不壞）→ 分批<strong>遷移</strong>（migrate）呼叫點，每一批是一張自己的票，CI 之所以維持綠燈，是因為舊形式還在 → <strong>收縮</strong>（contract：一旦沒有呼叫者了，就刪掉舊形式）。目前你只需要<em>認得</em>這種情況就好；真正的手續，等你撞上再說。
+  </div>
+
+  <h2>它如何發布</h2>
+  <p><code>to-tickets</code> 為每個項目寫一張票，依相依順序（阻塞者在前）。邊的形態，取決於 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md"><code>setup-matt-pocock-skills</code></a> 為你的 repo 設定了什麼：</p>
+  <ul>
+    <li><strong>本地檔案</strong> → 每張票一個檔案，放在 <code>.scratch/&lt;feature&gt;/issues/NN-slug.md</code> 之下，以文字寫「Blocked by」。（你的專案用 GitHub，所以這不是你——但這是單人／無遠端的途徑。）</li>
+    <li><strong>真實追蹤器（GitHub、Linear……）</strong> → 每張票一個 issue，使用平台<em>原生</em>的阻塞／子議題連結。這才是你的途徑。每張票會拿到 <code>ready-for-agent</code> 標籤——天生就能被代理抓取，<strong>不必分級</strong>。</li>
+  </ul>
+  <p>與規格同一條規則：票裡不放檔案路徑或程式碼片段（它們會腐朽）——除了能編碼決策的原型。</p>
+
+  <div class="checklist">
+    <h3>你的具體收穫 — 把這些說出口</h3>
+    <ol>
+      <li>用一句話定義曳光彈（四個性質：垂直、貫穿所有層而完整、可展示、塞進一個上下文視窗）。</li>
+      <li>為什麼<em>水平</em>切片在這裡是錯的？</li>
+      <li>什麼是<strong>前緣（frontier）</strong>？為什麼把阻塞邊寫明，就能讓每個 <code>implement</code> 全新地跑？</li>
+      <li>說出唯一一種<em>不是</em>曳光彈的情況，以及處理它的模式。</li>
+    </ol>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">認識層級——若你能答出這些，模型就到手了。真正的演練，等你第一次在自己的專案上跑真正的多工作階段建構時再來。</p>
+  </div>
+
+  <h2>深入了解</h2>
+  <ul>
+    <li><strong>主要來源（讀）：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a>——垂直切片規則、前緣、大範圍重構的例外，以及兩種發布範本。權威來源。</li>
+    <li><strong>地圖：</strong><a href="../reference/spec-driven-workflow.html">流程圖與詞彙表</a>——看看 <code>to-tickets</code> 坐在哪裡，以及前緣如何交棒給 <code>implement</code>。</li>
+    <li><strong>參考卡：</strong><a href="../reference/tickets-anatomy.html">票的解剖</a>——垂直切片規則、前緣、擴充–收縮，以及兩種發布範本。加入書籤。</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    挑一題：<em>「拿一個你專案裡真實的功能來試——比方說，新增一張報表圖表。曳光彈會是哪些？誰阻塞誰？」</em>（這是從認識走向實作的那一步）· <em>「垂直切片『薄』到什麼程度才算夠薄，再薄下去就只是鍍金？」</em> · <em>「我們前面聊過的、那段新舊做法並存的遷移——那是曳光彈，還是擴充–收縮？」</em>
+  </div>
+
+  <p class="nav-next">下一課 → <strong><code>improve-codebase-architecture</code> 如何消化這些文件。</strong>你已經建立了詞彙表和 ADR（第 3–4 課）。這個技能讀它們來尋找<em>深化機會</em>——把淺模組變成深模組。規格驅動圖像的最後一塊。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 8 課 · <a href="0007-to-spec-anatomy.html">← 第 7 課</a> · <a href="../MISSION.md">任務</a> · <a href="../reference/spec-driven-workflow.html">參考</a></p>
+  </div>
+
+</div>
+</body>
+</html>

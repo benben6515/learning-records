@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0016 — Setup &amp; Triage</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0016 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Setup &amp; Triage</h1>
+  <p class="subtitle">The run-once precondition, and the on-ramp that processes raw issues.</p>
+
+<p class="lead">Two skills sit at the boundary of the issue tracker: one <em>configures</em> it, one <em>processes</em> what lands in it.</p>
+
+<h2><code>/setup-matt-pocock-skills</code> — the run-once precondition</h2>
+<p>Run it <strong>once per repo, before any other engineering skill</strong>. It writes config — it doesn't hard-code behaviour. Three decisions, each with a recommended answer you can accept in a word:</p>
+<ul>
+<li><strong>Issue tracker</strong> — where issues live (GitHub, GitLab, local <code>.scratch/</code> markdown, or other). It proposes the one matching your <code>git remote</code>.</li>
+<li><strong>Triage labels</strong> — only asked if <code>triage</code> is installed. Keep the defaults (<code>needs-triage</code>, <code>needs-info</code>, <code>ready-for-agent</code>, <code>ready-for-human</code>, <code>wontfix</code>) unless your tracker already uses other strings.</li>
+<li><strong>Domain docs</strong> — single-context (one <code>CONTEXT.md</code> + <code>docs/adr/</code> at root) fits almost every repo; multi-context only when it spots monorepo signals.</li>
+</ul>
+<p>Output: files under <code>docs/agents/</code> (<code>issue-tracker.md</code>, <code>domain.md</code>, <code>triage-labels.md</code> if triage is installed) + an <code>## Agent skills</code> block in your <code>CLAUDE.md</code> or <code>AGENTS.md</code>. If <code>triage</code>/<code>to-spec</code>/<code>to-tickets</code> start <em>guessing</em> where your issues live, you skipped this.</p>
+
+<h2><code>/triage</code> — process raw incoming issues</h2>
+<p>An <strong>on-ramp</strong> to the main flow. When bug reports and feature requests pile up, triage moves them through a small state machine of roles and leaves an agent-ready brief.</p>
+
+<h3>Two roles per item, never zero or two</h3>
+<p>Every triaged item carries exactly one <strong>category</strong> role (<code>bug</code> / <code>enhancement</code>) and one <strong>state</strong> role (<code>needs-triage</code>, <code>needs-info</code>, <code>ready-for-agent</code>, <code>ready-for-human</code>, <code>wontfix</code>). It <em>recommends and waits</em> — tells you its call with reasoning, acts only on your direction.</p>
+
+<h3>Verify before you brief</h3>
+<p>The step that separates triage from ad-hoc labelling. It <strong>reproduces the bug</strong> from the reporter's steps, or <strong>checks out the PR and runs the tests</strong>. Confirmed with a code path → strong brief; failed or insufficient detail → <code>needs-info</code>. It also runs two codebase checks: <strong>redundancy</strong> (already implemented → <code>wontfix</code>) and <strong>prior rejection</strong> (<code>.out-of-scope/</code> already says no).</p>
+
+<h3>A PR is an issue with attached code</h3>
+<p>Where the tracker treats external PRs as a request surface, triage runs them through the <em>same</em> machine — states just read against the diff. <code>ready-for-agent</code> = a brief is attached, agent takes the next step; <code>ready-for-human</code> = ready to merge.</p>
+
+<div class="callout note">
+<span class="label">When NOT to triage</span>
+Triage is only for issues <strong>you didn't create</strong> — raw bug reports, incoming feature requests. Tickets that <code>/to-tickets</code> produced are <em>already agent-ready</em>, so don't triage them. Triaging your own tickets is wasted work.
+</div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "When should you run /setup-matt-pocock-skills?",
+  "options": [
+    "Every session, before each skill",
+    "Once per repo, before other skills",
+    "Only when triage breaks",
+    "After every git pull"
+  ],
+  "answer": 1,
+  "explainRight": "It is run-once setup. Day-to-day tweaks are just edits to docs/agents/*.md.",
+  "explainWrong": "It is a one-time bootstrap per repo, not a per-session step."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which issues should you run /triage on?",
+  "options": [
+    "Issues you created via to-tickets",
+    "Only issues with the wontfix label",
+    "Raw issues you did not create",
+    "Every issue, every time, always"
+  ],
+  "answer": 2,
+  "explainRight": "Triage is for raw incoming issues. to-tickets output is already agent-ready.",
+  "explainWrong": "to-tickets output is already agent-ready — triaging it is wasted work."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Before promoting anything to ready-for-agent, triage must:",
+  "options": [
+    "Ask you for more labels",
+    "Verify the claim first",
+    "Skip straight to wontfix",
+    "Rewrite the issue title"
+  ],
+  "answer": 1,
+  "explainRight": "Reproduce the bug or run the PR tests first. Verification makes a strong brief.",
+  "explainWrong": "Triage never labels blind. Verification is the step that separates it from ad-hoc labelling."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What roles does a triaged item end up with?",
+  "options": [
+    "Exactly one category and one state",
+    "Two categories, no state roles",
+    "As many labels as it needs",
+    "One state role, no category"
+  ],
+  "answer": 0,
+  "explainRight": "Exactly one category (bug/enhancement) and one state. Never zero, never two.",
+  "explainWrong": "Every item gets exactly one of each — never zero, never conflicting states."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0017-ask-matt.html">Ask Matt & Routers</a> — the alignment discipline and the shared language it leaves behind.</p>
+
+  <div class="footer">
+    <p>Lesson 16 of the <em>Matt Pocock Skills</em> course · <a href="0015-prototype-and-research.html">← Prototype & Research</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-setup-matt-pocock-skills" target="_blank" rel="noopener">setup-matt-pocock-skills</a>, <a href="https://aihero.dev/skills-triage" target="_blank" rel="noopener">triage</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

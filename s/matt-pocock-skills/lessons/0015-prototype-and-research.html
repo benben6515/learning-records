@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0015 — Prototype &amp; Research</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0015 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Prototype &amp; Research</h1>
+  <p class="subtitle">Two standalone tools that answer a question fast and feed the main flow.</p>
+
+<p class="lead">Two standalone tools that answer a question fast and feed the result back into the main flow.</p>
+
+<h2><code>/prototype</code> — throwaway from day one</h2>
+<p>A small, disposable program whose only job is to answer <strong>one design question</strong>: does this state model feel right, or what should this UI look like.</p>
+<p>It carries <strong>no tests, no error handling beyond what makes it run, no abstractions, no persistence</strong>. The point is to learn something fast and then delete it. The moment you start hardening it, you've stopped prototyping.</p>
+
+<h3>Two branches — pick first, build second</h3>
+<p>Picking the wrong branch wastes the whole prototype, so the question comes first:</p>
+<table>
+<thead><tr><th>Question</th><th>Shape</th></tr></thead>
+<tbody>
+<tr><td>"Does this logic / state model feel right?"</td><td>A tiny interactive terminal app that pushes the state machine through the awkward cases, printing the full state after every action.</td></tr>
+<tr><td>"What should this look like?"</td><td>Several radically different UI variations on one route, switchable from a floating bar, so you compare real renders instead of imagining them.</td></tr>
+</tbody>
+</table>
+<p>Both branches keep state in memory, run from one command, and surface the full state on every step.</p>
+
+<h3>Keep the prototype as a primary source</h3>
+<p>The <strong>answer</strong> — verdict plus the question it settled — is what you capture durably (a commit message, an ADR, an issue). The <strong>prototype itself is a primary source</strong> — the runnable evidence the answer came from.</p>
+<div class="callout note">
+<span class="label">Where it lives</span>
+It does <em>not</em> belong in the main branch: no tests, nothing to maintain. But don't destroy it. Capture it on a <strong>throwaway branch</strong> — out of main, never merged — and leave a context pointer to it on the implementation issue. Main stays clean; the raw exploration stays one click away.
+</div>
+
+<p><strong>Not for:</strong> if something already built is misbehaving and you need to find out <em>why</em>, use <code>/diagnosing-bugs</code>. Prototyping explores what to build, not why the built thing is broken.</p>
+
+<h2><code>/research</code> — delegated legwork</h2>
+<p>Answers a question by reading the sources that own the answer and leaving a cited Markdown file behind. It works only from <strong>primary sources</strong> — official docs, source code, specs, first-party APIs — never a secondary write-up of them, so what it saves is traceable back to something authoritative.</p>
+
+<h3>The defining move: background agent</h3>
+<p>The reading runs as a <strong>background agent</strong>. You keep working; it goes off, follows each claim back to its primary source, and drops a single cited Markdown file into wherever the repo keeps such notes. Research is legwork you <em>delegate</em>, not thinking you outsource — you get back a document to react to, with sources attached.</p>
+
+<div class="callout note">
+<span class="label">Feeds the thinking, doesn't replace it</span>
+The file research produces is something to take <em>into</em> the main flow at <code>/grill-with-docs</code> — research feeds the thinking, it doesn't replace it.
+</div>
+
+<p><strong>Not for:</strong> for sharpening a plan by <em>interview</em> instead of by reading, use <code>/grilling</code>; for exploring what to build with throwaway code, use <code>/prototype</code>.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What marks the moment you have stopped prototyping?",
+  "options": [
+    "You delete the prototype",
+    "You start hardening it",
+    "You write the answer down",
+    "You run it a second time"
+  ],
+  "answer": 1,
+  "explainRight": "The moment you start hardening it — adding tests, error handling — you have stopped prototyping.",
+  "explainWrong": "Hardening is the line. A prototype is throwaway from day one."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "A built feature is misbehaving. Which skill, not prototype?",
+  "options": [
+    "Use diagnosing-bugs",
+    "Use research instead",
+    "Use to-spec again",
+    "Use improve-codebase-architecture"
+  ],
+  "answer": 0,
+  "explainRight": "Prototype explores what to build. diagnosing-bugs finds why the built thing is broken.",
+  "explainWrong": "Prototype is for what to build, not why the built thing is broken. diagnosing-bugs is right."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Where does the prototype itself live after the answer is captured?",
+  "options": [
+    "Merged into the main branch",
+    "A throwaway branch, unmerged",
+    "Deleted entirely, always",
+    "In docs/adr/ as an ADR"
+  ],
+  "answer": 1,
+  "explainRight": "Out of main, never merged, with a context pointer on the implementation issue.",
+  "explainWrong": "It does not belong in main — no tests to maintain. But keep it on a throwaway branch."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "research works only from:",
+  "options": [
+    "Primary sources, cited",
+    "Secondary write-ups",
+    "The agent's own knowledge",
+    "User-provided answers"
+  ],
+  "answer": 0,
+  "explainRight": "Official docs, source code, specs, first-party APIs — never a summary of a summary.",
+  "explainWrong": "Secondary write-ups are exactly what research avoids. Primary sources, cited."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0016-setup-and-triage.html">Setup & Triage</a> — finish a stalled merge by intent, never abort.</p>
+
+  <div class="footer">
+    <p>Lesson 15 of the <em>Matt Pocock Skills</em> course · <a href="0014-wayfinder.html">← Wayfinder</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-prototype" target="_blank" rel="noopener">prototype</a>, <a href="https://aihero.dev/skills-research" target="_blank" rel="noopener">research</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

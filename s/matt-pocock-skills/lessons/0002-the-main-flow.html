@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 — The Main Flow: idea → ship</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0002 · ~5 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>The Main Flow: idea → ship</h1>
+  <p class="subtitle">The backbone route most work travels. Memorize it.</p>
+
+<p class="lead">Most work travels one route. Memorize it — it's the backbone of the whole set.</p>
+
+<div class="flow">grill-with-docs → to-spec → to-tickets → implement → code-review</div>
+
+<h2>Walk-through</h2>
+
+<ol>
+<li><strong><code>/grill-with-docs</code></strong> — interview you relentlessly, one question at a time, until the idea is sharp. Stateful: writes resolved terms to <code>CONTEXT.md</code> and hard decisions to ADRs as it goes. <em>No codebase?</em> Use <code>/grill-me</code> — same interview, stateless.</li>
+
+<li><strong>Prototype branch.</strong> If a question needs a runnable answer (state model, UI you must see), detour: <code>/handoff</code> out → fresh session → <code>/prototype</code> → <code>/handoff</code> back → reference from the original thread.</li>
+
+<li><strong>Size branch.</strong>
+<ul>
+<li><strong>Multi-session</strong> → <code>/to-spec</code> (synthesize the thread into a spec — no re-interviewing), then <code>/to-tickets</code> (split into tracer-bullet tickets, each declaring its <strong>blocking edges</strong>), then <code>/implement</code> per ticket.</li>
+<li><strong>One session</strong> → <code>/implement</code> right here.</li>
+</ul>
+Either way, <code>/implement</code> drives <code>/tdd</code> internally (red-green slice at a time), then runs <code>/code-review</code> (Standards + Spec, parallel sub-agents) before committing.</li>
+</ol>
+
+<div class="callout note">
+<span class="label">The single discipline</span>
+Keep steps 1–3 in <strong>one unbroken context window</strong>. Don't compact or clear until after <code>/to-tickets</code> — the grilling, spec, and tickets must build on the same thinking. Each <code>/implement</code> then starts fresh, working from the ticket.
+</div>
+
+<h2>The smart-zone limit</h2>
+<p>The window within which the model still reasons sharply is ~120k tokens — the <strong>smart zone</strong>. If a session approaches it before <code>/to-tickets</code>, don't push on degraded: <code>/handoff</code> and continue in a fresh thread.</p>
+
+<p>That's the whole flow. On-ramps (triage, wayfinder) and standalone tools (prototype, research) attach to it — coming in later lessons.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What is the correct order of the main flow?",
+  "options": [
+    "to-spec, grill, implement, review",
+    "grill, to-spec, to-tickets, implement",
+    "to-tickets, implement, grill, to-spec",
+    "implement, review, grill, to-tickets"
+  ],
+  "answer": 1,
+  "explainRight": "Grill first (align), then spec, then tickets, then implement. Review closes it.",
+  "explainWrong": "Grilling comes first — you align before you spec. Try again."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "When should you clear or compact the context window during the main flow?",
+  "options": [
+    "After grilling, before to-spec",
+    "Mid-grilling, to save tokens",
+    "Only after to-tickets, not before",
+    "Before each step, always fresh"
+  ],
+  "answer": 2,
+  "explainRight": "Steps 1-3 stay in one window. Each implement then starts fresh from the ticket.",
+  "explainWrong": "Compacting mid-flow breaks the shared thinking. Keep one window through to-tickets."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "You have a codebase and want grilling to leave a paper trail. Which skill?",
+  "options": [
+    "Use grill-me, it is stateless",
+    "Use grill-with-docs, it records",
+    "Use to-spec, it writes specs",
+    "Use implement, it builds code"
+  ],
+  "answer": 1,
+  "explainRight": "grill-with-docs writes CONTEXT.md and ADRs as it grills. grill-me is stateless.",
+  "explainWrong": "grill-me is stateless — no artifacts. grill-with-docs is the stateful sibling."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "A session is nearing the smart zone before you've run to-tickets. What do you do?",
+  "options": [
+    "Push on, just keep going",
+    "Compact mid-phase to save room",
+    "Handoff, continue fresh after",
+    "Skip to-tickets, go to implement"
+  ],
+  "answer": 2,
+  "explainRight": "Handoff forks to a fresh session. Don't push on degraded or compact mid-phase.",
+  "explainWrong": "Pushing on degrades reasoning. Handoff preserves the thread across the break."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0003-the-mental-map.html">The Mental Map</a> — the precondition and the first on-ramp.</p>
+
+  <div class="footer">
+    <p>Lesson 2 of the <em>Matt Pocock Skills</em> course · <a href="0001-the-four-failures.html">← The Four Failure Modes</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/spec-driven-workflow.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/SKILL.md" target="_blank" rel="noopener">ask-matt SKILL.md</a> (the authoritative router).</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

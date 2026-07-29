@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0018 — The Meta Skills: Teach &amp; Writing Great Skills</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0018 · ~7 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>The Meta Skills: Teach &amp; Writing Great Skills</h1>
+  <p class="subtitle">teach and writing-great-skills — the recursive layer.</p>
+
+<p class="lead">Two productivity skills that sit <em>off</em> the main flow and operate on the skills set itself, or on your learning. They are the recursive layer.</p>
+
+<h2><code>/teach</code> — learn over multiple sessions</h2>
+<p>This. Turns the current directory into a standing teaching workspace and teaches you one topic across many sessions — devising short, beautiful, interactive lessons tied to <em>why</em> you want to learn.</p>
+
+<div class="callout note">
+<span class="label">Parametric knowledge is untrusted</span>
+<code>teach</code> does not teach from the model's own memory. Before it can teach, it gathers high-trust resources and grounds every claim in a citation. This workspace's <code>RESOURCES.md</code> is exactly that mechanism.
+</div>
+
+<h3>Stateful — sessions accumulate</h3>
+<p>The workspace remembers what you've learned, so each session picks up where the last left off rather than starting from scratch. It writes:</p>
+<ul>
+<li><code>MISSION.md</code> — the reason you're learning (grounds everything; if empty, teach's first job is to interview you until it isn't).</li>
+<li><code>RESOURCES.md</code> — vetted high-trust sources.</li>
+<li><code>./lessons/*.html</code> — the numbered, self-contained lessons.</li>
+<li><code>./reference/*.html</code> — compressed cheat-sheets, glossaries.</li>
+<li><code>./learning-records/*.md</code> — what you've learned, ADR-style, used to judge what to teach next.</li>
+<li><code>./assets/*</code> — reusable components (the shared stylesheet first).</li>
+</ul>
+
+<h3>Mission &amp; the zone of proximal development</h3>
+<p>Every lesson hangs off the <strong>mission</strong>. From the mission and your learning records, teach computes your <strong>zone of proximal development</strong> — the next lesson should challenge you <em>just enough</em>, no more.</p>
+
+<h3>Storage strength, not fluency</h3>
+<p>The word to think with is <strong>storage strength</strong> — long-term retention — as opposed to <strong>fluency</strong>, the in-the-moment recall that feels like mastery but isn't. Teach deliberately builds the former through desirable difficulty: retrieval practice, spacing, and interleaving. Knowledge is taught first (where difficulty is the enemy), then skills are drilled through a tight feedback loop (where difficulty is the tool).</p>
+
+<h2><code>/writing-great-skills</code> — the reference for authoring</h2>
+<p>The reference you write and edit skills against — the shared vocabulary and principles that make a skill <em>predictable</em>.</p>
+
+<h3>Predictability is the root virtue</h3>
+<p>A skill's job is to wrangle determinism out of a stochastic system, so the goal is <em>not</em> the same output every run but the same <em>process</em>. Predictability is the root virtue, and every design choice is judged against it — not against how clever, complete, or exhaustive the skill reads.</p>
+
+<h3>The concept it turns on: cognitive load</h3>
+<p>Every skill spends one of two loads (see <a href="0017-ask-matt.html">Lesson 0012</a>): model-invoked costs context load but fires on its own; user-invoked costs zero context load but you must remember it exists — that's cognitive load. Most of these skills are user-invoked, so cognitive load is the pressure the whole system is built to manage, and the cure when it piles up is a router skill (<code>/ask-matt</code>).</p>
+
+<h3>The other levers</h3>
+<ul>
+<li><strong>Leading words</strong> — a compact concept already in the model's pretraining (<em>tight</em>, <em>red</em>, <em>tracer bullet</em>) that the agent thinks with while running the skill. Anchors execution in the fewest tokens.</li>
+<li><strong>Information hierarchy</strong> — the ladder from in-skill step → in-skill reference → external reference behind a <strong>context pointer</strong>. <strong>Progressive disclosure</strong> is the move down that ladder so the top stays legible.</li>
+<li><strong>Pruning</strong> — single source of truth, relevance, and the no-op test applied sentence by sentence, against <strong>sediment</strong> and <strong>sprawl</strong>.</li>
+<li><strong>Failure modes</strong> — <em>premature completion</em>, <em>duplication</em>, <em>sediment</em>, <em>sprawl</em>, <em>no-op</em> — to diagnose a skill that isn't behaving.</li>
+</ul>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What does teach treat as untrusted?",
+  "options": [
+    "The user's prior knowledge",
+    "The model's parametric memory",
+    "The workspace's RESOURCES.md",
+    "The lessons already written"
+  ],
+  "answer": 1,
+  "explainRight": "Parametric knowledge is untrusted. Every claim must be grounded in a cited high-trust source.",
+  "explainWrong": "teach gathers high-trust resources first; the model's own memory is not trusted."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What does teach build — fluency or storage strength?",
+  "options": [
+    "Fluency, in-the-moment recall",
+    "Storage strength, long-term",
+    "Both, equally weighted",
+    "Neither, it is reference only"
+  ],
+  "answer": 1,
+  "explainRight": "Storage strength — long-term retention — through desirable difficulty. Fluency feels like mastery but isn't.",
+  "explainWrong": "Fluency feels like mastery but isn't. Storage strength is the real goal."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What is the root virtue of a skill, per writing-great-skills?",
+  "options": [
+    "Completeness and coverage",
+    "Cleverness of the prompt",
+    "Predictability of process",
+    "Brevity of the SKILL.md"
+  ],
+  "answer": 2,
+  "explainRight": "Same process every run, not same output. Predictability is judged over cleverness or completeness.",
+  "explainWrong": "Predictability — the same process every run — is the root virtue. Not cleverness or completeness."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which load do most Matt Pocock skills cost, and what cures its pile-up?",
+  "options": [
+    "Context load, cured by compact",
+    "Cognitive load, cured by a router",
+    "Token load, cured by pruning",
+    "Memory load, cured by handoff"
+  ],
+  "answer": 1,
+  "explainRight": "User-invoked = cognitive load. A router (ask-matt) cures the pile-up by indexing them.",
+  "explainWrong": "Most are user-invoked = cognitive load. A router skill is the cure when they pile up."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0019-the-full-routing-drill.html">The Full Routing Drill</a> — five scenarios, route each to the right skill(s) in order.</p>
+
+  <div class="footer">
+    <p>Lesson 18 of the <em>Matt Pocock Skills</em> course · <a href="0017-ask-matt.html">← Ask Matt & Routers</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-teach" target="_blank" rel="noopener">teach docs</a>, <a href="https://aihero.dev/skills-writing-great-skills" target="_blank" rel="noopener">writing-great-skills docs</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

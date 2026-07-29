@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0017 — Ask Matt &amp; Routers</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0017 · ~5 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Ask Matt &amp; Routers</h1>
+  <p class="subtitle">The router over the user-invoked skills — the cure for cognitive load.</p>
+
+<p class="lead">You don't remember every skill, so ask. <code>/ask-matt</code> is the router over the user-invoked skills in the repo — it maps every skill and how they relate, so you don't have to hold it all in your head.</p>
+
+<h2>Why a router exists at all</h2>
+<p>This is a <strong>cognitive-load</strong> decision, from the <code>writing-great-skills</code> reference. Every skill spends one of two loads:</p>
+<table>
+<thead><tr><th>Mode</th><th>Cost</th><th>Fires</th></tr></thead>
+<tbody>
+<tr><td><strong>Model-invoked</strong></td><td>Keeps a description in the window every turn — <em>context load</em></td><td>On its own, when the task fits</td></tr>
+<tr><td><strong>User-invoked</strong></td><td>Strips that description; you must remember it exists — <em>cognitive load</em></td><td>Only when you type it</td></tr>
+</tbody>
+</table>
+<p>Most of the Matt Pocock skills are <em>user-invoked</em>, which is why cognitive load is the pressure the whole system is built to manage. When user-invoked skills multiply past what you can hold in your head, the cure is a <strong>router skill</strong> that names the others and when to reach for each.</p>
+
+<div class="callout note">
+<span class="label">ask-matt is that router</span>
+It is the direct cure for the cognitive load the user-invoked skills pile up. When you cannot remember which skill fits, type <code>/ask-matt</code> and it routes you over the whole set.
+</div>
+
+<h2>What ask-matt knows</h2>
+<p>The map (covered across this course):</p>
+<ul>
+<li>The <strong>main flow</strong> — idea→ship, with the prototype branch and the size branch.</li>
+<li><strong>On-ramps</strong> — triage, diagnosing-bugs, wayfinder.</li>
+<li><strong>Codebase health</strong> — improve-codebase-architecture (survey) + codebase-design (bench).</li>
+<li><strong>Vocabulary layers</strong> — domain-modeling (domain words) + codebase-design (module shape), running underneath.</li>
+<li><strong>Standalone</strong> — grill-me, prototype, research, teach, writing-great-skills, resolving-merge-conflicts.</li>
+<li><strong>Crossing sessions</strong> — handoff (forks) vs <code>/compact</code> (continues).</li>
+</ul>
+
+<h2>The rule that keeps the router honest</h2>
+<p>From the repo's <code>CLAUDE.md</code>: whenever a skill is added, renamed, removed, or changes how it fits the flows, <code>ask-matt</code>'s <code>SKILL.md</code> must be re-read and updated so the map stays accurate. <em>A new skill it never mentions, or a stale one it still routes to, is a router that lies.</em> This is the maintenance discipline that makes the router trustworthy over time.</p>
+
+<h2>When to reach for it</h2>
+<p>Whenever you are unsure which skill or flow fits the moment. Type <code>/ask-matt</code>; it routes you. It is not a step in a chain — it is the index you consult when you cannot remember the map.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Why does ask-matt exist as a skill?",
+  "options": [
+    "To replace the other skills",
+    "To cure cognitive load",
+    "To run code in parallel",
+    "To write the spec for you"
+  ],
+  "answer": 1,
+  "explainRight": "User-invoked skills pile up cognitive load. A router names them and when to reach for each.",
+  "explainWrong": "It is the cure for cognitive load — you cannot hold all the user-invoked skills in your head."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "When you cannot remember which skill fits, you:",
+  "options": [
+    "Pick one and hope for the best",
+    "Type ask-matt to be routed",
+    "Run every skill in order",
+    "Skip skills, code it yourself"
+  ],
+  "answer": 1,
+  "explainRight": "ask-matt is the router. Type it and it maps your situation to the right skill.",
+  "explainWrong": "Guessing wastes effort. ask-matt is the index you consult when you cannot remember the map."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "What happens to ask-matt when a skill is renamed?",
+  "options": [
+    "Nothing, it auto-updates",
+    "Its SKILL.md must be re-synced",
+    "It is deleted and rebuilt",
+    "It stops routing entirely"
+  ],
+  "answer": 1,
+  "explainRight": "Re-read and update ask-matt's SKILL.md so the map stays accurate. A router that lies is useless.",
+  "explainWrong": "A stale route is a router that lies. The map must be re-synced when skills change."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "Which load does a router cure?",
+  "options": [
+    "Context load on the model",
+    "Cognitive load on the user",
+    "Token load on the system",
+    "Memory load on the disk"
+  ],
+  "answer": 1,
+  "explainRight": "User-invoked skills cost cognitive load — you must remember them. A router holds the index.",
+  "explainWrong": "Context load is the model-invoked cost. A router cures cognitive load on the user."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0018-meta-skills.html">The Meta Skills</a> — handoff vs compact, and the smart zone.</p>
+
+  <div class="footer">
+    <p>Lesson 17 of the <em>Matt Pocock Skills</em> course · <a href="0016-setup-and-triage.html">← Setup & Triage</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://aihero.dev/skills-ask-matt" target="_blank" rel="noopener">ask-matt docs</a>, <a href="https://aihero.dev/skills-writing-great-skills" target="_blank" rel="noopener">writing-great-skills</a> (cognitive load).</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

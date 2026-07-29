@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 — The Four Failure Modes</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0001 · ~5 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>The Four Failure Modes</h1>
+  <p class="subtitle">Four ways an AI session goes wrong — and the skill that fixes each.</p>
+
+<p class="lead">Every skill in the Matt Pocock set is a fix for one of four ways an AI coding session goes wrong. Before learning any single skill, learn the four — they're the map the rest of the course is drawn from.</p>
+
+<h2>The four</h2>
+
+<ol>
+<li><strong>Misalignment</strong> — the agent didn't do what you wanted. You thought it understood; the output proved it didn't. The commonest failure of all.</li>
+<li><strong>Verbosity / no shared language</strong> — the agent uses 20 words where 1 will do, because no one taught it the project's jargon.</li>
+<li><strong>The code doesn't work</strong> — you're aligned, but the output is still broken. There's no feedback loop telling the agent what its code actually does.</li>
+<li><strong>A ball of mud</strong> — the codebase is hard to change. Agents accelerate entropy, so without deliberate design care it compounds fast.</li>
+</ol>
+
+<div class="callout note">
+<span class="label">The pattern</span>
+None of these are <em>cleverness</em> problems. Each is a <em>communication or feedback</em> problem. The fixes are disciplines borrowed from decades of software engineering — interview relentlessly, write the language down, run the code, invest in design — made repeatable as skills.
+</div>
+
+<h2>One fix per failure</h2>
+
+<table>
+<thead><tr><th>Failure</th><th>Fix skill</th><th>Anchored in</th></tr></thead>
+<tbody>
+<tr><td>Misalignment</td><td><code>/grill-me</code>, <code>/grill-with-docs</code></td><td>The Pragmatic Programmer</td></tr>
+<tr><td>No shared language</td><td><code>/grill-with-docs</code> builds <code>CONTEXT.md</code> + ADRs</td><td>Domain-Driven Design (Evans)</td></tr>
+<tr><td>Code doesn't work</td><td><code>/tdd</code>, <code>/diagnosing-bugs</code></td><td>The Pragmatic Programmer</td></tr>
+<tr><td>Ball of mud</td><td><code>/to-spec</code>, <code>/improve-codebase-architecture</code>, <code>/codebase-design</code></td><td>XP (Beck), Ousterhout</td></tr>
+</tbody>
+</table>
+
+<p>When you can classify any situation into one of these four, you know which skill to reach for. That's the whole game.</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "You told the agent what to build, it nodded, and the output is nothing like what you imagined. Which failure mode is this?",
+  "options": [
+    "Misalignment — agent missed it",
+    "Verbosity — too many words",
+    "Broken code — no feedback",
+    "Ball of mud — bad design"
+  ],
+  "answer": 0,
+  "explainRight": "Misalignment. The fix is grilling before building.",
+  "explainWrong": "Verbosity is about word count, not misunderstanding. This is misalignment."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "The codebase works, but every change requires touching five files and the agent keeps tangling things. Which failure mode?",
+  "options": [
+    "Misalignment — wrong goal",
+    "Verbosity — too wordy",
+    "Broken code — no tests",
+    "Ball of mud — bad design"
+  ],
+  "answer": 3,
+  "explainRight": "Ball of mud. The fix is design care: deep modules, periodic architecture passes.",
+  "explainWrong": "The code works, so it is not 'broken code'. This is the ball-of-mud failure."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "The agent writes paragraphs where a term would do, because you never taught it your project's vocabulary. Which failure mode?",
+  "options": [
+    "Misalignment — agent lost",
+    "Verbosity — no shared words",
+    "Broken code — no tests",
+    "Ball of mud — bad design"
+  ],
+  "answer": 1,
+  "explainRight": "Verbosity. The fix is a shared language in CONTEXT.md.",
+  "explainWrong": "Misalignment is about the goal being wrong. This is the shared-language failure."
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "You are aligned and the code looks right, but tests fail and the agent cannot tell why. Which failure mode?",
+  "options": [
+    "Misalignment — agent lost",
+    "Verbosity — too wordy",
+    "Broken code — no loop",
+    "Ball of mud — bad design"
+  ],
+  "answer": 2,
+  "explainRight": "Broken code. The fix is a tight feedback loop (TDD, diagnosing-bugs).",
+  "explainWrong": "The code looks right but fails — that is a feedback-loop problem, not alignment."
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? Ask a follow-up question — anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0002-the-main-flow.html">The Main Flow: idea → ship</a> — how the fixes chain together from idea to shipped code.</p>
+
+  <div class="footer">
+    <p>Lesson 1 of the <em>Matt Pocock Skills</em> course ·  · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/failure-modes.html">Reference</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/mattpocock/skills/blob/main/README.md" target="_blank" rel="noopener">README — "Why These Skills Exist"</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

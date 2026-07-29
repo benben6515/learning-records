@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary — Matt Pocock Skills</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference</p>
+  <p class="back-nav"><a href="../index.html">↑ Course home</a></p>
+  <h1>Glossary</h1>
+  <p class="subtitle">The domain language of the Matt Pocock skills set. Every lesson uses these terms.</p>
+
+  <p class="lead">The skills’ own <a href="https://github.com/mattpocock/skills/blob/main/CONTEXT.md" target="_blank" rel="noopener">CONTEXT.md</a> is the canonical source. Use these terms exactly; don’t drift to near-synonyms.</p>
+
+  <table>
+    <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Issue tracker</strong></td><td>The tool that hosts a repo’s issues — GitHub Issues, Linear, a local <code>.scratch/</code> markdown convention, or similar. Skills like <code>to-tickets</code>, <code>to-spec</code>, <code>triage</code>, and <code>wayfinder</code> read from and write to it. <em>Avoid:</em> backlog manager, backlog backend, issue host.</td></tr>
+      <tr><td><strong>Issue</strong></td><td>A single tracked unit of work inside an <strong>Issue tracker</strong> — a bug, task, spec, or slice produced by <code>to-tickets</code>. <em>Avoid “ticket”</em> except when quoting external systems that call them tickets, or for a <strong>Decision ticket</strong>.</td></tr>
+      <tr><td><strong>Decision ticket</strong></td><td>A <code>wayfinder</code> unit — a child <strong>Issue</strong> of a <code>wayfinder:map</code> holding a <em>question</em> whose resolution is a <em>decision</em>, not a slice of a build to execute. The <em>decision</em> qualifier is what keeps it distinct from an implementation issue.</td></tr>
+      <tr><td><strong>Triage role</strong></td><td>A canonical state-machine label applied to an <strong>Issue</strong> during triage (e.g. <code>needs-triage</code>, <code>ready-for-agent</code>). Each role maps to a real label string in the <strong>Issue tracker</strong> via <code>docs/agents/triage-labels.md</code>.</td></tr>
+      <tr><td><strong>Smart zone</strong></td><td>The context-window size (~120k tokens on state-of-the-art models) within which the model still reasons sharply. Sessions approaching it before <code>to-tickets</code> should <code>/handoff</code> rather than push on degraded. <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone" target="_blank" rel="noopener">aihero.dev dictionary</a>.</td></tr>
+      <tr><td><strong>Seam</strong></td><td>(Feathers’ term) A place you can change behaviour without editing there. The stable interface a feature is tested at. A well-placed seam gives tests something durable to aim at while the code underneath moves freely. <em>Chosen before any code is written</em> (during <code>to-spec</code>).</td></tr>
+      <tr><td><strong>Deep module</strong></td><td>A module that hides a lot of behaviour behind a small, stable interface. Depth is measured as <strong>leverage</strong> — how much a caller (or a test) can exercise per unit of interface it has to learn. Opposite: <strong>shallow</strong> (interface nearly as complex as the implementation).</td></tr>
+      <tr><td><strong>Depth</strong></td><td>Property of the <em>interface</em>, not the implementation. A deep module can be internally composed of small, swappable parts that never surface to callers.</td></tr>
+      <tr><td><strong>Blocking edges</strong></td><td>The dependency links between tickets. Every ticket declares the tickets that block it. On a real tracker these are native blocking links; locally they’re text in one file per ticket. The set of unblocked, unclaimed tickets is the <strong>frontier</strong>.</td></tr>
+      <tr><td><strong>Frontier</strong></td><td>The open, unblocked, unclaimed tickets — the edge of the known in <code>wayfinder</code>, or the takeable work in <code>to-tickets</code>. A tracker’s native blocking renders it visually.</td></tr>
+      <tr><td><strong>Tracer bullet</strong></td><td>A thin <em>vertical</em> slice that cuts through all integration layers end-to-end (schema, API, UI, tests), demoable on its own. The first TDD cycle proves one path works end-to-end before you build outward. Opposite: <strong>horizontal slice</strong> (one layer, nothing works until all land).</td></tr>
+      <tr><td><strong>Ubiquitous language</strong></td><td>(DDD, Evans) The shared vocabulary between devs and domain experts, used consistently in conversations, code, and files. In the skills set, captured in <code>CONTEXT.md</code> as a pure glossary — no implementation detail, no spec.</td></tr>
+      <tr><td><strong>ADR</strong></td><td>Architecture Decision Record, under <code>docs/adr/</code>. The bar is high: offered only when a choice is <strong>hard to reverse</strong>, <strong>surprising without context</strong>, and the <strong>result of a real trade-off</strong>. Miss any one and there is no ADR.</td></tr>
+      <tr><td><strong>HITL / AFK</strong></td><td>(wayfinder) Human-in-the-loop vs away-from-keyboard. Every wayfinder ticket is HITL (grilling, prototype — needs a live exchange) or AFK (research — agent alone). The agent never answers its own questions on a HITL ticket.</td></tr>
+      <tr><td><strong>Context hygiene</strong></td><td>Keeping steps 1–3 of the main flow (grill-with-docs → to-spec → to-tickets) in <em>one unbroken context window</em> — don’t compact or clear until after <code>to-tickets</code> — so the grilling, spec, and tickets build on the same thinking. Each <code>implement</code> then starts fresh.</td></tr>
+      <tr><td><strong>Red-green loop</strong></td><td>Write one failing test (red), add just enough code to pass it (green), then repeat for the next behaviour. Refactor only when green, never while red. The engine inside <code>tdd</code> and <code>implement</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:2rem;font-size:0.85rem;color:var(--muted);">Source: <a href="https://github.com/mattpocock/skills/blob/main/CONTEXT.md" target="_blank" rel="noopener">CONTEXT.md</a>, <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/SKILL.md" target="_blank" rel="noopener">ask-matt SKILL.md</a>, and the per-skill docs pages.</p>
+
+</div>
+</body>
+</html>
