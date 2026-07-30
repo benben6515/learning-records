@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 02 — Read Faster by Reading Smarter</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+<style>
+  /* drill-specific styles (not reused elsewhere) */
+  .drill { border:1px solid var(--rule); border-radius:10px; padding:1.1rem 1.3rem; background:var(--surface); margin:1.8rem 0; }
+  .drill .row { display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; }
+  .drill .stat { font-family:var(--sans); line-height:1.1; }
+  .drill .stat .big { display:block; font-size:1.7rem; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .drill .stat .cap { font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+  .drill button.go { font-family:var(--sans); font-size:.95rem; cursor:pointer; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:.6rem 1.1rem; transition:filter .12s; }
+  .drill button.go:hover { filter:brightness(1.08); }
+  .passage { font-size:1.08rem; line-height:1.85; }
+  #rresults { display:none; margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--rule); }
+  #rresults .label { font-family:var(--sans); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; display:block; margin-bottom:.5rem; }
+  .wpm-row { display:flex; gap:.7rem; margin:.6rem 0 0; flex-wrap:wrap; }
+  .wpm-chip { background:var(--accent-soft); border:1px solid var(--accent-border); border-radius:8px; padding:.5rem .9rem; text-align:center; min-width:5rem; }
+  .wpm-chip .n { display:block; font-family:var(--sans); font-size:1.5rem; font-weight:700; color:var(--accent); }
+  .wpm-chip .l { font-family:var(--sans); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  #rquiz { display:none; margin-top:2rem; }
+</style>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 02 · Reading Fluency</p>
+<h1>Read Faster by Reading Smarter</h1>
+<p class="badges">
+  <span class="badge">~12 min</span>
+  <span class="badge">drill + read</span>
+  <span class="badge">Solo · Free</span>
+</p>
+
+<p class="lead">You read dev docs every day, and you've felt the problem: you're slow. The good news — it's not your eyes, and it's fixable. You told me you <strong>translate to Chinese</strong> as you read. That's <em>two trips</em> for every sentence: English in → Chinese → meaning. No wonder it's slow. And here's the bonus: the same habit is what freezes your <strong>speaking</strong>. Fix it here and your speech speeds up too.</p>
+
+<h2>Why you're slow (the real reasons)</h2>
+<ol>
+  <li><strong>Decoding, not recognising.</strong> Every word you only half-know is a speed bump — your brain spells it out instead of knowing it instantly. Researcher Paul Nation found you need to know about <strong>98% of the words</strong> on a page to read comfortably without a dictionary <a href="https://www.victoria.ac.nz/__data/assets/pdf_file/0018/1626120/2006-How-large-a-vocab.pdf">(Nation, 2006)</a>. So slowness is mostly a <em>vocabulary</em> problem, not a speed problem.</li>
+  <li><strong>Translating word-by-word.</strong> Two trips per sentence. Fluent readers skip the translation.</li>
+  <li><strong>Reading single words.</strong> Your eyes can grab 2–4 words at each stop. If you stop at every word, you read several times slower than you could.</li>
+</ol>
+
+<h2>The fix: three habits</h2>
+<ul>
+  <li><strong>Read in chunks</strong> — let your eyes land on phrase groups ("when you type / a web address"), not single words.</li>
+  <li><strong>Tolerate gaps</strong> — don't stop for every unknown word. Guess from context and keep moving.</li>
+  <li><strong>Build sight vocabulary</strong> — the more words you recognise instantly, the faster you go.</li>
+</ul>
+
+<div class="callout">
+  <span class="label">Two rules that protect your understanding</span>
+  <strong>The 3× rule:</strong> only look up a word if it appears 3+ times <em>or</em> blocks the whole meaning. Otherwise, keep going.<br>
+  <strong>Read at the right level:</strong> if you're looking up words constantly, the text is too hard — drop to an easier one. Easy reading builds speed; hard reading builds frustration.
+</div>
+
+<div class="task">
+  <span class="label">Do the drill now — Repeated Reading</span>
+  <p style="margin:0 0 .8rem">Below is a short passage about how a web page loads — a topic you already understand, so you can focus on <em>how</em> you read, not <em>what</em> it means. Read it <strong>three times</strong>. Time each pass. Try to <strong>not translate</strong> — grab the meaning directly.</p>
+
+  <div class="drill">
+    <div class="row" style="margin-bottom:.8rem">
+      <div class="stat"><span class="big" id="wordcount">—</span><span class="cap">words</span></div>
+      <div class="stat"><span class="big" id="rtimer">0:00</span><span class="cap">this pass</span></div>
+      <button class="go" id="rgo">Start pass 1</button>
+    </div>
+    <p class="small muted" id="rstatus" style="margin:0 0 .6rem">Press <strong>Start</strong>, read the passage at your normal speed, then press the button when you finish.</p>
+
+    <div class="passage" id="passage">
+      <p>When you type a web address into your browser and press enter, a lot happens in just one second. First, your browser sends a request to a server. A server is simply another computer, somewhere in the world, that stores the files for the website.</p>
+      <p>While it waits, the browser receives the page piece by piece. The first piece is the structure — the bones of the page, written in HTML. Once the browser understands the structure, it asks for the styles, the images, and the scripts that make the page look right and feel alive.</p>
+      <p>This is why a page often appears in stages: first you see plain text, then the layout snaps into place, and finally the colors, fonts, and buttons arrive. Each step depends on the one before it. If one file is slow, everything after it must wait.</p>
+      <p>Most of this is invisible. You simply watch the page fill in, click a link, and move on — never thinking about the quiet conversation between your browser and a distant machine.</p>
+    </div>
+
+    <div id="rresults"></div>
+  </div>
+</div>
+
+<div id="rquiz">
+  <h2>Check you understood it</h2>
+  <p class="small muted">Speed means nothing if you didn't understand. Answer these three before you finish.</p>
+
+  <div class="quiz" data-right="Correct. The files live on a server — a remote computer." data-wrong="Not quite. The files are stored on a server (a remote computer). See the highlighted answer.">
+    <q>Where are the website's files stored?</q>
+    <div class="options">
+      <button class="opt">On a server</button>
+      <button class="opt">In the browser</button>
+      <button class="opt">On your screen</button>
+      <button class="opt">In the network</button>
+    </div>
+    <p class="feedback"></p>
+  </div>
+
+  <div class="quiz" data-right="Correct. The structure (HTML) arrives before styles and scripts." data-wrong="Not quite — see the highlighted answer. The structure comes first; styles and scripts come after.">
+    <q>What does the browser receive first?</q>
+    <div class="options">
+      <button class="opt">The structure</button>
+      <button class="opt">The styling</button>
+      <button class="opt">The scripts</button>
+      <button class="opt">The images</button>
+    </div>
+    <p class="feedback"></p>
+  </div>
+
+  <div class="quiz" data-right="Correct. Each step depends on the one before it — that's why pages load in stages." data-wrong="Not quite — see the highlighted answer. Each step depends on the step before it.">
+    <q>Each step depends on the one…</q>
+    <div class="options">
+      <button class="opt">Before it</button>
+      <button class="opt">After it</button>
+      <button class="opt">Beside it</button>
+      <button class="opt">Outside it</button>
+    </div>
+    <p class="feedback"></p>
+  </div>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://www.victoria.ac.nz/__data/assets/pdf_file/0018/1626120/2006-How-large-a-vocab.pdf">Nation, I. S. P. (2006) — "How Large a Vocabulary Is Needed for Reading and Listening?"</a> The canonical study behind the 98% rule. Skim the abstract and conclusion.
+  </div>
+
+  <p><strong>Keep this nearby:</strong> the <a href="../reference/reading-fluency.html">Reading Fluency reference sheet</a> condenses this lesson for quick review.</p>
+
+  <p><strong>Coming up:</strong></p>
+  <ul>
+    <li><strong>Lesson 03 — Writing</strong>: your other weak spot. A daily "free-writing sprint" you can send me for instant feedback (the tightest loop of all your skills).</li>
+    <li><strong>Lesson 04 — Connected speech (連音)</strong>: queued from your shadowing feedback — why words blur together, and how to train your ear and mouth for it.</li>
+  </ul>
+  <p>But first, keep <a href="0001-shadowing-your-daily-speaking-workout.html">Lesson 01 (shadowing)</a> going daily — it directly trains the 連音 you're finding hard.</p>
+
+  <p class="small muted"><strong>Did your speed jump between passes? Did you manage to not translate?</strong> Tell me your three wpm numbers — I'll log them as your baseline. And ask me anything that's unclear.</p>
+</div>
+
+</article>
+
+<script>
+/* drill: timed repeated reading across 3 passes, wpm per pass */
+(function () {
+  var passage = document.getElementById("passage");
+  if (!passage) return;
+  var words = passage.textContent.trim().split(/\s+/).filter(Boolean).length;
+  var wcEl = document.getElementById("wordcount");
+  if (wcEl) wcEl.textContent = words;
+
+  var status = document.getElementById("rstatus");
+  var timerEl = document.getElementById("rtimer");
+  var btn = document.getElementById("rgo");
+  var results = document.getElementById("rresults");
+  var quizWrap = document.getElementById("rquiz");
+
+  var passes = [];
+  var idx = 0;
+  var startT = 0;
+  var interval = null;
+
+  function fmt(ms) {
+    var s = Math.round(ms / 1000);
+    var m = Math.floor(s / 60);
+    var ss = s % 60;
+    return m + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+  function startPass() {
+    startT = Date.now();
+    btn.textContent = "Done — I finished pass " + (idx + 1);
+    status.innerHTML = "Reading pass <strong>" + (idx + 1) + " of 3</strong>… read at your normal speed. Try not to translate.";
+    interval = setInterval(function () { timerEl.textContent = fmt(Date.now() - startT); }, 200);
+  }
+  function finish() {
+    btn.style.display = "none";
+    status.textContent = "";
+    var p1 = passes[0].wpm, p3 = passes[2].wpm;
+    var imp = Math.round((p3 - p1) / p1 * 100);
+    var h = '<span class="label">Your results</span><div class="wpm-row">';
+    passes.forEach(function (p, i) {
+      h += '<div class="wpm-chip"><span class="n">' + p.wpm + '</span><span class="l">pass ' + (i + 1) + ' wpm</span></div>';
+    });
+    h += "</div>";
+    var trend = imp > 2
+      ? "You read <strong>" + imp + "% faster</strong> on pass 3 than pass 1."
+      : "Your speed held steady — pass 1 was already smooth for you.";
+    h += "<p style=\"margin:.7rem 0 0\">" + trend + " That jump is what <em>automaticity</em> feels like: less decoding, more recognising. Do this drill on one short passage a few times a week, and your <em>first-pass</em> speed climbs over the months.</p>";
+    h += '<button class="opt" id="rreset" style="margin-top:.7rem">Try the drill again</button>';
+    results.innerHTML = h;
+    results.style.display = "block";
+    if (quizWrap) quizWrap.style.display = "block";
+    var reset = document.getElementById("rreset");
+    if (reset) reset.addEventListener("click", resetDrill);
+    results.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function endPass() {
+    clearInterval(interval); interval = null;
+    var elapsed = Date.now() - startT;
+    var wpm = Math.max(1, Math.round(words / (elapsed / 60000)));
+    passes.push({ ms: elapsed, wpm: wpm });
+    idx++;
+    timerEl.textContent = fmt(elapsed);
+    if (idx < 3) {
+      status.innerHTML = "Pass " + idx + " done: <strong>" + wpm + " wpm</strong>. Take a breath, then read the same passage again — you'll be faster.";
+      btn.textContent = "Start pass " + (idx + 1);
+    } else {
+      finish();
+    }
+  }
+  function resetDrill() {
+    passes = []; idx = 0; timerEl.textContent = "0:00";
+    status.innerHTML = 'Press <strong>Start</strong>, read the passage at your normal speed, then press the button when you finish.';
+    results.style.display = "none"; results.innerHTML = "";
+    if (quizWrap) quizWrap.style.display = "none";
+    btn.style.display = ""; btn.textContent = "Start pass 1";
+  }
+  btn.addEventListener("click", function () { if (interval) endPass(); else startPass(); });
+})();
+</script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

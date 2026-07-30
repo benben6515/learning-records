@@ -1,0 +1,269 @@
+/* ============================================================
+   English Learning Workspace — shared stylesheet
+   Tufte-inspired: quiet, readable, prints well.
+   Dark-theme aware (defaults to dark; toggle via assets/theme.js).
+   Every lesson links this so the course looks like one course.
+   ============================================================ */
+
+/* ---- LIGHT (default tokens; also the print + fallback theme) ---- */
+:root {
+  --ink: #1b1b1b;
+  --muted: #5b6470;
+  --faint: #8a93a0;
+  --rule: #e3e6ea;
+  --paper: #fdfdfb;
+  --surface: #ffffff;
+  --surface-hover: #f4f6f7;
+  --link-border: #bcd9d7;
+
+  --accent: #0e7c7b;
+  --accent-soft: #e6f2f1;
+  --accent-border: #d4e7e5;
+  --warm: #b45309;
+  --warm-soft: #fbf1e2;
+  --warm-border: #c9a36a;
+  --ok: #15803d;
+  --ok-soft: #e3f5e9;
+  --bad: #b91c1c;
+  --bad-soft: #fbe3e3;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --measure: 38rem;
+}
+
+/* ---- DARK (the user's preferred default) ---- */
+:root[data-theme="dark"] {
+  --ink: #e8e5dd;
+  --muted: #9aa3ad;
+  --faint: #6c757f;
+  --rule: #2a3038;
+  --paper: #14171b;
+  --surface: #1c2127;
+  --surface-hover: #232a31;
+  --link-border: #2f5957;
+
+  --accent: #45c2bf;
+  --accent-soft: #14302f;
+  --accent-border: #244e4c;
+  --warm: #e6a85c;
+  --warm-soft: #2b2317;
+  --warm-border: #5a4622;
+  --ok: #5dd98a;
+  --ok-soft: #16291d;
+  --bad: #f08a8a;
+  --bad-soft: #2e191b;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* ---- layout shell ---- */
+.sheet {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+
+/* ---- eyebrow / metadata ---- */
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+}
+
+.badges { margin: 0.4rem 0 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.badge {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+}
+
+/* ---- headings ---- */
+h1 {
+  font-size: 2.3rem;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+h2 {
+  font-size: 1.5rem;
+  margin: 2.6rem 0 0.6rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.4rem; font-weight: 700; }
+
+p { margin: 0 0 1.1rem; }
+.lead { font-size: 1.18rem; color: var(--ink); opacity: 0.92; }
+
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--link-border); }
+a:hover { border-bottom-color: var(--accent); }
+
+strong { font-weight: 700; }
+em { font-style: italic; }
+
+/* ---- lists ---- */
+ul, ol { padding-left: 1.3rem; margin: 0 0 1.2rem; }
+li { margin-bottom: 0.5rem; }
+li::marker { color: var(--faint); }
+
+/* ---- callouts ---- */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 1rem 1.2rem;
+  margin: 1.6rem 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 1rem;
+}
+.callout .label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.task {
+  border-left: 3px solid var(--warm);
+  background: var(--warm-soft);
+  padding: 1.1rem 1.3rem;
+  margin: 1.8rem 0;
+  border-radius: 0 6px 6px 0;
+}
+.task .label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* ---- checklist (interactive) ---- */
+.checklist { list-style: none; padding: 0; margin: 0.6rem 0 0; }
+.checklist li {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  cursor: pointer; user-select: none;
+  padding: 0.35rem 0;
+}
+.checklist input { display: none; }
+.checklist .box {
+  width: 1.25rem; height: 1.25rem; flex: none; margin-top: 0.2rem;
+  border: 2px solid var(--warm-border); border-radius: 4px;
+  background: var(--surface); position: relative; transition: all 0.15s;
+}
+.checklist li.done .box { background: var(--warm); border-color: var(--warm); }
+.checklist li.done .box::after {
+  content: "✓"; position: absolute; inset: 0;
+  color: #fff; font-size: 0.85rem; font-weight: 700;
+  display: grid; place-items: center; line-height: 1;
+}
+.checklist .txt { transition: all 0.15s; }
+.checklist li.done .txt { color: var(--muted); text-decoration: line-through; }
+
+/* ---- quiz ---- */
+.quiz { margin: 1.6rem 0; }
+.quiz q { display: block; font-style: normal; font-weight: 700; margin-bottom: 0.8rem; }
+.quiz .options { display: grid; gap: 0.55rem; }
+.quiz .opt {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  color: var(--ink);
+}
+.quiz .opt:hover { border-color: var(--accent); background: var(--surface-hover); }
+.quiz .opt.correct { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); font-weight: 700; }
+.quiz .opt.wrong { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.quiz .opt.locked { cursor: default; }
+.quiz .opt.locked:hover { background: var(--ok-soft); }
+.quiz .opt.correct.locked:hover { background: var(--ok-soft); }
+.quiz .feedback { font-family: var(--sans); font-size: 0.88rem; margin-top: 0.7rem; min-height: 1.2em; color: var(--muted); }
+.quiz .feedback.right { color: var(--ok); }
+.quiz .feedback.off { color: var(--bad); }
+
+/* ---- footer ---- */
+hr.rule { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
+.footer { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
+.footer .next {
+  border-left: 3px solid var(--accent); padding-left: 1rem; margin-bottom: 1.4rem;
+}
+.footer a { font-family: var(--sans); }
+.footer strong { color: var(--ink); }
+
+/* ---- small utility ---- */
+.muted { color: var(--muted); }
+.small { font-size: 0.9rem; }
+.kicker { font-family: var(--sans); font-size: 0.78rem; color: var(--faint); }
+
+/* ---- reference docs: slightly denser ---- */
+.ref h1 { font-size: 2rem; }
+.ref .grid { display: grid; gap: 1.4rem; }
+.ref .card { border: 1px solid var(--rule); border-radius: 8px; padding: 1.1rem 1.3rem; background: var(--surface); }
+.ref .card h3 { margin-top: 0; color: var(--accent); }
+
+/* ---- theme toggle ---- */
+.theme-toggle {
+  position: fixed; top: 1rem; right: 1rem; z-index: 50;
+  width: 2.2rem; height: 2.2rem; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  font-size: 1rem; line-height: 1;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle:active { transform: scale(0.92); }
+
+/* ---- print: always light on paper ---- */
+@media print {
+  :root, :root[data-theme="dark"] {
+    --ink: #1b1b1b; --muted: #555; --paper: #fff; --surface: #fff;
+    --rule: #ccc; --accent: #0e7c7b; --accent-soft: #eef6f5; --warm-soft: #faf3e8;
+    --ok-soft: #eef7f0; --bad-soft: #fbeeee; --link-border: #bcd9d7;
+  }
+  body { background: #fff; color: #1b1b1b; font-size: 11.5pt; }
+  .sheet { max-width: none; padding: 0; }
+  .theme-toggle { display: none; }
+  .quiz .opt, .checklist .box { border: 1px solid #999; }
+  a { color: #1b1b1b; border-bottom: none; }
+  .footer .next, .callout, .task { break-inside: avoid; }
+}
