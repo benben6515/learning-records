@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0010 課 — TDD：紅—綠，一道切片</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0010 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>TDD：紅—綠，一道切片</h1>
+  <p class="subtitle">紅—綠，一次一道垂直切片——那個賦予代理眼睛的迴圈。</p>
+
+<p class="lead">失敗模式 #3（程式碼不能跑）的修復。少了告訴代理「它的程式碼實際做了什麼」的回饋迴圈，它就像矇眼飛行。<code>/tdd</code> 給它眼睛。</p>
+
+<h2>主導觀念：一次一道切片的紅—綠</h2>
+<ol>
+<li>寫<strong>一條</strong>失敗的測試（紅）。</li>
+<li>加入剛好讓它通過的程式碼（綠）。</li>
+<li>為下一個行為重複——每一個循環都由上一個教你的東西所引導。</li>
+</ol>
+<p>只有當套件全綠時才重構；<strong>絕不在紅的時候重構</strong>。</p>
+
+<div class="callout note">
+<span class="label">為什麼一次一道，而非整批</span>
+先把測試整批寫好（「水平切片」）會產生測試<em>想像中</em>行為的測試——它們檢查的是東西的形狀，對真正的變更會失去感覺。<code>tdd</code> 走的是<strong>垂直切片</strong>：一條測試，再剛好的程式碼，再下一條。因為你才剛寫完那段程式碼，你確切知道哪個行為重要、如何驗證它——你永遠不會開到車燈照不到的地方。
+</div>
+
+<h2>曳光彈</h2>
+<p>第一個循環是一發<strong>曳光彈（tracer bullet）</strong>：一條證明單一路徑能端到端跑通的測試，在你往外擴建之前先打下。一道貫穿每一層（schema、API、UI、測試）的薄垂直切片——本身就足以展示。</p>
+
+<h2>兩條讓測試保持誠實的規則</h2>
+<ol>
+<li><strong>測試讀起來像一份規格</strong>——「使用者可以用有效的購物車結帳」——而且<em>透過公開 API</em> 來行使真實的程式碼路徑。重新命名一個內部函式永遠不會弄壞測試。測試針對的是<strong>接縫（seam）</strong>，在寫任何程式碼之前就選定了。</li>
+<li><strong>期望值來自獨立的真實來源</strong>——一個已知正確的字面值、一個算過的範例、規格——<em>絕不</em>用程式碼計算它們的方式重新計算。那種重新計算，正是一個<strong>套套邏輯（tautological）</strong>測試「因構造而通過」、什麼也沒告訴你的原因。</li>
+</ol>
+
+<h2>它坐在哪裡</h2>
+<p><code>tdd</code> 是<em>在</em> <code>/implement</code> 內部的引擎，而不是獨立的一步。<code>implement</code> 驅動它，逐張票以測試先行地建造，然後交給 <code>/code-review</code>。當有某個具體行為要建造、卻沒有完整規格時，你也可以直接抓 <code>tdd</code>。它的鄰居是 <code>/codebase-design</code>——<code>tdd</code> 依賴它在寫測試<em>之前</em>先把接縫安放好。</p>
+
+<p>若行為還沒敲定，先解決規格——為此用 <code>/to-spec</code>。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "紅—綠迴圈的順序是什麼？",
+  "options": [
+    "重構、寫測試、寫程式",
+    "寫測試、寫程式、重構",
+    "寫程式、寫測試、重構",
+    "寫多條測試、寫程式、重構"
+  ],
+  "answer": 1,
+  "explainRight": "一條失敗測試（紅），剛好通過的程式碼（綠），然後在綠時重構。",
+  "explainWrong": "測試在前——一次一條。只有在綠的時候才重構，絕不在紅的時候。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "為什麼 tdd 禁止一開始就把所有測試整批寫好？",
+  "options": [
+    "這比寫程式慢",
+    "測試想像行為會失去感覺",
+    "代理會耗盡 token",
+    "會弄壞型別檢查"
+  ],
+  "answer": 1,
+  "explainRight": "整批的測試檢查的是形狀，不是真實行為，對真正的變更會失去感覺。",
+  "explainWrong": "整批測試是測試想像中的行為——它們會失去感覺。一次一道才是修復。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "是什麼讓一條測試變成套套邏輯（而無用）？",
+  "options": [
+    "它只測公開 API",
+    "期望值與程式碼一致",
+    "它用已知正確的字面值",
+    "它讀起來像規格"
+  ],
+  "answer": 1,
+  "explainRight": "用程式碼同樣的方式重新計算期望值，代表它因構造而通過。",
+  "explainWrong": "期望值必須來自獨立來源，而不是用程式碼的方式重新計算。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "在 tdd 下，你什麼時候可以重構？",
+  "options": [
+    "只有當套件全綠時",
+    "任何時候，即使在紅時",
+    "只有在寫測試之前",
+    "只有在提交程式碼之後"
+  ],
+  "answer": 0,
+  "explainRight": "只有綠時才重構。絕不在紅時——你會失去安全網。",
+  "explainWrong": "在紅時重構代表沒有通過的測試來抓住回歸。只有綠。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0011-diagnosing-bugs.html">診斷 bug</a>——回饋迴圈的「難纏 bug」版本。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 10 課 · <a href="0009-implement-and-review.html">← 實作與程式碼審查</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-tdd" target="_blank" rel="noopener">tdd 文件</a>。植基於《<a href="https://www.amazon.co.uk/Pragmatic-Programmer-Anniversary-Journey-Mastery/dp/B0833F1T3V" target="_blank" rel="noopener">The Pragmatic Programmer</a>》。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

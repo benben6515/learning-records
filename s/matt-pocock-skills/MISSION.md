@@ -18,7 +18,7 @@ The skills are already installed. The gap isn't installation — it's fluency in
 - **Conceptual / reference-first for the spine** (favour clear mental models and reference cards); **quiz-based retrieval** for the breadth tour (multiple-choice, equal-length options, immediate feedback).
 - **Primary sources** are the skills repo itself (README, `ask-matt` router, per-skill `SKILL.md`, `CONTEXT.md`) plus the four books it cites. Parametric knowledge is not trusted — every claim cites a source.
 - **Dark theme preferred** — the shared stylesheet (`assets/styles.css`) is dark-themed (light via OS `prefers-color-scheme`). Print stays light.
-- **Dual language:** the **spec-driven spine (7 lessons)** is in EN + 繁中; the **other 12 lessons** (failure modes, main flow, build/verify, on-ramps, router, meta, capstone) are EN-only for now — 繁中 translation is a deferred follow-up.
+- **Dual language:** **all 19 lessons** are in EN + 繁中 (full 繁中 translation complete); the **spec-driven spine (Lessons 03–08, 13)** additionally carries the deeper conceptual treatment.
 - **Generic running example** — lessons reference no specific real project (the shared example is a `permissionBits` auth bitmask, a new/old coexistence migration, and neutral terms like "Order").
 
 ## Publishing

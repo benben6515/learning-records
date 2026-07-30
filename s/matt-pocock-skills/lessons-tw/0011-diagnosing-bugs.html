@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0011 課 — 診斷 bug：緊密迴圈</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0011 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>診斷 bug：緊密迴圈</h1>
+  <p class="subtitle">給那些一眼看不穿的難纏 bug 用的緊密迴圈紀律。</p>
+
+<p class="lead">回饋迴圈的「難纏 bug」版本。<code>/diagnosing-bugs</code> 針對那些一眼看不穿的 bug——間歇性的 flake、悄悄出現在兩個已知良好狀態之間的回歸——跑一套紀律化的診斷迴圈。</p>
+
+<h2>緊密迴圈本身，就是這項技能</h2>
+<p>其他一切——二分法、假設檢定、埋儀器——一旦你有了訊號，都是機械式的。所以 <code>diagnosing-bugs</code> 在第一階段花上不成比例的力氣：構造一條<strong>能驅動實際 bug 程式碼路徑、並斷言使用者確切症狀的 pass／fail 指令</strong>，然後把它<strong>收緊</strong>到快、可重現、且代理跑得起來。</p>
+
+<div class="callout note">
+<span class="label">那個拒絕</span>
+在你擁有緊密的回饋迴圈之前，它拒絕提出假設——<strong>一條在這個 bug 上已經會轉紅的可執行指令</strong>。在那條指令存在之前，靠讀程式碼來建立理論，正是這項技能要防止的那種失敗。沒有能轉紅的迴圈，就沒有診斷。
+</div>
+
+<p>一個 30 秒會飄的迴圈，只比沒有好一點點；一個 2 秒、可重現的迴圈，則是除錯超能力。</p>
+
+<h2>迴圈的階梯</h2>
+<p>它給你一道建造那個迴圈的方式階梯，大致依偏好排序：</p>
+<ul>
+<li>失敗的測試</li>
+<li><code>curl</code> 腳本</li>
+<li>CLI diff</li>
+<li>無頭瀏覽器</li>
+<li>重播的 trace</li>
+<li>拋棄式測試架</li>
+<li>模糊測試迴圈</li>
+<li><code>git bisect run</code></li>
+<li>差分執行</li>
+<li>需要人介入的 bash 腳本——只作為<strong>最後手段</strong></li>
+</ul>
+
+<h2>非確定性的 bug</h2>
+<p>對 flake 而言，目標不是乾淨的重現，而是<strong>更高的重現率</strong>：迴圈觸發、平行化、加壓，直到 flake 變得可除錯。</p>
+
+<h2>這樣子就算有在工作</h2>
+<ul>
+<li>它在提出理論<em>之前</em>，就建造並執行一條重現指令——並貼上呼叫方式與它的紅色輸出。</li>
+<li>迴圈斷言的是你確實回報的症狀，而不是某個鄰近的失敗。</li>
+<li>假設以一份排序過、可證偽的清單送達，而且是在<em>任何一條被測試之前</em>先給你看。</li>
+<li>除錯儀器有標記（<code>[DEBUG-...]</code>），而且在宣告完成之前會被 grep 掉。</li>
+</ul>
+
+<h2>它在哪裡交接</h2>
+<p>它是一個隨時可抓的獨立工具——壞掉了就丟進來，修復與回歸測試都就位後就退出。它的<strong>事後檢討</strong>會在真正的發現是「<em>沒有一個好接縫能把 bug 鎖死</em>」時，交接給 <code>/improve-codebase-architecture</code>——這時問題是程式碼，而不是 bug。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "diagnosing-bugs 在提出假設之前，必須先存在什麼？",
+  "options": [
+    "一份寫下來的 bug 理論",
+    "一條能轉紅的緊密迴圈",
+    "一個失敗的型別檢查",
+    "一條已合併的回歸測試"
+  ],
+  "answer": 1,
+  "explainRight": "一條在這個 bug 上已經會轉紅的可執行指令。沒有迴圈，就沒有診斷。",
+  "explainWrong": "在迴圈存在之前就提理論，正是這項技能要防止的那種失敗。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "這個 bug 只是有時候會飄。目標是什麼？",
+  "options": [
+    "一次乾淨的重現",
+    "更高的重現率",
+    "直接跳到 git bisect",
+    "重寫整個模組"
+  ],
+  "answer": 1,
+  "explainRight": "迴圈觸發、平行化、加壓——直到 flake 變得可除錯。",
+  "explainWrong": "對 flake 而言，乾淨重現可能辦不到。追求更高的重現率。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "迴圈需要斷言什麼？",
+  "options": [
+    "某個鄰近、較容易的失敗",
+    "你回報的確切症狀",
+    "任何失敗的測試都行",
+    "一個通過的型別檢查"
+  ],
+  "answer": 1,
+  "explainRight": "迴圈斷言的是你確實回報的症狀——不是某個鄰近的失敗。",
+  "explainWrong": "鄰近的失敗會讓你追錯 bug。斷言確切的症狀。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "事後檢討說沒有好接縫能鎖死這個 bug。交接給：",
+  "options": [
+    "improve-codebase-architecture",
+    "to-spec，去重寫它",
+    "triage，標成 wontfix",
+    "wayfinder，去畫地圖"
+  ],
+  "answer": 0,
+  "explainRight": "當問題是程式碼、不是 bug 時，交接給 improve-codebase-architecture。",
+  "explainWrong": "沒有好接縫代表問題在程式碼。improve-codebase-architecture 來深化它。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0012-resolving-merge-conflicts.html">解決合併衝突</a>——依意圖求解，絕不憑文字、絕不 abort。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 11 課 · <a href="0010-tdd.html">← TDD：紅—綠，一道切片</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-diagnosing-bugs" target="_blank" rel="noopener">diagnosing-bugs 文件</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

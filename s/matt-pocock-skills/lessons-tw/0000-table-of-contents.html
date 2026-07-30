@@ -30,6 +30,10 @@
   }
   .index .d .lvl { color: var(--note); }
   .index .d .cap { color: var(--warn); }
+  .index .d .qz  { color: var(--accent); }
+  h2.phase { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-family: var(--sans); font-weight: 600;
+    margin: 2.2rem 0 0.2rem; }
 </style>
 </head>
 <body>
@@ -37,9 +41,9 @@
 
   <p class="kicker">第 0000 課 · 課程目錄</p>
   <h1>《Matt Pocock 技能》課程目錄</h1>
-  <p class="subtitle">規格驅動主幹（繁中版）——從想法到交付，全程由規格驅動。</p>
+  <p class="subtitle">十九堂課，一條路：從想法到交付——以及掛在上面的工具。</p>
 
-  <p class="lead">這門課是一條幾乎所有工作都會走過的路徑。繁中版目前涵蓋<strong>規格驅動主幹</strong>的七堂課（心智地圖 → 入口 → 兩份產物 → 規格 → 票 → 架構消費）。完整 19 堂課（含四種失敗模式、主流程、建構／驗證、入口坡道、路由器）目前為<a href="../lessons/0000-table-of-contents.html">英文版</a>。</p>
+  <p class="lead">這門課不是一盒互不相干的指令。它是一條幾乎所有工作都會走過的路徑，外加幾個入口坡道與獨立工具。你會先學<strong>地圖</strong>，再深入走<strong>規格驅動主幹</strong>，接著加上<strong>建構／驗證／設計</strong>、<strong>入口坡道</strong>，以及把一切握在腦中的<strong>路由器</strong>。</p>
 
   <div class="flow">
     <div class="row">
@@ -56,9 +60,28 @@
     <div class="under">想法 &nbsp;⟶&nbsp; 交付 &nbsp;·&nbsp; 全程由 <code>CONTEXT.md</code> + ADR 撰寫，再由 <code>improve-codebase-architecture</code> 消化</div>
   </div>
 
-  <h2>繁中課程（規格驅動主幹）</h2>
-
+  <h2 class="phase">階段 A — 地圖與規格驅動主幹</h2>
   <ol class="index">
+    <li>
+      <a href="0001-the-four-failures.html">
+        <span class="num">01</span>
+        <span class="meta">
+          <span class="t">四種失敗模式</span>
+          <span class="s">AI 工作階段出錯的四種方式，以及各自對應的修復技能。</span>
+          <span class="d">約 5 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0002-the-main-flow.html">
+        <span class="num">02</span>
+        <span class="meta">
+          <span class="t">主流程：從想法到交付</span>
+          <span class="s">大多數工作都走的骨幹路線。把它背起來。</span>
+          <span class="d">約 5 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
     <li>
       <a href="0003-the-mental-map.html">
         <span class="num">03</span>
@@ -114,8 +137,52 @@
         <span class="num">08</span>
         <span class="meta">
           <span class="t"><code>to-tickets</code> — 曳光彈與前緣</span>
-          <span class="s">規格驅動主幹的最後一站。一份規格變成一套讓代理能在全新視窗中施工的票。</span>
+          <span class="s">一份規格變成一套讓代理能在全新視窗中施工的票。</span>
           <span class="d">約 7 分鐘 · <span class="lvl">認識層級</span></span>
+        </span>
+      </a>
+    </li>
+  </ol>
+
+  <h2 class="phase">階段 B — 建構、驗證與設計</h2>
+  <ol class="index">
+    <li>
+      <a href="0009-implement-and-review.html">
+        <span class="num">09</span>
+        <span class="meta">
+          <span class="t">實作與程式碼審查</span>
+          <span class="s"><code>implement</code> 建造；<code>code-review</code> 在兩條絕不合併的軸線上評判。</span>
+          <span class="d">約 6 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0010-tdd.html">
+        <span class="num">10</span>
+        <span class="meta">
+          <span class="t">TDD：紅—綠，一道切片</span>
+          <span class="s">賦予代理眼睛的那個回饋迴圈。</span>
+          <span class="d">約 6 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0011-diagnosing-bugs.html">
+        <span class="num">11</span>
+        <span class="meta">
+          <span class="t">診斷 bug</span>
+          <span class="s">給那些一眼看不穿的難纏 bug 用的緊密迴圈紀律。</span>
+          <span class="d">約 6 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0012-resolving-merge-conflicts.html">
+        <span class="num">12</span>
+        <span class="meta">
+          <span class="t">解決合併衝突</span>
+          <span class="s">依意圖求解，絕不憑文字——而且絕不 abort。</span>
+          <span class="d">約 5 分鐘 · <span class="qz">隨堂測驗</span></span>
         </span>
       </a>
     </li>
@@ -131,14 +198,73 @@
     </li>
   </ol>
 
-  <div class="callout accent">
-    <span class="label">完整 19 堂課（英文版）</span>
-    其餘 12 堂——<strong>四種失敗模式、主流程、實作／審查、TDD、診斷 bug、合併衝突、wayfinder、prototype／research、setup／triage、ask-matt、後設技能、總整路由演練</strong>——目前為英文版，附選擇題隨堂測驗。前往<a href="../lessons/0000-table-of-contents.html">英文課程目錄</a>。
-  </div>
+  <h2 class="phase">階段 C — 入口坡道、獨立工具與路由器</h2>
+  <ol class="index">
+    <li>
+      <a href="0014-wayfinder.html">
+        <span class="num">14</span>
+        <span class="meta">
+          <span class="t">Wayfinder</span>
+          <span class="s">給迷霧籠罩、跨多 session 工作用的入口坡道。它規劃；它不建造。</span>
+          <span class="d">約 6 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0015-prototype-and-research.html">
+        <span class="num">15</span>
+        <span class="meta">
+          <span class="t">原型與研究</span>
+          <span class="s">兩個能快速回答問題、再餵回主流程的獨立工具。</span>
+          <span class="d">約 6 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0016-setup-and-triage.html">
+        <span class="num">16</span>
+        <span class="meta">
+          <span class="t">設定與分級</span>
+          <span class="s">跑一次的前置條件，以及處理原始議題的入口坡道。</span>
+          <span class="d">約 6 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0017-ask-matt.html">
+        <span class="num">17</span>
+        <span class="meta">
+          <span class="t">Ask Matt 與路由器</span>
+          <span class="s">整套技能之上的那個路由器——認知負荷的解藥。</span>
+          <span class="d">約 5 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="0018-meta-skills.html">
+        <span class="num">18</span>
+        <span class="meta">
+          <span class="t">後設技能：teach 與 writing-great-skills</span>
+          <span class="s">那個遞迴層——對技能集本身、或對你學習本身來運作。</span>
+          <span class="d">約 7 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li class="capstone">
+      <a href="0019-the-full-routing-drill.html">
+        <span class="num">19</span>
+        <span class="meta">
+          <span class="t">總整路由演練</span>
+          <span class="s">五個情境。把每一個路由到對的技能（依序）。</span>
+          <span class="d">約 6 分鐘 · <span class="cap">總整</span> · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+  </ol>
 
   <div class="callout note">
     <span class="label">怎麼開始</span>
-    若你是第一次讀，從<strong>第 3 課（心智地圖）</strong>開始按順序走——它會給你那張地圖，其餘各課都是在填滿地圖上的各站。若只想查某個階段，直接點上面任何一堂。
+    若你是第一次讀，從<strong>第 1 課</strong>開始按順序走——它會給你那張地圖，其餘各課都是在填滿地圖上的各站。若只想查某個階段，直接點上面任何一堂。
   </div>
 
   <h2>延伸閱讀</h2>
@@ -146,12 +272,12 @@
     <li><strong>流程圖與詞彙表：</strong><a href="../reference/spec-driven-workflow.html">規格驅動流程參考</a>——每個階段、規格解剖、<code>CONTEXT.md</code>／ADR 規則、最佳實踐原則。</li>
     <li><strong>四種失敗模式：</strong><a href="../reference/failure-modes.html">四種失敗模式</a>——整套技能的主幹；每種失敗對應一個修復技能。</li>
     <li><strong>詞彙表：</strong><a href="../reference/glossary.html">領域語言詞彙表</a>——Issue、Decision ticket、智慧區、seam、depth、frontier……。</li>
-    <li><strong>技能目錄：</strong><a href="../reference/skills-catalog.html">Matt Pocock 技能目錄</a>——所有技能的繁中譯名與一句話說明。</li>
+    <li><strong>技能目錄：</strong><a href="../reference/skills-catalog.html">Matt Pocock 技能目錄</a> · <a href="../reference/spec-anatomy.html">規格解剖</a> · <a href="../reference/context-md-format.html">CONTEXT.md 格式</a> · <a href="../reference/adr-format.html">ADR 格式</a> · <a href="../reference/tickets-anatomy.html">票解剖</a> · <a href="../reference/codebase-design-vocab.html">深模組詞彙</a></li>
     <li><strong>任務說明：</strong><a href="../MISSION.md">任務</a>——這門課為何存在、要帶你到哪裡。</li>
   </ul>
 
   <div class="footer">
-    <p>《Matt Pocock 技能》課程目錄 · <a href="../MISSION.md">任務</a> · <a href="../RESOURCES.md">資源</a> · <a href="../reference/spec-driven-workflow.html">參考</a></p>
+    <p>《Matt Pocock 技能》課程目錄 · <a href="../index.html">回課程首頁</a> · <a href="../MISSION.md">任務</a> · <a href="../RESOURCES.md">資源</a> · <a href="../reference/spec-driven-workflow.html">參考</a></p>
   </div>
 
 </div>

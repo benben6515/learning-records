@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0014 課 — Wayfinder：迷霧與決策票</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0014 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>Wayfinder：迷霧與決策票</h1>
+  <p class="subtitle">給迷霧籠罩、跨多 session 的工作用的入口坡道。它規劃；它不建造。</p>
+
+<p class="lead">一個給最困難案例用的<strong>入口坡道（on-ramp）</strong>：一件大到單一代理 session 裝不下、又裹在迷霧裡的工作，從這裡到目的地的那條路還看不見。<code>/wayfinder</code> <em>規劃，不建造</em>。</p>
+
+<h2>什麼時候該抓它——什麼時候不該</h2>
+<ul>
+<li><strong>該</strong>——全新專案、大型功能建造、大到塞不進一次 session、路線仍一片迷霧。你摸得到工作的形狀，卻還無法把它寫成規格或計畫。</li>
+<li><strong>不該</strong>——一個範圍清楚的功能。<code>/grill-with-docs</code> 是把你<em>能</em>在一次 session 裡掌握的想法磨銳利；wayfinder 則是給你<em>掌握不了</em>的那個想法用的。它更慢、更密——把它留給正好那種情況。</li>
+</ul>
+
+<h2>地圖是一份索引，迷霧是前緣</h2>
+<p>這張<strong>地圖</strong>是一張單一的 <code>wayfinder:map</code> issue，它的票就是它的子 issue——一個全團隊都能盯著看的共用 URL。它是一份<strong>索引，而非倉庫</strong>：每個決策只活在一個地方（它的票裡）；地圖只摘要並連結，絕不重述。</p>
+<p>在活的票之外，是一片<strong>戰爭迷霧（fog of war）</strong>——那些你感覺得到即將到來、卻還無法釘死的決策。判斷某樣東西究竟是一張票還是仍是迷霧的測試是：你能否<em>現在就精確地陳述這個問題</em>，而不是你能否回答它。</p>
+<p>解掉一張票會清掉它前方的迷霧，把現在可規格化的東西<strong>畢業（graduating）</strong>成新票。<strong>前緣（frontier）</strong>是那些開放、未阻塞、未被認領的票——已知世界的邊緣。迷霧只<em>朝目的地</em>聚集；過了它的那邊的工作被裁定為<strong>不在範圍內</strong>、被關閉，永不畢業。</p>
+
+<h2>是決策，不是交付物</h2>
+<p>每一張票解決的都是一個<strong>決策</strong>——一個要敲定的問題，而不是一道要執行的建造切片。當再也沒有什麼要在某人去把東西建出來之前決定的，這張地圖就完成了。這就是它的定義動作：<em>wayfinder 產出決策，不產出交付物</em>。</p>
+
+<h2>HITL vs AFK</h2>
+<p>每一張票不是 <strong>HITL</strong>（human in the loop——盤問、原型），就是 <strong>AFK</strong>（agent alone——研究）。一張 HITL 票只能透過一場即時交流來解，所以代理絕不回答自己的問題。研究仍是一張真正的票——下游決策會掛在上面的共用阻塞——但因為它是 AFK，某次 session 會發射一個 <code>/research</code> 子代理把它在背景拆掉，讓前緣保持快速。</p>
+
+<h2>它交接，不建造</h2>
+<div class="callout note">
+<span class="label">交接規則</span>
+當地圖清空，wayfinder 會<strong>交接</strong>給 <code>/to-spec</code>，由它把地圖上互相連結的決策收合成一份可建造的計畫——再如常走 <code>/to-tickets</code> 與 <code>/implement</code>。把地圖直接繞進 <code>/implement</code>，會跳過那次收合，並把互相連結的細節丟掉。
+</div>
+<p>若開場的盤問浮現<strong>完全沒有迷霧</strong>，它就停下來告訴你：這趟旅程小到可以跳過地圖——直接去 <code>/to-spec</code>，若它真的小到那樣，甚至直接 <code>/implement</code>。</p>
+
+<h2>一次 session 最多解一張票</h2>
+<p>（研究票除外。）它把答案以一則決議留言記下、關閉該票，並在<em>「Decisions so far」</em>後面附上一行指標。命名<strong>目的地</strong>是第一個動作，在任何票存在之前——因為它固定了每一張票要拿來衡量的那個範圍。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "什麼時候 wayfinder 是對的工具？",
+  "options": [
+    "一個範圍清楚、單一 session 的功能",
+    "一件迷霧籠罩、跨多 session 的工作",
+    "一個你需要重現的 bug",
+    "一份要拆開的已完成規格"
+  ],
+  "answer": 1,
+  "explainRight": "迷霧又大到塞不進一次 session。把它留給正好那種情況——絕不用在範圍清楚的功能上。",
+  "explainWrong": "範圍清楚的功能是 grill-with-docs，不是 wayfinder。wayfinder 是給迷霧、跨多 session 的案例用的。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "一張 wayfinder 票會解成什麼？",
+  "options": [
+    "一道已交付的程式碼切片",
+    "一個決策，不是交付物",
+    "一個已合併的 pull request",
+    "一份新的 CONTEXT.md"
+  ],
+  "answer": 1,
+  "explainRight": "每一張票解決的都是一個決策。地圖產出決策，不產出交付物。",
+  "explainWrong": "wayfinder 規劃，不建造。票敲定問題，不是程式碼切片。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "地圖清空了。wayfinder 交接給哪裡？",
+  "options": [
+    "直接到 implement，跳過 spec",
+    "到 to-spec，再走主流程",
+    "到 triage 去排序",
+    "到 grill-me 再跑一輪"
+  ],
+  "answer": 1,
+  "explainRight": "交接給 to-spec，由它把決策收合成一份可建造的計畫。",
+  "explainWrong": "直接進 implement 會把互相連結的細節丟掉。to-spec 先把地圖收合。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "一張 HITL 票只能透過什麼來解？",
+  "options": [
+    "與你的一場即時交流",
+    "代理獨自回答",
+    "一次背景研究跑",
+    "不留任何留言地關閉"
+  ],
+  "answer": 0,
+  "explainRight": "HITL＝human in the loop。代理絕不在一張 HITL 票上回答自己的問題。",
+  "explainWrong": "AFK 票由代理獨自解。HITL 需要與你的一場即時交流。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0015-prototype-and-research.html">原型與研究</a>——兩個能快速回答問題、再餵回主流程的獨立工具。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 14 課 · <a href="0013-improve-architecture-consumes-the-docs.html">← improve-codebase-architecture 如何消化文件</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-wayfinder" target="_blank" rel="noopener">wayfinder 文件</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

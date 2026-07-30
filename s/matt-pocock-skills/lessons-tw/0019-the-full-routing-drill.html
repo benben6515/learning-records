@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0019 課 — 總整路由演練</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0019 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>總整路由演練</h1>
+  <p class="subtitle">五個情境。把每一個路由到對的技能（依序）。</p>
+
+<p class="lead">五個寫實情境。針對每一個，挑出該抓的技能與順序。這是整門課壓縮成一道演練——五題全對，任務的<em>「success looks like」</em>就達成了。</p>
+
+<h2>情境 1</h2>
+<p>你有一個程式庫。一個功能請求在你腦中還很模糊——你摸得到形狀，但有三四個決策尚未解開，而且專案對它的用語還沒敲定。你想把它建出來。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "先抓哪個技能？",
+  "options": [
+    "to-spec，現在就寫規格",
+    "grill-with-docs，先訪談",
+    "implement，開始建造",
+    "triage，把請求排序"
+  ],
+  "answer": 1,
+  "explainRight": "模糊＋有程式庫＋用語未定＝grill-with-docs。它邊問邊寫 CONTEXT.md + ADR。",
+  "explainWrong": "計畫模糊、語言未定。先盤問——to-spec 是在對齊「之後」才綜合。"
+}
+</script></div>
+
+<h2>情境 2</h2>
+<p>一條間歇性的測試，大約每二十次 CI 跑就飄一次。沒人能在本地重現。它綠了兩天，剛剛又失敗了。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "用哪個技能，它的第一個動作是什麼？",
+  "options": [
+    "tdd，把測試改寫到綠",
+    "diagnosing-bugs，建一條迴圈",
+    "prototype，重現那個狀態",
+    "research，讀關於 flake 的資料"
+  ],
+  "answer": 1,
+  "explainRight": "diagnosing-bugs。第一個動作：建一條能轉紅的緊密迴圈（此處是靠迴圈／加壓來提高重現率）。",
+  "explainWrong": "難纏 bug＋間歇性＝diagnosing-bugs。在緊密迴圈存在之前，它拒絕提理論。"
+}
+</script></div>
+
+<h2>情境 3</h2>
+<p>你的議題追蹤器有 30 個未審閱的 bug 回報，以及貢獻者的外部 PR。其中兩個是重複的、一個已修好，還有幾個缺重現步驟。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "用哪個技能，而且在任何 ready-for-agent 標籤之前它必須做什麼？",
+  "options": [
+    "triage，先驗證每項主張",
+    "to-tickets，把它們全拆開",
+    "implement，挑容易的做",
+    "wayfinder，把回報畫成地圖"
+  ],
+  "answer": 0,
+  "explainRight": "triage。它在任何簡報之前，重現 bug／跑 PR 測試，並檢查冗餘與先前否決。",
+  "explainWrong": "原始進來的議題＝triage。它先驗證再寫簡報——絕不盲目貼標籤。"
+}
+</script></div>
+
+<h2>情境 4</h2>
+<p>你要展開一個會花上數月的新專案。你摸得到形狀，卻還無法把它寫成規格——未知數太多，通往目的地的那條路一片迷霧。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "用哪個技能，而且地圖清空時它交接去哪裡？",
+  "options": [
+    "grill-with-docs，再 to-spec",
+    "wayfinder，再 to-spec",
+    "to-spec，再 to-tickets",
+    "prototype，再 implement"
+  ],
+  "answer": 1,
+  "explainRight": "wayfinder 畫決策票，直到迷霧散去，再交接給 to-spec（絕不直接跳到 implement）。",
+  "explainWrong": "太迷霧＋跨多 session＝wayfinder。它規劃，再交接給 to-spec 把地圖收合。"
+}
+</script></div>
+
+<h2>情境 5</h2>
+<p>你正在盤問一個功能盤到一半，session 已到約 11 萬 token——還算銳利，但決策樹你才走一半，而且正逼近智慧區。你不想丟掉這條執行緒。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "哪個動作，為什麼？",
+  "options": [
+    "中途壓縮來騰出空間",
+    "handoff，分叉一個全新 session",
+    "硬撐，期望它保持銳利",
+    "跳過 to-spec，直接 implement"
+  ],
+  "answer": 1,
+  "explainRight": "在 to-tickets 之前逼近智慧區＝handoff。分叉全新；別在衰退的推理上硬撐，也別中途壓縮。",
+  "explainWrong": "中途壓縮會丟掉執行緒；硬撐會讓推理衰退。handoff 分叉到全新的 session。"
+}
+</script></div>
+
+<h2>加分題——雙軸審查</h2>
+<div class="quiz"><script type="application/json">
+{
+  "question": "code-review 發現 diff 通過 Standards、卻在 Spec 失敗。報告會怎麼顯示？",
+  "options": [
+    "單一混合判決，通過",
+    "兩個分開區塊，沒有贏家",
+    "只有 Spec 失敗，Standards 隱藏",
+    "Standards 永遠覆蓋 Spec"
+  ],
+  "answer": 1,
+  "explainRight": "兩條軸線，絕不混併。每個區塊各自引用來源；刻意沒有橫跨兩軸的單一贏家。",
+  "explainWrong": "混併會讓其中一條掩蓋另一條。報告把它們分開——Standards 與 Spec 並列。"
+}
+</script></div>
+
+<hr class="rule">
+
+<h2>你已經把這門課走完了</h2>
+<p>橫跨所有 22 個已推廣技能的課程。若你把五個情境都路由對了，你就能在對的那一刻抓對技能——任務達成。</p>
+
+<p>有兩件事要繼續做：</p>
+<ul>
+<li><strong>回顧參考文件</strong>——<a href="../reference/spec-driven-workflow.html">技能地圖</a>、<a href="../reference/spec-driven-workflow.html">主流程</a>、<a href="../reference/failure-modes.html">四種失敗模式</a>、<a href="../reference/glossary.html">詞彙表</a>。它們是壓縮後的精髓；課會淡去，參考留下。</li>
+<li><strong>在真正的當下打 <code>/ask-matt</code></strong>——路由器是認知負荷的解藥。你不必把全部 22 個技能塞在腦子裡；路由器替你握著。</li>
+</ul>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">課程到此完整結束。想重看任何一站？<a href="0000-table-of-contents.html">回目錄</a>。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 19 課（總整）· <a href="0018-meta-skills.html">← 後設技能</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/spec-driven-workflow.html">參考</a></p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

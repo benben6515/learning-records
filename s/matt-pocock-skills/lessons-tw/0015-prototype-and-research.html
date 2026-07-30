@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0015 課 — 原型與研究</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0015 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>原型與研究</h1>
+  <p class="subtitle">兩個能快速回答問題、再把結果餵回主流程的獨立工具。</p>
+
+<p class="lead">兩個獨立工具：快速回答一個問題，再把結果餵回主流程。</p>
+
+<h2><code>/prototype</code>——從第一天起就是拋棄式</h2>
+<p>一個小小的、用完即丟的程式，它唯一的任務是回答<strong>一個設計問題</strong>：這個狀態模型對不對勁，或這個 UI 該長什麼樣。</p>
+<p>它<strong>沒有測試、沒有超出「能跑」所需的錯誤處理、沒有抽象、沒有持久化</strong>。重點是快速學到一件事，然後刪掉它。你一開始硬化它，就不再是在做原型了。</p>
+
+<h3>兩條分支——先挑，再做</h3>
+<p>挑錯分支會浪費掉整個原型，所以問題先來：</p>
+<table>
+<thead><tr><th>問題</th><th>形狀</th></tr></thead>
+<tbody>
+<tr><td>「這個邏輯／狀態模型對不對勁？」</td><td>一個小小的互動式終端機程式，把狀態機推過那些尷尬的案例，並在每次動作後印出完整狀態。</td></tr>
+<tr><td>「這個該長什麼樣？」</td><td>在同一條路由上的數個截然不同的 UI 變體，從一條浮動工具列切換，讓你比較真實的渲染、而非憑空想像。</td></tr>
+</tbody>
+</table>
+<p>兩條分支都把狀態留在記憶體裡、用一道指令跑起來，並在每一步顯露完整狀態。</p>
+
+<h3>把原型留作主要來源</h3>
+<p>那個<strong>答案</strong>——結論加上它所敲定的問題——才是你持久捕捉下來的東西（一則 commit 訊息、一份 ADR、一個 issue）。而<strong>原型本身就是一份主要來源</strong>——答案所來自的那份可執行證據。</p>
+<div class="callout note">
+<span class="label">它住在哪裡</span>
+它<em>不</em>屬於主分支：沒有測試，沒有要維護的東西。但也別毀了它。把它留在<strong>拋棄式分支</strong>上——離開主分支、永不合併——並在實作 issue 上留一個指向它的上下文指標。主分支保持乾淨；那份原始探索則在一點之遙。
+</div>
+
+<p><strong>不適用於：</strong>若某個已建好的東西行為異常，而你需要找出<em>為什麼</em>，用 <code>/diagnosing-bugs</code>。原型探索的是「要建什麼」，而不是「已建好的東西為何壞了」。</p>
+
+<h2><code>/research</code>——委派出去的跑腿活</h2>
+<p>它透過閱讀「擁有答案的那些來源」來回答一個問題，並留下一份帶引用的 Markdown 檔。它只從<strong>主要來源</strong>工作——官方文件、原始碼、規格、第一方 API——絕不用對它們的二手轉述，所以它存下的東西都追溯得到某個權威出處。</p>
+
+<h3>定義動作：背景代理</h3>
+<p>閱讀是以<strong>背景代理</strong>執行的。你繼續工作；它跑到一邊，把每一項主張追回它的主要來源，並把單一份帶引用的 Markdown 檔丟進 repo 存這類筆記的地方。研究是你<em>委派</em>出去的跑腿活，而不是你外包出去的思考——你拿回來的是一份可以回應、並附有來源的文件。</p>
+
+<div class="callout note">
+<span class="label">餵養思考，不取代思考</span>
+research 產出的那份檔案，是要在 <code>/grill-with-docs</code> <em>帶進</em>主流程的東西——研究餵養思考，它不取代思考。
+</div>
+
+<p><strong>不適用於：</strong>想用<em>訪談</em>而非閱讀來磨利計畫，用 <code>/grilling</code>；想用拋棄式程式碼探索「要建什麼」，用 <code>/prototype</code>。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "什麼標誌著你已經不再做原型了？",
+  "options": [
+    "你刪掉原型",
+    "你開始硬化它",
+    "你把答案寫下來",
+    "你第二次跑它"
+  ],
+  "answer": 1,
+  "explainRight": "你一開始硬化它——加測試、加錯誤處理——就不再是在做原型了。",
+  "explainWrong": "硬化是那條界線。原型從第一天起就是拋棄式的。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "一個已建好的功能行為異常。該用哪個技能、而非 prototype？",
+  "options": [
+    "用 diagnosing-bugs",
+    "改用 research",
+    "再用一次 to-spec",
+    "用 improve-codebase-architecture"
+  ],
+  "answer": 0,
+  "explainRight": "prototype 探索要建什麼。diagnosing-bugs 找出已建的東西為何壞了。",
+  "explainWrong": "prototype 是給「要建什麼」的，不是「已建的為何壞了」。diagnosing-bugs 才對。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "答案捕捉下來之後，原型本身住哪裡？",
+  "options": [
+    "合併進主分支",
+    "拋棄式分支，不合併",
+    "一律整個刪掉",
+    "放在 docs/adr/ 當作 ADR"
+  ],
+  "answer": 1,
+  "explainRight": "離開主分支、永不合併，並在實作 issue 上留一個上下文指標。",
+  "explainWrong": "它不屬於主分支——沒有要維護的測試。但把它留在拋棄式分支上。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "research 只從什麼工作？",
+  "options": [
+    "主要來源，帶引用",
+    "二手轉述",
+    "代理自己的知識",
+    "使用者提供的答案"
+  ],
+  "answer": 0,
+  "explainRight": "官方文件、原始碼、規格、第一方 API——絕不是摘要的摘要。",
+  "explainWrong": "二手轉述正是 research 要避開的。主要來源，帶引用。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0016-setup-and-triage.html">設定與分級</a>——跑一次的前置條件，以及處理原始議題的入口坡道。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 15 課 · <a href="0014-wayfinder.html">← Wayfinder</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-prototype" target="_blank" rel="noopener">prototype</a>、<a href="https://aihero.dev/skills-research" target="_blank" rel="noopener">research</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

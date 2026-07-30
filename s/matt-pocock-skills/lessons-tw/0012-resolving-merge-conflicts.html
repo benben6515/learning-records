@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0012 課 — 解決合併衝突</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0012 課 · 約 5 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>解決合併衝突</h1>
+  <p class="subtitle">依意圖求解，絕不憑文字——而且絕不 abort。</p>
+
+<p class="lead">一個隨時可抓的獨立工具，用於 merge 或 rebase 卡住的那一刻。<code>/resolving-merge-conflicts</code> 逐一 hunk 地走過衝突，並把操作做完——已解決、已檢查、已提交。</p>
+
+<h2>依意圖求解，而非依文字</h2>
+<p>衝突裡的陷阱，是把它當成<em>文字</em>問題——選「ours」或「theirs」好讓標記消失。這項技能把它當成<em>意圖</em>問題。</p>
+<div class="callout note">
+<span class="label">那條規則</span>
+一個 hunk 的兩側之所以存在，是因為有人<em>想要</em>某件事。解法必須在能辦到時同時尊重兩邊的想望；而在它們真的不相容時，挑選符合這次 merge 所宣稱目標的那一邊，並<strong>把取捨明白地記下來</strong>。它絕不發明新行為來掩蓋衝突。
+</div>
+
+<h2>先看主要來源</h2>
+<p>你無法保全一個你還沒讀過的意圖，所以工作從<em>歷史</em>開始——不是從 diff。在動一個 hunk 之前，把兩側各自回溯到它的<strong>主要來源</strong>：commit 訊息、PR、原始 issue。先理解這項變更<em>為何</em>被做，再在兩側意圖相容之處同時保全。</p>
+
+<h2>絕不 <code>--abort</code></h2>
+<p>merge 永遠會被做完。絕不會去抓 <code>--abort</code>。「解決」本身就是重點——這項技能把你交還一棵乾淨、已提交的樹。</p>
+
+<h2>這樣子就算有在工作</h2>
+<ul>
+<li>每一個已解決的 hunk 都保住兩側的行為，或在辦不到時說出取捨。</li>
+<li>沒有出現任何一個分支上都不存在的新行為。</li>
+<li>專案自己的檢查——型別檢查、測試、格式——都被找到，並在<em>提交之前</em>跑到綠。</li>
+<li>merge 或 rebase 一路被帶到完成的 commit，絕不 abort。</li>
+</ul>
+
+<h2>它放在哪裡</h2>
+<p>天然的鄰居是 <code>/diagnosing-bugs</code>：一場解得很乾淨、卻<em>之後行為異常</em>的 merge，是診斷問題，不是衝突問題。<code>resolving-merge-conflicts</code> 是給<em>眼前</em>的衝突用的——不是用來規劃 merge，也不是用來除錯之後壞掉的行為。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "resolving-merge-conflicts 把衝突當成什麼？",
+  "options": [
+    "一個挑文字的問題",
+    "一個兩側意圖的問題",
+    "一個型別檢查問題",
+    "一個測試覆蓋問題"
+  ],
+  "answer": 1,
+  "explainRight": "兩側都想要某件事。能辦到就同時尊重；辦不到就說出取捨。",
+  "explainWrong": "選 ours／theirs 好讓標記消失，正是那個陷阱。是意圖，不是文字。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "在動一個 hunk 之前，這項技能從哪裡開始？",
+  "options": [
+    "在 diff 裡，逐行",
+    "在歷史裡，主要來源",
+    "在測試套件裡，跑它",
+    "在 git config 裡，檢查它"
+  ],
+  "answer": 1,
+  "explainRight": "commit、PR、ticket——主要來源。你無法保全一個沒讀過的意圖。",
+  "explainWrong": "diff 是症狀。意圖活在歷史裡——先看主要來源。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "什麼時候 --abort 是正確之舉？",
+  "options": [
+    "絕不，merge 會做完",
+    "當衝突超過十個檔案",
+    "只在 rebase，不在 merge",
+    "當代理搞混了"
+  ],
+  "answer": 0,
+  "explainRight": "絕不。merge 永遠會做完——已解決、已檢查、已提交。",
+  "explainWrong": "絕不去抓 --abort。把操作做完才是整個重點。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "一場 merge 解得很乾淨，但 app 現在行為異常。用哪個技能？",
+  "options": [
+    "再用一次 resolving-merge-conflicts",
+    "diagnosing-bugs，它壞了",
+    "improve-codebase-architecture",
+    "to-spec，重寫計畫"
+  ],
+  "answer": 1,
+  "explainRight": "一場乾淨卻行為異常的 merge，是診斷問題，不是衝突問題。",
+  "explainWrong": "衝突已經沒了。diagnosing-bugs 處理之後壞掉的行為。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0013-improve-architecture-consumes-the-docs.html"><code>improve-codebase-architecture</code> 如何消化這些文件</a>——讀進你一路建立的所有東西，找出程式碼想深化之處。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 12 課 · <a href="0011-diagnosing-bugs.html">← 診斷 bug</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-resolving-merge-conflicts" target="_blank" rel="noopener">resolving-merge-conflicts 文件</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0001 課 — 四種失敗模式</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0001 課 · 約 5 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>四種失敗模式</h1>
+  <p class="subtitle">AI 工作階段出錯的四種方式——以及各自對應的修復技能。</p>
+
+<p class="lead">Matt Pocock 技能集裡的每一項技能，都是為了修復某一種「AI 寫程式工作階段出錯的方式」。在學任何單一技能之前，先學這四種——它們是整門課其餘部分所依據的地圖。</p>
+
+<h2>四種</h2>
+
+<ol>
+<li><strong>失準（Misalignment）</strong>——代理沒做你要的事。你以為它懂了；產出證明它沒懂。這是最常見的失敗。</li>
+<li><strong>冗長／沒有共用語言（Verbosity / no shared language）</strong>——該用一個字的地方，代理卻用了二十個字，因為沒人教過它這個專案的行話。</li>
+<li><strong>程式碼不能跑（The code doesn't work）</strong>——你們已對齊，但產出還是壞的。沒有任何回饋迴圈告訴代理，它的程式碼實際上做了什麼。</li>
+<li><strong>爛泥球（A ball of mud）</strong>——程式庫難以變更。代理會加速熵增，所以少了刻意的設計照護，它只會快速惡化、複合。</li>
+</ol>
+
+<div class="callout note">
+<span class="label">這個模式</span>
+這些沒有一個是<em>聰明度</em>問題。每一個都是<em>溝通或回饋</em>問題。修復方法都是借用自數十年軟體工程的紀律——窮追不捨地訪談、把語言寫下來、執行程式碼、投資設計——把它們做成可重複的技能。
+</div>
+
+<h2>一種失敗，一個修復</h2>
+
+<table>
+<thead><tr><th>失敗</th><th>修復技能</th><th>植基於</th></tr></thead>
+<tbody>
+<tr><td>失準</td><td><code>/grill-me</code>、<code>/grill-with-docs</code></td><td>《The Pragmatic Programmer》</td></tr>
+<tr><td>沒有共用語言</td><td><code>/grill-with-docs</code> 建立 <code>CONTEXT.md</code> + ADR</td><td>《Domain-Driven Design》（Evans）</td></tr>
+<tr><td>程式碼不能跑</td><td><code>/tdd</code>、<code>/diagnosing-bugs</code></td><td>《The Pragmatic Programmer》</td></tr>
+<tr><td>爛泥球</td><td><code>/to-spec</code>、<code>/improve-codebase-architecture</code>、<code>/codebase-design</code></td><td>XP（Beck）、Ousterhout</td></tr>
+</tbody>
+</table>
+
+<p>當你能把任何情況歸入這四種之一，你就知道該抓哪個技能了。整場遊戲就是這樣。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "你告訴代理要建什麼，它點頭稱是，產出卻和你想像的完全不同。這是哪種失敗模式？",
+  "options": [
+    "失準——代理搞錯了",
+    "冗長——太多字",
+    "程式不能跑——沒回饋",
+    "爛泥球——設計差"
+  ],
+  "answer": 0,
+  "explainRight": "失準。修復方式是動手前先窮追訪談。",
+  "explainWrong": "冗長關乎字數，不是誤解。這是失準。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "程式庫能跑，但每次變更都得動到五個檔案，代理還一直把東西絞在一起。這是哪種失敗模式？",
+  "options": [
+    "失準——目標錯",
+    "冗長——太冗長",
+    "程式不能跑——沒測試",
+    "爛泥球——設計差"
+  ],
+  "answer": 3,
+  "explainRight": "爛泥球。修復方式是設計照護：深模組、定期的架構健檢。",
+  "explainWrong": "程式能跑，所以不是「程式不能跑」。這是爛泥球的失敗。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "該用一個術語的地方，代理卻寫了一整段，因為你從沒教過它專案的詞彙。這是哪種失敗模式？",
+  "options": [
+    "失準——代理迷失",
+    "冗長——沒有共用詞",
+    "程式不能跑——沒測試",
+    "爛泥球——設計差"
+  ],
+  "answer": 1,
+  "explainRight": "冗長。修復方式是在 CONTEXT.md 裡建立共用語言。",
+  "explainWrong": "失準是目標搞錯。這是共用語言的失敗。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "你們已對齊，程式碼看起來也對，但測試失敗，而代理說不出為什麼。這是哪種失敗模式？",
+  "options": [
+    "失準——代理迷失",
+    "冗長——太冗長",
+    "程式不能跑——沒迴圈",
+    "爛泥球——設計差"
+  ],
+  "answer": 2,
+  "explainRight": "程式不能跑。修復方式是緊密的回饋迴圈（TDD、diagnosing-bugs）。",
+  "explainWrong": "程式碼看起來對卻失敗——這是回饋迴圈的問題，不是失準。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0002-the-main-flow.html">主流程：從想法到交付</a>——這些修復如何從想法一路串連到交付的程式碼。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 1 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/failure-modes.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://github.com/mattpocock/skills/blob/main/README.md" target="_blank" rel="noopener">README——「Why These Skills Exist」</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0009 課 — 實作與程式碼審查</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0009 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>實作與程式碼審查</h1>
+  <p class="subtitle">主流程的最後兩步：implement 負責建造，code-review 負責在兩條軸線上評判。</p>
+
+<p class="lead">主流程的最後兩步：<code>/implement</code> 建造，<code>/code-review</code> 評判。它們把迴圈收起來。</p>
+
+<h2><code>/implement</code>——是手，不是腦</h2>
+<p>它建造規格或一組票所描述的工作——驅動 <code>/tdd</code>、型別檢查與完整測試套件，然後交給審查並提交到當前分支。</p>
+
+<div class="callout note">
+<span class="label">它不決定要建什麼</span>
+規格早已談定，接縫也早已議定。<code>implement</code> 執行那份計畫，而不是重新開啟它。思考發生在上游——在 <code>grill-with-docs</code> 與 <code>to-spec</code> 裡。若規格還不存在，先去寫規格。
+</div>
+
+<h3>預先議定的接縫</h3>
+<p><code>implement</code> 運作所依的觀念是<strong>接縫（seam）</strong>——一道穩定的介面，是一道功能接受測試之處，且是<em>在寫任何程式碼之前</em>就（在 <code>to-spec</code> 期間）選定的。它不會在施工中途發明接縫；它用的是已經挑好的那些，並透過 <code>tdd</code> 針對它們寫測試。在預先議定的接縫上施工，正是讓實作保持誠實的關鍵：測試針對的是某個耐久的東西，所以底下的程式碼可以移動，而測試不必跟著移動。</p>
+
+<p>在那個核心之外，它把迴圈維持得很緊——經常型別檢查、邊做邊跑單一測試檔、最後跑一次整套套件——然後以一次審查與一次提交收尾。</p>
+
+<h2><code>/code-review</code>——兩條軸線，絕不混併</h2>
+<p>它審查 <code>HEAD</code> 與你給定的某個固定基準點（commit、分支、tag、merge-base）之間的 diff，沿著<strong>兩條分開的軸線</strong>，以並行子代理執行，好讓兩者不污染彼此的上下文：</p>
+
+<table>
+<thead><tr><th>軸線</th><th>問題</th><th>來源</th></tr></thead>
+<tbody>
+<tr><td><strong>Standards（標準）</strong></td><td>它建得對嗎？它是否遵循這個 repo 寫程式的方式？</td><td><code>CODING_STANDARDS.md</code>／<code>CONTRIBUTING.md</code> + 一份約 12 項 Fowler 壞味道的固定基線（Mysterious Name、Duplicated Code、Feature Envy、Data Clumps……）</td></tr>
+<tr><td><strong>Spec（規格）</strong></td><td>它是對的東西嗎？它是否做了該 issue／規格所要求的？</td><td>原始的 issue 或規格（由 setup 接好的議題追蹤器）</td></tr>
+</tbody>
+</table>
+
+<div class="callout note">
+<span class="label">為什麼絕不混併</span>
+一項變更可能通過其中一條軸線、卻在另一條失敗。單一個混合判決會讓其中一條掩蓋另一條。所以報告把它們放在分開的 <code>## Standards</code> 與 <code>## Spec</code> 標題之下，各自帶摘要。這裡刻意<em>不</em>有個橫跨兩軸的單一贏家。
+</div>
+
+<h3>兩條規則守住 Standards 基線</h3>
+<ul>
+<li>一份有文件紀錄的 repo 標準，永遠優先於 Fowler 基線。</li>
+<li>每一個壞味道都是判斷題，絕不是硬性違規。</li>
+</ul>
+
+<h3>沒有規格 → Spec 軸線跳過</h3>
+<p>Spec 軸線需要某個能找到原始規格的地方——commit 訊息裡的 issue 引用、你傳入的路徑，或是 <code>docs/</code>／<code>specs/</code> 底下的規格。沒有的話，它回報「找不到可用規格」，而不是憑空發明需求。Standards 軸線什麼都不必設定——它永遠帶著內建的 Fowler 壞味道基線。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "若規格還不存在，implement 會怎麼做？",
+  "options": [
+    "邊建邊發明一個",
+    "停下來，你先去寫",
+    "直接跳到 code review",
+    "重啟盤問階段"
+  ],
+  "answer": 1,
+  "explainRight": "implement 是手，不是腦。沒規格就不建——先去寫一個。",
+  "explainWrong": "implement 不決定要建什麼。規格必須先存在。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "code-review 的兩條軸線是沿什麼切分的？",
+  "options": [
+    "前端 vs 後端程式碼",
+    "Standards vs Spec，並行",
+    "測試 vs 實作",
+    "commit 大小 vs 檔案數"
+  ],
+  "answer": 1,
+  "explainRight": "Standards（建得對嗎？）與 Spec（是對的東西嗎？），並行子代理，絕不混併。",
+  "explainWrong": "兩條軸線是 Standards 與 Spec——以並行子代理執行，好讓彼此不污染。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "為什麼兩條軸線絕不混併成一個判決？",
+  "options": [
+    "混併起來比較慢",
+    "一條會掩蓋另一條",
+    "代理無法合併文字",
+    "它們跑在不同模型上"
+  ],
+  "answer": 1,
+  "explainRight": "一項變更可能通過一條、卻在另一條失敗。混併會讓其中一條掩蓋另一條。",
+  "explainWrong": "把軸線混併，會讓其中一條的通過遮蔽另一條的失敗。把它們分開。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "這份 diff 找不到規格。Spec 軸線會怎麼做？",
+  "options": [
+    "發明合理的需求",
+    "回報找不到可用規格",
+    "預設讓審查失敗",
+    "退回只跑 Standards"
+  ],
+  "answer": 1,
+  "explainRight": "它回報「找不到可用規格」，而不是發明需求。",
+  "explainWrong": "發明需求會是虛構。Spec 軸線據實以告並跳過。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0010-tdd.html">TDD：紅—綠，一道切片</a>——賦予代理眼睛的那個回饋迴圈。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 9 課 · <a href="0008-to-tickets-tracer-bullets.html">← to-tickets——曳光彈</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-implement" target="_blank" rel="noopener">implement</a>、<a href="https://aihero.dev/skills-code-review" target="_blank" rel="noopener">code-review</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0002 課 — 主流程：從想法到交付</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0002 課 · 約 5 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>主流程：從想法到交付</h1>
+  <p class="subtitle">大多數工作都走這條骨幹路線。把它背起來。</p>
+
+<p class="lead">大多數工作都走同一條路線。把它背起來——它是整套技能的骨幹。</p>
+
+<div class="flow">grill-with-docs → to-spec → to-tickets → implement → code-review</div>
+
+<h2>逐步走過</h2>
+
+<ol>
+<li><strong><code>/grill-with-docs</code></strong>——一次一個問題地窮追不捨地訪談你，直到想法變銳利。有狀態：邊問邊把談定的用語寫進 <code>CONTEXT.md</code>、把硬決策寫進 ADR。<em>沒有程式庫？</em>改用 <code>/grill-me</code>——同樣的訪談，但無狀態。</li>
+
+<li><strong>原型分支。</strong>若某個問題需要一個能跑的答案（狀態模型、你必須親眼看到的 UI），就繞個路：<code>/handoff</code> 出去 → 開全新 session → <code>/prototype</code> → <code>/handoff</code> 回來 → 在原本的執行緒裡引用結果。</li>
+
+<li><strong>規模分支。</strong>
+<ul>
+<li><strong>多 session</strong> → <code>/to-spec</code>（把執行緒綜合成一份規格——不重新訪談），再 <code>/to-tickets</code>（拆成曳光彈票，每張宣告自己的<strong>阻塞邊</strong>），再逐張 <code>/implement</code>。</li>
+<li><strong>單一 session</strong> → 就在這裡直接 <code>/implement</code>。</li>
+</ul>
+無論哪條，<code>/implement</code> 內部都會驅動 <code>/tdd</code>（一次一道紅—綠切片），然後在提交前跑 <code>/code-review</code>（Standards + Spec，並行子代理）。</li>
+</ol>
+
+<div class="callout note">
+<span class="label">單一紀律</span>
+把步驟 1–3 留在<strong>同一個未中斷的上下文視窗</strong>裡。在 <code>/to-tickets</code> 之前不要壓縮、也不要清空——盤問、規格、票必須建立在同一份思考上。之後每一張 <code>/implement</code> 都從<strong>全新</strong>的視窗開始，只讀自己的那張票。
+</div>
+
+<h2>智慧區上限</h2>
+<p>模型還能銳利推理的那個視窗，大約是 12 萬 token——稱為<strong>智慧區（smart zone）</strong>。若某次 session 在 <code>/to-tickets</code> 之前就逼近它，別在衰退的推理上硬撐：<code>/handoff</code>，在全新的執行緒裡繼續。</p>
+
+<p>整個流程就是這樣。入口坡道（triage、wayfinder）與獨立工具（prototype、research）掛在它上面——之後的課會講。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "主流程的正確順序是什麼？",
+  "options": [
+    "to-spec、grill、implement、review",
+    "grill、to-spec、to-tickets、implement",
+    "to-tickets、implement、grill、to-spec",
+    "implement、review、grill、to-tickets"
+  ],
+  "answer": 1,
+  "explainRight": "先 grill（對齊），再 spec，再 tickets，再 implement。review 收尾。",
+  "explainWrong": "grill 在最前面——你要先對齊才寫規格。再試一次。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "在主流程中，你什麼時候可以清空或壓縮上下文視窗？",
+  "options": [
+    "grill 之後、to-spec 之前",
+    "grill 到一半，省點 token",
+    "只在 to-tickets 之後，不在它之前",
+    "每個步驟前都清，永遠全新"
+  ],
+  "answer": 2,
+  "explainRight": "步驟 1–3 留在同一個視窗。之後每張 implement 再從票開全新視窗。",
+  "explainWrong": "中途壓縮會打斷那份共有的思考。在 to-tickets 之前，維持單一視窗。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "你有程式庫，而且希望盤問過程留下書面紀錄。該用哪個技能？",
+  "options": [
+    "用 grill-me，它是無狀態",
+    "用 grill-with-docs，它會記錄",
+    "用 to-spec，它寫規格",
+    "用 implement，它寫程式"
+  ],
+  "answer": 1,
+  "explainRight": "grill-with-docs 邊盤問邊寫 CONTEXT.md 與 ADR。grill-me 是無狀態的。",
+  "explainWrong": "grill-me 無狀態——不產出成品。grill-with-docs 才是有狀態的那個兄弟。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "某次 session 在你跑 to-tickets 之前就逼近智慧區。你該怎麼做？",
+  "options": [
+    "硬撐下去，繼續就好",
+    "中途壓縮來騰出空間",
+    "handoff，之後在全新視窗續",
+    "跳過 to-tickets，直接 implement"
+  ],
+  "answer": 2,
+  "explainRight": "handoff 分叉到全新 session。別在衰退的推理上硬撐，也別中途壓縮。",
+  "explainWrong": "硬撐會讓推理衰退。handoff 在跨斷點之間保全執行緒。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0003-the-mental-map.html">心智地圖</a>——規格驅動坐在哪裡、第一個入口坡道。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 2 課 · <a href="0001-the-four-failures.html">← 四種失敗模式</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/spec-driven-workflow.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/SKILL.md" target="_blank" rel="noopener">ask-matt SKILL.md</a>（權威的路由器）。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0018 課 — 後設技能：teach 與 writing-great-skills</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0018 課 · 約 7 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>後設技能：teach 與 writing-great-skills</h1>
+  <p class="subtitle">teach 與 writing-great-skills——那個遞迴層。</p>
+
+<p class="lead">兩個生產力技能，它們坐在主流程<em>之外</em>，對技能集本身、或對你的學習來運作。它們是那個遞迴層。</p>
+
+<h2><code>/teach</code>——跨多次 session 學習</h2>
+<p>就是這門課。它把當前目錄變成一個常設的教學工作區，並跨許多次 session 教你一個主題——設計出簡短、漂亮、互動的課，繫於你<em>為何</em>想學。</p>
+
+<div class="callout note">
+<span class="label">參數知識不可信</span>
+<code>teach</code> 不從模型自己的記憶裡教。在它能教之前，它會收集高信任資源，並把每一項主張都奠基於一則引用。本工作區的 <code>RESOURCES.md</code> 正是那個機制。
+</div>
+
+<h3>有狀態——session 會累積</h3>
+<p>工作區記得你學到哪裡，所以每次 session 都從上次離開之處接續，而非從零開始。它寫下：</p>
+<ul>
+<li><code>MISSION.md</code>——你為何而學（奠定一切；若為空，teach 的第一個任務就是訪談你，直到它不空）。</li>
+<li><code>RESOURCES.md</code>——審核過的高信任來源。</li>
+<li><code>./lessons/*.html</code>——編號、各自獨立的課。</li>
+<li><code>./reference/*.html</code>——壓縮後的小抄、詞彙表。</li>
+<li><code>./learning-records/*.md</code>——你學到了什麼，ADR 風格，用來判斷下一步教什麼。</li>
+<li><code>./assets/*</code>——可重複使用的元件（首先是共用的樣式表）。</li>
+</ul>
+
+<h3>任務與近側發展區</h3>
+<p>每一堂課都掛在<strong>任務</strong>之下。從任務與你的學習紀錄，teach 算出你的<strong>近側發展區（zone of proximal development）</strong>——下一堂課該挑戰你<em>恰到好處</em>，不多不少。</p>
+
+<h3>要的是儲存強度，不是流利度</h3>
+<p>用來思考的那個詞是<strong>儲存強度（storage strength）</strong>——長期記憶——而不是<strong>流利度（fluency）</strong>，那種當下的回憶，感覺像精通、其實不是。teach 刻意透過「合意難度」來建立前者：提取練習、間隔、交錯。知識先教（此處難度是敵人），技能再透過緊密的回饋迴圈來鍛鍊（此處難度是工具）。</p>
+
+<h2><code>/writing-great-skills</code>——撰寫技能的參考</h2>
+<p>你撰寫與編輯技能時所依的參考——讓一個技能變得<em>可預測</em>的那套共用詞彙與原則。</p>
+
+<h3>可預測性是根本美德</h3>
+<p>一個技能的任務，是從一個隨機系統裡擰出確定性，所以目標<em>不是</em>每次跑出一樣的輸出，而是一樣的<em>過程</em>。可預測性是根本美德，每一個設計選擇都拿它來評判——而不是拿這個技能讀起來多聰明、多完整、多詳盡來評判。</p>
+
+<h3>它所依的核心觀念：認知負荷</h3>
+<p>每個技能花的是兩種負荷之一（見<a href="0017-ask-matt.html">第 0017 課</a>）：模型觸發花上下文負荷，但會自行觸發；使用者觸發不花上下文負荷，但你必須記得它存在——那就是認知負荷。這些技能大多是使用者觸發的，所以認知負荷是整套系統被設計來管控的壓力，而它堆積起來時的解藥是一個路由器技能（<code>/ask-matt</code>）。</p>
+
+<h3>其他幾根操縱桿</h3>
+<ul>
+<li><strong>主導詞（leading words）</strong>——已存在於模型預訓練裡的精簡概念（<em>tight</em>、<em>red</em>、<em>tracer bullet</em>），代理在跑技能時拿來思考。用最少的 token 錨定執行。</li>
+<li><strong>資訊層級</strong>——從「技能內步驟 → 技能內參考 → 一個<strong>上下文指標</strong>背後的外部參考」這道階梯。<strong>漸進揭露（progressive disclosure）</strong>就是沿這道階梯往下走的動作，好讓頂層保持可讀。</li>
+<li><strong>修剪</strong>——單一真實來源、相關性，以及逐句套用的「no-op 測試」，對抗<strong>沉積（sediment）</strong>與<strong>蔓延（sprawl）</strong>。</li>
+<li><strong>失敗模式</strong>——<em>過早完成</em>、<em>重複</em>、<em>沉積</em>、<em>蔓延</em>、<em>no-op</em>——用來診斷一個行為異常的技能。</li>
+</ul>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "teach 把什麼視為不可信？",
+  "options": [
+    "使用者的既有知識",
+    "模型的參數記憶",
+    "工作區的 RESOURCES.md",
+    "已寫好的課"
+  ],
+  "answer": 1,
+  "explainRight": "參數知識不可信。每一項主張都必須奠基於帶引用的高信任來源。",
+  "explainWrong": "teach 先收集高信任資源；模型自己的記憶不被信任。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "teach 建立的是什麼——流利度，還是儲存強度？",
+  "options": [
+    "流利度，當下的回憶",
+    "儲存強度，長期的",
+    "兩者，權重相等",
+    "都不是，它只是參考"
+  ],
+  "answer": 1,
+  "explainRight": "儲存強度——長期記憶——透過合意難度。流利度感覺像精通，其實不是。",
+  "explainWrong": "流利度感覺像精通，其實不是。儲存強度才是真正的目標。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "依 writing-great-skills，一個技能的根本美德是什麼？",
+  "options": [
+    "完整性與涵蓋面",
+    "提示詞的聰明度",
+    "過程的可預測性",
+    "SKILL.md 的簡短"
+  ],
+  "answer": 2,
+  "explainRight": "每次跑出同樣的過程，而非同樣的輸出。可預測性優於聰明度或完整性來評判。",
+  "explainWrong": "可預測性——每次同樣的過程——才是根本美德。不是聰明度或完整性。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "多數 Matt Pocock 技能花的是哪種負荷，其堆積的解藥是什麼？",
+  "options": [
+    "上下文負荷，解藥是 compact",
+    "認知負荷，解藥是路由器",
+    "token 負荷，解藥是修剪",
+    "記憶體負荷，解藥是 handoff"
+  ],
+  "answer": 1,
+  "explainRight": "使用者觸發＝認知負荷。一個路由器（ask-matt）透過把它們索引化解除堆積。",
+  "explainWrong": "大多是使用者觸發＝認知負荷。堆積起來時，一個路由器技能是解藥。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0019-the-full-routing-drill.html">總整路由演練</a>——五個情境，把每一個路由到對的技能（依序）。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 18 課 · <a href="0017-ask-matt.html">← Ask Matt 與路由器</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-teach" target="_blank" rel="noopener">teach 文件</a>、<a href="https://aihero.dev/skills-writing-great-skills" target="_blank" rel="noopener">writing-great-skills 文件</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

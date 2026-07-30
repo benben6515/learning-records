@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0017 課 — Ask Matt 與路由器</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0017 課 · 約 5 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>Ask Matt 與路由器</h1>
+  <p class="subtitle">使用者觸發技能之上的那個路由器——認知負荷的解藥。</p>
+
+<p class="lead">你記不住每個技能，那就問。<code>/ask-matt</code> 是 repo 裡「使用者觸發技能」之上的路由器——它畫出每個技能以及彼此的關係，所以你不必把全部塞在腦子裡。</p>
+
+<h2>為什麼要有路由器</h2>
+<p>這是一個<strong>認知負荷</strong>的決定，出自 <code>writing-great-skills</code> 參考。每個技能花的是兩種負荷之一：</p>
+<table>
+<thead><tr><th>模式</th><th>代價</th><th>觸發</th></tr></thead>
+<tbody>
+<tr><td><strong>模型觸發（model-invoked）</strong></td><td>每一回合都在視窗裡保有一段描述——<em>上下文負荷</em></td><td>任務符合時，自行觸發</td></tr>
+<tr><td><strong>使用者觸發（user-invoked）</strong></td><td>剝掉那段描述；你必須記得它存在——<em>認知負荷</em></td><td>只有在你打字時</td></tr>
+</tbody>
+</table>
+<p>多數 Matt Pocock 技能都是<em>使用者觸發</em>的，這正是為什麼認知負荷是整套系統被設計來管控的那股壓力。當使用者觸發的技能多到你腦子裝不下，解藥就是一個<strong>路由器技能</strong>，把其餘技能命名出來、並標明何時該抓哪個。</p>
+
+<div class="callout note">
+<span class="label">ask-matt 就是那個路由器</span>
+它正是使用者觸發技能堆積起來的認知負荷的直接解藥。當你記不住哪個技能合用，打 <code>/ask-matt</code>，它把你路由過整套技能。
+</div>
+
+<h2>ask-matt 知道什麼</h2>
+<p>這張地圖（本課程各課會逐一講到）：</p>
+<ul>
+<li><strong>主流程</strong>——想法→交付，含原型分支與規模分支。</li>
+<li><strong>入口坡道</strong>——triage、diagnosing-bugs、wayfinder。</li>
+<li><strong>程式庫健康</strong>——improve-codebase-architecture（巡查）+ codebase-design（基準）。</li>
+<li><strong>詞彙層</strong>——domain-modeling（領域用語）+ codebase-design（模組形狀），在底下運行。</li>
+<li><strong>獨立工具</strong>——grill-me、prototype、research、teach、writing-great-skills、resolving-merge-conflicts。</li>
+<li><strong>跨 session</strong>——handoff（分叉）vs <code>/compact</code>（延續）。</li>
+</ul>
+
+<h2>讓路由器保持誠實的那條規則</h2>
+<p>出自 repo 的 <code>CLAUDE.md</code>：每當某個技能被新增、改名、移除，或它融入流程的方式改變，<code>ask-matt</code> 的 <code>SKILL.md</code> 就必須被重新讀過並更新，好讓地圖保持準確。<em>一個它從不提及的新技能，或一個它仍路由到的過時技能，就是一個會說謊的路由器。</em>這正是讓路由器隨時間仍可信的維護紀律。</p>
+
+<h2>什麼時候該抓它</h2>
+<p>每當你不確定哪個技能或流程適合此刻。打 <code>/ask-matt</code>；它把你路由過去。它不是鏈上的一步——它是你記不住地圖時去查的那份索引。</p>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "ask-matt 為什麼以一個技能存在？",
+  "options": [
+    "為了取代其他技能",
+    "為了解除認知負荷",
+    "為了平行跑程式碼",
+    "為了幫你寫規格"
+  ],
+  "answer": 1,
+  "explainRight": "使用者觸發的技能會堆積認知負荷。路由器把它們命名出來，並標明何時該抓哪個。",
+  "explainWrong": "它是認知負荷的解藥——你不可能把所有使用者觸發的技能都塞在腦子裡。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "當你記不住哪個技能合用時，你要：",
+  "options": [
+    "挑一個碰運氣",
+    "打 ask-matt 被路由",
+    "依序跑每個技能",
+    "跳過技能，自己寫"
+  ],
+  "answer": 1,
+  "explainRight": "ask-matt 是路由器。打它，它就把你的情況對到對的技能。",
+  "explainWrong": "瞎猜會白費力氣。ask-matt 是你記不住地圖時去查的那份索引。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "某個技能被改名時，ask-matt 會怎麼樣？",
+  "options": [
+    "沒事，它自動更新",
+    "它的 SKILL.md 必須重新同步",
+    "它被刪掉再重建",
+    "它完全停止路由"
+  ],
+  "answer": 1,
+  "explainRight": "重新讀過並更新 ask-matt 的 SKILL.md，好讓地圖保持準確。會說謊的路由器毫無用處。",
+  "explainWrong": "一條過時的路由，就是一個會說謊的路由器。技能變動時，地圖必須重新同步。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "路由器解除的是哪種負荷？",
+  "options": [
+    "模型上的上下文負荷",
+    "使用者上的認知負荷",
+    "系統上的 token 負荷",
+    "磁碟上的記憶體負荷"
+  ],
+  "answer": 1,
+  "explainRight": "使用者觸發的技能花的是認知負荷——你必須記得它們。路由器握著那份索引。",
+  "explainWrong": "上下文負荷是模型觸發的代價。路由器解除的是使用者上的認知負荷。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0018-meta-skills.html">後設技能</a>——teach 與 writing-great-skills，那個對技能集本身、或對你學習本身運作的遞迴層。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 17 課 · <a href="0016-setup-and-triage.html">← 設定與分級</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-ask-matt" target="_blank" rel="noopener">ask-matt 文件</a>、<a href="https://aihero.dev/skills-writing-great-skills" target="_blank" rel="noopener">writing-great-skills</a>（認知負荷）。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

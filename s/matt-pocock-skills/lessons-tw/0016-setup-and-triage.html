@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 0016 課 — 設定與分級</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">第 0016 課 · 約 6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
+  <h1>設定與分級</h1>
+  <p class="subtitle">跑一次的前置條件，以及處理原始議題的入口坡道。</p>
+
+<p class="lead">兩個技能坐在議題追蹤器的邊界上：一個<em>設定</em>它，一個<em>處理</em>掉進它裡面的東西。</p>
+
+<h2><code>/setup-matt-pocock-skills</code>——跑一次的前置條件</h2>
+<p>在每個 repo <strong>跑一次，而且是在任何其他工程技能之前</strong>。它寫的是設定檔——不硬編行為。三個決定，各有一個你能一個字接受的建議答案：</p>
+<ul>
+<li><strong>議題追蹤器</strong>——議題住哪裡（GitHub、GitLab、本地 <code>.scratch/</code> markdown，或其他）。它會提議符合你 <code>git remote</code> 的那一個。</li>
+<li><strong>分級標籤</strong>——只有裝了 <code>triage</code> 才問。保留預設值（<code>needs-triage</code>、<code>needs-info</code>、<code>ready-for-agent</code>、<code>ready-for-human</code>、<code>wontfix</code>），除非你的追蹤器已用別的字串。</li>
+<li><strong>領域文件</strong>——單一情境（根目錄一份 <code>CONTEXT.md</code> + <code>docs/adr/</code>）幾乎適用每個 repo；只有當它嗅到 monorepo 訊號時才用多情境。</li>
+</ul>
+<p>產出：<code>docs/agents/</code> 底下的檔案（<code>issue-tracker.md</code>、<code>domain.md</code>，以及裝了 triage 時的 <code>triage-labels.md</code>）+ 你的 <code>CLAUDE.md</code> 或 <code>AGENTS.md</code> 裡一段 <code>## Agent skills</code> 區塊。若 <code>triage</code>／<code>to-spec</code>／<code>to-tickets</code> 開始<em>猜</em>你的議題住哪，就是你跳過了這一步。</p>
+
+<h2><code>/triage</code>——處理原始進來的議題</h2>
+<p>主流程的一個<strong>入口坡道</strong>。當 bug 回報與功能請求堆積如山，triage 把它們推過一套小型的角色狀態機，並留下一份代理可直接施工的簡報。</p>
+
+<h3>每項兩個角色，絕不零個或兩個以上</h3>
+<p>每個分級項目都帶恰好一個<strong>分類</strong>角色（<code>bug</code>／<code>enhancement</code>）和一個<strong>狀態</strong>角色（<code>needs-triage</code>、<code>needs-info</code>、<code>ready-for-agent</code>、<code>ready-for-human</code>、<code>wontfix</code>）。它<em>建議並等待</em>——告訴你它的判斷與理由，只在你指示下才動作。</p>
+
+<h3>先驗證，再寫簡報</h3>
+<p>這一步把 triage 與隨手貼標籤區分開來。它會<strong>照回報者的步驟重現 bug</strong>，或<strong> checkout 那個 PR 並跑測試</strong>。以一條程式碼路徑確認 → 強簡報；失敗或細節不足 → <code>needs-info</code>。它還會跑兩道程式庫檢查：<strong>冗餘</strong>（已實作 → <code>wontfix</code>）與<strong>先前已否決</strong>（<code>.out-of-scope/</code> 早已說不）。</p>
+
+<h3>一個 PR 就是一個附帶程式碼的議題</h3>
+<p>當追蹤器把外部 PR 當作請求介面，triage 會把它們推過<em>同一套</em>機器——狀態只是改對著 diff 來讀。<code>ready-for-agent</code>＝附上了一份簡報，代理接下下一步；<code>ready-for-human</code>＝可以合併了。</p>
+
+<div class="callout note">
+<span class="label">什麼時候不要 triage</span>
+triage 只用在<strong>不是你建立的</strong>議題——原始的 bug 回報、進來的功能請求。<code>/to-tickets</code> 產出的票<em>早已是代理可直接施工的</em>，所以別 triage 它們。分級你自己的票是白做工。
+</div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "你什麼時候該跑 /setup-matt-pocock-skills？",
+  "options": [
+    "每次 session、每個技能前",
+    "每個 repo 一次，在其他技能之前",
+    "只有 triage 壞掉時",
+    "每次 git pull 之後"
+  ],
+  "answer": 1,
+  "explainRight": "它是跑一次的設定。日常微調只是去編輯 docs/agents/*.md。",
+  "explainWrong": "它是每個 repo 一次的啟動，不是每次 session 的步驟。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "你該對哪些議題跑 /triage？",
+  "options": [
+    "你透過 to-tickets 建立的議題",
+    "只有帶 wontfix 標籤的議題",
+    "不是你建立的原始議題",
+    "每個議題、每次、永遠"
+  ],
+  "answer": 2,
+  "explainRight": "triage 是給原始進來的議題。to-tickets 的產出早已是代理可直接施工的。",
+  "explainWrong": "to-tickets 的產出早已是代理可直接施工的——triage 它們是白做工。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "在把任何東西升級成 ready-for-agent 之前，triage 必須：",
+  "options": [
+    "向你要更多標籤",
+    "先驗證主張",
+    "直接跳到 wontfix",
+    "改寫議題標題"
+  ],
+  "answer": 1,
+  "explainRight": "先重現 bug 或跑 PR 測試。驗證造就強簡報。",
+  "explainWrong": "triage 絕不盲目貼標籤。驗證是把它與隨手貼標籤區分開的那一步。"
+}
+</script></div>
+
+<div class="quiz"><script type="application/json">
+{
+  "question": "一個分級項目最終會帶什麼角色？",
+  "options": [
+    "恰好一個分類和一個狀態",
+    "兩個分類、沒有狀態",
+    "它需要多少標籤就多少",
+    "一個狀態、沒有分類"
+  ],
+  "answer": 0,
+  "explainRight": "恰好一個分類（bug／enhancement）和一個狀態。絕不零個、絕不兩個。",
+  "explainWrong": "每個項目都恰好各拿一個——絕不零個、絕不衝突的狀態。"
+}
+</script></div>
+
+  <div class="callout note">
+    <span class="label">向老師提問</span>
+    卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">下一課 → <a href="0017-ask-matt.html">Ask Matt 與路由器</a>——整套技能之上的那個路由器——認知負荷的解藥。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》第 16 課 · <a href="0015-prototype-and-research.html">← 原型與研究</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference/skills-catalog.html">參考</a></p>
+    <p><strong>主要來源：</strong><a href="https://aihero.dev/skills-setup-matt-pocock-skills" target="_blank" rel="noopener">setup-matt-pocock-skills</a>、<a href="https://aihero.dev/skills-triage" target="_blank" rel="noopener">triage</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
