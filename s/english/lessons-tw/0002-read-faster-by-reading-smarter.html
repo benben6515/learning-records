@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 02 課 — 讀得更快，靠的是讀得更聰明</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+<style>
+  /* drill-specific styles (not reused elsewhere) */
+  .drill { border:1px solid var(--rule); border-radius:10px; padding:1.1rem 1.3rem; background:var(--surface); margin:1.8rem 0; }
+  .drill .row { display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; }
+  .drill .stat { font-family:var(--sans); line-height:1.1; }
+  .drill .stat .big { display:block; font-size:1.7rem; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .drill .stat .cap { font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+  .drill button.go { font-family:var(--sans); font-size:.95rem; cursor:pointer; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:.6rem 1.1rem; transition:filter .12s; }
+  .drill button.go:hover { filter:brightness(1.08); }
+  .passage { font-size:1.08rem; line-height:1.85; }
+  #rresults { display:none; margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--rule); }
+  #rresults .label { font-family:var(--sans); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; display:block; margin-bottom:.5rem; }
+  .wpm-row { display:flex; gap:.7rem; margin:.6rem 0 0; flex-wrap:wrap; }
+  .wpm-chip { background:var(--accent-soft); border:1px solid var(--accent-border); border-radius:8px; padding:.5rem .9rem; text-align:center; min-width:5rem; }
+  .wpm-chip .n { display:block; font-family:var(--sans); font-size:1.5rem; font-weight:700; color:var(--accent); }
+  .wpm-chip .l { font-family:var(--sans); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  #rquiz { display:none; margin-top:2rem; }
+</style>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 02 課 · 閱讀流暢度</p>
+<h1>讀得更快，靠的是讀得更聰明</h1>
+<p class="badges">
+  <span class="badge">約 12 分鐘</span>
+  <span class="badge">練習＋閱讀</span>
+  <span class="badge">獨自 · 免費</span>
+</p>
+
+<p class="lead">你每天讀開發文件，也感受過那個問題：你讀得慢。好消息是——這跟你的眼睛無關，而且可以改善。你告訴過我，你讀的時候會<strong>翻譯成中文</strong>。這讓每一句都走了<em>兩趟</em>：英文進來 → 中文 → 意義。難怪慢。而且還有額外好處：同一個習慣，正是卡住你<strong>口說</strong>的元兇。在這裡修好它，你的口說也會跟著變快。</p>
+
+<h2>你為什麼慢（真正的原因）</h2>
+<ol>
+  <li><strong>在「解碼」，不是在「認字」。</strong>每個你只有半熟的字都是減速坡——大腦把它拼出來，而不是立刻認得。研究者 Paul Nation 發現，一頁當中你大約要認得 <strong>98% 的字</strong>，才能不查字典而舒適地閱讀<a href="https://www.victoria.ac.nz/__data/assets/pdf_file/0018/1626120/2006-How-large-a-vocab.pdf">（Nation, 2006）</a>。所以慢，多半是<em>字彙</em>問題，不是速度問題。</li>
+  <li><strong>逐字翻譯。</strong>每句兩趟。流暢的讀者會跳過翻譯。</li>
+  <li><strong>一次讀一個字。</strong>你的眼睛每次停留可以抓 2–4 個字。如果你每個字都停，閱讀速度會比應有的慢上好幾倍。</li>
+</ol>
+
+<h2>解法：三個習慣</h2>
+<ul>
+  <li><strong>以意義群組（chunk）閱讀</strong>——讓眼睛落在片語群組上（「when you type / a web address」），而不是單字。</li>
+  <li><strong>容忍空白</strong>——不要每個生字都停。從上下文猜，繼續往前。</li>
+  <li><strong>建立即認字彙（sight vocabulary）</strong>——你瞬間認得的字越多，讀得越快。</li>
+</ul>
+
+<div class="callout">
+  <span class="label">保護理解力的兩條規則</span>
+  <strong>3× 規則：</strong>只有當一個字出現 3 次以上、<em>或</em>擋住整句意思時才查。否則繼續往前。<br>
+  <strong>讀適合的難度：</strong>如果你一直查字，表示文章太難——換簡單一點的。輕鬆的閱讀培養速度；艱難的閱讀只培養挫折。
+</div>
+
+<div class="task">
+  <span class="label">現在就做練習 —— 重複閱讀（Repeated Reading）</span>
+  <p style="margin:0 0 .8rem">下面是一段關於「網頁如何載入」的短文——這個主題你已經懂，所以你可以把注意力放在<em>怎麼讀</em>，而不是<em>讀什麼</em>。<strong>讀三次</strong>，每次計時。試著<strong>不要翻譯</strong>——直接抓意思。</p>
+  <p class="small muted" style="margin:0 0 .8rem">這段文章刻意保留<strong>英文</strong>：你練習的正是「讀英文」這件事，速度是以英文字數計算（每分鐘字數 wpm）。</p>
+
+  <div class="drill">
+    <div class="row" style="margin-bottom:.8rem">
+      <div class="stat"><span class="big" id="wordcount">—</span><span class="cap">字數</span></div>
+      <div class="stat"><span class="big" id="rtimer">0:00</span><span class="cap">這一次</span></div>
+      <button class="go" id="rgo">開始第 1 次</button>
+    </div>
+    <p class="small muted" id="rstatus" style="margin:0 0 .6rem">按<strong>開始</strong>，用你平常的速度讀完整段，讀完再按按鈕。</p>
+
+    <div class="passage" id="passage">
+      <p>When you type a web address into your browser and press enter, a lot happens in just one second. First, your browser sends a request to a server. A server is simply another computer, somewhere in the world, that stores the files for the website.</p>
+      <p>While it waits, the browser receives the page piece by piece. The first piece is the structure — the bones of the page, written in HTML. Once the browser understands the structure, it asks for the styles, the images, and the scripts that make the page look right and feel alive.</p>
+      <p>This is why a page often appears in stages: first you see plain text, then the layout snaps into place, and finally the colors, fonts, and buttons arrive. Each step depends on the one before it. If one file is slow, everything after it must wait.</p>
+      <p>Most of this is invisible. You simply watch the page fill in, click a link, and move on — never thinking about the quiet conversation between your browser and a distant machine.</p>
+    </div>
+
+    <div id="rresults"></div>
+  </div>
+</div>
+
+<div id="rquiz">
+  <h2>確認你讀懂了</h2>
+  <p class="small muted">如果沒讀懂，速度毫無意義。結束前回答這三題。</p>
+
+  <div class="quiz" data-right="正確。檔案存在 server（伺服器）上——一台遠端的電腦。" data-wrong="不盡然。檔案存在 server（伺服器，一台遠端電腦）上。見標出的答案。">
+    <q>網站的檔案存在哪裡？</q>
+    <div class="options">
+      <button class="opt">伺服器（server）上</button>
+      <button class="opt">瀏覽器裡</button>
+      <button class="opt">你的螢幕上</button>
+      <button class="opt">網路線裡</button>
+    </div>
+    <p class="feedback"></p>
+  </div>
+
+  <div class="quiz" data-right="正確。結構（HTML）比樣式與腳本先到。" data-wrong="不盡然——見標出的答案。結構最先到；樣式與腳本在後。">
+    <q>瀏覽器最先收到什麼？</q>
+    <div class="options">
+      <button class="opt">結構</button>
+      <button class="opt">樣式</button>
+      <button class="opt">腳本</button>
+      <button class="opt">圖片</button>
+    </div>
+    <p class="feedback"></p>
+  </div>
+
+  <div class="quiz" data-right="正確。每一步都依賴前一步——這正是網頁分階段載入的原因。" data-wrong="不盡然——見標出的答案。每一步都依賴它前一步。">
+    <q>每一步都依賴它的……</q>
+    <div class="options">
+      <button class="opt">前一步</button>
+      <button class="opt">後一步</button>
+      <button class="opt">旁邊那步</button>
+      <button class="opt">外面的步驟</button>
+    </div>
+    <p class="feedback"></p>
+  </div>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課主要來源</strong><br>
+    <a href="https://www.victoria.ac.nz/__data/assets/pdf_file/0018/1626120/2006-How-large-a-vocab.pdf">Nation, I. S. P. (2006) — "How Large a Vocabulary Is Needed for Reading and Listening?"</a> 98% 規則背後的經典研究。瀏覽摘要與結論即可。
+  </div>
+
+  <p><strong>放在手邊：</strong><a href="../reference-tw/reading-fluency.html">閱讀流暢度參考卡</a>把這課濃縮成快速複習。</p>
+
+  <p><strong>接下來：</strong></p>
+  <ul>
+    <li><strong>第 03 課 —— 寫作</strong>：你的另一個弱點。一個每日「自由寫作衝刺」，寫完可以傳給我即時回饋（你所有技能裡最緊密的回饋迴圈）。</li>
+    <li><strong>第 04 課 —— 連音（connected speech）</strong>：從你的跟讀回饋排進來的——為什麼字會黏在一起模糊掉，以及如何訓練耳朵和嘴巴。</li>
+  </ul>
+  <p>但首先，持續每天做<a href="0001-shadowing-your-daily-speaking-workout.html">第 01 課（跟讀）</a>——它直接訓練你覺得最難的連音。</p>
+
+  <p class="small muted"><strong>你的速度有在幾次之間躍進嗎？你有做到不翻譯嗎？</strong>把你的三個 wpm 數字告訴我——我會把它們記為你的基準。任何不清楚的也儘管問。</p>
+</div>
+
+</article>
+
+<script>
+/* drill: timed repeated reading across 3 passes, wpm per pass（繁中 UI）*/
+(function () {
+  var passage = document.getElementById("passage");
+  if (!passage) return;
+  var words = passage.textContent.trim().split(/\s+/).filter(Boolean).length;
+  var wcEl = document.getElementById("wordcount");
+  if (wcEl) wcEl.textContent = words;
+
+  var status = document.getElementById("rstatus");
+  var timerEl = document.getElementById("rtimer");
+  var btn = document.getElementById("rgo");
+  var results = document.getElementById("rresults");
+  var quizWrap = document.getElementById("rquiz");
+
+  var passes = [];
+  var idx = 0;
+  var startT = 0;
+  var interval = null;
+
+  function fmt(ms) {
+    var s = Math.round(ms / 1000);
+    var m = Math.floor(s / 60);
+    var ss = s % 60;
+    return m + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+  function startPass() {
+    startT = Date.now();
+    btn.textContent = "完成 —— 我讀完第 " + (idx + 1) + " 次";
+    status.innerHTML = "正在閱讀第 <strong>" + (idx + 1) + " 次（共 3 次）</strong>……用你平常的速度讀。盡量不要翻譯。";
+    interval = setInterval(function () { timerEl.textContent = fmt(Date.now() - startT); }, 200);
+  }
+  function finish() {
+    btn.style.display = "none";
+    status.textContent = "";
+    var p1 = passes[0].wpm, p3 = passes[2].wpm;
+    var imp = Math.round((p3 - p1) / p1 * 100);
+    var h = '<span class="label">你的結果</span><div class="wpm-row">';
+    passes.forEach(function (p, i) {
+      h += '<div class="wpm-chip"><span class="n">' + p.wpm + '</span><span class="l">第 ' + (i + 1) + ' 次 wpm</span></div>';
+    });
+    h += "</div>";
+    var trend = imp > 2
+      ? "你第 3 次比第 1 次快 <strong>" + imp + "%</strong>。"
+      : "你的速度持平——第 1 次對你來說已經很順了。";
+    h += "<p style=\"margin:.7rem 0 0\">" + trend + "那樣的躍進，就是<em>自動化（automaticity）</em>的感覺：少一點解碼、多一點直接認得。每週挑一篇短文做幾次這個練習，幾個月後你的<em>第一次</em>速度就會爬升。</p>";
+    h += '<button class="opt" id="rreset" style="margin-top:.7rem">再練一次</button>';
+    results.innerHTML = h;
+    results.style.display = "block";
+    if (quizWrap) quizWrap.style.display = "block";
+    var reset = document.getElementById("rreset");
+    if (reset) reset.addEventListener("click", resetDrill);
+    results.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function endPass() {
+    clearInterval(interval); interval = null;
+    var elapsed = Date.now() - startT;
+    var wpm = Math.max(1, Math.round(words / (elapsed / 60000)));
+    passes.push({ ms: elapsed, wpm: wpm });
+    idx++;
+    timerEl.textContent = fmt(elapsed);
+    if (idx < 3) {
+      status.innerHTML = "第 " + idx + " 次完成：<strong>" + wpm + " wpm</strong>。深呼吸，再把同一篇讀一次——會更快。";
+      btn.textContent = "開始第 " + (idx + 1) + " 次";
+    } else {
+      finish();
+    }
+  }
+  function resetDrill() {
+    passes = []; idx = 0; timerEl.textContent = "0:00";
+    status.innerHTML = '按<strong>開始</strong>，用你平常的速度讀完整段，讀完再按按鈕。';
+    results.style.display = "none"; results.innerHTML = "";
+    if (quizWrap) quizWrap.style.display = "none";
+    btn.style.display = ""; btn.textContent = "開始第 1 次";
+  }
+  btn.addEventListener("click", function () { if (interval) endPass(); else startPass(); });
+})();
+</script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
