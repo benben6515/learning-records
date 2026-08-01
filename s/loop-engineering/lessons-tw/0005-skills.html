@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005 — Skills：把 intent 寫在外面</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0005 · ~6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>Skills：把 intent 寫在外面</h1>
+  <p class="subtitle">付清 intent debt——把慣例、build、與「我們不這樣做」寫一次，每次讀。</p>
+
+  <p class="lead">前三堂課講了 loop 的零件與兩根支柱。這堂課回到第 3 個 primitive——<strong>skills</strong>。源文件稱它為「<strong>意圖的持久記憶</strong>」。上一課的 state 記的是「做到哪」（進度）；skills 記的是「<strong>要什麼、怎麼做、什麼不做</strong>」（意圖）。沒有它，loop 每次都從零重新推導——這就是 <strong>intent debt（意圖債）</strong>。</p>
+
+  <div class="principle">每次 session 都冷啟動；你沒寫下來的意圖，會被「自信的猜測」填滿。Skill 是還債的單位。</div>
+
+  <h2>問題：意圖債是怎麼欠下的</h2>
+  <p>每個 session 都<strong>冷啟動</strong>。你心裡有、卻沒寫下來的東西——「我們用 pnpm 不用 npm」「這個欄位不能是 null」「別動那個檔，因為上次踩過雷」——agent 一概不知道。它不會停下來問，而是用<strong>自信的猜測</strong>把空缺填滿。猜對是運氣，猜錯你就要收拾。每次 run 都重新欠一次這筆債。</p>
+
+  <h2>解法：一個 SKILL.md，寫一次、每次讀</h2>
+  <p>Skill 通常是一個 <code>SKILL.md</code>（可附腳本與參考），封裝：</p>
+  <ul>
+    <li><strong>專案慣例</strong>——用哪個套件管理器、命名規則、目錄結構。</li>
+    <li><strong>build/test/lint 指令</strong>——確切指令，不是「跑一下測試」。</li>
+    <li><strong>review 標準</strong>——什麼算「可以 merge」。</li>
+    <li><strong>領域知識</strong>——業務規則、資料模型。</li>
+    <li><strong>「我們不這樣做，因為那次事故」</strong>——這是精華。</li>
+  </ul>
+
+  <div class="callout accent">
+    <span class="label">skill 不只是指令，是傷疤</span>
+    「我們不這樣做，因為 X 事故」這一類條目，是把<strong>制度記憶（scar tissue）</strong>編進 skill。它不是教 agent 怎麼做，而是教它<strong>別重蹈覆轍</strong>。這是 skill 最有價值、也最難從程式碼本身推導出來的部分。
+  </div>
+
+  <h2>沒有 skill，loop 每次從零推導</h2>
+  <p>源文件講得很直白：沒有 skill，loop「每次都從零重新推導一切」。同樣的慣例、同樣的 build 指令、同樣的「別踩雷」，每一次 run 都重新猜一遍。Skill 把這些<strong>寫一次、每次讀</strong>，把重複的猜測變成可靠的預設。</p>
+
+  <h2>triage skill：大多數 loop 的第一個 skill</h2>
+  <p>最小可行 loop 是「排程 ＋ 一個 triage skill ＋ 一個 state 檔」。triage skill 是那個「判讀工作、決定要動什麼」的 skill，而且它的<strong>輸出格式要收得很緊</strong>——這樣下游才好解析。設計清單還提醒：skill 的描述要<strong>「無聊且具體」</strong>，自動觸發才會準。</p>
+
+  <h2>skill 也是重用的單位</h2>
+  <p>Skill 不只還你一個 repo 的債——把它<strong>打包成 plugin</strong>，就能跨 repo、跨團隊共用。一個團隊踩過的雷，編成 skill 後，所有 loop 都不必再踩一次。</p>
+
+  <h2>兩種記憶，最後收攏</h2>
+  <table>
+    <thead><tr><th></th><th>記的是</th><th>回答</th><th>沒有它會</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Skills</strong></td><td>意圖</td><td>要什麼、怎麼做、什麼不做</td><td>每次冷啟動重猜（intent debt）</td></tr>
+      <tr><td><strong>State</strong></td><td>進度</td><td>做到哪、試過什麼、卡在哪</td><td>每次失憶接不起來</td></tr>
+    </tbody>
+  </table>
+  <p>兩者合起來，loop 才有「不會忘的標準」與「想得起來的過去」。Phase B（讓 loop 真的可靠）到這裡講完——下一課進入 Phase C：自主等級。</p>
+
+  <div class="callout note">
+    <span class="label">對照你自己的工具</span>
+    你現在用的 <code>AGENTS.md</code>，本質上就是一種「把專案慣例寫在外面、每次讀」的檔案——功能上接近一個共用的 skill。差別在於：skill 是<strong>結構化、可觸發、可重用</strong>的單位（有自己的描述、輸出格式、能被打包）。觀念是同一條：把意圖從「你腦裡」搬到「磁碟上」。
+  </div>
+
+  <h2>帶走的一句話</h2>
+  <p>Skill 是把「你以為大家都知道、其實只有你知道」的東西寫成檔案。付清 intent debt 的方法很樸素：<strong>寫一次，每次讀</strong>。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "intent debt（意圖債）是怎麼欠下的？",
+    "options": [
+      "每次 session 冷啟動，沒寫下的意圖被「自信猜測」填滿",
+      "模型太貴，用不起來",
+      "程式碼太多，模型讀不完",
+      "skill 寫太多，互相打架"
+    ],
+    "answer": 0,
+    "explainRight": "冷啟動下，缺漏的意圖不會被問，而是被自信地猜錯。每次 run 重新欠一次。",
+    "explainWrong": "成本、程式量、skill 衝突都不是 intent debt 的成因。成因是『冷啟動＋沒寫下來』。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "「我們不這樣做，因為 X 事故」這類條目，代表 skill 記的是什麼？",
+    "options": [
+      "制度記憶／傷疤（scar tissue）——避免重蹈覆轍",
+      "最新的功能文件",
+      "給人看的 README，loop 用不到",
+      "純粹的程式碼註解"
+    ],
+    "answer": 0,
+    "explainRight": "這是 skill 最有價值的部分：把過去踩雷的教訓編進去，教 agent『別這樣做』，是程式碼本身推導不出來的。",
+    "explainWrong": "它不是功能文件、不是給人看的、也不是註解。它是『別重蹈覆轍』的制度記憶。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "為什麼 skill 的描述要「無聊且具體」？",
+    "options": [
+      "為了自動觸發準確——讓對的 skill 在對的時機被選上",
+      "為了讓人讀了覺得專業",
+      "為了壓低 token 數",
+      "其實越華麗越好觸發"
+    ],
+    "answer": 0,
+    "explainRight": "描述具體、不賣弄，模型才容易在對的時機自動選對 skill。模糊華麗的描述反而會誤觸發。",
+    "explainWrong": "不是觀感、不是省 token、更不是越花俏越好。是『觸發準確』的工程考量。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "「我們要什麼、怎麼做、什麼不做」屬於哪種記憶？",
+    "options": [
+      "Skills（意圖的記憶）",
+      "State（進度的記憶）",
+      "Verifier（驗證的記憶）",
+      "Connector（操作的記憶）"
+    ],
+    "answer": 0,
+    "explainRight": "Skills 記『意圖』。State 記的才是『進度』（做到哪）。",
+    "explainWrong": "『要什麼、怎麼做』是意圖，屬於 Skills。『做到哪』才是 State。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">問你的老師</span>
+    「我現在的 AGENTS.md 裡，哪些是慣例、哪些是『因為踩過雷』？」「如果要把它拆成一個個 skill，我會從哪個開始？」「triage skill 的輸出格式為什麼要收緊？」——任何不清楚的都可以問。
+  </div>
+
+  <p class="nav-next">接下來 → <a href="0006-autonomy-levels.html">第 06 課：自主等級 L1 → L2 → L3</a>——Phase C 開始，先 report-only，再 assisted，最後 unattended。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 05 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a>（#3 Skills）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">concepts.md</a>（Intent Debt）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> §3。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

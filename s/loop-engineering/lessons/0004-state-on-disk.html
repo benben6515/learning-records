@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004 — State on Disk: the model forgets, the repo doesn't</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0004 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>State on Disk: the model forgets, the repo doesn't</h1>
+  <p class="subtitle">The second pillar of loop reliability — why durable, cross-session memory must live on disk.</p>
+
+  <p class="lead">Last lesson was the first pillar (maker/checker). This one is the second: <strong>state on disk</strong>. The source says the state file is "often the single most important artifact the loop produces." Why would a memory file matter more than the code the loop ships? Because without it, every run starts from zero and nothing chains together.</p>
+
+  <div class="principle">The model has no long-term memory across sessions — it forgets every time. Write progress to disk and the loop gets a spine.</div>
+
+  <h2>The problem: every run is a cold start</h2>
+  <p>The model's memory only lasts within a session. Close the session and it <strong>remembers nothing</strong>. If the loop keeps "where we are, what we tried" only in the model's head, the next run has amnesia — the design checklist flags this directly: <strong>no state file means the loop has amnesia every run</strong>. So state must live in a <strong>durable thing outside the model</strong>.</p>
+
+  <h2>Good state answers three questions</h2>
+  <p>State isn't "write everything down" — it precisely answers three questions:</p>
+  <table>
+    <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+    <tbody>
+      <tr><td>What are we working on now?</td><td>The current work item</td></tr>
+      <tr><td>What did we try last time, and what was the outcome?</td><td>Attempts and their results (avoid re-hitting the same wall)</td></tr>
+      <tr><td>What's waiting for a human?</td><td>Items needing a person, and why</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Forms and discipline</h2>
+  <p><strong>Forms</strong> vary: a <code>STATE.md</code> / <code>LOOP-STATE.json</code> in the repo, a section of a Linear board, a GitHub Project, or a database row. What matters isn't the form — it's the <strong>discipline</strong> the loop follows every run:</p>
+  <ul>
+    <li><strong>Read</strong>: start every run by reading prior state.</li>
+    <li><strong>Write</strong>: write back outcomes, timestamps, last actions.</li>
+    <li><strong>Prune</strong>: clear resolved / merged / closed items every run.</li>
+    <li><strong>Record human overrides</strong>: decisions you changed stay in state.</li>
+  </ul>
+  <p>Separately, a <strong>run log</strong> (<code>loop-run-log.md</code>) is append-only, recording facts per run — "a loop that ran but didn't log is a loop you <strong>can't debug</strong>."</p>
+
+  <h2>How it runs: one pass</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">Read STATE</span><span class="arrow">→</span>
+      <span class="stage accent">Run triage / act</span><span class="arrow">→</span>
+      <span class="stage accent">Write STATE</span>
+    </div>
+    <div class="row">
+      <span class="stage">Prune closed items</span><span class="arrow">→</span>
+      <span class="stage">Append run log</span>
+    </div>
+    <div class="under">Read → do → write back → prune. The next run picks up where this one left off because of this cycle.</div>
+  </div>
+
+  <h2>The two memories, one more time</h2>
+  <p>The distinction planted in Lesson 02 closes here:</p>
+  <table>
+    <thead><tr><th></th><th>Remembers</th><th>Answers</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Skills</strong></td><td>memory of <em>intent</em></td><td>what we want, how we do it, what we never do (next lesson)</td></tr>
+      <tr><td><strong>State</strong></td><td>memory of <em>progress</em></td><td>where we are, what we tried, where we're stuck (this lesson)</td></tr>
+    </tbody>
+  </table>
+  <p>You need both: without skills the loop doesn't know "how to do it"; without state it doesn't know "where we are."</p>
+
+  <h2>Its weight in the score</h2>
+  <p>The Loop Ready score (<code>loop-audit</code>) gives the state file <strong>14 points</strong> — tied with the verifier as the single highest-weighted signal. And L3 (unattended) is <strong>mechanically blocked</strong> until three cost signals exist: <code>loop-budget.md</code>, <code>loop-run-log.md</code>, and a budget section in LOOP.md. In other words, even "can you let go" depends on whether your state is written well enough.</p>
+
+  <div class="callout note">
+    <span class="label">Why start at L1 report-only</span>
+    Part of why "Daily Triage at L1, report only" is the recommended first loop is that it <strong>teaches you state discipline without auto-merge risk</strong>. Build the read/write/prune muscle first; acting comes later.
+  </div>
+
+  <h2>One sentence to take away</h2>
+  <p>The model forgets; the repo doesn't. State on disk is the <strong>spine</strong> that chains amnesiac sessions into one continuous thread of work. The next lesson covers the other memory — skills, writing intent on the outside.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Why must state live on disk (not in the model's memory)?",
+    "options": [
+      "The model has no long-term memory across sessions — it forgets every time",
+      "Because disk is cheaper than the model",
+      "Because the model can't read or write files",
+      "It can live in the model too, just slower"
+    ],
+    "answer": 0,
+    "explainRight": "Close the session and the model remembers nothing. State must live in a durable thing outside the model so runs chain together.",
+    "explainWrong": "It's not cost or capability. It's a memory-boundary problem: the model's memory doesn't cross sessions."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "What three things does good state mainly answer?",
+    "options": [
+      "Working on now / tried last time + outcome / waiting for a human",
+      "Model name / token count / runtime seconds",
+      "Who wrote the code / when / why",
+      "Whether to parallelize / which worktree / who reviews"
+    ],
+    "answer": 0,
+    "explainRight": "These three let the loop avoid re-hitting walls, know the current work, and know what's stuck and needs a human.",
+    "explainWrong": "The other options are log details or other primitives' concerns. The core of state is the three 'progress' questions."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Which is a red flag on the design checklist?",
+    "options": [
+      "No state file — the loop has amnesia every run",
+      "Each run appends a run-log entry",
+      "The loop reads prior state at the start of a run",
+      "Merged items get pruned from state"
+    ],
+    "answer": 0,
+    "explainRight": "An amnesiac loop can't continue work. Reading, logging, and pruning are correct discipline; the red flag is having no state at all.",
+    "explainWrong": "Logging, reading state, and pruning are all things you should do. The red flag is the amnesia caused by 'no state file.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "'Where we are, what we tried, where we're stuck' is which kind of memory?",
+    "options": [
+      "State (memory of progress)",
+      "Skills (memory of intent)",
+      "Verifier (memory of checks)",
+      "Connector (memory of actions)"
+    ],
+    "answer": 0,
+    "explainRight": "State remembers 'progress.' Skills remember 'intent' (what we want, how to do it).",
+    "explainWrong": "'Where we are, what we tried' is progress — that's State. Intent (what/how) is Skills."
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Think about your own work: "Do I have any mechanism today that remembers 'where I got to' across sessions?" "How is STATE.md different from the notes/TODOs I keep?" "If my loop could add only one primitive, why is it state?" Anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0005-skills.html">Lesson 05: Skills</a> — write intent on the outside and pay down intent debt.</p>
+
+  <div class="footer">
+    <p>Lesson 04 of <em>Loop Engineering</em> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a> (+Memory/State), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> §5, <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a> (run log, L3 gating).</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

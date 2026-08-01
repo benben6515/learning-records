@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 — Maker / Checker：實作者不評分自己的作業</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0003 · ~6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>Maker / Checker：實作者不評分自己的作業</h1>
+  <p class="subtitle">讓 loop 可靠最重要的一根支柱——為什麼「寫的人不批改自己」是結構原則。</p>
+
+  <p class="lead">上一課你認過六個 primitives。這堂課深入第 5 個——sub-agent 的 <strong>maker/checker 分工</strong>。源文件直接稱它為「讓 loop 可靠<strong>最重要的一個結構原則</strong>」。為什麼一個分工這麼重要？因為它解的是 loop 裡最危險的一個問題：<strong>誰來判斷「做完了」和「做對了」</strong>。</p>
+
+  <div class="principle">寫程式的那個 agent，對自己的程式碼是個差勁的裁判——這不是模型不夠強，是結構性事實。</div>
+
+  <h2>問題：自我審查會繼承同一個盲點</h2>
+  <p>為什麼實作者不能評分自己的作業？因為<strong>產生 bug 的那個盲點，回頭檢查時會把同一個 bug 藏起來</strong>。自我審查不是「稍微不可靠」，而是結構性地繼承了自己的錯。換更強的模型也救不了——如果你叫同一個 session「再檢查一遍」，它帶著一樣的假設再看一次。所以關鍵不是「更聰明」，而是<strong>換一個視角</strong>。</p>
+
+  <h2>解法：分出一個 verifier</h2>
+  <p>第二個 agent 負責驗證。它必須和實作者<strong>不同</strong>——換模型、或至少換指令。常見的分工：</p>
+  <ul>
+    <li><strong>Explorer → Implementer → Verifier</strong>（探索 → 實作 → 驗證）</li>
+    <li><strong>Implementer → Security reviewer</strong>（實作 → 安全審查）</li>
+    <li><strong>Implementer → Test writer + runner</strong>（實作 → 寫測試並跑）</li>
+  </ul>
+  <p>「不同」可以只差在<strong>指令</strong>（同一個模型、不同的 prompt 與角色），但最穩的是換模型——尤其是 verifier 用更強的模型，因為它要在 unattended 時替你把關。</p>
+
+  <h2>同一招，套在「停止條件」上</h2>
+  <p>maker/checker 不只驗程式碼，還能驗<strong>「做完沒」</strong>。這正是 <code>/goal</code> 的設計：它跑到某個可驗證條件成立才停，而且由<strong>另一個</strong>模型來判斷那個條件成不成立。換句話說，實作者宣稱「我 done 了」不算數——要 checker 點頭才算。這是把 maker/checker 套用在<strong>停止條件</strong>上，而不只是套用在程式碼上。</p>
+
+  <h2>它怎麼跑：一次迴圈</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">Explorer</span><span class="arrow">→</span>
+      <span class="stage accent">Implementer</span><span class="arrow">→</span>
+      <span class="stage accent">Verifier</span>
+    </div>
+    <div class="branch">Verifier 通過 →</div>
+    <div class="row"><span class="stage">交回給人 / 開 PR</span></div>
+    <div class="branch">Verifier 不通過 → 退回 Implementer（最多 N 次，超過就升級給人）</div>
+    <div class="under"><code>/goal</code> 把同一招用在停止條件上——「另一個」模型判斷「done」成不成立。</div>
+  </div>
+
+  <h2>為什麼這根支柱讓你「敢走開」</h2>
+  <p>在 unattended（L3）的 loop 裡，<strong>那個 verifier 正是讓你（人）敢走開的本錢</strong>。沒有它，「做完了」只是實作者的一面之詞；有了它，至少有一個獨立的第二意見在把關。這也是為什麼 Loop Ready 評分（<code>loop-audit</code>）給「verifier skill 是否存在」<strong>14 分</strong>——和 state 檔並列、是所有信號裡最高的單項權重。</p>
+
+  <div class="callout warn">
+    <span class="label">設計清單上的紅旗</span>
+    看到這幾種就停下來修，別讓 loop 繼續跑：<strong>verifier 跟 implementer 是同一個 session</strong>、實作者能把自己的工作標成「done」、或 verifier 沒在隔離的 worktree 裡跑過測試就放行。
+  </div>
+
+  <h2>帶走的一句話</h2>
+  <p>可靠不是來自「更強的模型自己檢查自己」，而是來自<strong>分工</strong>：一個寫、一個驗。這根支柱是 loop 能從「報告」走到「無人看管」的前提——下一課就看另一根支柱：state on disk。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "為什麼實作者不能評分自己的作業？",
+    "options": [
+      "產生 bug 的盲點，回頭檢查時會把同一個 bug 藏起來（結構性）",
+      "因為模型不夠強，換更強的模型就能自己檢查",
+      "因為自我審查太花 token，不划算",
+      "其實可以，只要再跑一次就好"
+    ],
+    "answer": 0,
+    "explainRight": "自我審查繼承了自己的假設——同一個盲點會把同一個 bug 藏起來。換更強的模型也救不了同一個 session 的假設。",
+    "explainWrong": "不是模型笨、不是成本問題、重跑一次也不會改變假設。關鍵是換一個視角，不是再聰明一點。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "`/goal` 把 maker/checker 套用在什麼地方？",
+    "options": [
+      "停止條件——由「另一個」模型判斷「done」成不成立",
+      "排程——決定 loop 多久跑一次",
+      "worktree——決定用哪一棵 checkout",
+      "token 預算——決定能不能繼續跑"
+    ],
+    "answer": 0,
+    "explainRight": "`/goal` 跑到可驗證條件成立才停，且由另一個模型判斷條件成不成立。實作者說「我 done 了」不算數。",
+    "explainWrong": "排程、worktree、預算都不是 /goal 管的事。它管的是『什麼時候算完成』——而且交給另一個模型判斷。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "設計清單上，下列哪一個是該立刻停修的紅旗？",
+    "options": [
+      "Verifier 跟 implementer 是同一個 agent session",
+      "Verifier 用了比 implementer 更強的模型",
+      "同一個 PR 已經被人工 review 過一次",
+      "Loop 把 resolved 的項目從 state 裡修剪掉"
+    ],
+    "answer": 0,
+    "explainRight": "同一個 session＝同一組假設，等於自己批改自己。這正是 maker/checker 要避免的結構性問題。",
+    "explainWrong": "verifier 更強是好事；人工 review、修剪 state 都是正確紀律。紅旗是『verifier 不獨立』。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "沒有 maker/checker，你負責任地走不到哪個自主等級？",
+    "options": [
+      "L3 unattended（無人看管）",
+      "L1 report-only（只報告）",
+      "L0 draft（只有文件）",
+      "哪個等級都沒影響"
+    ],
+    "answer": 0,
+    "explainRight": "verifier 是『讓你敢走開』的本錢。沒有獨立驗證，你不該讓 loop 無人看管地動手。L1 只報告則不需要它。",
+    "explainWrong": "L0/L1 不動手，對 verifier 的依賴低。真正需要 maker/checker 才敢放手的是 L3。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">問你的老師</span>
+    拿你自己的工作對照看看：「我現在用 agent，有沒有任何『另一個視角』在把關？」「opencode 裡要怎麼做出 maker/checker？」「如果 verifier 跟 implementer 用同一個模型但不同 prompt，算不算數？」——任何不清楚的都可以問。
+  </div>
+
+  <p class="nav-next">接下來 → <a href="0004-state-on-disk.html">第 04 課：State on Disk</a>——模型會忘，repo 不會。為什麼 <code>STATE.md</code> 是 loop 的脊椎。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 03 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a>（#5 Sub-agents）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">concepts.md</a>（Code Agent Orchestra）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> §4 與紅旗。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

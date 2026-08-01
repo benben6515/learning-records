@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0007 — Two Debts and a Trap</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0007 · ~7 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Two Debts and a Trap</h1>
+  <p class="subtitle">The loop doesn't delete you — amplified comprehension debt, orchestration tax, and cognitive surrender.</p>
+
+  <p class="lead">Take seriously the line from Lesson 01: <strong>the loop changes the work; it doesn't delete you from it</strong>. And three problems actually get <strong>sharper</strong> as the loop gets better, not easier. This lesson lays them out at once: two "debts," one "trap," plus a "tax." The source definitions are precise — we follow them.</p>
+
+  <div class="principle">Same loop, opposite outcomes. The loop doesn't know the difference — you do. "Build the loop. Stay the engineer."</div>
+
+  <h2>Debt one: Intent debt</h2>
+  <p>Every session is a cold start; missing intent gets filled with confident guesses. <strong>The pay-down: skills</strong> — write conventions, build, and "we don't do it this way" once, read every run (Lesson 05). It's debt you owe before the loop even runs.</p>
+
+  <h2>Debt two: Comprehension debt</h2>
+  <p>This is the one that bites. <strong>Comprehension debt = the gap between what exists in the repo and what you actually understand.</strong> The faster the loop ships code you didn't write, the wider the gap opens. <strong>The only pay-down: read what the loop made.</strong> Don't read, and the debt only grows.</p>
+  <div class="callout warn">
+    <span class="label">The key</span>
+    "Done" is a claim, not a proof. The faster the loop runs, the more dangerous the gap between "what you think you understand" and "what you actually do."
+  </div>
+
+  <h2>The trap: Cognitive surrender</h2>
+  <p>Letting the loop run while you stop having opinions — that state is <strong>comfortable, and dangerous</strong>. The source puts it best: <strong>"Designing loops with judgment is the cure; using loops to avoid thinking is the accelerant. Same action, opposite outcome."</strong></p>
+  <p>Two people run the exact same loop: one uses it to move faster on work they understand deeply; the other uses it to <strong>avoid</strong> understanding the work. The loop can't tell the difference — you can. That's why comprehension debt keeps accumulating: <strong>surrender is its supply</strong>.</p>
+
+  <h2>The tax: Orchestration tax + token cost</h2>
+  <p>The first two are about "your relationship with the repo"; this one is "the cost of running loops."</p>
+  <p><strong>Orchestration tax</strong> = the human cost of coordinating parallel agents: review bandwidth, merge conflicts, context switching. Worktrees remove the <strong>mechanical</strong> collisions, but <strong>you (the human) remain the ceiling</strong> on parallelism — how many loops you can absorb at once is a human limit, not a tool limit.</p>
+  <p><strong>Token cost</strong> has a counter-intuitive multiplier: <strong>cadence is linear</strong> — running every 5 minutes vs once a day is 288× the runs per day. A CI sweeper running every 15 minutes, if every run is "full," can burn ~5M tokens/day. <strong>The fix: early-exit</strong> — spawn sub-agents only when state says "there's something actionable"; an empty watchlist exits in under 5k tokens.</p>
+
+  <h2>How the four connect</h2>
+  <table>
+    <thead><tr><th>Name</th><th>What it is</th><th>Pay-down / fix</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Intent debt</strong></td><td>Cold start, intent confidently guessed wrong</td><td>skills (Lesson 05)</td></tr>
+      <tr><td><strong>Comprehension debt</strong></td><td>Gap between repo content and what you understand</td><td>read what it made</td></tr>
+      <tr><td><strong>Cognitive surrender</strong></td><td>Letting it run while you stop having opinions</td><td>design loops with judgment; don't use them to avoid thinking</td></tr>
+      <tr><td><strong>Orchestration/cost tax</strong></td><td>Parallel-coordination cost + linear token burn</td><td>worktree + early-exit + budget cap</td></tr>
+    </tbody>
+  </table>
+  <p>How to read it: the first two (intent, comprehension) are debts you <strong>actively pay</strong>; cognitive surrender is the <strong>trap</strong> that turns debt fatal; orchestration/cost is the <strong>tax</strong> you keep paying. Operating a loop means staying awake on all four.</p>
+
+  <div class="callout accent">
+    <span class="label">When to slow down / pause / kill</span>
+    <strong>Slow down</strong>: budget >80% mid-week, triage false-positive rate >30%, same item escalated 2+ times in 48h. <strong>Pause</strong>: production incident in progress, schema migration underway, key reviewer OOO with auto-merge on. <strong>Kill</strong>: cost > value for 2 consecutive weeks, team mutes all notifications.
+  </div>
+
+  <h2>One sentence to take away</h2>
+  <p>The loop doesn't delete you — it <strong>amplifies you</strong>. Whether comprehension debt eats you depends on whether you'll read, and keep having opinions. The final lesson shows how to turn these ideas into copyable production patterns.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Does comprehension debt stop on its own? How do you pay it down?",
+    "options": [
+      "No — the only pay-down is to read what the loop wrote",
+      "Yes — once the loop gets stronger you understand automatically",
+      "Yes — as long as it runs slowly enough",
+      "You can't pay it down; you have to switch repos"
+    ],
+    "answer": 0,
+    "explainRight": "Comprehension debt is the gap between repo content and what you understand. Faster shipping + less reading only grows it. Reading is the only pay-down.",
+    "explainWrong": "A stronger loop doesn't make you understand; running slowly doesn't pay it; switching repos is avoidance. Only reading output pays it."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "In cognitive surrender, 'same action, opposite outcome' — what distinguishes the two people?",
+    "options": [
+      "One uses the loop to speed up work they understand; the other to avoid understanding",
+      "One uses a strong model; the other a weak one",
+      "One runs in the cloud; the other locally",
+      "One writes Python; the other Go"
+    ],
+    "answer": 0,
+    "explainRight": "Both leave the loop running; the difference is whether you're still thinking. The loop can't tell — you can.",
+    "explainWrong": "Model, cloud-vs-local, and language aren't the point. The point is 'speed up understanding' vs 'avoid understanding.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Orchestration tax: what do worktrees remove, and what remains the ceiling?",
+    "options": [
+      "They remove mechanical collisions; you (the human) remain the ceiling on parallelism",
+      "They remove token cost; model strength is the ceiling",
+      "They remove comprehension debt; repo size is the ceiling",
+      "They remove nothing — they just look nice"
+    ],
+    "answer": 0,
+    "explainRight": "Worktrees solve 'files colliding' — a mechanical problem — but 'how many loops you can absorb' is a human-bandwidth problem. You are the ceiling.",
+    "explainWrong": "Worktrees don't solve tokens or comprehension debt. They solve mechanical collisions; human bandwidth is the parallelism limit."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "How does cadence affect token cost?",
+    "options": [
+      "It's a linear multiplier — every 5 min vs once a day is 288× the runs per day",
+      "No effect — it costs the same however often it runs",
+      "Running slower costs more",
+      "Only L3 is affected"
+    ],
+    "answer": 0,
+    "explainRight": "Cadence is a linear multiplier. So a CI sweeper that runs 'full' every time explodes — the fix is early-exit, exiting in <5k tokens on an empty watchlist.",
+    "explainWrong": "Cadence is linear: the more frequent, the more expensive; every level is affected."
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    "Roughly how much comprehension debt am I carrying with agents today?" "Am I in cognitive surrender, and how do I self-check?" "Which part of my work is best suited to using a loop to speed up understanding rather than avoid it?" Anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0008-patterns-and-loop-ready.html">Lesson 08: Seven Patterns and the Loop Ready Score</a> — turn the ideas into copyable production loops, and the score that says whether you can ship.</p>
+
+  <div class="footer">
+    <p>Lesson 07 of <em>Loop Engineering</em> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">concepts.md</a> (precise definitions of all four terms), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a> (token cost, when to pause), and Lesson 01's Addy Osmani "same loop, opposite outcomes."</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

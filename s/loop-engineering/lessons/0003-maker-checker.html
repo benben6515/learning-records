@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 — Maker / Checker: the writer never grades its own work</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0003 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Maker / Checker: the writer never grades its own work</h1>
+  <p class="subtitle">The most important pillar of loop reliability — why "the implementer doesn't grade itself" is a structural principle.</p>
+
+  <p class="lead">Last lesson you met all six primitives. This one goes deep on the fifth — the sub-agent <strong>maker/checker split</strong>. The source calls it "the single most important structural pattern for reliable loops." Why is one division of labor that weighty? Because it solves the most dangerous question in a loop: <strong>who decides "done" and "correct".</strong></p>
+
+  <div class="principle">The agent that wrote the code is a terrible judge of its own work — not a model-strength problem, a structural fact.</div>
+
+  <h2>The problem: self-review inherits the same blind spot</h2>
+  <p>Why can't the implementer grade its own homework? Because <strong>the blind spot that produced the bug hides that same bug on review</strong>. Self-review isn't "slightly unreliable" — it structurally inherits its own assumptions. A stronger model doesn't save you: if you ask the same session to "check again," it looks again with the same assumptions. So the fix isn't "be smarter" — it's <strong>a different perspective</strong>.</p>
+
+  <h2>The fix: split off a verifier</h2>
+  <p>A second agent performs verification. It must <strong>differ</strong> from the implementer — a different model, or at least different instructions. Common splits:</p>
+  <ul>
+    <li><strong>Explorer → Implementer → Verifier</strong></li>
+    <li><strong>Implementer → Security reviewer</strong></li>
+    <li><strong>Implementer → Test writer + runner</strong></li>
+  </ul>
+  <p>"Different" can be only in the <strong>instructions</strong> (same model, different prompt and role), but the safest move is a different model — especially putting a stronger model on the verifier, since it stands in for you when unattended.</p>
+
+  <h2>The same trick, applied to the stop condition</h2>
+  <p>Maker/checker doesn't only verify code — it can verify <strong>"are we done"</strong>. That's exactly how <code>/goal</code> is designed: it runs until a verifiable condition is true, and a <strong>different</strong> model decides whether that condition holds. In other words, the implementer claiming "I'm done" doesn't count — the checker has to agree. That's maker/checker applied to the <strong>stop condition</strong>, not just the code.</p>
+
+  <h2>How it runs: one pass</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">Explorer</span><span class="arrow">→</span>
+      <span class="stage accent">Implementer</span><span class="arrow">→</span>
+      <span class="stage accent">Verifier</span>
+    </div>
+    <div class="branch">Verifier passes →</div>
+    <div class="row"><span class="stage">Hand off / open PR</span></div>
+    <div class="branch">Verifier fails → back to Implementer (max N attempts, then escalate to human)</div>
+    <div class="under"><code>/goal</code> uses the same trick on the stop condition — a "different" model decides whether "done" holds.</div>
+  </div>
+
+  <h2>Why this pillar lets you "walk away"</h2>
+  <p>In an unattended (L3) loop, <strong>that verifier is exactly what lets you (the human) walk away with some confidence</strong>. Without it, "done" is just the implementer's word; with it, there's at least one independent second opinion minding the gate. This is also why the Loop Ready score (<code>loop-audit</code>) gives the presence of a verifier skill <strong>14 points</strong> — tied with the state file as the single highest-weighted signal.</p>
+
+  <div class="callout warn">
+    <span class="label">Red flags on the checklist</span>
+    Stop and fix before letting the loop run: <strong>the verifier is the same session as the implementer</strong>, the implementer can mark its own work "done," or the verifier approves without running tests in an isolated worktree.
+  </div>
+
+  <h2>One sentence to take away</h2>
+  <p>Reliability doesn't come from "a stronger model checking itself" — it comes from <strong>separation of duties</strong>: one writes, one verifies. This pillar is the precondition for a loop moving from "report" to "unattended." The next lesson covers the other pillar: state on disk.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Why can't the implementer grade its own work?",
+    "options": [
+      "The blind spot that made the bug hides it on review (structural)",
+      "Because the model isn't strong enough — a stronger one can self-check",
+      "Because self-review costs too many tokens",
+      "It actually can, as long as it runs once more"
+    ],
+    "answer": 0,
+    "explainRight": "Self-review inherits its own assumptions — the same blind spot hides the same bug. A stronger model can't fix a single session's assumptions.",
+    "explainWrong": "It's not model stupidity, cost, or fixable by re-running. The fix is a different perspective, not more cleverness."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Where does /goal apply maker/checker?",
+    "options": [
+      "The stop condition — a 'different' model decides whether 'done' holds",
+      "Scheduling — how often the loop runs",
+      "Worktree — which checkout to use",
+      "Token budget — whether it may keep running"
+    ],
+    "answer": 0,
+    "explainRight": "/goal runs until a verifiable condition is true, and a different model decides whether it holds. The implementer's 'I'm done' doesn't count.",
+    "explainWrong": "Scheduling, worktree, and budget aren't /goal's job. It governs 'when is it finished' — and hands that judgment to another model."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Which is a red flag you should stop and fix immediately?",
+    "options": [
+      "The verifier is the same agent session as the implementer",
+      "The verifier uses a stronger model than the implementer",
+      "A PR has been human-reviewed once",
+      "The loop prunes resolved items from state"
+    ],
+    "answer": 0,
+    "explainRight": "Same session = same assumptions = self-grading. That's exactly the structural problem maker/checker exists to prevent.",
+    "explainWrong": "A stronger verifier is good; human review and pruning state are correct discipline. The red flag is a non-independent verifier."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Without maker/checker, which autonomy level can you not responsibly reach?",
+    "options": [
+      "L3 unattended",
+      "L1 report-only",
+      "L0 draft",
+      "It doesn't affect any level"
+    ],
+    "answer": 0,
+    "explainRight": "The verifier is what lets you walk away. Without independent verification you shouldn't let a loop act unattended. L1 report-only doesn't need it.",
+    "explainWrong": "L0/L1 don't act, so they barely depend on a verifier. The level that genuinely requires maker/checker before you let go is L3."
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Map this onto your own work: "When I use agents today, is there any 'second perspective' minding the gate?" "How do I actually build maker/checker in opencode?" "If verifier and implementer share a model but differ in prompt, does it count?" Anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0004-state-on-disk.html">Lesson 04: State on Disk</a> — the model forgets; the repo doesn't. Why <code>STATE.md</code> is the loop's spine.</p>
+
+  <div class="footer">
+    <p>Lesson 03 of <em>Loop Engineering</em> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a> (#5 Sub-agents), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">concepts.md</a> (Code Agent Orchestra), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> §4 and red flags.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

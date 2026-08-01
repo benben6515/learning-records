@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0008 — 七個 Patterns 與 Loop Ready score</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0008 · ~8 分鐘 · 最終課</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>七個 Patterns 與 Loop Ready score</h1>
+  <p class="subtitle">把觀念落地成可複製的生產 loop，以及「能不能上線」的評分。</p>
+
+  <p class="lead">這是最後一堂。前面七課建立的是<strong>心智模型</strong>——loop 是什麼、六個零件、兩根支柱、自主等級、風險。這堂課把它們落地：可複製的<strong>生產模式（patterns）</strong>，以及一個告訴你「能不能上線」的<strong>Loop Ready 分數</strong>。學完這堂，你就有詞彙看懂任何一個真實 loop。</p>
+
+  <div class="principle">Pattern 是「可複製的生產 loop」；Loop Ready score 是「你能不能放手」的客觀量尺。先挑一個 pattern，從 L1 開始。</div>
+
+  <h2>什麼是 pattern</h2>
+  <p>Pattern 是一個可複製的生產 loop——每個都有自己的<strong>節奏（cadence）、自主等級、token 成本</strong>。挑選原則很簡單：<strong>一個顧慮，挑一個主 loop</strong>；重疊的 loop 需要協調（別讓它們在同一小時搶同一條 branch）。</p>
+
+  <h2>七個 patterns</h2>
+  <table>
+    <thead><tr><th>Pattern</th><th>症狀（什麼時候用）</th><th>怎麼開始</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Daily Triage</strong></td><td>每天早上「我該做什麼？」的混亂</td><td><strong>L1 只報告，第一週</strong></td></tr>
+      <tr><td><strong>Issue Triage</strong></td><td>GitHub issues 噪音太多</td><td>L1</td></tr>
+      <tr><td><strong>PR Babysitter</strong></td><td>PR 卡在 review／CI／rebase</td><td>L1 觀察 → L2 協助</td></tr>
+      <tr><td><strong>CI Sweeper</strong></td><td>main 或 PR 上的 CI 紅了</td><td>L2，15 分鐘，最多 3 次</td></tr>
+      <tr><td><strong>Dependency Sweeper</strong></td><td>過時套件／CVE 警報</td><td>L2 只修補，擋住大版號</td></tr>
+      <tr><td><strong>Post-Merge Cleanup</strong></td><td>merge 後的 TODO 與清理</td><td>L1 離峰跑，只做小修</td></tr>
+      <tr><td><strong>Changelog Drafter</strong></td><td>release notes 過時或缺漏</td><td><strong>L1（先只草擬）</strong>，極低風險</td></tr>
+    </tbody>
+  </table>
+  <p>如果不知道挑哪個——<strong>就從 Daily Triage 在 L1 開始</strong>。它教你 state 紀律、又沒有 auto-merge 風險，是「低風險、極佳的練習對象」。</p>
+
+  <h2>怎麼挑：問「現在什麼在痛？」</h2>
+  <div class="flow">
+    <div class="branch">CI 紅？</div>
+    <div class="row"><span class="stage">CI Sweeper</span></div>
+    <div class="branch">PR 卡住？</div>
+    <div class="row"><span class="stage">PR Babysitter</span></div>
+    <div class="branch">早上混亂／issue 噪音？</div>
+    <div class="row"><span class="stage">Daily Triage ＋ Issue Triage</span></div>
+    <div class="branch">套件／CVE 噪音？</div>
+    <div class="row"><span class="stage">Dependency Sweeper</span></div>
+    <div class="branch">merge 後債／TODO 堆積？</div>
+    <div class="row"><span class="stage">Post-Merge Cleanup</span></div>
+    <div class="branch">release notes 過時？預算緊？</div>
+    <div class="row"><span class="stage">Changelog Drafter（讀多、安全）</span></div>
+  </div>
+
+  <h2>Loop Ready score：0–100 的客觀量尺</h2>
+  <p>「能不能放手」不是感覺問題。<code>loop-audit</code> 給你的專案打一個 <strong>0–100 的 Loop Readiness 分數</strong>，背後是 20 多個信號。幾個關鍵事實：</p>
+  <ul>
+    <li><strong>它把分數對應到自主等級</strong>——L0/L1/L2/L3 各自對應設計清單的不同段落（第 06 課那張表）。</li>
+    <li><strong>最高權重的信號是 verifier 與 state</strong>——兩者各 14 分，並列所有信號裡最高。這正是第 03、04 課說的「兩根支柱」的量化證明。</li>
+    <li><strong>L3 被機械性擋住</strong>，直到 <code>loop-budget.md</code>＋<code>loop-run-log.md</code>＋LOOP.md 預算段落就位。</li>
+    <li><strong>自主等級不是單向棘輪</strong>——可以、也應該往下退。</li>
+  </ul>
+
+  <div class="callout warn">
+    <span class="label">分數高，不代表就能放手</span>
+    有個故事：一個團隊 <code>loop-init</code>＋<code>loop-audit</code> 衝到 <strong>92 分</strong>，report-only 的 Daily Triage 也真的看出了價值。然後他們在第 6 天把它升級成每 15 分鐘跑的 CI sweeper——<strong>卻沒有獨立的 verifier、沒有 branch 白名單、也沒有硬性的每日 token 上限</strong>。分數高是必要，不是充分。
+  </div>
+
+  <h2>設計清單上的紅旗（看到就停修）</h2>
+  <ul>
+    <li>同一個 PR 已被自動修復 <strong>>3 次</strong>沒有進展。</li>
+    <li>Verifier 跟 implementer 是<strong>同一個 session</strong>。</li>
+    <li><strong>沒有 state 檔</strong>——loop 每次 run 都失憶。</li>
+    <li>不管有沒有發現，每次 run 都發通知。</li>
+    <li>開了 auto-merge 卻<strong>沒有 path 白名單</strong>。</li>
+  </ul>
+
+  <h2>全課程回顧：一條主軸</h2>
+  <p>八堂課其實是一條線：</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">01 典範轉移</span><span class="arrow">→</span>
+      <span class="stage">02 六個零件</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">03 maker/checker</span><span class="arrow">＋</span>
+      <span class="stage accent">04 state</span><span class="arrow">＋</span>
+      <span class="stage">05 skills</span>
+    </div>
+    <div class="row">
+      <span class="stage">06 自主等級</span><span class="arrow">→</span>
+      <span class="stage">07 風險</span><span class="arrow">→</span>
+      <span class="stage accent">08 patterns＋上線</span>
+    </div>
+    <div class="under">典範 → 零件 → 兩根支柱＋skills → 經營 → 風險 → 落地。「Build the loop. Stay the engineer.」</div>
+  </div>
+
+  <h2>帶走的一句話</h2>
+  <p>你現在有了完整的詞彙：能講清楚 loop 是什麼、harness 與 loop 的差別、六個 primitives、兩根支柱、L1→L2→L3、四種風險，以及七個 patterns 與 Loop Ready score。心智模型到此建立完成——<strong>這是「動手」階段的起點，不是終點</strong>。下一階段（scaffold 你的第一個 loop、採用評估）就在這個模型之上展開。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "不知道挑哪個 pattern 時，文件建議從哪裡開始？",
+    "options": [
+      "Daily Triage 在 L1 report-only",
+      "CI Sweeper 在 L3 全自動",
+      "Dependency Sweeper 直接升大版號",
+      "七個全部一起上"
+    ],
+    "answer": 0,
+    "explainRight": "Daily Triage 在 L1 教你 state 紀律、又沒有 auto-merge 風險——低風險、極佳的練習對象。",
+    "explainWrong": "L3 全自動、亂升版號、全部一起上，都是還沒準備好就放手的危險做法。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "CI Sweeper 的建議起手式是？",
+    "options": [
+      "L2，每 15 分鐘，最多 3 次嘗試",
+      "L3，每 5 分鐘，無限嘗試",
+      "L1，每天一次，只報告",
+      "L0，只寫文件不跑"
+    ],
+    "answer": 0,
+    "explainRight": "CI Sweeper 從 L2、15 分鐘 cadence、max 3 attempts 開始；5 分鐘全跑會燒爆 token。",
+    "explainWrong": "5 分鐘無限嘗試會燒 token；只報告／只寫文件解不了 CI 紅。建議是 L2/15m/最多 3 次。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Loop Ready score 裡，最高權重的信號是？",
+    "options": [
+      "verifier skill 與 state 檔（各 14 分，並列最高）",
+      "cadence 設得多密集",
+      "用了哪一個模型",
+      "通知發得多頻繁"
+    ],
+    "answer": 0,
+    "explainRight": "verifier 與 state 各 14 分——這是『兩根支柱』的量化證明：讓 loop 可靠，靠的就是這兩件。",
+    "explainWrong": "頻率、模型、通知都不是最高權重。最高的是『獨立驗證』和『持久狀態』。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "那個衝到 92 分的團隊，升級 CI sweeper 時缺了什麼？",
+    "options": [
+      "獨立的 verifier、branch 白名單、硬性每日 token 上限",
+      "更高的 Loop Ready 分數",
+      "更強的單一模型",
+      "更密的 cadence"
+    ],
+    "answer": 0,
+    "explainRight": "分數高是必要不是充分。他們缺的是 L2/L3 的真正護欄：獨立 verifier、path 白名單、硬性 token 上限。",
+    "explainWrong": "他們分數已經夠高；更強模型、更密頻率反而更危險。缺的是『護欄』，不是『更衝』。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "下列哪一個是設計清單上的紅旗？",
+    "options": [
+      "同一個 PR 已被自動修復 >3 次沒有進展",
+      "每次 run 都 append run log",
+      "loop 在開頭讀上次的 state",
+      "verifier 用了不同的 session"
+    ],
+    "answer": 0,
+    "explainRight": ">3 次自動修復沒進展，代表 loop 在原地打轉，該停下來交給人。其他三項都是正確紀律。",
+    "explainWrong": "記 log、讀 state、verifier 不同 session 都是該做的事。紅旗是『重複無進展的自動修復』。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">課程完成——問你的老師</span>
+    模型建好了，接下來是你要決定的方向：「我想挑一個 pattern（例如 Daily Triage），動手 scaffold 我的第一個 loop——從哪裡開始？」「我想先做採用評估：這套適不適合我的工作流程？」「哪個觀念我還想再深入？」心智模型階段到此完成，下一步由你決定。
+  </div>
+
+  <p class="nav-next">課程完成 → 回到 <a href="0000-table-of-contents.html">目錄</a>，或看 <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> 複習全貌。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 08 課（終課）· <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/pattern-picker.md" target="_blank" rel="noopener">pattern-picker.md</a>（七個 patterns、首選建議）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a>（Readiness Levels、紅旗）、<code>loop-audit</code>（14 分信號、L3 gating）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a>（92 分故事）。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

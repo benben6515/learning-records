@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004 — State on Disk：模型會忘，repo 不會</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0004 · ~6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>State on Disk：模型會忘，repo 不會</h1>
+  <p class="subtitle">讓 loop 可靠的第二根支柱——為什麼跨 session 的持久記憶必須落在磁碟上。</p>
+
+  <p class="lead">上一課是第一根支柱（maker/checker）。這堂課是第二根：<strong>state on disk</strong>。源文件說，state 檔「常常是 loop 產出<strong>最重要</strong>的單一成品」。一個記憶檔為什麼比它產出的程式碼還重要？因為沒有它，loop 每一次跑都從零開始、什麼都接不起來。</p>
+
+  <div class="principle">模型跨 session 沒有長期記憶——每次都失憶。把進度寫在磁碟上，loop 才有脊椎。</div>
+
+  <h2>問題：每一次 run 都是冷啟動</h2>
+  <p>模型的記憶只在一個 session 裡有效。session 一關，它<strong>什麼都不記得</strong>。如果 loop 把「做到哪、試過什麼」只放在模型的腦裡，下一次 run 它就失憶了——設計清單把這條列為紅旗：<strong>沒有 state 檔，loop 每次 run 都失憶</strong>。所以 state 必須落在模型之外的<strong>持久物</strong>上。</p>
+
+  <h2>好的 state 回答三件事</h2>
+  <p>state 不是「把所有東西記下來」，而是精準回答三個問題：</p>
+  <table>
+    <thead><tr><th>問題</th><th>回答</th></tr></thead>
+    <tbody>
+      <tr><td>我們現在在做什麼？</td><td>當前的工作項目</td></tr>
+      <tr><td>上次試了什麼、結果如何？</td><td>嘗試過的方法與結局（避免重複撞牆）</td></tr>
+      <tr><td>什麼在等人？</td><td>需要人類介入的項目與原因</td></tr>
+    </tbody>
+  </table>
+
+  <h2>形式與紀律</h2>
+  <p><strong>形式</strong>很多種：repo 裡的 <code>STATE.md</code>／<code>LOOP-STATE.json</code>、Linear board 的一段、GitHub Project、或資料庫一列。重點不是用哪種，而是<strong>紀律</strong>——loop 每次都要做到：</p>
+  <ul>
+    <li><strong>讀</strong>：run 一開始先讀上次的 state。</li>
+    <li><strong>寫</strong>：把結果、時間戳、上次動作寫回去。</li>
+    <li><strong>修剪</strong>：每次把已解決／已 merge／已關閉的項目清掉。</li>
+    <li><strong>記錄人的覆寫</strong>：你改過的決定要留在 state 裡。</li>
+  </ul>
+  <p>另外有一個 <strong>run log</strong>（<code>loop-run-log.md</code>）只追加、不覆蓋，記每次 run 的事實——「一個跑過卻沒記錄的 loop，是你<strong>沒辦法 debug</strong> 的 loop」。</p>
+
+  <h2>它怎麼跑：一次迴圈</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">讀 STATE</span><span class="arrow">→</span>
+      <span class="stage accent">跑 triage／做事</span><span class="arrow">→</span>
+      <span class="stage accent">寫 STATE</span>
+    </div>
+    <div class="row">
+      <span class="stage">修剪已關閉項目</span><span class="arrow">→</span>
+      <span class="stage">append run log</span>
+    </div>
+    <div class="under">讀 → 做 → 寫回 → 修剪。下次 run 接得起來，靠的就是這個循環。</div>
+  </div>
+
+  <h2>兩種記憶，再對照一次</h2>
+  <p>第 02 課種下的區分，在這裡收攏：</p>
+  <table>
+    <thead><tr><th></th><th>記的是</th><th>回答</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Skills</strong></td><td>「意圖」的記憶</td><td>我們要什麼、怎麼做、什麼不做（下一課深入）</td></tr>
+      <tr><td><strong>State</strong></td><td>「進度」的記憶</td><td>我們做到哪、試過什麼、卡在哪（本課）</td></tr>
+    </tbody>
+  </table>
+  <p>兩者缺一不可：沒有 skills，loop 不知道「該怎麼做」；沒有 state，loop 不知道「做到哪了」。</p>
+
+  <h2>它在評分裡的份量</h2>
+  <p>Loop Ready 評分（<code>loop-audit</code>）給 state 檔 <strong>14 分</strong>——跟 verifier 並列、是所有信號裡最高的單項權重。而且 L3（無人看管）會被<strong>機械性地擋住</strong>，直到三個成本訊號就位：<code>loop-budget.md</code>、<code>loop-run-log.md</code>、以及 LOOP.md 裡的預算段落。換句話說，連「能不能放手」都取決於你的 state 寫得夠不夠。</p>
+
+  <div class="callout note">
+    <span class="label">為什麼先從 L1 report-only</span>
+    「Daily Triage 在 L1 只報告」之所以是推薦的第一個 loop，部分原因就是它<strong>教你把 state 紀律練起來，卻沒有 auto-merge 的風險</strong>。先把讀／寫／修剪的肌肉養成，再談動手。
+  </div>
+
+  <h2>帶走的一句話</h2>
+  <p>模型會忘；repo 不會。state on disk 是把一個個失憶的 session 串成一條連續工作的<strong>脊椎</strong>。下一課看另一種記憶——skills，把「意圖」寫在外面。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "為什麼 state 必須落在磁碟上（而不是模型的記憶裡）？",
+    "options": [
+      "模型跨 session 沒有長期記憶，每次都失憶",
+      "因為磁碟比模型便宜",
+      "因為模型不能讀寫檔案",
+      "其實放模型裡也可以，只是慢一點"
+    ],
+    "answer": 0,
+    "explainRight": "session 一關，模型什麼都不記得。state 必須落在模型之外的持久物上，loop 才接得起來。",
+    "explainWrong": "不是成本、不是能力問題。是『記憶邊界』問題：模型的記憶不跨 session。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "好的 state 主要回答哪三件事？",
+    "options": [
+      "現在在做什麼／上次試了什麼結果如何／什麼在等人",
+      "模型叫什麼／token 多少／跑了幾秒",
+      "誰寫的 code／何時寫的／為什麼寫",
+      "要不要並行／用哪個 worktree／誰來 review"
+    ],
+    "answer": 0,
+    "explainRight": "這三問讓 loop 不重複撞牆、知道當前工作、也知道哪裡卡住要交回給人。",
+    "explainWrong": "其他選項是日誌細節或別的 primitive 的事。state 的核心是『進度』三問。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "設計清單上，下列哪個是紅旗？",
+    "options": [
+      "沒有 state 檔——loop 每次 run 都失憶",
+      "每次 run 都 append 一筆 run log",
+      "loop 在 run 開頭讀上次的 state",
+      "已 merge 的項目被從 state 修剪掉"
+    ],
+    "answer": 0,
+    "explainRight": "失憶的 loop 沒辦法接續工作。讀寫、記 log、修剪都是正確紀律；紅旗是『根本沒有 state』。",
+    "explainWrong": "記 log、讀 state、修剪都是該做的事。紅旗是『沒有 state 檔』造成的失憶。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "「我們做到哪、試過什麼、卡在哪」是哪種記憶？",
+    "options": [
+      "State（進度的記憶）",
+      "Skills（意圖的記憶）",
+      "Verifier（驗證的記憶）",
+      "Connector（操作的記憶）"
+    ],
+    "answer": 0,
+    "explainRight": "State 記的是『進度』。Skills 記的才是『意圖』（我們要什麼、怎麼做）。",
+    "explainWrong": "『做到哪、試過什麼』是進度，屬於 State。意圖（要什麼、怎麼做）才是 Skills。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">問你的老師</span>
+    想想你自己的工作：「我現在有任何『跨 session 記得做到哪』的機制嗎？」「STATE.md 跟我用的筆記/TODO 有什麼不一樣？」「如果我的 loop 只能加一個 primitive，為什麼是 state？」——任何不清楚的都可以問。
+  </div>
+
+  <p class="nav-next">接下來 → <a href="0005-skills.html">第 05 課：Skills</a>——把 intent 寫在外面，付清 intent debt。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 04 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a>（+Memory/State）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> §5、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a>（run log、L3 gating）。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

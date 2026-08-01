@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0008 — Seven Patterns and the Loop Ready Score</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0008 · ~8 min · Final lesson</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Seven Patterns and the Loop Ready Score</h1>
+  <p class="subtitle">Turn the ideas into copyable production loops, and the score that says whether you can ship.</p>
+
+  <p class="lead">This is the last lesson. The first seven built a <strong>mental model</strong> — what a loop is, the six parts, the two pillars, autonomy levels, risks. This one lands them: copyable <strong>production patterns</strong>, plus a <strong>Loop Ready score</strong> that tells you whether you can ship. After this lesson you have the vocabulary to read any real loop.</p>
+
+  <div class="principle">A pattern is a "copyable production loop"; the Loop Ready score is the objective measure of "can you let go." Pick one pattern, start at L1.</div>
+
+  <h2>What's a pattern</h2>
+  <p>A pattern is a copyable production loop — each with its own <strong>cadence, autonomy level, and token cost</strong>. The picking rule is simple: <strong>one concern, one primary loop</strong>; overlapping loops need coordination (don't let them fight over the same branch in the same hour).</p>
+
+  <h2>The seven patterns</h2>
+  <table>
+    <thead><tr><th>Pattern</th><th>Symptom (when to use)</th><th>How to start</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Daily Triage</strong></td><td>Morning "what should I work on?" chaos</td><td><strong>L1 report-only, week one</strong></td></tr>
+      <tr><td><strong>Issue Triage</strong></td><td>Too much GitHub issue noise</td><td>L1</td></tr>
+      <tr><td><strong>PR Babysitter</strong></td><td>PRs stalled on review / CI / rebase</td><td>L1 watch → L2 assisted</td></tr>
+      <tr><td><strong>CI Sweeper</strong></td><td>CI red on main or PRs</td><td>L2, 15 min, max 3 attempts</td></tr>
+      <tr><td><strong>Dependency Sweeper</strong></td><td>Outdated packages / CVE alerts</td><td>L2 patch-only, denylist majors</td></tr>
+      <tr><td><strong>Post-Merge Cleanup</strong></td><td>TODOs and cleanup after merges</td><td>L1 off-peak, small fixes only</td></tr>
+      <tr><td><strong>Changelog Drafter</strong></td><td>Stale or missing release notes</td><td><strong>L1 (draft only first)</strong>, very low risk</td></tr>
+    </tbody>
+  </table>
+  <p>If you don't know which to pick — <strong>start with Daily Triage at L1</strong>. It teaches state discipline without auto-merge risk — "low risk, excellent pair."</p>
+
+  <h2>How to pick: ask "what hurts right now?"</h2>
+  <div class="flow">
+    <div class="branch">CI red?</div>
+    <div class="row"><span class="stage">CI Sweeper</span></div>
+    <div class="branch">PRs stalling?</div>
+    <div class="row"><span class="stage">PR Babysitter</span></div>
+    <div class="branch">Morning chaos / issue noise?</div>
+    <div class="row"><span class="stage">Daily Triage + Issue Triage</span></div>
+    <div class="branch">Package / CVE noise?</div>
+    <div class="row"><span class="stage">Dependency Sweeper</span></div>
+    <div class="branch">Merge debt / TODOs piling up?</div>
+    <div class="row"><span class="stage">Post-Merge Cleanup</span></div>
+    <div class="branch">Release notes stale? Tight budget?</div>
+    <div class="row"><span class="stage">Changelog Drafter (read-mostly, safe)</span></div>
+  </div>
+
+  <h2>The Loop Ready score: an objective 0–100 measure</h2>
+  <p>"Can I let go" isn't a feeling. <code>loop-audit</code> scores your project <strong>0–100 on Loop Readiness</strong>, backed by 20+ signals. Key facts:</p>
+  <ul>
+    <li><strong>It maps the score to autonomy levels</strong> — L0/L1/L2/L3 each correspond to different sections of the design checklist (the table from Lesson 06).</li>
+    <li><strong>The highest-weighted signals are the verifier and state</strong> — 14 points each, tied for highest. This is the quantitative proof of the "two pillars" from Lessons 03 and 04.</li>
+    <li><strong>L3 is mechanically blocked</strong> until <code>loop-budget.md</code> + <code>loop-run-log.md</code> + a LOOP.md budget section exist.</li>
+    <li><strong>Autonomy is not a one-way ratchet</strong> — you can and should demote.</li>
+  </ul>
+
+  <div class="callout warn">
+    <span class="label">A high score doesn't mean you can let go</span>
+    A cautionary story: a team ran <code>loop-init</code> + <code>loop-audit</code> to <strong>92</strong>, and the report-only Daily Triage genuinely surfaced value. Then on day 6 they upgraded it to a CI sweeper at 15 minutes — <strong>with no separate verifier, no branch allowlist, and no hard daily token cap</strong>. A high score is necessary, not sufficient.
+  </div>
+
+  <h2>Red flags on the checklist (stop and fix)</h2>
+  <ul>
+    <li>The same PR has had <strong>>3</strong> automated fix attempts without progress.</li>
+    <li>The verifier is the <strong>same session</strong> as the implementer.</li>
+    <li><strong>No state file</strong> — the loop has amnesia every run.</li>
+    <li>Notifications fire on every run regardless of findings.</li>
+    <li>Auto-merge enabled with <strong>no path allowlist</strong>.</li>
+  </ul>
+
+  <h2>Course recap: one through-line</h2>
+  <p>The eight lessons are a single line:</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">01 paradigm shift</span><span class="arrow">→</span>
+      <span class="stage">02 six parts</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">03 maker/checker</span><span class="arrow">+</span>
+      <span class="stage accent">04 state</span><span class="arrow">+</span>
+      <span class="stage">05 skills</span>
+    </div>
+    <div class="row">
+      <span class="stage">06 autonomy</span><span class="arrow">→</span>
+      <span class="stage">07 risk</span><span class="arrow">→</span>
+      <span class="stage accent">08 patterns + ship</span>
+    </div>
+    <div class="under">Paradigm → parts → two pillars + skills → operating → risk → landing it. "Build the loop. Stay the engineer."</div>
+  </div>
+
+  <h2>One sentence to take away</h2>
+  <p>You now have the full vocabulary: you can explain what a loop is, harness vs loop, the six primitives, the two pillars, L1→L2→L3, the four risks, and the seven patterns plus the Loop Ready score. The mental model is complete — <strong>this is the start of the "hands-on" phase, not the end</strong>. The next phase (scaffolding your first loop, adoption decisions) builds on top of this model.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "When you don't know which pattern to pick, the docs recommend starting with?",
+    "options": [
+      "Daily Triage at L1 report-only",
+      "CI Sweeper at L3 fully automatic",
+      "Dependency Sweeper bumping majors right away",
+      "All seven at once"
+    ],
+    "answer": 0,
+    "explainRight": "Daily Triage at L1 teaches state discipline without auto-merge risk — low risk, excellent pair.",
+    "explainWrong": "L3 fully automatic, bumping majors, all at once are all 'let go before you're ready' dangers."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "The recommended start for CI Sweeper is?",
+    "options": [
+      "L2, every 15 minutes, max 3 attempts",
+      "L3, every 5 minutes, unlimited attempts",
+      "L1, once a day, report only",
+      "L0, just docs, never run"
+    ],
+    "answer": 0,
+    "explainRight": "CI Sweeper starts at L2, 15-minute cadence, max 3 attempts; a full run every 5 min would torch tokens.",
+    "explainWrong": "5-min unlimited torches tokens; report-only / docs-only doesn't fix red CI. The recommendation is L2/15m/max 3."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "In the Loop Ready score, the highest-weighted signals are?",
+    "options": [
+      "Verifier skill and state file (14 points each, tied for highest)",
+      "How dense the cadence is",
+      "Which model you use",
+      "How often notifications fire"
+    ],
+    "answer": 0,
+    "explainRight": "Verifier and state are 14 points each — the quantitative proof of the 'two pillars': reliability rests on exactly these two.",
+    "explainWrong": "Density, model, and notifications aren't the top weight. The top is 'independent verification' and 'durable state.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "When the team at 92 upgraded to a CI sweeper, what were they missing?",
+    "options": [
+      "A separate verifier, a branch allowlist, and a hard daily token cap",
+      "A higher Loop Ready score",
+      "A stronger single model",
+      "A denser cadence"
+    ],
+    "answer": 0,
+    "explainRight": "A high score is necessary, not sufficient. They lacked the real L2/L3 guardrails: a separate verifier, a path allowlist, a hard token cap.",
+    "explainWrong": "Their score was already high; a stronger model or denser cadence is more dangerous. What was missing was 'guardrails,' not 'more push.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Which is a red flag on the design checklist?",
+    "options": [
+      "The same PR has had >3 automated fix attempts without progress",
+      "Each run appends a run-log entry",
+      "The loop reads prior state at the start",
+      "The verifier uses a different session"
+    ],
+    "answer": 0,
+    "explainRight": ">3 automated fix attempts without progress means the loop is spinning in place — stop and hand it to a human. The other three are correct discipline.",
+    "explainWrong": "Logging, reading state, and a different verifier session are all things you should do. The red flag is 'repeated no-progress auto-fixes.'"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Course complete — ask your teacher</span>
+    The model is built; the next direction is yours to choose: "I want to pick a pattern (say Daily Triage) and actually scaffold my first loop — where do I start?" "I want to do an adoption assessment: does this fit my workflow?" "Which idea do I want to go deeper on?" The mental-model phase is done; the next step is up to you.
+  </div>
+
+  <p class="nav-next">Course complete → back to the <a href="0000-table-of-contents.html">Index</a>, or review the whole picture with the <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a>.</p>
+
+  <div class="footer">
+    <p>Lesson 08 of <em>Loop Engineering</em> (final) · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/pattern-picker.md" target="_blank" rel="noopener">pattern-picker.md</a> (seven patterns, first-loop rec), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> (Readiness Levels, red flags), <code>loop-audit</code> (14-point signals, L3 gating), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a> (the 92-point story).</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

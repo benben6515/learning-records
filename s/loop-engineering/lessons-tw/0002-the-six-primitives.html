@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 — 六個 Primitives（＋Memory）：loop 的零件詞彙表</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0002 · ~7 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>六個 Primitives（＋Memory）：loop 的零件詞彙表</h1>
+  <p class="subtitle">把 loop 拆成六個零件——每個都修好一個會讓 loop 壞掉的洞。</p>
+
+  <p class="lead">上一課你看過那張全貌表：loop 不是一道長 prompt，而是六個零件組成的小系統。這堂課把它們一個個拆開。讀法很簡單——<strong>每個 primitive 都對應一個「沒有它，loop 就會在這裡壞掉」的洞</strong>。先認得零件與它修好的洞，後面幾堂課（maker/checker、state、skills）再分別往深裡走。</p>
+
+  <div class="principle">六個 primitives，六個洞。學它們，就是在學「loop 會在哪裡失靈」。</div>
+
+  <h2>1. 排程（Scheduling）— loop 的心跳</h2>
+  <p>沒有排程，你只是<strong>跑了一次</strong> agent，不是 loop。排程把「一次 run」變成「在時間上反覆發生的 run」，所以它是 loop 的心跳。形式很多：<code>/loop</code>（Grok）、Claude Code 的排程任務／cron、GitHub Actions、<code>/goal</code>（跑到某個可驗證條件成立才停）。要留意的屬性：間隔多久、能不能立刻觸發、recurring 還是一次性、重啟後還在不在（durable）。</p>
+  <div class="callout note">
+    <span class="label">它修好的洞</span>
+    沒有心跳 → 沒有「在時間上編排」，就退化成一次性 run。
+  </div>
+
+  <h2>2. Worktree — 並行不互踩</h2>
+  <p>兩個 agent 同時改同一批檔案，就是 merge hell。Git worktree 給每個 agent 一個<strong>獨立的工作目錄</strong>——共享歷史，但不共享工作區。用完要清理：任務結束或交回給人，就把那棵 worktree 刪掉。<code>loop-worktree</code> 這類 CLI 把這件事機械化：每次嘗試一棵 worktree、記在 manifest 裡、被拒或升級時清掃。</p>
+  <div class="callout note">
+    <span class="label">它修好的洞</span>
+    並行 agent 互踩檔案 → 給各 agent 一個隔離的 checkout，並行而不混亂。
+  </div>
+
+  <h2>3. Skills — 意圖的記憶</h2>
+  <p>每次 session 都<strong>冷啟動</strong>；你沒寫下來的意圖，會被 agent「自信的猜測」填滿——這叫 <strong>intent debt（意圖債）</strong>。Skill 是還債的單位：通常是一個 <code>SKILL.md</code>，封裝專案慣例、build/test/lint 指令、review 標準、領域知識，以及「我們不這樣做，因為那次事故」。沒有 skill，loop 每次都從零重新推導一切。Skill 也是<strong>重用的單位</strong>——打包成 plugin，跨 repo、跨團隊共用。</p>
+  <div class="callout note">
+    <span class="label">它修好的洞</span>
+    冷啟動 + 缺漏意圖被自信猜錯 → 把意圖寫在外面，每次讀，付清 intent debt。
+  </div>
+
+  <h2>4. Connectors（MCP）— 從評論員到操作員</h2>
+  <p>只會讀檔案系統的 loop，最多是個<strong>評論員</strong>。Connectors 讓它變成<strong>操作員</strong>：讀寫 Linear／Jira ticket、貼 Slack／Discord、查資料庫或內部 API、在 GitHub 開 branch 和 PR、觸發部署。<strong>MCP</strong>（Model Context Protocol）已經成為共同底層——為一個工具寫的 connector，常常換個工具也能用。</p>
+  <div class="callout note">
+    <span class="label">它修好的洞</span>
+    loop 只能「說」不能「做」→ 接上真實工具，它才能動到世界。
+  </div>
+
+  <h2>5. Sub-agent（maker/checker）— 寫的人不批改自己</h2>
+  <p>這是「讓 loop 可靠」<strong>最重要的一個結構原則</strong>。寫程式的那個 agent，對自己的程式碼是個差勁的裁判。第二個 agent（有時用更強的模型，永遠用不同的指令）負責驗證。常見分工：Explorer → Implementer → Verifier；Implementer → Security reviewer；Implementer → Test writer + runner。在 unattended 的 loop 裡，那個 verifier 正是「讓你（人）敢走開」的本錢。<code>/goal</code> 也用了同一招：用<strong>另一個</strong>模型來判斷停止條件成不成立。</p>
+  <div class="callout warn">
+    <span class="label">它修好的洞</span>
+    實作者批改自己的作業 → 分出一個 verifier；這是結構性事實，不是模型不夠強。
+  </div>
+
+  <h2>6. State（記憶）— 進度的脊椎</h2>
+  <p>模型跨 session <strong>沒有長期記憶</strong>。loop 必須讀寫一個持久的東西：repo 裡的 <code>STATE.md</code>／<code>LOOP-STATE.json</code>、Linear board 的一段、GitHub Project、或資料庫一列。好的 state 回答三件事：<em>我們現在在做什麼？上次試了什麼、結果如何？什麼在等人？</em> 這個 state 檔，常常是 loop 產出<strong>最重要</strong>的單一成品。</p>
+  <div class="callout note">
+    <span class="label">它修好的洞</span>
+    模型會忘 → 把進度落在磁碟上；跨 session 才接得起來。
+  </div>
+
+  <h2>兩種記憶，別搞混</h2>
+  <p>上面有兩個看起來都像「記憶」的零件，它們記的是<strong>不同的東西</strong>：</p>
+  <table>
+    <thead><tr><th></th><th>記的是</th><th>回答</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Skills</strong></td><td>「意圖」的記憶</td><td>我們要什麼、怎麼做、什麼不做</td></tr>
+      <tr><td><strong>State</strong></td><td>「進度」的記憶</td><td>我們做到哪、試過什麼、卡在哪</td></tr>
+    </tbody>
+  </table>
+  <p>合起來，loop 才有「想得起來的過去」與「不會忘的標準」。這也是為什麼課程寫「六個 primitives（＋Memory）」——State 那一格就是那個 +Memory。</p>
+
+  <h2>它們怎麼組起來：生長路徑</h2>
+  <p>你不必一次到齊。<strong>最小可行的 loop</strong> 從三件最小的事開始，其餘 primitive 在「前一個版本證明了價值、也暴露了壞掉的方式」之後，才一個個加上去：</p>
+  <div class="flow">
+    <div class="branch">最小可行 loop</div>
+    <div class="row">
+      <span class="stage accent">排程</span><span class="arrow">+</span>
+      <span class="stage accent">triage skill</span><span class="arrow">+</span>
+      <span class="stage accent">state 檔</span>
+    </div>
+    <div class="branch">開始改東西了 →</div>
+    <div class="row"><span class="stage">＋ Worktree</span></div>
+    <div class="branch">要自主跑了 →</div>
+    <div class="row"><span class="stage">＋ Sub-agent 驗證（maker/checker）</span></div>
+    <div class="branch">要推 ticket / PR 了 →</div>
+    <div class="row"><span class="stage">＋ Connectors（MCP）</span></div>
+    <div class="under">最好的 loop 是「長」出來的，不是一次蓋好——每加一個零件，都先看過前一版怎麼壞的。</div>
+  </div>
+
+  <h2>帶走的一句話</h2>
+  <p>記住這六個零件，不如記住<strong>它們各自修好的那個洞</strong>：沒有心跳、並行互踩、意圖被猜、只能說不能做、自己批改自己、轉身就忘。loop engineering 的可靠度，就是把這六個洞一個個補起來的結果。接下來三堂課，會挑三個最關鍵的洞深入——先從 maker/checker 開始。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "拿掉哪一個 primitive，loop 就退化成『只跑一次的 agent』？",
+    "options": [
+      "排程（scheduling）",
+      "Worktree",
+      "Skills",
+      "State"
+    ],
+    "answer": 0,
+    "explainRight": "排程是心跳。沒有它，你只是執行了一次 run，沒有『在時間上反覆編排』。",
+    "explainWrong": "其他四個都還在，loop 仍可能跑——只是會在別處壞掉。唯獨排程一拿掉，『loop』這個概念本身就消失了。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "兩個 agent 同時改同一個檔案會 merge hell。哪個 primitive 專門解這個？",
+    "options": [
+      "Worktree——各 agent 一棵獨立 checkout",
+      "Skills——把改檔慣例寫下來",
+      "排程——錯開它們跑的時間",
+      "Connectors——用 GitHub 協調"
+    ],
+    "answer": 0,
+    "explainRight": "Worktree 給每個 agent 一個共享歷史、但不共享工作區的目錄，並行就不互踩。用完要清理。",
+    "explainWrong": "錯開時間能避開碰撞，但犧牲了並行；慣例與 connector 解的是別的問題。Worktree 才是『並行而不混亂』的零件。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "為什麼 loop 需要 skills？",
+    "options": [
+      "每次 session 都冷啟動，沒寫下的意圖會被『自信猜測』填滿（intent debt）",
+      "模型太弱，要把每個步驟寫死給它照做",
+      "沒有 skill，模型連 git 指令都不會下",
+      "skill 是讓 loop 能並行的唯一辦法"
+    ],
+    "answer": 0,
+    "explainRight": "skill 是意圖的持久記憶——封裝慣例、build、與『我們不這樣做因為某次事故』，讓 loop 不必每次從零推導。",
+    "explainWrong": "不是模型笨、也不是並行的關鍵。是『記憶』問題：冷啟動下，缺漏的意圖會被自信地猜錯。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "『寫程式的那個 agent，不該批改自己的作業』對應哪個 primitive？",
+    "options": [
+      "Sub-agent 的 maker/checker 分工",
+      "Worktree 的隔離",
+      "Skills 的持久記憶",
+      "Connectors 的操作能力"
+    ],
+    "answer": 0,
+    "explainRight": "實作者對自己的程式碼是差勁的裁判——這是結構性事實。另一個 agent（常換模型／換指令）負責驗證，你才敢走開。",
+    "explainWrong": "隔離、記憶、操作各解各的問題；唯有 maker/checker 直接處理『誰來判斷對錯』。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "最小可行的 loop，從什麼組合開始？",
+    "options": [
+      "排程 ＋ 一個 triage skill ＋ 一個 state 檔",
+      "六個 primitive 全部到齊才能跑",
+      "只要有排程和 cron 就夠",
+      "worktree ＋ connectors，不需要 skill"
+    ],
+    "answer": 0,
+    "explainRight": "先讓心跳＋判讀工作＋記住進度三件最小的事成立，其餘 primitive 在證明價值後再一個個加。",
+    "explainWrong": "不需要一次到齊；光有排程缺 triage 和 state，loop 不知道做什麼也記不住；worktree／connector 是後來才加的。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">問你的老師</span>
+    把這六個零件對照你自己的工具看看，例如：「我用 opencode，這六個哪些我已經有、哪些還沒？」「skills 跟我現在用的 AGENTS.md 是同一件事嗎？」「worktree 我從哪裡開始？」「我的 loop 缺哪個洞最危險？」——任何不清楚的都可以問。
+  </div>
+
+  <p class="nav-next">接下來 → <a href="0003-maker-checker.html">第 03 課：Maker / Checker</a>——為什麼「實作者不評分自己的作業」是讓 loop 可靠最重要的一根支柱。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 02 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a>（六 primitives 的權威定義）與 <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" rel="noopener">Addy Osmani · Loop Engineering</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

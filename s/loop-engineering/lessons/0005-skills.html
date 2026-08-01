@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005 — Skills: write intent on the outside</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0005 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Skills: write intent on the outside</h1>
+  <p class="subtitle">Pay down intent debt — write conventions, build, and "we don't do it this way" once, read every run.</p>
+
+  <p class="lead">The first three lessons covered the parts and the two pillars. This one returns to the third primitive — <strong>skills</strong>. The source calls it "the persistent memory of <em>intent</em>." Last lesson's state remembers "where we are" (progress); skills remember "<strong>what we want, how to do it, what we never do</strong>" (intent). Without it the loop re-derives everything from scratch each run — that's <strong>intent debt</strong>.</p>
+
+  <div class="principle">Every session is a cold start; intent you didn't write down gets filled by "confident guesses." A skill is the unit that pays the debt.</div>
+
+  <h2>The problem: how intent debt accrues</h2>
+  <p>Every session is a <strong>cold start</strong>. The things you have in your head but never wrote down — "we use pnpm not npm," "this field can't be null," "don't touch that file, it bit us once" — the agent doesn't know any of it. It won't stop to ask; it fills the gap with a <strong>confident guess</strong>. Right is luck; wrong is your cleanup. Every run re-accrues that debt.</p>
+
+  <h2>The fix: one SKILL.md, written once, read every run</h2>
+  <p>A skill is usually a <code>SKILL.md</code> (optionally with scripts/references) that encodes:</p>
+  <ul>
+    <li><strong>Project conventions</strong> — which package manager, naming rules, directory layout.</li>
+    <li><strong>build/test/lint commands</strong> — exact commands, not "run the tests."</li>
+    <li><strong>Review standards</strong> — what counts as "mergeable."</li>
+    <li><strong>Domain knowledge</strong> — business rules, data models.</li>
+    <li><strong>"We don't do it this way because of X incident"</strong> — the gold.</li>
+  </ul>
+
+  <div class="callout accent">
+    <span class="label">A skill isn't just instructions — it's scar tissue</span>
+    Entries like "we don't do it this way because of X incident" encode <strong>institutional memory (scar tissue)</strong> into the skill. They don't teach the agent how to do something; they teach it <strong>not to repeat a mistake</strong>. This is the most valuable part of a skill — and the hardest to derive from the code alone.
+  </div>
+
+  <h2>Without skills, the loop re-derives from scratch</h2>
+  <p>The source is blunt: without skills the loop "re-derives everything from scratch on every run." The same conventions, the same build commands, the same "don't step on that landmine" — re-guessed every single run. A skill writes these <strong>once and reads them every time</strong>, turning repeated guesses into reliable defaults.</p>
+
+  <h2>The triage skill: most loops' first skill</h2>
+  <p>The minimal viable loop is "scheduling + one triage skill + a state file." The triage skill is the one that "reads the work and decides what to act on," and its <strong>output format must be tight</strong> — so downstream can parse it. The checklist also reminds: skill descriptions should be <strong>"boring and specific"</strong> so auto-triggering is accurate.</p>
+
+  <h2>A skill is also the unit of reuse</h2>
+  <p>A skill doesn't only pay one repo's debt — <strong>package it as a plugin</strong> and it's shared across repos and teams. A landmine one team hit, once encoded as a skill, never needs to be re-hit by any loop.</p>
+
+  <h2>The two memories, closed out</h2>
+  <table>
+    <thead><tr><th></th><th>Remembers</th><th>Answers</th><th>Without it</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Skills</strong></td><td>intent</td><td>what we want, how, what we never do</td><td>cold-start re-guessing (intent debt)</td></tr>
+      <tr><td><strong>State</strong></td><td>progress</td><td>where we are, what we tried, stuck where</td><td>amnesia, nothing chains</td></tr>
+    </tbody>
+  </table>
+  <p>Together they give the loop a "standard it won't forget" and a "past it can recall." That completes Phase B (making loops reliable) — the next lesson opens Phase C: autonomy levels.</p>
+
+  <div class="callout note">
+    <span class="label">Map it to your own tools</span>
+    The <code>AGENTS.md</code> you already use is, in essence, "project conventions written on the outside, read every run" — functionally close to a shared skill. The difference: a skill is a <strong>structured, triggerable, reusable</strong> unit (its own description, output format, packageable). The idea is the same: move intent from "your head" to "disk."
+  </div>
+
+  <h2>One sentence to take away</h2>
+  <p>A skill writes down "what you thought everyone knew, but only you did." The way to pay down intent debt is plain: <strong>write it once, read it every run</strong>.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "How does intent debt accrue?",
+    "options": [
+      "Every session is a cold start; unwritten intent gets filled by 'confident guesses'",
+      "The model is too expensive to use",
+      "There's too much code for the model to read",
+      "Too many skills conflicting with each other"
+    ],
+    "answer": 0,
+    "explainRight": "Under cold start, missing intent isn't asked for — it's confidently guessed wrong. Every run re-accrues it.",
+    "explainWrong": "Cost, code volume, and skill conflicts aren't the cause. The cause is 'cold start + not written down.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "'We don't do it this way because of X incident' represents what kind of memory in a skill?",
+    "options": [
+      "Institutional memory / scar tissue — avoid repeating a mistake",
+      "Up-to-date feature documentation",
+      "A README for humans the loop won't use",
+      "Just a code comment"
+    ],
+    "answer": 0,
+    "explainRight": "This is a skill's most valuable part: encoding past lessons so the agent learns 'don't do that' — something the code alone can't derive.",
+    "explainWrong": "It's not feature docs, not human-only, not a comment. It's institutional memory: 'don't repeat this.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Why should skill descriptions be 'boring and specific'?",
+    "options": [
+      "So auto-triggering is accurate — the right skill fires at the right time",
+      "So they look professional to readers",
+      "To minimize token count",
+      "Actually, the fancier the better for triggering"
+    ],
+    "answer": 0,
+    "explainRight": "A specific, unflashy description makes it easy for the model to auto-select the right skill at the right time. Vague flashy ones misfire.",
+    "explainWrong": "It's not appearance, not token savings, and fancier is worse. It's an engineering concern: 'trigger accurately.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "'What we want, how we do it, what we never do' is which kind of memory?",
+    "options": [
+      "Skills (memory of intent)",
+      "State (memory of progress)",
+      "Verifier (memory of checks)",
+      "Connector (memory of actions)"
+    ],
+    "answer": 0,
+    "explainRight": "Skills remember 'intent.' State remembers 'progress' (where we are).",
+    "explainWrong": "'What/how' is intent — that's Skills. 'Where we are' is State."
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    "In my AGENTS.md today, which entries are conventions and which are 'because we got burned'?" "If I broke it into individual skills, where would I start?" "Why does the triage skill's output format need to be tight?" Anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0006-autonomy-levels.html">Lesson 06: Autonomy Levels L1 → L2 → L3</a> — Phase C begins: report-only first, then assisted, then unattended.</p>
+
+  <div class="footer">
+    <p>Lesson 05 of <em>Loop Engineering</em> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a> (#3 Skills), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">concepts.md</a> (Intent Debt), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> §3.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

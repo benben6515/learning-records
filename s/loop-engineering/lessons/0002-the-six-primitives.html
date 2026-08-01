@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 — The Six Primitives (+ Memory): the loop's part list</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0002 · ~7 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>The Six Primitives (+ Memory): the loop's part list</h1>
+  <p class="subtitle">Take the loop apart into six parts — each one patches a hole that would otherwise break it.</p>
+
+  <p class="lead">Last lesson you saw the whole-picture table: a loop is not one long prompt but a small system of six parts. This lesson unpacks them one by one. The read is simple — <strong>each primitive maps to a hole that, left unplugged, breaks the loop right there.</strong> Learn the parts and the holes they patch; later lessons (maker/checker, state, skills) go deep on each.</p>
+
+  <div class="principle">Six primitives, six holes. Learning them is learning where a loop fails.</div>
+
+  <h2>1. Scheduling — the loop's heartbeat</h2>
+  <p>Without scheduling, you <strong>ran an agent once</strong> — that's not a loop. Scheduling turns "one run" into "runs that recur over time," so it's the heartbeat. Forms vary: <code>/loop</code> (Grok), scheduled tasks / cron in Claude Code, GitHub Actions, <code>/goal</code> (run until a verifiable condition is true). Properties to mind: interval, fire-immediately, recurring vs one-shot, durable (survives restarts).</p>
+  <div class="callout note">
+    <span class="label">The hole it patches</span>
+    No heartbeat → no "orchestration over time" → it collapses back into a one-off run.
+  </div>
+
+  <h2>2. Worktree — parallelism without chaos</h2>
+  <p>Two agents editing the same files at once is merge hell. A git worktree gives each agent its <strong>own working directory</strong> — shared history, but not a shared working tree. Cleanup matters: when the task is done or handed off, delete the worktree. CLIs like <code>loop-worktree</code> make it mechanical: one worktree per attempt, tracked in a manifest, swept on reject or escalation.</p>
+  <div class="callout note">
+    <span class="label">The hole it patches</span>
+    Parallel agents collide on files → give each an isolated checkout; parallel without chaos.
+  </div>
+
+  <h2>3. Skills — the memory of intent</h2>
+  <p>Every session is a <strong>cold start</strong>; intent you didn't write down gets filled in by the agent's "confident guesses" — that's <strong>intent debt</strong>. A skill is the unit that pays it down: usually a <code>SKILL.md</code> encoding project conventions, build/test/lint commands, review standards, domain knowledge, and "we don't do it this way because of X incident." Without skills the loop re-derives everything from scratch each run. A skill is also the <strong>unit of reuse</strong> — package it as a plugin to share across repos or teams.</p>
+  <div class="callout note">
+    <span class="label">The hole it patches</span>
+    Cold start + missing intent confidently guessed wrong → write intent down outside, read it every run, pay down the debt.
+  </div>
+
+  <h2>4. Connectors (MCP) — from commentator to operator</h2>
+  <p>A loop that can only read the filesystem is at best a <strong>commentator</strong>. Connectors turn it into an <strong>operator</strong>: read and update Linear / Jira tickets, post to Slack / Discord, query databases or internal APIs, open branches and PRs on GitHub, trigger deploys. <strong>MCP</strong> (Model Context Protocol) has become the common substrate, so a connector written for one tool often works in another.</p>
+  <div class="callout note">
+    <span class="label">The hole it patches</span>
+    The loop can "talk" but not "act" → wire it to real tools so it can move the world.
+  </div>
+
+  <h2>5. Sub-agent (maker/checker) — the writer doesn't grade its own work</h2>
+  <p>This is the <strong>single most important structural pattern</strong> for reliable loops. The agent that wrote the code is a terrible judge of its own work. A second agent (sometimes a stronger model, always different instructions) performs verification. Common splits: Explorer → Implementer → Verifier; Implementer → Security reviewer; Implementer → Test writer + runner. In an unattended loop, that verifier is exactly what lets you (the human) walk away with some confidence. <code>/goal</code> uses the same trick: a <strong>different</strong> model decides whether the stopping condition has been met.</p>
+  <div class="callout warn">
+    <span class="label">The hole it patches</span>
+    The implementer grades its own homework → split off a verifier; that's structural, not a model-strength problem.
+  </div>
+
+  <h2>6. State (memory) — the spine of progress</h2>
+  <p>The model has <strong>no long-term memory</strong> across sessions. The loop must read from and write to something durable: a <code>STATE.md</code> / <code>LOOP-STATE.json</code> in the repo, a section of a Linear board, a GitHub Project, or a database row. Good state answers three questions: <em>what are we working on now? what did we try last time and what was the outcome? what's waiting for a human?</em> This state file is often the <strong>single most important</strong> artifact the loop produces.</p>
+  <div class="callout note">
+    <span class="label">The hole it patches</span>
+    The model forgets → put progress on disk; sessions can chain together.
+  </div>
+
+  <h2>Two kinds of memory — don't confuse them</h2>
+  <p>Two of the parts above both look like "memory," and they remember <strong>different things</strong>:</p>
+  <table>
+    <thead><tr><th></th><th>Remembers</th><th>Answers</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Skills</strong></td><td>memory of <em>intent</em></td><td>what we want, how we do it, what we never do</td></tr>
+      <tr><td><strong>State</strong></td><td>memory of <em>progress</em></td><td>where we are, what we tried, where we're stuck</td></tr>
+    </tbody>
+  </table>
+  <p>Together they give the loop a past it can recall and a standard it won't forget. This is why the course says "six primitives (+ Memory)" — the State row <em>is</em> that +Memory.</p>
+
+  <h2>How they fit: the growth path</h2>
+  <p>You don't need all of them at once. A <strong>minimal viable loop</strong> starts with the three smallest things; the rest get added only after the previous version has proven its value — and its failure modes:</p>
+  <div class="flow">
+    <div class="branch">Minimal viable loop</div>
+    <div class="row">
+      <span class="stage accent">Scheduling</span><span class="arrow">+</span>
+      <span class="stage accent">triage skill</span><span class="arrow">+</span>
+      <span class="stage accent">state file</span>
+    </div>
+    <div class="branch">Start making changes →</div>
+    <div class="row"><span class="stage">＋ Worktree</span></div>
+    <div class="branch">Running autonomously →</div>
+    <div class="row"><span class="stage">＋ Sub-agent verification (maker/checker)</span></div>
+    <div class="branch">Driving tickets / PRs →</div>
+    <div class="row"><span class="stage">＋ Connectors (MCP)</span></div>
+    <div class="under">The best loops are grown, not built in one shot — each new part is added only after you've watched the previous version break.</div>
+  </div>
+
+  <h2>One sentence to take away</h2>
+  <p>Rather than memorize six parts, memorize <strong>the six holes they patch</strong>: no heartbeat, parallel collisions, guessed intent, can only talk, self-graded work, forgotten the moment you look away. A loop's reliability is exactly the result of plugging those holes one by one. The next three lessons go deep on the three most critical holes — starting with maker/checker.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Remove which primitive and the loop collapses back into a one-off agent run?",
+    "options": [
+      "Scheduling",
+      "Worktree",
+      "Skills",
+      "State"
+    ],
+    "answer": 0,
+    "explainRight": "Scheduling is the heartbeat. Without it you just ran once — there's no 'recurring over time.'",
+    "explainWrong": "Keep the other four and the loop may still run — it just breaks somewhere else. Pull scheduling and the very concept of a 'loop' disappears."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Two agents editing the same file cause merge hell. Which primitive is built for exactly this?",
+    "options": [
+      "Worktree — a separate checkout per agent",
+      "Skills — write down the file-editing conventions",
+      "Scheduling — stagger when they run",
+      "Connectors — coordinate via GitHub"
+    ],
+    "answer": 0,
+    "explainRight": "A worktree gives each agent a directory with shared history but not a shared working tree, so they don't collide. Clean up when done.",
+    "explainWrong": "Staggering avoids the crash but throws away parallelism; conventions and connectors solve other problems. Worktree is the part for 'parallel without chaos.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Why does a loop need skills?",
+    "options": [
+      "Every session is a cold start; unwritten intent gets filled by 'confident guesses' (intent debt)",
+      "The model is too weak, so every step must be hard-coded for it",
+      "Without a skill the model can't even run git commands",
+      "Skills are the only way to make a loop parallel"
+    ],
+    "answer": 0,
+    "explainRight": "A skill is persistent memory of intent — conventions, build, and 'we don't do this because of X incident' — so the loop needn't re-derive from scratch.",
+    "explainWrong": "It's not model stupidity or the key to parallelism. It's a memory problem: under cold start, missing intent gets confidently guessed wrong."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "'The agent that wrote the code shouldn't grade its own work' maps to which primitive?",
+    "options": [
+      "Sub-agent maker/checker split",
+      "Worktree isolation",
+      "Skills' persistent memory",
+      "Connectors' ability to act"
+    ],
+    "answer": 0,
+    "explainRight": "The implementer is a poor judge of its own code — that's structural. A second agent (often a different model / instructions) verifies, so you can walk away.",
+    "explainWrong": "Isolation, memory, and acting each solve their own problem; only maker/checker directly handles 'who judges right from wrong.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "What does a minimal viable loop start with?",
+    "options": [
+      "Scheduling + one triage skill + a state file",
+      "All six primitives must be present to run",
+      "Just scheduling and cron is enough",
+      "Worktree + connectors, no skill needed"
+    ],
+    "answer": 0,
+    "explainRight": "Get the three smallest things working — heartbeat, triage, and remembering progress — then add primitives as each proves value.",
+    "explainWrong": "You don't need everything at once; scheduling without triage and state means the loop doesn't know what to do or remember it; worktree/connectors come later."
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Map the six parts onto your own tools, e.g.: "I use opencode — which of these six do I already have, which don't I?" "Are skills the same thing as the AGENTS.md I use now?" "Where do I start with worktrees?" "Which hole is the most dangerous one my loop is missing?" Anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0003-maker-checker.html">Lesson 03: Maker / Checker</a> — why "the implementer never grades its own work" is the most important pillar of loop reliability.</p>
+
+  <div class="footer">
+    <p>Lesson 02 of <em>Loop Engineering</em> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/primitives.md" target="_blank" rel="noopener">repo primitives.md</a> (authoritative definition of the six) and <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" rel="noopener">Addy Osmani · Loop Engineering</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006 — 自主等級 L1 → L2 → L3</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0006 · ~7 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>自主等級 L1 → L2 → L3</h1>
+  <p class="subtitle">先 report-only，再 assisted，最後 unattended——分階上線的邏輯，以及為什麼「絕不跳過 L1」。</p>
+
+  <p class="lead">Phase B（讓 loop 可靠）講完了零件與兩根支柱。Phase C 談「經營、風險與模式」。這堂課先處理最關鍵的經營問題：<strong>loop 該放手到什麼程度？</strong>答案是一條分階的階梯——而且它<strong>不是單向棘輪</strong>，出事時你該往下退。</p>
+
+  <div class="principle">自主等級不是「越高越好」，而是「證明了才升」。對 production repo 上的新 pattern，絕不跳過 L1。</div>
+
+  <h2>四個等級，對應不同的檢查表</h2>
+  <p>設計清單把就緒度分成四級，每一級要通過的檢查表段落不同：</p>
+  <table>
+    <thead><tr><th>等級</th><th>做什麼</th><th>要通過</th></tr></thead>
+    <tbody>
+      <tr><td><strong>L0 — Draft</strong></td><td>只有文件上的意圖</td><td>§1</td></tr>
+      <tr><td><strong>L1 — Report</strong></td><td>triage → state，不自動動手</td><td>§1–3、§5</td></tr>
+      <tr><td><strong>L2 — Assisted</strong></td><td>有 verifier 的小幅自動修復</td><td>§1–7</td></tr>
+      <tr><td><strong>L3 — Unattended</strong></td><td>沒人盯著跑</td><td>全部段落</td></tr>
+    </tbody>
+  </table>
+
+  <h2>升級路徑：證明了才往下一步</h2>
+  <p>operating-loops 給的升級路徑，每一步都有前提：</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">L1 只報告</span><span class="arrow">→</span>
+      <span class="stage">穩定 triage 1–2 週</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">L2 小幅自動修復</span><span class="arrow">+</span>
+      <span class="stage">verifier ＋ worktree ＋ 上限次數</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">L2+ 接 connectors</span><span class="arrow">→</span>
+      <span class="stage">自動更新 PR／ticket</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">L3 無人看管</span><span class="arrow">+</span>
+      <span class="stage">denylist ＋ 預算 ＋ 指標 ＋ 人類 gate</span>
+    </div>
+    <div class="under">出事就往回退——這不是單向棘輪。</div>
+  </div>
+
+  <h2>L1 → L2 是影響最深遠的一步</h2>
+  <p>這條階梯上，<strong>L1 到 L2 的跨越是影響最深遠的</strong>——因為這是 loop 開始<strong>動手</strong>（act）而不只是<strong>報告</strong>（report）的轉折。一旦它開始改東西、開 PR，風險性質就變了。所以這一步的前提最硬：要有 verifier、要有 worktree 隔離、要有「最多嘗試幾次」的上限。</p>
+
+  <h2>為什麼先 report-only</h2>
+  <p>「Daily Triage 在 L1 只報告」是文件給的<strong>第一個 loop 建議</strong>，理由有二：</p>
+  <ol>
+    <li><strong>教紀律，沒有風險</strong>——它逼你把 state 的讀／寫／修剪練起來，卻沒有 auto-merge 的破壞力。「低風險、極佳的練習對象。」</li>
+    <li><strong>先看價值再談動手</strong>——report-only 那一週你會看到：過時的 PR、不穩的測試、常態性紅的 main。先證明它「看得準」，再升級去修。</li>
+  </ol>
+
+  <div class="callout warn">
+    <span class="label">不是單向棘輪</span>
+    自主等級可以、也應該<strong>往下退</strong>。發生 production 事件（loop 可能跟 hotfix 打架）、進行中的 schema migration、或關鍵 reviewer 不在卻又開了 auto-merge（別這樣）——這些時候都該退回 report-only。
+  </div>
+
+  <h2>loop-audit 會機械性地擋住 L3</h2>
+  <p>「能不能放手」不是你自己說了算。<code>loop-audit</code> 會<strong>機械性地擋住 L3</strong>，直到三個成本訊號就位：<code>loop-budget.md</code>、<code>loop-run-log.md</code>、以及 LOOP.md 裡的預算段落。換句話說，沒把預算與可觀測性準備好，系統就不讓你升到無人看管——這是強制的護欄，不是建議。</p>
+
+  <h2>帶走的一句話</h2>
+  <p>自主等級是一條「<strong>證明了才升、出事就退</strong>」的階梯。影響最大的是 L1→L2（loop 開始動手）；而 L3 不是目標，是你在預算、指標、gate 都到位後，<strong>才被允許</strong>抵達的終點。下一課看這條階梯上會被放大的風險。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "為什麼第一個 loop 建議從 L1 report-only 開始？",
+    "options": [
+      "它教 state 紀律，又沒有 auto-merge 的破壞風險",
+      "因為 L1 最便宜，可以省 token",
+      "因為 L2 以上不合法",
+      "因為 report-only 不需要寫任何檔案"
+    ],
+    "answer": 0,
+    "explainRight": "L1 低風險、又是極佳的練習對象——逼你把讀／寫／修剪 state 的紀律練起來，先證明『看得準』再談動手。",
+    "explainWrong": "不是省錢、不是法規、更不是『什麼都不用寫』。是『先練紀律、零破壞風險』。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "哪一個跨越是這條階梯上影響最深遠的，為什麼？",
+    "options": [
+      "L1 → L2——這是 loop 開始『動手』而不只是『報告』的轉折",
+      "L0 → L1——因為要寫第一個檔案",
+      "L2 → L3——因為 token 會變貴",
+      "每一階都一樣重要"
+    ],
+    "answer": 0,
+    "explainRight": "L1→L2 是 loop 開始 act 的轉折，風險性質整個變了，所以前提最硬（verifier、worktree、上限次數）。",
+    "explainWrong": "寫檔案、token 變貴都不是『影響最深遠』的理由。關鍵是『從說到做』的質變。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "loop-audit 機械性地擋住 L3，直到什麼就位？",
+    "options": [
+      "loop-budget.md ＋ loop-run-log.md ＋ LOOP.md 的預算段落",
+      "verifier 用最強的模型",
+      "cadence 調到一天一次",
+      "人工 review 滿 100 次"
+    ],
+    "answer": 0,
+    "explainRight": "這三個成本／可觀測性訊號缺一個，L3 就被擋住。這是強制護欄，不是建議。",
+    "explainWrong": "模型強度、頻率、review 次數都不是 L3 的機械閘門。閘門是『預算＋日誌＋LOOP 預算段』三件。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "關於自主等級，下列哪一句最正確？",
+    "options": [
+      "它不是單向棘輪——出事（事件、migration、reviewer 不在）就該退回 report-only",
+      "一旦升上 L3 就永遠不能退",
+      "等級越高，loop 一定越可靠",
+      "L1 沒有任何價值，只是過場"
+    ],
+    "answer": 0,
+    "explainRight": "自主等級可升可退。事件、schema migration、關鍵 reviewer 不在，都是退回 report-only 的訊號。",
+    "explainWrong": "不會『永遠不能退』；等級高不代表更可靠（還看 verifier、預算、gate）；L1 本身就是極有價值的練習與觀察階段。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">問你的老師</span>
+    「我現在用 agent，大概落在哪一級？」「我想試 L2，前提（verifier、worktree、上限）我缺哪些？」「什麼樣的工作適合一直留在 L1 report-only？」——任何不清楚的都可以問。
+  </div>
+
+  <p class="nav-next">接下來 → <a href="0007-debts-and-traps.html">第 07 課：兩種債與一個陷阱</a>——loop 不會刪掉你：被放大的 comprehension debt、orchestration tax 與 cognitive surrender。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 06 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a>（Readiness Levels）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a>（Upgrade Path、L3 gating）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/pattern-picker.md" target="_blank" rel="noopener">pattern-picker.md</a>（第一個 loop = Daily Triage L1）。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

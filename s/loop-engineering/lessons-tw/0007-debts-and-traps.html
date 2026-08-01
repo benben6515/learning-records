@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0007 — 兩種債與一個陷阱</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0007 · ~7 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>兩種債與一個陷阱</h1>
+  <p class="subtitle">loop 不會刪掉你——被放大的 comprehension debt、orchestration tax 與 cognitive surrender。</p>
+
+  <p class="lead">第 01 課那句話要認真對待：<strong>loop 改變了工作，沒有把你從工作中刪掉</strong>。而且有三個問題會隨著 loop 變強而<strong>更尖銳</strong>，不是更輕鬆。這堂課把它們一次講清楚：兩種「債」、一個「陷阱」，外加一種「稅」。源文件的定義很精準——我們照著走。</p>
+
+  <div class="principle">同一個 loop，相反結果。loop 分不出來——你分得出來。「Build the loop. Stay the engineer.」</div>
+
+  <h2>債一：Intent debt（意圖債）</h2>
+  <p>每個 session 都冷啟動，缺漏的意圖被「自信的猜測」填滿。<strong>還法：skills</strong>——把慣例、build、「我們不這樣做」寫一次、每次讀（第 05 課）。這是 loop 還沒跑就先欠下的債。</p>
+
+  <h2>債二：Comprehension debt（理解債）</h2>
+  <p>這是真正會咬人的債。<strong>理解債＝repo 實際內容與「你真正理解多少」的差距</strong>。loop 出貨愈快、寫了愈多「你沒寫的程式碼」，這條差距就拉得愈開。<strong>還法只有一個：去讀它寫了什麼</strong>。不讀，債就只增不減。</p>
+  <div class="callout warn">
+    <span class="label">關鍵</span>
+    「做完了」是個主張，不是證明。loop 跑得愈快，你「以為自己懂」和「實際懂多少」的落差就愈危險。
+  </div>
+
+  <h2>陷阱：Cognitive surrender（認知棄守）</h2>
+  <p>放任 loop 跑、自己不再有意見——這個狀態<strong>很舒服，也很危險</strong>。源文件講得最到位的一句：<strong>「用判斷力設計 loop 是解藥；用 loop 逃避思考是加速器。同一個動作，相反結果。」</strong></p>
+  <p>兩個人跑一模一樣的 loop，一個用它加速「自己深刻理解」的工作；另一個用它<strong>逃避</strong>理解工作。loop 分不出來——你分得出來。這就是為什麼 comprehension debt 會不斷累積：<strong>棄守，是它的供給</strong>。</p>
+
+  <h2>稅：Orchestration tax（編排稅）＋ token 成本</h2>
+  <p>前兩個是「你跟 repo 的關係」，這個是「你跑 loop 的成本」。</p>
+  <p><strong>編排稅</strong>＝協調並行 agent 的人力成本：review 頻寬、merge 衝突、context 切換。worktree 拿掉<strong>機械性</strong>的碰撞，但<strong>你（人）仍是並行數的天花板</strong>——能同時吸收幾個 loop，是人的限制，不是工具的。</p>
+  <p><strong>token 成本</strong>有個反直覺的乘數：<strong>cadence 是線性乘數</strong>——5 分鐘跑一次 vs 一天一次，是一天 288 倍的 run。CI sweeper 每 15 分鐘跑、若每次都「全跑」，一天可以燒到 ~5M tokens。<strong>解法：early-exit</strong>——只在 state 說「有可做的」時才 spawn sub-agent；空的 watchlist 就在 5k tokens 內退出。</p>
+
+  <h2>四件事怎麼串起來</h2>
+  <table>
+    <thead><tr><th>名稱</th><th>是什麼</th><th>還法／解法</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Intent debt</strong></td><td>冷啟動，意圖被自信猜錯</td><td>skills（第 05 課）</td></tr>
+      <tr><td><strong>Comprehension debt</strong></td><td>repo 內容 vs 你懂多少的差距</td><td>讀它寫了什麼</td></tr>
+      <tr><td><strong>Cognitive surrender</strong></td><td>放任跑、不再有意見</td><td>用判斷力設計 loop，別用它逃避思考</td></tr>
+      <tr><td><strong>Orchestration/cost tax</strong></td><td>並行協調成本＋cadence 線性燒 token</td><td>worktree＋early-exit＋預算上限</td></tr>
+    </tbody>
+  </table>
+  <p>讀法：前兩個（intent、comprehension）是你要<strong>主動還</strong>的債；cognitive surrender 是讓債變成致命的<strong>陷阱</strong>；orchestration/cost 是持續在付的<strong>稅</strong>。loop 的經營，就是在這四件事上保持清醒。</p>
+
+  <div class="callout accent">
+    <span class="label">何時該慢下來／停／殺掉</span>
+    <strong>慢下來</strong>：預算週中破 80%、triage 誤報率 >30%、同一項 48 小時內被升級 2 次以上。<strong>暫停</strong>：production 事件進行中、schema migration 進行中、關鍵 reviewer 不在還開著 auto-merge。<strong>殺掉</strong>：成本 > 價值連續兩週、團隊把所有通知靜音。
+  </div>
+
+  <h2>帶走的一句話</h2>
+  <p>loop 不會刪掉你——它<strong>放大你</strong>。理解債會不會吃掉你，取決於你願不願意讀、願不願意保持意見。最後一堂課看怎麼把這些觀念落地成可複製的生產模式。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "comprehension debt（理解債）會自己停下來嗎？怎麼還？",
+    "options": [
+      "不會——唯一還法是去讀 loop 寫了什麼",
+      "會——loop 變強後你就自然懂了",
+      "會——只要跑得夠慢",
+      "還不掉，只能換 repo"
+    ],
+    "answer": 0,
+    "explainRight": "理解債是『repo 內容 vs 你懂多少』的差距。loop 出貨愈快、你讀愈少，債只增不減。讀，是唯一還法。",
+    "explainWrong": "loop 變強不會讓你自動懂；跑慢不還債；換 repo 是逃避。只有『讀產出』能還。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "cognitive surrender 裡『同一個動作，相反結果』，兩人差在哪？",
+    "options": [
+      "一個用它加速自己理解的工作；另一個用它逃避理解",
+      "一個用強模型；另一個用弱模型",
+      "一個在雲端跑；另一個在本機跑",
+      "一個寫 python；另一個寫 go"
+    ],
+    "answer": 0,
+    "explainRight": "同樣放著 loop 跑，差別在『你還有沒有在思考』。loop 分不出來——你分得出來。",
+    "explainWrong": "模型、雲本地、語言都不是重點。重點是『加速理解』還是『逃避理解』。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "orchestration tax：worktree 拿掉了什麼？什麼仍是天花板？",
+    "options": [
+      "拿掉機械性碰撞；你（人）仍是並行數的天花板",
+      "拿掉 token 成本；模型強度是天花板",
+      "拿掉理解債；repo 大小是天花板",
+      "什麼都沒拿掉，只是好看"
+    ],
+    "answer": 0,
+    "explainRight": "worktree 解掉『檔案互踩』這種機械碰撞，但『能同時吸收幾個 loop』是人的頻寬問題——你是天花板。",
+    "explainWrong": "worktree 不解 token、不解理解債。它解的是機械碰撞；人的頻寬才是並行的上限。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "cadence 對 token 成本的影響是？",
+    "options": [
+      "線性乘數——5 分鐘一次 vs 一天一次，是一天 288 倍的 run",
+      "沒影響，跑幾次都一樣貴",
+      "跑愈慢愈貴",
+      "只有 L3 才會被影響"
+    ],
+    "answer": 0,
+    "explainRight": "cadence 是線性乘數。所以 CI sweeper 每次全跑會爆——解法是 early-exit，空 watchlist 就在 5k tokens 內退出。",
+    "explainWrong": "cadence 是線性乘數，跑愈密愈貴；不論哪個等級都會被影響。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">問你的老師</span>
+    「我現在用 agent，理解債大概欠了多少？」「我有沒有在 cognitive surrender？怎麼自查？」「我的工作中，哪一段最適合用 loop 加速理解、而不是逃避理解？」——任何不清楚的都可以問。
+  </div>
+
+  <p class="nav-next">接下來 → <a href="0008-patterns-and-loop-ready.html">第 08 課：七個 Patterns 與 Loop Ready score</a>——把觀念落地成可複製的生產 loop，以及「能不能上線」的評分。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 07 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">concepts.md</a>（四個詞彙的精確定義）、<a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a>（token 成本、何時停），以及第 01 課 Addy Osmani 的「same loop, opposite outcomes」。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

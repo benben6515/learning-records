@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006 — Autonomy Levels L1 → L2 → L3</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0006 · ~7 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>Autonomy Levels L1 → L2 → L3</h1>
+  <p class="subtitle">Report-only first, then assisted, then unattended — the logic of phased rollout, and why you never skip L1.</p>
+
+  <p class="lead">Phase B (reliability) covered the parts and the two pillars. Phase C is about "operating, risk, and patterns." This lesson tackles the central operating question first: <strong>how much should you let go?</strong> The answer is a phased ladder — and it's <strong>not a one-way ratchet</strong>; when things go wrong you demote.</p>
+
+  <div class="principle">Autonomy isn't "higher is better" — it's "prove it, then promote." Never skip L1 for a new pattern on a production repo.</div>
+
+  <h2>Four levels, mapped to checklist sections</h2>
+  <p>The design checklist splits readiness into four levels, each gated by which checklist sections pass:</p>
+  <table>
+    <thead><tr><th>Level</th><th>What it does</th><th>Requires</th></tr></thead>
+    <tbody>
+      <tr><td><strong>L0 — Draft</strong></td><td>Documented intent only</td><td>§1</td></tr>
+      <tr><td><strong>L1 — Report</strong></td><td>triage → state, no auto-action</td><td>§1–3, §5</td></tr>
+      <tr><td><strong>L2 — Assisted</strong></td><td>Small auto-fixes with a verifier</td><td>§1–7</td></tr>
+      <tr><td><strong>L3 — Unattended</strong></td><td>Runs without you watching</td><td>All sections</td></tr>
+    </tbody>
+  </table>
+
+  <h2>The upgrade path: prove it, then take the next step</h2>
+  <p>The operating-loops upgrade path gives each step a precondition:</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">L1 report-only</span><span class="arrow">→</span>
+      <span class="stage">stable triage 1–2 weeks</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">L2 small auto-wins</span><span class="arrow">+</span>
+      <span class="stage">verifier + worktree + max attempts</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">L2+ connectors</span><span class="arrow">→</span>
+      <span class="stage">PRs / tickets updated automatically</span>
+    </div>
+    <div class="row">
+      <span class="stage accent">L3 unattended</span><span class="arrow">+</span>
+      <span class="stage">denylist + budget + metrics + human gate</span>
+    </div>
+    <div class="under">Demote when it breaks — this is not a one-way ratchet.</div>
+  </div>
+
+  <h2>L1 → L2 is the most consequential step</h2>
+  <p>On this ladder, <strong>the L1 → L2 crossing is the most consequential</strong> — because it's the turn where the loop starts <strong>acting</strong> instead of just <strong>reporting</strong>. Once it edits files and opens PRs, the risk profile changes. So this step has the hardest preconditions: a verifier, worktree isolation, and a "max attempts" cap.</p>
+
+  <h2>Why report-only first</h2>
+  <p>"Daily Triage at L1, report only" is the docs' <strong>first-loop recommendation</strong>, for two reasons:</p>
+  <ol>
+    <li><strong>It teaches discipline, risk-free</strong> — it forces you to build the read/write/prune state muscle without auto-merge's destructive power. "Low risk, excellent pair."</li>
+    <li><strong>See the value before acting</strong> — in that report-only week you'll see: stale PRs, flaky tests, a chronically red main. Prove it "reads accurately" first, then promote it to fix.</li>
+  </ol>
+
+  <div class="callout warn">
+    <span class="label">Not a one-way ratchet</span>
+    Autonomy can and should be <strong>demoted</strong>. A production incident in progress (the loop may fight a hotfix), a breaking schema migration underway, or a key reviewer OOO while auto-merge was on (don't) — these are all signals to drop back to report-only.
+  </div>
+
+  <h2>loop-audit mechanically blocks L3</h2>
+  <p>"Can I let go" isn't just your call. <code>loop-audit</code> <strong>mechanically blocks L3</strong> until three cost signals exist: <code>loop-budget.md</code>, <code>loop-run-log.md</code>, and a budget section in LOOP.md. In other words, without budget and observability in place, the system won't let you reach unattended — that's an enforced guardrail, not advice.</p>
+
+  <h2>One sentence to take away</h2>
+  <p>Autonomy is a ladder of "<strong>prove it then promote, demote when it breaks</strong>." The biggest jump is L1→L2 (the loop starts acting); and L3 isn't a goal — it's a destination you're <strong>allowed</strong> to reach only once budget, metrics, and gates are in place. The next lesson covers the risks this ladder amplifies.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Why does the first-loop recommendation start at L1 report-only?",
+    "options": [
+      "It teaches state discipline without auto-merge's destructive risk",
+      "Because L1 is cheapest and saves tokens",
+      "Because L2 and above are not allowed",
+      "Because report-only needs no files at all"
+    ],
+    "answer": 0,
+    "explainRight": "L1 is low-risk and an excellent pair — it forces the read/write/prune discipline, proving 'reads accurately' before acting.",
+    "explainWrong": "It's not savings, legality, or 'write nothing.' It's 'build discipline with zero destructive risk.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Which crossing is the most consequential on this ladder, and why?",
+    "options": [
+      "L1 → L2 — this is where the loop starts 'acting' not just 'reporting'",
+      "L0 → L1 — because you write the first file",
+      "L2 → L3 — because tokens get expensive",
+      "All steps are equally important"
+    ],
+    "answer": 0,
+    "explainRight": "L1→L2 is the turn where the loop acts, so the risk profile changes entirely — hence the hardest preconditions (verifier, worktree, max attempts).",
+    "explainWrong": "Writing files or token cost aren't 'most consequential.' The point is the qualitative shift from talking to doing."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "What does loop-audit mechanically block L3 until exists?",
+    "options": [
+      "loop-budget.md + loop-run-log.md + a budget section in LOOP.md",
+      "The verifier uses the strongest model",
+      "Cadence is set to once per day",
+      "100 human reviews have happened"
+    ],
+    "answer": 0,
+    "explainRight": "Missing any of these three cost/observability signals blocks L3. It's an enforced guardrail, not advice.",
+    "explainWrong": "Model strength, frequency, and review counts aren't L3's mechanical gate. The gate is 'budget + log + LOOP budget section.'"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Which statement about autonomy levels is most correct?",
+    "options": [
+      "It's not a one-way ratchet — demote to report-only on incident, migration, or reviewer OOO",
+      "Once you reach L3 you can never go back",
+      "Higher level always means a more reliable loop",
+      "L1 has no value — it's just a formality"
+    ],
+    "answer": 0,
+    "explainRight": "Autonomy goes up and down. Incidents, schema migrations, and a missing key reviewer are all signals to drop to report-only.",
+    "explainWrong": "You're never 'stuck at L3'; higher isn't automatically more reliable (that depends on verifier, budget, gates); and L1 is itself a valuable practice and observation stage."
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    "Roughly what level am I at when I use agents today?" "I want to try L2 — which preconditions (verifier, worktree, caps) am I missing?" "What kinds of work should just stay at L1 report-only?" Anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0007-debts-and-traps.html">Lesson 07: Two Debts and a Trap</a> — the loop doesn't delete you: amplified comprehension debt, orchestration tax, and cognitive surrender.</p>
+
+  <div class="footer">
+    <p>Lesson 06 of <em>Loop Engineering</em> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/loop-design-checklist.md" target="_blank" rel="noopener">loop-design-checklist.md</a> (Readiness Levels), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/operating-loops.md" target="_blank" rel="noopener">operating-loops.md</a> (Upgrade Path, L3 gating), <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/pattern-picker.md" target="_blank" rel="noopener">pattern-picker.md</a> (first loop = Daily Triage L1).</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
