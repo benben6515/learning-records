@@ -104,6 +104,7 @@
     background: var(--surface-elevated);
   }
   .nav-link svg { width: 16px; height: 16px; display: block; }
+  .nav-link.icon-only { padding: 9px; }
 
   /* ── Main ── */
   main { flex: 1; }
@@ -249,9 +250,8 @@
   <header class="nav">
     <div class="container nav-inner">
       <a class="wordmark" href="https://benben.me"><span class="dot"></span>Benben</a>
-      <a class="nav-link" href="https://github.com/benben6515/learning-records" target="_blank" rel="noopener">
+      <a class="nav-link icon-only" href="https://github.com/benben6515/learning-records" target="_blank" rel="noopener" aria-label="GitHub">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-        GitHub
       </a>
     </div>
   </header>
@@ -268,17 +268,6 @@
     <div class="container">
       <p class="section-label">// EXPLORE</p>
       <div class="cards">
-
-        <a class="card" href="https://github.com/benben6515/learning-records" target="_blank" rel="noopener">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-          </div>
-          <div class="card-body">
-            <h2 class="card-title">GitHub Repo</h2>
-            <p class="card-desc">Source code, notes &amp; code examples across courses, languages, tools, and research.</p>
-            <p class="card-host">github.com/benben6515/learning-records</p>
-          </div>
-        </a>
 
         <a class="card" href="/s/matt-pocock-skills/">
           <div class="card-icon" aria-hidden="true">
@@ -299,6 +288,17 @@
             <h2 class="card-title">English</h2>
             <p class="card-desc">Short daily drills for productive English fluency — speaking &amp; writing, B2 → C1.</p>
             <p class="card-host">learning.benben.me/s/english</p>
+          </div>
+        </a>
+
+        <a class="card" href="/s/loop-engineering/">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title">Loop Engineering</h2>
+            <p class="card-desc">Building a mental model of the loop that drives AI agents — harness, primitives, maker-checker &amp; autonomy levels.</p>
+            <p class="card-host">learning.benben.me/s/loop-engineering</p>
           </div>
         </a>
 
