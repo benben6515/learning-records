@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loop Engineering 課程 · 驅動 AI Agent 的迴圈工程</title>
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .entries { display:flex; gap:1.25rem; flex-wrap:wrap; margin:1.75rem 0 0.5rem; }
+  .entries a {
+    flex:1 1 14rem; display:block; border:1.5px solid var(--ink-soft); border-radius:8px;
+    padding:1.3rem 1.4rem; background:var(--paper-edge); border-bottom:none;
+    text-decoration:none; transition: border-color .15s, transform .15s;
+  }
+  .entries a:hover { border-color:var(--accent); transform: translateY(-2px); }
+  .entries a .lang { font-family:var(--sans); font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); }
+  .entries a .t { display:block; font-size:1.5rem; color:var(--ink); font-weight:600; margin:0.3rem 0 0.35rem; line-height:1.2; }
+  .entries a .s { font-size:0.92rem; color:var(--muted); font-style:italic; }
+  .entries a .go { display:block; margin-top:0.7rem; font-family:var(--sans); font-size:0.78rem; color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Course · 個人學習</p>
+  <h1>Loop Engineering（驅動 AI Agent 的迴圈工程）</h1>
+  <p class="subtitle">從「自己逐句 prompt agent」升級成「設計會編排 agent 的系統」。From prompting agents to designing the loops that drive them.</p>
+
+  <p class="lead">Boris Cherny（Anthropic Claude Code 負責人）說他現在不再 prompt Claude，而是「寫 loop」。這門課先建立<strong>完整的心智模型</strong>：loop engineering 是什麼、harness 與 loop 的差別、六個 primitives、讓 loop 可靠的兩根支柱（maker/checker 與 state on disk）、自主等級 L1→L2→L3，以及它「不會刪掉你」的風險。植基於 <a href="https://cobusgreyling.substack.com/p/loop-engineering">Cobus Greyling</a>、<a href="https://addyosmani.com/blog/loop-engineering/">Addy Osmani</a> 與 <a href="https://github.com/cobusgreyling/loop-engineering">cobusgreyling/loop-engineering</a> repo。</p>
+
+  <div class="entries">
+    <a href="lessons-tw/0000-table-of-contents.html">
+      <span class="lang">繁體中文</span>
+      <span class="t">課程目錄</span>
+      <span class="s">從「什麼是 loop engineering」開始，逐步建立完整心智模型。</span>
+      <span class="go">進入目錄 →</span>
+    </a>
+    <a href="lessons/0000-table-of-contents.html">
+      <span class="lang">English</span>
+      <span class="t">Course Index</span>
+      <span class="s">Same course, in English.</span>
+      <span class="go">Open index →</span>
+    </a>
+  </div>
+
+  <h2>快速參考</h2>
+  <ul>
+    <li><a href="reference-tw/loop-engineering-basics.html">Loop Engineering 基礎小抄（繁中）</a>——paradigm、harness vs loop、六 primitives、L1/L2/L3，一頁可印。</li>
+    <li><a href="GLOSSARY.md">領域語言詞彙表（Glossary）</a>——recursive goal、maker/checker、intent/comprehension debt、cognitive surrender……。</li>
+  </ul>
+
+  <div class="footer">
+    <p>本課程為個人學習用途。見 <a href="https://github.com/benben6515/learning-records">learning-records repo</a> · <a href="MISSION.md">Mission</a> · <a href="RESOURCES.md">Resources</a>。</p>
+  </div>
+
+</div>
+</body>
+</html>

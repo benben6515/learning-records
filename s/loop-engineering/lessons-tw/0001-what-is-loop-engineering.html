@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 — Loop Engineering 是什麼：別再自己 prompt</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0001 · ~6 分鐘</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ 目錄</a></p>
+  <h1>Loop Engineering 是什麼：別再自己 prompt</h1>
+  <p class="subtitle">從「逐句 prompt agent」升級成「設計會驅動 agent 的系統」。</p>
+
+  <p class="lead">你現在大概是這樣用 agent 的：打一句、讀回應、再打下一句，全程握著它。Boris Cherny（Anthropic Claude Code 負責人）說他已經不這樣做了——「<em>我不再 prompt Claude 了。我有 loop 在跑、由它們去 prompt Claude 並決定要做什麼。我的工作是寫 loop。</em>」這門課要講的，就是把這句話變成你能用的觀念。</p>
+
+  <div class="principle">Loop engineering＝取代那個「自己 prompt agent」的你。你設計系統，系統去戳 agent。 —— Cobus Greyling / Addy Osmani</div>
+
+  <h2>一個概念：loop 是「遞迴目標」</h2>
+  <p>把 loop 想成一個<strong>遞迴目標（recursive goal）</strong>：你定義一個目的，agent 用 sub-agent 與外部記憶體反覆迭代，<strong>直到完成，或直到它把事情交回給你</strong>。關鍵在於——你把整件事<strong>設計一次</strong>，之後不再逐句 prompt 那些步驟。系統自己去發現工作、分派、驗證、寫回狀態、決定下一步。</p>
+
+  <p>這跟「寫一個 prompt」是不同層的事。一年前想做 loop，你得自己維護一堆 bash 腳本；現在這些零件已經內建在工具裡（Claude Code、Codex、Grok、opencode），所以 loop 的「形狀」漸漸跨工具通用——你設計的 loop 不會綁死在某個工具上。</p>
+
+  <h2>關鍵區別：Harness vs Loop</h2>
+  <p>要懂 loop，先分清楚它和「harness」的差別——這是很多人混淆的地方：</p>
+  <table>
+    <thead><tr><th>概念</th><th>是什麼</th><th>解決的問題</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Harness（馴具）</strong></td><td>單一 agent、單次 session 的環境設定：工具、context、權限、規則</td><td>「這一次 run」要跑得好</td></tr>
+      <tr><td><strong>Loop（迴圈）</strong></td><td>harness ＋ 排程 ＋ 狀態 ＋ 驗證鏈</td><td>「在時間上反覆編排」這些 run</td></tr>
+    </tbody>
+  </table>
+  <p>一句話：<strong>harness 是單次 session 的沙盒；loop 是「排程並編排 harness 跑」的系統。</strong>Loop 在 harness 的上一層樓——它跑在計時器上、生出小幫手、自己餵自己。</p>
+
+  <h2>全貌：六個 Primitives（＋Memory）</h2>
+  <p>一個能 unattended 跑的 loop，不是一道長 prompt，而是六個零件組成的小系統。先認全貌，後面幾堂課各深入一個：</p>
+  <table>
+    <thead><tr><th>Primitive</th><th>在 loop 裡的工作</th></tr></thead>
+    <tbody>
+      <tr><td><strong>排程 / 自動化</strong></td><td>心跳。沒有排程，就只是一次性 run。形式：<code>/loop</code>、cron、GitHub Actions、<code>/goal</code>。</td></tr>
+      <tr><td><strong>Worktree</strong></td><td>隔離的 git checkout，讓多 agent 並行不互踩檔案。</td></tr>
+      <tr><td><strong>Skills</strong></td><td>意圖的持久記憶（<code>SKILL.md</code>）：慣例、build、與「我們不這樣做」。</td></tr>
+      <tr><td><strong>Connectors（MCP）</strong></td><td>讓 loop 動到真實工具：開 PR、更新 ticket、貼 Slack。</td></tr>
+      <tr><td><strong>Sub-agent（maker/checker）</strong></td><td>一個寫、另一個驗。實作者絕不評分自己的作業。</td></tr>
+      <tr><td><strong>＋ State（記憶）</strong></td><td>跨 session 的持久脊椎（<code>STATE.md</code>）。模型會忘，repo 不會。</td></tr>
+    </tbody>
+  </table>
+  <p>最小可行 loop 通常從 <strong>排程 ＋ 一個 triage skill ＋ 一個 state 檔</strong> 開始，再依證明的價值一個個加上去。</p>
+
+  <h2>最重要的一句：loop 不會刪掉你</h2>
+  <p>Loop 改變了工作，沒有把你從工作中刪掉。而且有三個問題會隨著 loop 變強而<strong>更尖銳</strong>，不是更輕鬆：</p>
+  <ol>
+    <li><strong>驗證仍是你的責任。</strong> 無人看管的 loop，也在無人看管地犯錯。「做完了」是個主張，不是證明——你仍要讀進 repo 的東西。</li>
+    <li><strong>理解債長更快。</strong> loop 出貨愈快，repo 內容與「你真正懂多少」的差距就拉得愈開。</li>
+    <li><strong>認知棄守的舒適陷阱。</strong> 放任 loop 跑、自己不再有意見，很舒服也很危險。</li>
+  </ol>
+
+  <div class="callout warn">
+    <span class="label">同一個 loop，相反結果</span>
+    兩個人能跑一模一樣的 loop，得到完全相反的結果。一個用它加速「自己深刻理解」的工作；另一個用它逃避理解工作。<strong>Loop 分不出來。你分得出來。</strong>—— Addy Osmani：「Build the loop. Stay the engineer.」
+  </div>
+
+  <h2>帶走的一句話</h2>
+  <p>槓桿點已經從「寫好單一 prompt」移到「設計會編排 agent 的控制系統」。Cherny 的意思不是工作變簡單了，而是<strong>施力的位置變了</strong>。接下來的課，會把上面那六個零件一個個講清楚。</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Loop engineering 的核心轉變是什麼？",
+    "options": [
+      "從自己逐句 prompt，改成設計驅動 agent 的系統",
+      "從使用小模型，改成全部都改用最強的模型",
+      "從自己寫程式，改成完全不需要再寫程式",
+      "從本地端開發，改成全部都丟到雲端去跑"
+    ],
+    "answer": 0,
+    "explainRight": "核心是「取代那個自己 prompt 的你」——你設計系統，系統去發現、分派、驗證、寫回狀態。",
+    "explainWrong": "換模型、不寫程式、上雲端都不是重點。重點是施力點從「單一 prompt」移到「編排 agent 的系統」。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Harness 和 Loop 的差別是？",
+    "options": [
+      "Harness 是單次 session；Loop 再加上排程與狀態",
+      "兩者其實完全相同，只是取了不同名字",
+      "Harness 比 Loop 更強大，而且可以跑得更久",
+      "Loop 只能在雲端跑，Harness 只能在本地跑"
+    ],
+    "answer": 0,
+    "explainRight": "Harness＝單次 session 的環境設定；Loop＝harness＋排程＋狀態＋驗證鏈，在時間上反覆編排。",
+    "explainWrong": "它們不是同一件事，也非強弱／雲本地之別。Loop 是 harness 上一層「會排程與記憶」的系統。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "一個能 unattended 跑的 loop，不能少的是？",
+    "options": [
+      "Maker/checker：實作者不評分自己的作業",
+      "讓同一個 agent 既寫程式又自己檢查自己",
+      "完全不寫狀態檔，一切靠模型自己記住",
+      "把 cadence 調到最高，loop 就會更可靠"
+    ],
+    "answer": 0,
+    "explainRight": "實作者對自己的程式碼是差勁的裁判——這是結構性原則。分開一個 verifier，才有本錢放手。",
+    "explainWrong": "自己改自己、不記狀態、狂拉頻率，都會讓 loop 更不可靠。可靠來自分工與持久記憶。"
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "關於 loop，下列哪一句最正確？",
+    "options": [
+      "Loop 不會刪掉你，驗證與理解仍是你的責任",
+      "Loop 一旦跑起來，就不必再讀它寫的程式碼",
+      "Loop 跑得愈快，你對 repo 的理解就會愈深",
+      "只要設計好 loop，軟體品質就會自動變好"
+    ],
+    "answer": 0,
+    "explainRight": "Loop 放大判斷——好壞皆然。驗證、理解、保持判斷力，仍在你身上。「Build the loop. Stay the engineer.」",
+    "explainWrong": "不讀產出會累積理解債；跑得快不等於你懂；loop 不保證品質，它放大的是「你」。"
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">問你的老師</span>
+    哪裡卡住、或想再追問？例如：「六個 primitives 我先深入哪個？」「我自己用 opencode，能對應到哪些零件？」「/goal 和 /loop 到底差在哪？」——任何不清楚的地方都可以問。
+  </div>
+
+  <p class="nav-next">接下來 → <a href="0000-table-of-contents.html">第 02 課（規劃中）：六個 Primitives（＋Memory）</a>——把 loop 的零件詞彙表一個個講清楚。</p>
+
+  <div class="footer">
+    <p>《Loop Engineering》第 01 課 · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/loop-engineering-basics.html">基礎小抄</a> · <a href="../GLOSSARY.md">詞彙表</a></p>
+    <p><strong>主要來源：</strong> <a href="https://cobusgreyling.substack.com/p/loop-engineering" target="_blank" rel="noopener">Cobus Greyling · Loop Engineering</a>（起源文）與 <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" rel="noopener">Addy Osmani · Loop Engineering</a>。Cherny／Steinberger 引言見 <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">repo concepts.md</a>。</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

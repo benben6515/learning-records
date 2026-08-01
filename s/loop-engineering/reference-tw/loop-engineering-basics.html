@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loop Engineering 基礎小抄（繁中）</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Reference · 可印小抄</p>
+  <p class="back-nav"><a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a></p>
+  <h1>Loop Engineering 基礎小抄</h1>
+  <p class="subtitle">一頁壓縮：paradigm、harness vs loop、六 primitives、loop 解剖、L1/L2/L3、風險。</p>
+
+  <h2>一句話定義</h2>
+  <div class="principle">取代那個「自己 prompt agent」的你。loop＝遞迴目標：你定義目的，agent 用 sub-agent＋外部記憶迭代到完成或交回給你。你設計一次，不再逐句 prompt。</div>
+
+  <h2>Harness vs Loop（別搞混）</h2>
+  <table>
+    <thead><tr><th></th><th>Harness（馴具）</th><th>Loop（迴圈）</th></tr></thead>
+    <tbody>
+      <tr><td>範圍</td><td>單一 agent、單次 session</td><td>跨 session、反覆跑</td></tr>
+      <tr><td>組成</td><td>工具／context／權限／規則</td><td>harness ＋ 排程 ＋ 狀態 ＋ 驗證鏈</td></tr>
+      <tr><td>解決</td><td>「這一次 run」跑得好</td><td>「在時間上編排」這些 run</td></tr>
+    </tbody>
+  </table>
+
+  <h2>六個 Primitives（＋Memory）</h2>
+  <table>
+    <thead><tr><th>Primitive</th><th>職責</th><th>形式／例子</th></tr></thead>
+    <tbody>
+      <tr><td><strong>排程</strong></td><td>心跳；沒有它就只是一次性 run</td><td><code>/loop</code>、cron、GitHub Actions、<code>/goal</code></td></tr>
+      <tr><td><strong>Worktree</strong></td><td>並行不互踩的隔離 checkout</td><td>每 agent 一棵 worktree，用完清理</td></tr>
+      <tr><td><strong>Skills</strong></td><td>意圖的持久記憶；付 intent debt</td><td><code>SKILL.md</code>：慣例、build、「不這樣做」</td></tr>
+      <tr><td><strong>Connectors（MCP）</strong></td><td>從評論員變操作員</td><td>開 PR、更新 Linear、貼 Slack、查 DB</td></tr>
+      <tr><td><strong>Sub-agent</strong></td><td>maker/checker 分工</td><td>explorer→implementer→verifier</td></tr>
+      <tr><td><strong>＋ State</strong></td><td>跨 session 持久脊椎</td><td><code>STATE.md</code>／Linear board</td></tr>
+    </tbody>
+  </table>
+  <p><strong>最小可行 loop</strong>＝排程 ＋ 一個 triage skill ＋ 一個 state 檔；再依價值一個個加。</p>
+
+  <h2>Loop 解剖（一次 run）</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">排程</span><span class="arrow">→</span>
+      <span class="stage">Triage skill</span><span class="arrow">→</span>
+      <span class="stage">讀寫 STATE</span>
+    </div>
+    <div class="row">
+      <span class="stage">Worktree</span><span class="arrow">→</span>
+      <span class="stage accent">實作 sub-agent</span><span class="arrow">→</span>
+      <span class="stage accent">驗證 sub-agent</span>
+    </div>
+    <div class="row">
+      <span class="stage">MCP／Git／Ticket</span><span class="arrow">→</span>
+      <span class="stage">Human Gate？</span><span class="arrow">→</span>
+      <span class="stage">提交／PR 或 交回給人</span>
+    </div>
+    <div class="under">實作者絕不評分自己的作業——驗證 sub-agent 是你能放手的本錢</div>
+  </div>
+
+  <h2>自主等級 L1 → L2 → L3</h2>
+  <table>
+    <thead><tr><th>等級</th><th>做什麼</th><th>建議</th></tr></thead>
+    <tbody>
+      <tr><td><strong>L1</strong></td><td>只報告（report-only）</td><td>第一週就從這裡開始</td></tr>
+      <tr><td><strong>L2</strong></td><td>協助修復（assisted）</td><td>有 verifier 後再升</td></tr>
+      <tr><td><strong>L3</strong></td><td>無人看管（unattended）</td><td>最後才上；token 會爆</td></tr>
+    </tbody>
+  </table>
+
+  <h2>風險：loop 不會刪掉你</h2>
+  <div class="callout warn">
+    <span class="label">三個會被放大的問題</span>
+    <strong>Intent debt</strong>：每次冷啟動，缺漏被自信猜測填滿 → 用 skills 還債。<br>
+    <strong>Comprehension debt</strong>：loop 出貨愈快、你懂愈少 → 去讀它寫了什麼。<br>
+    <strong>Cognitive surrender</strong>：放任跑、不再有意見 → 用判斷力設計 loop，別用它逃避思考。<br>
+    <strong>Orchestration tax</strong>：並行 agent 的人力成本；worktree 拿掉機械碰撞，<em>你</em>仍是天花板。
+  </div>
+
+  <h2>`/goal` vs `/loop`</h2>
+  <ul>
+    <li><code>/loop</code>＝依 cadence 重跑（每 N 分鐘／小時）。</li>
+    <li><code>/goal</code>＝跑到某可驗證條件成立為止，且由「另一個」模型檢查是否完成（maker/checker 套用在停止條件）。</li>
+  </ul>
+
+  <div class="footer">
+    <p>參考文件 · <a href="../GLOSSARY.md">詞彙表</a> · 主要來源：<a href="https://cobusgreyling.substack.com/p/loop-engineering" target="_blank" rel="noopener">Cobus Greyling</a> · <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" rel="noopener">Addy Osmani</a> · <a href="https://github.com/cobusgreyling/loop-engineering" target="_blank" rel="noopener">repo</a> · <a href="../reference/loop-engineering-basics.html">English</a></p>
+  </div>
+
+</div>
+</body>
+</html>

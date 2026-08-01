@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0000 — 課程目錄</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .index { list-style: none; padding: 0; margin: 1.25rem 0; }
+  .index li { margin: 0; border-bottom: 1px solid var(--rule); }
+  .index li:first-child { border-top: 1px solid var(--ink-soft); }
+  .index li.planned { background: var(--paper-edge); opacity: 0.78; }
+  .index a, .index .row {
+    display: flex; gap: 1.1rem; padding: 0.9rem 0.6rem; align-items: baseline;
+    border-bottom: none; border-left: 3px solid transparent;
+  }
+  .index a:hover { border-left-color: var(--accent); background: var(--paper-edge); }
+  .index .num {
+    font-family: var(--sans); font-size: 1.5rem; font-weight: 300;
+    color: var(--accent); flex: 0 0 2.9rem; letter-spacing: -0.02em; line-height: 1;
+  }
+  .index li.planned .num { color: var(--muted); }
+  .index .meta { display: flex; flex-direction: column; gap: 0.18rem; }
+  .index .t { font-size: 1.1rem; color: var(--ink); font-weight: 600; line-height: 1.3; }
+  .index .t code { font-size: 0.96rem; }
+  .index .s { font-size: 0.9rem; color: var(--muted); font-style: italic; line-height: 1.45; }
+  .index .d {
+    font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-top: 0.15rem;
+  }
+  .index .d .qz  { color: var(--accent); }
+  .index .d .plan { color: var(--warn); }
+  h2.phase { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-family: var(--sans); font-weight: 600;
+    margin: 2.2rem 0 0.2rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0000 · 課程目錄</p>
+  <p class="back-nav"><a href="../index.html">↑ 課程首頁</a></p>
+  <h1>《Loop Engineering》課程目錄</h1>
+  <p class="subtitle">一條路：從「為什麼別再自己 prompt」走到「能講清楚 loop 怎麼可靠地運作」。</p>
+
+  <p class="lead">這門課沿一條主軸走：先掌握<strong>典範轉移</strong>（loop 是什麼、與 harness 的差別），建立<strong>六個 primitives</strong> 的詞彙表；再學讓 loop 真正可靠的<strong>兩根支柱</strong>（maker/checker、state on disk）與 skills；最後看<strong>自主等級</strong>、<strong>風險</strong>與<strong>生產模式</strong>。每一課都短短的、可獨立完成，並附隨堂測驗。知識先行，之後才動手。</p>
+
+  <h2 class="phase">Phase A — 典範轉移</h2>
+  <ol class="index">
+    <li>
+      <a href="0001-what-is-loop-engineering.html">
+        <span class="num">01</span>
+        <span class="meta">
+          <span class="t">Loop Engineering 是什麼：別再自己 prompt</span>
+          <span class="s">從「逐句 prompt」到「設計會驅動 agent 的系統」；harness vs loop。</span>
+          <span class="d">~6 分鐘 · <span class="qz">隨堂測驗</span></span>
+        </span>
+      </a>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">02</span>
+        <span class="meta">
+          <span class="t">六個 Primitives（＋Memory）</span>
+          <span class="s">loop 的零件詞彙表：排程／worktree／skills／MCP／sub-agent／state。</span>
+          <span class="d"><span class="plan">規劃中</span></span>
+        </span>
+      </div>
+    </li>
+  </ol>
+
+  <h2 class="phase">Phase B — 讓 loop 真的可靠</h2>
+  <ol class="index">
+    <li class="planned">
+      <div class="row">
+        <span class="num">03</span>
+        <span class="meta">
+          <span class="t">Maker / Checker：實作者不評分自己的作業</span>
+          <span class="s">sub-agent 分工的結構性原則；`/goal` 把它套用在停止條件上。</span>
+          <span class="d"><span class="plan">規劃中</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">04</span>
+        <span class="meta">
+          <span class="t">State on Disk：模型會忘，repo 不會</span>
+          <span class="s">為什麼 `STATE.md` 是 loop 的脊椎——跨 session 的持久記憶。</span>
+          <span class="d"><span class="plan">規劃中</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">05</span>
+        <span class="meta">
+          <span class="t">Skills：把 intent 寫在外面</span>
+          <span class="s">付清 intent debt——慣例、build、與「我們不這樣做」寫一次、每次讀。</span>
+          <span class="d"><span class="plan">規劃中</span></span>
+        </span>
+      </div>
+    </li>
+  </ol>
+
+  <h2 class="phase">Phase C — 經營、風險與模式</h2>
+  <ol class="index">
+    <li class="planned">
+      <div class="row">
+        <span class="num">06</span>
+        <span class="meta">
+          <span class="t">自主等級 L1 → L2 → L3</span>
+          <span class="s">先 report-only，再 assisted，最後 unattended——分階上線的邏輯。</span>
+          <span class="d"><span class="plan">規劃中</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">07</span>
+        <span class="meta">
+          <span class="t">兩種債與一個陷阱</span>
+          <span class="s">comprehension debt、orchestration tax，與 cognitive surrender——loop 不會刪掉你。</span>
+          <span class="d"><span class="plan">規劃中</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">08</span>
+        <span class="meta">
+          <span class="t">七個 Patterns 與 Loop Ready score</span>
+          <span class="s">daily triage、pr babysitter、ci sweeper……；以及「能不能上線」的評分。</span>
+          <span class="d"><span class="plan">規劃中</span></span>
+        </span>
+      </div>
+    </li>
+  </ol>
+
+  <div class="callout note">
+    <span class="label">怎麼開始</span>
+    第一次走，從<strong>第 01 課</strong>開始即可。課程會依你的進度一堂堂長出來——每一課都落在你「稍微踮腳就搆得到」的範圍。
+  </div>
+
+  <h2>參考書架</h2>
+  <ul>
+    <li><a href="../reference-tw/loop-engineering-basics.html">Loop Engineering 基礎小抄</a>——paradigm、harness vs loop、六 primitives、L1/L2/L3。</li>
+    <li><a href="../GLOSSARY.md">詞彙表（Glossary）</a>——本課程的領域語言與譯名。</li>
+  </ul>
+
+  <div class="footer">
+    <p>《Loop Engineering》課程目錄 · <a href="../lessons/0000-table-of-contents.html">English</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a></p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0000 — Course Index</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .index { list-style: none; padding: 0; margin: 1.25rem 0; }
+  .index li { margin: 0; border-bottom: 1px solid var(--rule); }
+  .index li:first-child { border-top: 1px solid var(--ink-soft); }
+  .index li.planned { background: var(--paper-edge); opacity: 0.78; }
+  .index a, .index .row {
+    display: flex; gap: 1.1rem; padding: 0.9rem 0.6rem; align-items: baseline;
+    border-bottom: none; border-left: 3px solid transparent;
+  }
+  .index a:hover { border-left-color: var(--accent); background: var(--paper-edge); }
+  .index .num {
+    font-family: var(--sans); font-size: 1.5rem; font-weight: 300;
+    color: var(--accent); flex: 0 0 2.9rem; letter-spacing: -0.02em; line-height: 1;
+  }
+  .index li.planned .num { color: var(--muted); }
+  .index .meta { display: flex; flex-direction: column; gap: 0.18rem; }
+  .index .t { font-size: 1.1rem; color: var(--ink); font-weight: 600; line-height: 1.3; }
+  .index .t code { font-size: 0.96rem; }
+  .index .s { font-size: 0.9rem; color: var(--muted); font-style: italic; line-height: 1.45; }
+  .index .d {
+    font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-top: 0.15rem;
+  }
+  .index .d .qz  { color: var(--accent); }
+  .index .d .plan { color: var(--warn); }
+  h2.phase { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-family: var(--sans); font-weight: 600;
+    margin: 2.2rem 0 0.2rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0000 · Table of Contents</p>
+  <p class="back-nav"><a href="../index.html">↑ Course home</a></p>
+  <h1>The <em>Loop Engineering</em> Course Index</h1>
+  <p class="subtitle">One route: from "why stop prompting" to "how a loop stays reliable."</p>
+
+  <p class="lead">The course follows one spine: first the <strong>paradigm shift</strong> (what a loop is, vs a harness) and the vocabulary of the <strong>six primitives</strong>; then the <strong>two pillars</strong> that make a loop actually reliable (maker/checker, state on disk) plus skills; finally <strong>autonomy levels</strong>, <strong>risk</strong>, and <strong>production patterns</strong>. Each lesson is short, self-contained, and has a quiz. Knowledge first; hands-on later.</p>
+
+  <h2 class="phase">Phase A — The paradigm shift</h2>
+  <ol class="index">
+    <li>
+      <a href="0001-what-is-loop-engineering.html">
+        <span class="num">01</span>
+        <span class="meta">
+          <span class="t">What is Loop Engineering: stop prompting</span>
+          <span class="s">From prompting turn-by-turn to designing the system that drives agents; harness vs loop.</span>
+          <span class="d">~6 min · <span class="qz">quiz</span></span>
+        </span>
+      </a>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">02</span>
+        <span class="meta">
+          <span class="t">The Six Primitives (+ Memory)</span>
+          <span class="s">The loop's parts: scheduling / worktree / skills / MCP / sub-agent / state.</span>
+          <span class="d"><span class="plan">planned</span></span>
+        </span>
+      </div>
+    </li>
+  </ol>
+
+  <h2 class="phase">Phase B — What makes a loop actually work</h2>
+  <ol class="index">
+    <li class="planned">
+      <div class="row">
+        <span class="num">03</span>
+        <span class="meta">
+          <span class="t">Maker / Checker: never grade your own homework</span>
+          <span class="s">The structural principle behind sub-agent splits; `/goal` applies it to the stop condition.</span>
+          <span class="d"><span class="plan">planned</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">04</span>
+        <span class="meta">
+          <span class="t">State on Disk: the model forgets, the repo doesn't</span>
+          <span class="s">Why `STATE.md` is the loop's spine — durable memory across sessions.</span>
+          <span class="d"><span class="plan">planned</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">05</span>
+        <span class="meta">
+          <span class="t">Skills: write the intent on the outside</span>
+          <span class="s">Paying down intent debt — conventions, build, and "we don't do it this way," once.</span>
+          <span class="d"><span class="plan">planned</span></span>
+        </span>
+      </div>
+    </li>
+  </ol>
+
+  <h2 class="phase">Phase C — Operating, risk &amp; patterns</h2>
+  <ol class="index">
+    <li class="planned">
+      <div class="row">
+        <span class="num">06</span>
+        <span class="meta">
+          <span class="t">Autonomy levels L1 → L2 → L3</span>
+          <span class="s">Report-only first, then assisted, then unattended — the logic of phasing.</span>
+          <span class="d"><span class="plan">planned</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">07</span>
+        <span class="meta">
+          <span class="t">Two debts and a trap</span>
+          <span class="s">comprehension debt, orchestration tax, and cognitive surrender — the loop doesn't delete you.</span>
+          <span class="d"><span class="plan">planned</span></span>
+        </span>
+      </div>
+    </li>
+    <li class="planned">
+      <div class="row">
+        <span class="num">08</span>
+        <span class="meta">
+          <span class="t">Seven patterns &amp; the Loop Ready score</span>
+          <span class="s">daily triage, pr babysitter, ci sweeper…; and the "is it ship-ready?" score.</span>
+          <span class="d"><span class="plan">planned</span></span>
+        </span>
+      </div>
+    </li>
+  </ol>
+
+  <div class="callout note">
+    <span class="label">How to start</span>
+    If this is your first time through, start with <strong>Lesson 01</strong>. The course grows one lesson at a time, each pitched at the edge of what you can already do.
+  </div>
+
+  <h2>Reference shelf</h2>
+  <ul>
+    <li><a href="../reference/loop-engineering-basics.html">Loop Engineering basics cheat sheet</a> — paradigm, harness vs loop, six primitives, L1/L2/L3.</li>
+    <li><a href="../GLOSSARY.md">Glossary</a> — the domain language of this course.</li>
+  </ul>
+
+  <div class="footer">
+    <p><em>Loop Engineering</em> course index · <a href="../lessons-tw/0000-table-of-contents.html">繁體中文</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a></p>
+  </div>
+
+</div>
+</body>
+</html>

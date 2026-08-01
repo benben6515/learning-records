@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loop Engineering Basics Cheat Sheet (EN)</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Reference · printable cheat sheet</p>
+  <p class="back-nav"><a href="../lessons/0000-table-of-contents.html">↑ Course index</a></p>
+  <h1>Loop Engineering Basics Cheat Sheet</h1>
+  <p class="subtitle">One page: paradigm, harness vs loop, six primitives, loop anatomy, L1/L2/L3, risk.</p>
+
+  <h2>Definition in one line</h2>
+  <div class="principle">Replace yourself as the person who prompts the agent. A loop = a recursive goal: you define a purpose, the agent iterates with sub-agents + external memory until done or handed back to you. You design it once; you don't prompt the steps.</div>
+
+  <h2>Harness vs Loop (don't confuse them)</h2>
+  <table>
+    <thead><tr><th></th><th>Harness</th><th>Loop</th></tr></thead>
+    <tbody>
+      <tr><td>Scope</td><td>One agent, one session</td><td>Across sessions, recurring</td></tr>
+      <tr><td>Makeup</td><td>tools / context / permissions / rules</td><td>harness + scheduling + state + verification chain</td></tr>
+      <tr><td>Solves</td><td>Making "this run" go well</td><td>Orchestrating runs <em>over time</em></td></tr>
+    </tbody>
+  </table>
+
+  <h2>The Six Primitives (+ Memory)</h2>
+  <table>
+    <thead><tr><th>Primitive</th><th>Job</th><th>Form / example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Scheduling</strong></td><td>Heartbeat; without it, it's a one-off</td><td><code>/loop</code>, cron, GitHub Actions, <code>/goal</code></td></tr>
+      <tr><td><strong>Worktree</strong></td><td>Isolated checkout for safe parallelism</td><td>one worktree per agent, cleaned up after</td></tr>
+      <tr><td><strong>Skills</strong></td><td>Persistent memory of intent; pays intent debt</td><td><code>SKILL.md</code>: conventions, build, "not this way"</td></tr>
+      <tr><td><strong>Connectors (MCP)</strong></td><td>From commentator to operator</td><td>open PR, update Linear, post Slack, query DB</td></tr>
+      <tr><td><strong>Sub-agent</strong></td><td>maker/checker split</td><td>explorer→implementer→verifier</td></tr>
+      <tr><td><strong>+ State</strong></td><td>Durable spine across sessions</td><td><code>STATE.md</code> / Linear board</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Minimal viable loop</strong> = scheduling + one triage skill + a state file; add the rest one at a time as value is proven.</p>
+
+  <h2>Loop anatomy (one run)</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">Schedule</span><span class="arrow">→</span>
+      <span class="stage">Triage skill</span><span class="arrow">→</span>
+      <span class="stage">Read/Write STATE</span>
+    </div>
+    <div class="row">
+      <span class="stage">Worktree</span><span class="arrow">→</span>
+      <span class="stage accent">Implementer sub-agent</span><span class="arrow">→</span>
+      <span class="stage accent">Verifier sub-agent</span>
+    </div>
+    <div class="row">
+      <span class="stage">MCP / Git / Ticket</span><span class="arrow">→</span>
+      <span class="stage">Human Gate?</span><span class="arrow">→</span>
+      <span class="stage">Commit/PR or escalate</span>
+    </div>
+    <div class="under">The implementer never grades its own homework — the verifier is what lets you walk away.</div>
+  </div>
+
+  <h2>Autonomy levels L1 → L2 → L3</h2>
+  <table>
+    <thead><tr><th>Level</th><th>What it does</th><th>Guidance</th></tr></thead>
+    <tbody>
+      <tr><td><strong>L1</strong></td><td>Report only</td><td>Start week one here</td></tr>
+      <tr><td><strong>L2</strong></td><td>Assisted fixes</td><td>Upgrade once a verifier exists</td></tr>
+      <tr><td><strong>L3</strong></td><td>Unattended</td><td>Last; tokens will burn</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Risk: the loop doesn't delete you</h2>
+  <div class="callout warn">
+    <span class="label">Three problems that get amplified</span>
+    <strong>Intent debt</strong>: every cold start fills gaps with confident guesses → pay it down with skills.<br>
+    <strong>Comprehension debt</strong>: faster shipping, less you understand → read what it wrote.<br>
+    <strong>Cognitive surrender</strong>: letting it run while you stop having opinions → design with judgment, don't use it to avoid thinking.<br>
+    <strong>Orchestration tax</strong>: the human cost of parallel agents; worktrees remove mechanical collisions, <em>you</em> remain the ceiling.
+  </div>
+
+  <h2>`/goal` vs `/loop`</h2>
+  <ul>
+    <li><code>/loop</code> = re-runs on a cadence (every N min/hours).</li>
+    <li><code>/goal</code> = runs until a verifiable condition holds, with a <em>different</em> model checking "done" (maker/checker applied to the stop condition).</li>
+  </ul>
+
+  <div class="footer">
+    <p>Reference · <a href="../GLOSSARY.md">Glossary</a> · Sources: <a href="https://cobusgreyling.substack.com/p/loop-engineering" target="_blank" rel="noopener">Cobus Greyling</a> · <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" rel="noopener">Addy Osmani</a> · <a href="https://github.com/cobusgreyling/loop-engineering" target="_blank" rel="noopener">repo</a> · <a href="../reference-tw/loop-engineering-basics.html">繁體中文</a></p>
+  </div>
+
+</div>
+</body>
+</html>

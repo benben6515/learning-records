@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 — What is Loop Engineering: stop prompting</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p class="kicker">Lesson 0001 · ~6 min</p>
+  <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
+  <h1>What is Loop Engineering: stop prompting</h1>
+  <p class="subtitle">From prompting agents turn-by-turn to designing the system that drives them.</p>
+
+  <p class="lead">Here's probably how you use agents today: you type a thing, read the reply, type the next thing, holding it the whole time. Boris Cherny (head of Claude Code at Anthropic) says he doesn't do that anymore — "<em>I don't prompt Claude anymore. I have loops running that prompt Claude and figuring out what to do. My job is to write loops.</em>" This course turns that sentence into a model you can use.</p>
+
+  <div class="principle">Loop engineering = replacing yourself as the person who prompts the agent. You design the system that does it instead. — Cobus Greyling / Addy Osmani</div>
+
+  <h2>One idea: a loop is a "recursive goal"</h2>
+  <p>Think of a loop as a <strong>recursive goal</strong>: you define a purpose, and the agent iterates with sub-agents and external memory, <strong>until it's done, or until it hands the work back to you</strong>. The point is you <strong>design it once</strong> — you don't keep prompting the steps. The system discovers work, assigns it, verifies results, persists state, and decides the next action.</p>
+
+  <p>This is a different layer than "writing a prompt." A year ago, building a loop meant maintaining a pile of bash scripts yourself; now these pieces ship inside the tools (Claude Code, Codex, Grok, opencode), so the "shape" of a loop is becoming tool-agnostic — the loop you design isn't nailed to one tool.</p>
+
+  <h2>The key distinction: Harness vs Loop</h2>
+  <p>To understand loops, first separate them from "harnesses" — a common point of confusion:</p>
+  <table>
+    <thead><tr><th>Concept</th><th>What it is</th><th>Problem it solves</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Harness</strong></td><td>The environment for one agent, one session: tools, context, permissions, rules</td><td>Making "this one run" go well</td></tr>
+      <tr><td><strong>Loop</strong></td><td>harness + scheduling + state + a verification chain</td><td>Orchestrating those runs <em>over time</em></td></tr>
+    </tbody>
+  </table>
+  <p>One line: <strong>the harness is the sandbox for a single session; the loop is the system that schedules and orchestrates harness runs.</strong> The loop sits one floor above the harness — it runs on a timer, spawns little helpers, and feeds itself.</p>
+
+  <h2>The whole picture: six primitives (+ Memory)</h2>
+  <p>A loop that runs unattended is not one long prompt — it's a small system of six parts. Meet the whole picture first; later lessons go deep on each one:</p>
+  <table>
+    <thead><tr><th>Primitive</th><th>Job in the loop</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Scheduling / automations</strong></td><td>The heartbeat. No schedule = a one-off run. Forms: <code>/loop</code>, cron, GitHub Actions, <code>/goal</code>.</td></tr>
+      <tr><td><strong>Worktree</strong></td><td>An isolated git checkout so parallel agents don't collide on files.</td></tr>
+      <tr><td><strong>Skills</strong></td><td>Persistent memory of intent (<code>SKILL.md</code>): conventions, build, and "we don't do it this way."</td></tr>
+      <tr><td><strong>Connectors (MCP)</strong></td><td>Let the loop act on real tools: open PRs, update tickets, post to Slack.</td></tr>
+      <tr><td><strong>Sub-agent (maker/checker)</strong></td><td>One writes, another verifies. The implementer never grades its own homework.</td></tr>
+      <tr><td><strong>+ State (memory)</strong></td><td>The durable spine across sessions (<code>STATE.md</code>). The model forgets; the repo doesn't.</td></tr>
+    </tbody>
+  </table>
+  <p>A minimal viable loop usually starts with <strong>scheduling + one triage skill + a state file</strong>, then adds primitives one at a time as each proves its value.</p>
+
+  <h2>The most important line: the loop doesn't delete you</h2>
+  <p>The loop changes the work; it doesn't delete you from it. And three problems actually get <strong>sharper</strong> as the loop gets better, not easier:</p>
+  <ol>
+    <li><strong>Verification is still on you.</strong> A loop running unattended is also making mistakes unattended. "Done" is a claim, not a proof — you still read what landed in the repo.</li>
+    <li><strong>Comprehension debt grows faster.</strong> The faster the loop ships code you didn't write, the wider the gap between what exists and what you actually understand.</li>
+    <li><strong>The comfortable trap of cognitive surrender.</strong> Letting the loop run while you stop having opinions is comfortable, and dangerous.</li>
+  </ol>
+
+  <div class="callout warn">
+    <span class="label">Same loop, opposite outcomes</span>
+    Two people can run the exact same loop and get completely opposite results. One uses it to move faster on work they understand deeply; the other uses it to avoid understanding the work at all. <strong>The loop doesn't know the difference. You do.</strong> — Addy Osmani: "Build the loop. Stay the engineer."
+  </div>
+
+  <h2>One sentence to take away</h2>
+  <p>The leverage point has moved from "crafting a single prompt" to "designing the control system that orchestrates agents." Cherny's point isn't that the work got easier — it's that <strong>where you push has moved</strong>. The next lessons take those six parts one at a time.</p>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "What is the core shift of loop engineering?",
+    "options": [
+      "From prompting turn by turn, to a system driving agents",
+      "From using small models, to using only the strongest one",
+      "From writing code yourself, to never writing code again",
+      "From local development, to running everything in the cloud"
+    ],
+    "answer": 0,
+    "explainRight": "The core is replacing yourself as the prompter — you design the system that discovers, assigns, verifies, and persists state.",
+    "explainWrong": "Bigger models, no code, or the cloud aren't the point. The point is moving leverage from a single prompt to the system that orchestrates agents."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "What's the difference between harness and loop?",
+    "options": [
+      "Harness is one session; a loop adds scheduling and state",
+      "They are actually identical, just with different names",
+      "A harness is stronger than a loop and runs much longer",
+      "A loop runs only in the cloud, a harness only locally"
+    ],
+    "answer": 0,
+    "explainRight": "Harness = the setup for a single session; Loop = harness + scheduling + state + a verification chain, orchestrated over time.",
+    "explainWrong": "They aren't the same thing, nor a strength/cloud-vs-local split. The loop is the layer above the harness that schedules and remembers."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "What can an unattended loop not do without?",
+    "options": [
+      "Maker/checker: the writer doesn't grade its own work",
+      "Letting the same agent both write and review itself",
+      "Writing no state file, relying on the model to recall",
+      "Cranking cadence to the max to be more reliable"
+    ],
+    "answer": 0,
+    "explainRight": "The implementer is a poor judge of its own code — that's structural. A separate verifier is what lets you walk away.",
+    "explainWrong": "Self-review, no state, and max cadence all make a loop less reliable. Reliability comes from separation of duties and durable memory."
+  }
+  </script></div>
+
+  <div class="quiz"><script type="application/json">
+  {
+    "question": "Which statement about loops is most correct?",
+    "options": [
+      "The loop won't delete you; verifying and understanding stay yours",
+      "Once a loop runs, you no longer need to read its code",
+      "The faster the loop runs, the deeper your repo understanding",
+      "As long as a loop is well designed, quality improves on its own"
+    ],
+    "answer": 0,
+    "explainRight": "A loop amplifies judgment — for better or worse. Verification, understanding, and staying engaged remain on you. 'Build the loop. Stay the engineer.'",
+    "explainWrong": "Not reading output grows comprehension debt; speed ≠ understanding; a loop doesn't guarantee quality — it amplifies *you*."
+  }
+  </script></div>
+
+  <div class="callout note">
+    <span class="label">Ask your teacher</span>
+    Stuck or curious? For example: "Which of the six primitives should I go deep on first?" "I use opencode — which parts map to which pieces?" "What's the real difference between /goal and /loop?" Anything unclear is fair game.
+  </div>
+
+  <p class="nav-next">Next → <a href="0000-table-of-contents.html">Lesson 02 (planned): The Six Primitives (+ Memory)</a> — unpack the loop's parts, one by one.</p>
+
+  <div class="footer">
+    <p>Lesson 01 of <em>Loop Engineering</em> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/loop-engineering-basics.html">Basics cheat sheet</a> · <a href="../GLOSSARY.md">Glossary</a></p>
+    <p><strong>Primary sources:</strong> <a href="https://cobusgreyling.substack.com/p/loop-engineering" target="_blank" rel="noopener">Cobus Greyling · Loop Engineering</a> (origin essay) and <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" rel="noopener">Addy Osmani · Loop Engineering</a>. Cherny/Steinberger quotes in <a href="https://github.com/cobusgreyling/loop-engineering/blob/main/docs/concepts.md" target="_blank" rel="noopener">repo concepts.md</a>.</p>
+  </div>
+
+</div>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
