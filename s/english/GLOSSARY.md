@@ -30,6 +30,20 @@ _Avoid_: Repeat-after-me, echoing
 The "music" of a language — which words get stressed, how pitch rises and falls, the rhythm of a sentence. What makes speech sound natural rather than just correct.
 _Avoid_: Tone, melody, intonation (intonation is only the pitch part)
 
+## Writing technique
+
+**Free-writing:**
+Writing continuously for a fixed time without stopping, editing, or looking anything up. The point is to defeat the inner editor and build the "think in English on the page" reflex. (Elbow's method.)
+_Avoid_: Freewriting (variant spelling), journaling, stream of consciousness
+
+**Inner editor:**
+The critical voice that interrupts mid-sentence to fix grammar or word-choice. Free-writing's whole purpose is to silence it *temporarily*, because producing and editing are two brain modes that sabotage each other.
+_Avoid_: Inner critic, perfectionism
+
+**Revision (vs editing while drafting):**
+Fixing a draft as a *separate pass* after generating it — not while writing. The two modes (generating vs revising) trip each other up when mixed.
+_Avoid_: Proofreading, editing (too generic here)
+
 ## Practice design
 
 **Spaced practice (spacing):**
