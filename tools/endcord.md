@@ -75,7 +75,7 @@ Commands: `toggle_thread` (current), `toggle_thread_tree` (selected in tree).
 | Send message                                      | `Enter`                       |
 | Newline (`Shift+Enter` doesn't work in terminals) | `Ctrl+N`                      |
 | Paste text **or** file                            | `Ctrl+V`                      |
-| Upload attachment                                 | `Ctrl+U`                      |
+| Upload attachment                                 | `Ctrl+U` ⚠️ **broken on macOS** |
 | Upload typed text as `.txt`                       | command `send_as_file`        |
 | Undo / Redo                                       | `Alt+Z` / `Alt+Shift+Z`       |
 | Open external editor                              | `Alt+E`                       |
@@ -119,6 +119,16 @@ Regex-replace your last message: type `s/old/new/`.
 | Cycle upload slots                            | `Alt+<` / `Alt+>` |
 | Cancel **all** downloads/uploads              | `Ctrl+X`          |
 | Cancel selected attachment                    | `Ctrl+K`          |
+
+**📤 Uploading an image (macOS)** — `Ctrl+U` is broken on macOS (AppleScript bug → [issue #140](https://github.com/sparklost/endcord/issues/140)); it silently does nothing. Use the palette instead:
+
+1. `Ctrl+K` → opens palette (it pre-fills `goto ` — delete it)
+2. type `upload ~/path/to/image.png` — `~` and absolute paths both work
+3. `Enter`
+
+> ⚡ Fastest loop: Finder → select image → `Option+Cmd+C` (copy path) → `Ctrl+K` → type `upload ` → `Ctrl+V` → `Enter`.
+
+> ⚠️ Pasting an image **from clipboard** via `Ctrl+V` doesn't work on Warp (needs kitty graphics protocol). Paste a *path*, not the image.
 
 **To check an image:** select message → `Ctrl+W` (ASCII art in Warp). For a _real_ image use `Alt+O` (browser), `Ctrl+L` (download), or enable `native_media_player = True` to open in Preview.
 
@@ -201,7 +211,7 @@ Navigate `Alt+↑/↓`, insert `Alt+Enter`. `Esc` closes.
 
 ---
 
-## 🎛 Useful commands (via `Ctrl+/` palette)
+## 🎛 Useful commands (via `Ctrl+/` or `Ctrl+K` palette)
 
 ```
 goto #channel        mark_as_read *      toggle_member_list
@@ -219,6 +229,9 @@ switch_profile       redraw              about / quit
 - Warp doesn't support kitty graphics protocol → in-terminal images are ASCII only. Use `native_media_player = True` or `Alt+O` for real images.
 - Spellcheck: `brew install aspell`.
 - Keys grabbed by OS/terminal (already rebound): `Ctrl+↑/↓` (Mission Control), `Ctrl+←/→` (Warp), `Ctrl+Space` (Input Sources).
+- **`Ctrl+U` upload is broken on macOS** — osascript syntax error ([issue #140](https://github.com/sparklost/endcord/issues/140)); does nothing silently → use `Ctrl+K` → `upload <path>`.
+- **`Ctrl+/` may be grabbed by Warp** → open the palette with `Ctrl+K` instead (it runs `command_palette; type 'goto '`).
+- **Pasting an image from clipboard (`Ctrl+V`) doesn't work on Warp** — only text/paths paste. Use `upload <path>`.
 
 ---
 
