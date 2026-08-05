@@ -10,8 +10,8 @@
 ## Curriculum map
 - **L01 — Shadowing** (speaking): daily solo habit. ✅ shipped
 - **L02 — Reading fluency** (reading / input): break the translate-to-first-language habit; repeated-reading wpm drill. ✅ shipped
-- **L03 — Writing sprint** (writing): daily free-write the agent can correct. ⏳ next
-- **L04 — Connected speech / 連音** (speaking): ear+mouth training. ⏳ queued
+- **L03 — Writing sprint** (writing): daily free-write the agent can correct. ✅ shipped
+- **L04 — Connected speech / 連音** (speaking): ear+mouth training. ⏳ next
 - Reusable components in `assets/`: `style.css`, `theme.js`, `quiz.js`, `checklist.js`.
 
 ## Workspace location

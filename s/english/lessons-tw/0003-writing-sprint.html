@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 03 課 — 寫作衝刺（Writing Sprint）</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+<style>
+  /* drill-specific styles (not reused elsewhere) */
+  .drill { border:1px solid var(--rule); border-radius:10px; padding:1.1rem 1.3rem; background:var(--surface); margin:1.8rem 0; }
+  .drill .row { display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; }
+  .drill .stat { font-family:var(--sans); line-height:1.1; }
+  .drill .stat .big { display:block; font-size:1.7rem; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .drill .stat .cap { font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+  .drill button.go { font-family:var(--sans); font-size:.95rem; cursor:pointer; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:.6rem 1.1rem; transition:filter .12s; }
+  .drill button.go:hover { filter:brightness(1.08); }
+  .wprompt { border:1px dashed var(--rule); border-radius:8px; padding:.7rem 1rem; background:var(--paper); margin:.4rem 0 1rem; font-size:1.02rem; }
+  .wprompt .pl { font-family:var(--sans); font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); display:block; margin-bottom:.25rem; }
+  .wprompt .pq { font-style:italic; }
+  .wtext { width:100%; min-height:11rem; font-family:var(--serif); font-size:1.05rem; line-height:1.7; padding:.8rem 1rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface); color:var(--ink); resize:vertical; }
+  .wtext:focus { outline:none; border-color:var(--accent); }
+  .wtext:disabled { opacity:.55; cursor:not-allowed; }
+  .durs { display:flex; gap:.45rem; align-items:center; flex-wrap:wrap; }
+  .durs .dl { font-family:var(--sans); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); margin-right:.2rem; }
+  .dur { font-family:var(--sans); font-size:.8rem; cursor:pointer; background:var(--surface); color:var(--muted); border:1px solid var(--rule); border-radius:999px; padding:.2rem .75rem; transition:background .12s, border-color .12s, color .12s; }
+  .dur:hover { border-color:var(--accent); }
+  .dur.active { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700; }
+  .dur.disabled { opacity:.5; cursor:not-allowed; }
+  .wnew { font-family:var(--sans); font-size:.72rem; cursor:pointer; background:transparent; color:var(--accent); border:1px solid var(--accent-border); border-radius:6px; padding:.18rem .6rem; transition:background .12s; }
+  .wnew:hover { background:var(--accent-soft); }
+  #rresults { display:none; margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--rule); }
+  #rresults .label { font-family:var(--sans); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; display:block; margin-bottom:.5rem; }
+  .wpm-row { display:flex; gap:.7rem; margin:.6rem 0 0; flex-wrap:wrap; }
+  .wpm-chip { background:var(--accent-soft); border:1px solid var(--accent-border); border-radius:8px; padding:.5rem .9rem; text-align:center; min-width:5rem; }
+  .wpm-chip .n { display:block; font-family:var(--sans); font-size:1.5rem; font-weight:700; color:var(--accent); }
+  .wpm-chip .l { font-family:var(--sans); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+</style>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 03 課 · 寫作</p>
+<h1>寫作衝刺（Writing Sprint）：你每天的寫作練習</h1>
+<p class="badges">
+  <span class="badge">約 10 分鐘</span>
+  <span class="badge">5 分鐘閱讀 · 5 分鐘寫作</span>
+  <span class="badge">獨自 · 免費</span>
+</p>
+
+<p class="lead">寫作和你口說、閱讀的毛病一樣：你<strong>先翻譯成中文</strong>，而且你會<strong>邊寫邊改</strong>，於是卡住。但寫作有一樣口說沒有的優勢——你可以把它傳給我，立刻得到訂正。這讓每日衝刺成為你所有技能裡<em>最緊密的回饋迴圈</em>，也是達成任務目標最快的路：一氣呵成、不查字典，寫出 150–250 字的訊息。</p>
+
+<h2>你寫作會卡住的真正原因</h2>
+<ol>
+  <li><strong>先翻譯成中文。</strong>和你的閱讀習慣（第 02 課）是同一個根源。每句都要走兩趟：想法 → 中文 → 英文 → 紙面。流暢的寫者是<em>想法 → 英文 → 紙面</em>。</li>
+  <li><strong>內在編輯（inner editor）。</strong>你寫到一半停下來修時態、找更好的字、刪掉重寫。每一次停下都斷了鏈條。寫作老師 Peter Elbow 為這個衝突取了名字——<strong>產出（producing）</strong>與<strong>編輯（editing）</strong>是兩種不同的腦部模式，混在一起會互相破壞。</li>
+  <li><strong>對字典的恐懼。</strong>你一打開翻譯 App，流暢度就死了。沒有那個字？<em>繞過去</em>寫，繼續往前。</li>
+</ol>
+
+<h2>解法：自由寫作（free-writing）</h2>
+<p>只有一條規則：<strong>讓手指持續動。</strong>不要修。不要翻譯。不要查任何東西。不要劃掉。一份難看的第一版草稿是<em>目標</em>，不是失敗——編輯是另一個階段，在<em>之後</em>才做。</p>
+
+<div class="callout">
+  <span class="label">為什麼有效</span>
+  <ul style="margin-bottom:0">
+    <li><strong>它讓內在編輯閉嘴。</strong>速度逼你停止打磨、開始產出。第一版草稿<em>本來就</em>該亂——這樣你才跑得過那個挑剔的聲音。</li>
+    <li><strong>它暴露缺口（comprehensible output）。</strong>寫作正是你<em>發現</em>自己還不會說什麼的地方。每一個你想用、卻想不起來的字，都是一張「接下來要學什麼」的地圖點。</li>
+    <li><strong>它訓練「用英文思考」。</strong>和第 02 課同一個機制：徹底跳過中文翻譯那趟。</li>
+    <li><strong>它鍛鍊「一氣呵成」的肌肉。</strong>任務目標——150–250 字、不查字典——不過就是你做過一百次的衝刺。</li>
+  </ul>
+</div>
+
+<p class="small muted">這可不是偏方：自由寫作法出自 Peter Elbow 的《Writing Without Teachers》（1973），如今是全世界寫作課的標準做法。<a href="https://en.wikipedia.org/wiki/Freewriting">閱讀這篇方法介紹 →</a></p>
+
+<h2>方法 —— 四個步驟</h2>
+<ol>
+  <li><strong>挑一個題目（prompt）。</strong>一句話即可。用我下面提供的，或自己編：站會更新、你對某篇開發文章的回應、你昨天做了什麼。任何你<em>已經有想法</em>的主題都行。</li>
+  <li><strong>設一個計時器（5 分鐘）。</strong>5 分鐘是預設值。忙的時候降到 3 分鐘；但絕不要是零。</li>
+  <li><strong>不停筆地寫。</strong>不修、不翻譯、不查字典。卡住時，就寫「I'm stuck, I'm stuck…」直到有東西浮現——但<em>保持手指在動</em>。缺一個字？繞過去寫（「the thing that…」、「kind of…」）。</li>
+  <li><strong>把它傳給我。</strong>把草稿貼進我們的對話。我會標出 <strong>2–3 個</strong>可以更銳利的地方——絕不會是 20 個。那個訂正就是迴圈：<em>產出 → 回饋 → 明天再產出</em>。</li>
+</ol>
+<p>總計：約 10 分鐘，含閱讀。然後你今天就完成了。</p>
+
+<div class="callout">
+  <span class="label">五分鐘法則</span>
+  如果今天 15 分鐘對你太多，那就做 <strong>5 分鐘</strong>。每天五分鐘，會徹底打敗週日兩小時。堅持才是整個遊戲。
+</div>
+
+<div class="task">
+  <span class="label">現在就做 —— 你的第一次衝刺</span>
+  <p style="margin:0 0 .8rem">選好長度，按開始，然後不停筆地寫到時間到。目標：<strong>讓手指持續動</strong>——不要修、不要翻譯、不要查任何東西。</p>
+  <p class="small muted" style="margin:0 0 .8rem">題目刻意用<strong>英文</strong>：你練的正是「用英文寫」這件事，字數也是以英文字數計算。</p>
+
+  <div class="drill">
+    <div class="wprompt">
+      <span class="pl">今天的題目 <button class="wnew" id="wnew">↻ 換一個</button></span>
+      <span class="pq" id="wprompt">—</span>
+    </div>
+
+    <div class="row" style="margin-bottom:.8rem">
+      <div class="stat"><span class="big" id="wordcount">0</span><span class="cap">字數</span></div>
+      <div class="stat"><span class="big" id="wtimer">5:00</span><span class="cap">剩餘</span></div>
+      <div class="durs">
+        <span class="dl">長度</span>
+        <button class="dur" data-d="3">3 分鐘</button>
+        <button class="dur active" data-d="5">5 分鐘</button>
+        <button class="dur" data-d="10">10 分鐘</button>
+      </div>
+      <button class="go" id="wgo">開始衝刺</button>
+    </div>
+    <p class="small muted" id="wstatus" style="margin:0 0 .6rem">按<strong>開始</strong>，不停筆地寫到時間到。文字框會在你開始後解鎖。</p>
+
+    <textarea class="wtext" id="wtext" placeholder="你的草稿寫在這裡……" disabled></textarea>
+
+    <div id="rresults"></div>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="label">第二步（稍後）：修訂 —— 但不是現在</span>
+  計時器一停，忍住立刻修改草稿的衝動。修訂和產出是<em>不同</em>的腦部模式，兩者會互相絆倒。更好的做法：把原始草稿貼給我，看我標的 2–3 個地方，<em>然後</em>才重寫那些弱點。久而久之，你會把我的修法借過來，直到它們變成你自己的。
+</div>
+
+<h2>測測你的理解</h2>
+
+<div class="quiz" data-right="正確。繞過去寫，繼續往前——那個字之後再精修。停下來查會斷了鏈條。" data-wrong="不盡然——見標出的答案。繞過那個缺字繼續寫。停下來查會斷了鏈條。">
+  <q>衝刺到一半，你想不起來某個精確的字。你該怎麼做？</q>
+  <div class="options">
+    <button class="opt">繞過去寫，繼續往前</button>
+    <button class="opt">停下來查字典</button>
+    <button class="opt">切換成中文</button>
+    <button class="opt">刪掉這句</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確。自由寫作把「產出」和「編輯」分開——這兩者混在一起會互相破壞。" data-wrong="不盡然——見標出的答案。自由寫作的力量，在於把產出與編輯分開。">
+  <q>自由寫作之所以有效，主要是因為它……</q>
+  <div class="options">
+    <button class="opt">把產出與編輯分開</button>
+    <button class="opt">教你全新的單字</button>
+    <button class="opt">改善你的拼字</button>
+    <button class="opt">直接修好你的文法</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確。在之後的另一個階段修訂——最好是在收到回饋之後。混進寫作中會扼殺流暢。" data-wrong="不盡然——見標出的答案。在之後的另一個階段修訂，而不是邊寫邊修。">
+  <q>你應該何時修訂你的衝刺草稿？</q>
+  <div class="options">
+    <button class="opt">之後的另一個階段</button>
+    <button class="opt">寫作的當下</button>
+    <button class="opt">開始之前</button>
+    <button class="opt">永不修訂——保持原樣</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課主要來源</strong><br>
+    <a href="https://en.wikipedia.org/wiki/Freewriting">Free-writing（Peter Elbow 方法概述）</a> —— 本課背後的技術，附原始著作連結。這週讀它一次。修訂時搭配《The Elements of Style》（Strunk &amp; White）：強動詞、刪去多餘的字。
+  </div>
+
+  <p><strong>放在手邊：</strong><a href="../reference-tw/writing-techniques.html">寫作技巧參考卡</a>把這課濃縮起來，並附上另外兩個單人寫作練習，方便快速複習。</p>
+
+  <p><strong>下一課 —— 第 04 課：</strong><em>連音（connected speech）</em>——從你的跟讀回饋排進來的。為什麼字在快速英文裡會黏在一起模糊掉，以及如何訓練耳朵和嘴巴掌握連音、弱化與縮音。</p>
+  <p>同時，持續每天做<a href="0001-shadowing-your-daily-speaking-workout.html">第 01 課（跟讀）</a>與<a href="0002-read-faster-by-reading-smarter.html">第 02 課（閱讀練習）</a>——它們和這課共用同一個根治之道：停止翻譯，開始產出。</p>
+
+  <p class="small muted"><strong>你第一次衝刺寫完了嗎？把它貼過來。</strong>我會給你 2–3 個可以更銳利的地方。難看的草稿也歡迎——這正是重點。</p>
+</div>
+
+</article>
+
+<script>
+/* drill: timed free-writing sprint — countdown timer, live word count, copy-out（繁中 UI）*/
+(function () {
+  var prompts = [
+    "What's one feature you shipped recently, and what made it hard?",
+    "Describe your ideal code review — what should a reviewer do, and what should they avoid?",
+    "Tell the story of the last nasty bug you fixed. How did you find it?",
+    "What tool or library did you discover this month? Why did it click for you?",
+    "If a junior dev asked you 'how do I get good at CSS?', what would you answer?",
+    "React or Vue for a brand-new side project — which, and why?",
+    "Describe your yesterday, morning to night, in detail.",
+    "A friend asks: should I learn to code in 2026? What do you tell them?"
+  ];
+
+  var promptEl = document.getElementById("wprompt");
+  var newBtn = document.getElementById("wnew");
+  var ta = document.getElementById("wtext");
+  var wcEl = document.getElementById("wordcount");
+  var timerEl = document.getElementById("wtimer");
+  var goBtn = document.getElementById("wgo");
+  var results = document.getElementById("rresults");
+  var status = document.getElementById("wstatus");
+  var durChips = Array.prototype.slice.call(document.querySelectorAll(".dur"));
+
+  var duration = 5 * 60 * 1000;
+  var remaining = duration;
+  var startT = 0;
+  var interval = null;
+  var running = false;
+
+  function setPrompt() {
+    var p = prompts[Math.floor(Math.random() * prompts.length)];
+    if (promptEl) promptEl.textContent = p;
+  }
+  function countWords(s) { return s.trim().split(/\s+/).filter(Boolean).length; }
+  function fmt(ms) {
+    var s = Math.max(0, Math.round(ms / 1000));
+    var m = Math.floor(s / 60);
+    var ss = s % 60;
+    return m + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+  function updateWc() { if (wcEl) wcEl.textContent = countWords(ta.value); }
+  function selectDur(d) {
+    duration = d * 60 * 1000;
+    durChips.forEach(function (c) {
+      c.classList.toggle("active", parseInt(c.getAttribute("data-d"), 10) === d);
+    });
+    if (!running) { remaining = duration; if (timerEl) timerEl.textContent = fmt(remaining); }
+  }
+  function start() {
+    running = true;
+    startT = Date.now();
+    var orig = remaining;
+    ta.disabled = false;
+    ta.focus();
+    goBtn.textContent = "完成 —— 我提前寫完了";
+    status.innerHTML = "衝刺中……<strong>繼續寫，不要停。</strong>不修、不翻譯、不查字典。";
+    durChips.forEach(function (c) { c.classList.add("disabled"); });
+    interval = setInterval(function () {
+      var elapsed = Date.now() - startT;
+      remaining = Math.max(0, orig - elapsed);
+      if (timerEl) timerEl.textContent = fmt(remaining);
+      updateWc();
+      if (remaining <= 0) finish();
+    }, 250);
+  }
+  function finish() {
+    if (interval) { clearInterval(interval); interval = null; }
+    running = false;
+    var words = countWords(ta.value);
+    var usedMs = duration - remaining;
+    var wpm = usedMs > 0 ? Math.round(words / (usedMs / 60000)) : 0;
+    var mins = duration / 60000;
+    var h = '<span class="label">你的衝刺</span><div class="wpm-row">';
+    h += '<div class="wpm-chip"><span class="n">' + words + '</span><span class="l">字數</span></div>';
+    h += '<div class="wpm-chip"><span class="n">' + wpm + '</span><span class="l">wpm</span></div>';
+    h += '<div class="wpm-chip"><span class="n">' + Math.round(150 / mins) + '</span><span class="l">目標／分</span></div>';
+    h += '</div>';
+    var msg;
+    if (words >= 150) {
+      msg = "你剛剛產出了一大塊英文——已經落在任務目標內（150–250 字）。";
+    } else if (words >= 80) {
+      msg = "不錯——你有持續前進。明天再推高一點；目標是每次衝刺 150–250 字。";
+    } else if (words > 0) {
+      msg = "短，但你開始了——這是最難的部分。明天多寫一點字，別停下來修。";
+    } else {
+      msg = "紙面還是空的——沒關係。再試一次；這次無論如何都讓手指持續動。";
+    }
+    h += '<p style="margin:.7rem 0 0">' + msg + '</p>';
+    if (words > 0) {
+      h += '<p style="margin:.6rem 0 0">現在是<strong>第二步</strong>：複製你的草稿傳給我。我會標出 2–3 個可以更銳利的地方——不是 20 個。那個回饋就是讓你成長的迴圈。</p>';
+    }
+    h += '<div class="wpm-row" style="margin-top:.7rem">';
+    if (words > 0) h += '<button class="opt" id="wcopy">複製我的草稿</button>';
+    h += '<button class="opt" id="wreset">再衝刺一次</button></div>';
+    results.innerHTML = h;
+    results.style.display = "block";
+    var copyBtn = document.getElementById("wcopy");
+    if (copyBtn) copyBtn.addEventListener("click", function () {
+      var text = ta.value;
+      function ok() { copyBtn.textContent = "已複製 ✓"; setTimeout(function () { copyBtn.textContent = "複製我的草稿"; }, 1500); }
+      function fallback() { ta.select(); try { document.execCommand("copy"); } catch (e) {} ok(); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      } else { fallback(); }
+    });
+    var resetBtn = document.getElementById("wreset");
+    if (resetBtn) resetBtn.addEventListener("click", reset);
+    results.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function reset() {
+    running = false;
+    if (interval) { clearInterval(interval); interval = null; }
+    ta.value = "";
+    ta.disabled = true;
+    remaining = duration;
+    if (timerEl) timerEl.textContent = fmt(remaining);
+    updateWc();
+    goBtn.textContent = "開始衝刺";
+    goBtn.style.display = "";
+    status.innerHTML = '按<strong>開始</strong>，不停筆地寫到時間到。文字框會在你開始後解鎖。';
+    results.style.display = "none"; results.innerHTML = "";
+    durChips.forEach(function (c) { c.classList.remove("disabled"); });
+    setPrompt();
+  }
+
+  if (newBtn) newBtn.addEventListener("click", setPrompt);
+  if (ta) ta.addEventListener("input", updateWc);
+  durChips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      if (running) return;
+      selectDur(parseInt(c.getAttribute("data-d"), 10));
+    });
+  });
+  if (goBtn) goBtn.addEventListener("click", function () { if (running) finish(); else start(); });
+
+  /* init */
+  ta.disabled = true;
+  selectDur(5);
+  setPrompt();
+})();
+</script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

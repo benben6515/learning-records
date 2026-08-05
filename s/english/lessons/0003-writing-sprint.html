@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 03 — Writing Sprint</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+<style>
+  /* drill-specific styles (not reused elsewhere) */
+  .drill { border:1px solid var(--rule); border-radius:10px; padding:1.1rem 1.3rem; background:var(--surface); margin:1.8rem 0; }
+  .drill .row { display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; }
+  .drill .stat { font-family:var(--sans); line-height:1.1; }
+  .drill .stat .big { display:block; font-size:1.7rem; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .drill .stat .cap { font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+  .drill button.go { font-family:var(--sans); font-size:.95rem; cursor:pointer; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:.6rem 1.1rem; transition:filter .12s; }
+  .drill button.go:hover { filter:brightness(1.08); }
+  .wprompt { border:1px dashed var(--rule); border-radius:8px; padding:.7rem 1rem; background:var(--paper); margin:.4rem 0 1rem; font-size:1.02rem; }
+  .wprompt .pl { font-family:var(--sans); font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); display:block; margin-bottom:.25rem; }
+  .wprompt .pq { font-style:italic; }
+  .wtext { width:100%; min-height:11rem; font-family:var(--serif); font-size:1.05rem; line-height:1.7; padding:.8rem 1rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface); color:var(--ink); resize:vertical; }
+  .wtext:focus { outline:none; border-color:var(--accent); }
+  .wtext:disabled { opacity:.55; cursor:not-allowed; }
+  .durs { display:flex; gap:.45rem; align-items:center; flex-wrap:wrap; }
+  .durs .dl { font-family:var(--sans); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); margin-right:.2rem; }
+  .dur { font-family:var(--sans); font-size:.8rem; cursor:pointer; background:var(--surface); color:var(--muted); border:1px solid var(--rule); border-radius:999px; padding:.2rem .75rem; transition:background .12s, border-color .12s, color .12s; }
+  .dur:hover { border-color:var(--accent); }
+  .dur.active { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700; }
+  .dur.disabled { opacity:.5; cursor:not-allowed; }
+  .wnew { font-family:var(--sans); font-size:.72rem; cursor:pointer; background:transparent; color:var(--accent); border:1px solid var(--accent-border); border-radius:6px; padding:.18rem .6rem; transition:background .12s; }
+  .wnew:hover { background:var(--accent-soft); }
+  #rresults { display:none; margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--rule); }
+  #rresults .label { font-family:var(--sans); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; display:block; margin-bottom:.5rem; }
+  .wpm-row { display:flex; gap:.7rem; margin:.6rem 0 0; flex-wrap:wrap; }
+  .wpm-chip { background:var(--accent-soft); border:1px solid var(--accent-border); border-radius:8px; padding:.5rem .9rem; text-align:center; min-width:5rem; }
+  .wpm-chip .n { display:block; font-family:var(--sans); font-size:1.5rem; font-weight:700; color:var(--accent); }
+  .wpm-chip .l { font-family:var(--sans); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+</style>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 03 · Writing</p>
+<h1>Writing Sprint: Your Daily Writing Workout</h1>
+<p class="badges">
+  <span class="badge">~10 min total</span>
+  <span class="badge">5 read · 5 write</span>
+  <span class="badge">Solo · Free</span>
+</p>
+
+<p class="lead">Writing shares the same disease as your speaking and your reading: you <strong>translate from Chinese first</strong>, and you freeze because you <strong>edit while you write</strong>. But writing has one thing speaking doesn't — you can send it to me for an instant correction. That makes the daily sprint the <em>tightest feedback loop</em> of all your skills, and the fastest path to the Mission goal: a clean 150–250 word message, written in one sitting, without a dictionary.</p>
+
+<h2>Why you freeze when you write (the real reasons)</h2>
+<ol>
+  <li><strong>Translating from Chinese first.</strong> Same root as your reading habit (Lesson 02). Every sentence takes two trips: thought → Chinese → English → page. Fluent writers go <em>thought → English → page</em>.</li>
+  <li><strong>The inner editor.</strong> You stop mid-sentence to fix a tense, hunt a better word, delete and rewrite. Each stop breaks the chain. Writing teacher Peter Elbow named this clash — <strong>producing</strong> and <strong>editing</strong> are two different brain modes, and mixing them sabotages both.</li>
+  <li><strong>Dictionary fear.</strong> The moment you reach for a translation app, the flow is dead. Don't have the word? Write <em>around</em> it and keep moving.</li>
+</ol>
+
+<h2>The fix: free-writing</h2>
+<p>One rule: <strong>keep your fingers moving.</strong> Don't edit. Don't translate. Don't look anything up. Don't cross out. An ugly first draft is the <em>goal</em>, not a failure — editing is a separate pass that comes <em>after</em>.</p>
+
+<div class="callout">
+  <span class="label">Why it works</span>
+  <ul style="margin-bottom:0">
+    <li><strong>It silences the inner editor.</strong> Speed forces you to stop polishing and start producing. The first draft is <em>supposed</em> to be messy — that's how you outrun the critic.</li>
+    <li><strong>It surfaces gaps (comprehensible output).</strong> Writing is where you <em>discover</em> what you can't yet say. Every word you reach for and don't have is a map dot for what to learn next.</li>
+    <li><strong>It trains "think in English".</strong> Same mechanism as Lesson 02: skip the Chinese translation trip entirely.</li>
+    <li><strong>It builds the one-sitting muscle.</strong> The Mission goal — 150–250 words without a dictionary — is just a sprint you've done a hundred times.</li>
+  </ul>
+</div>
+
+<p class="small muted">Not folklore: the free-writing method comes from Peter Elbow's <em>Writing Without Teachers</em> (1973) and is now standard practice in writing courses worldwide. <a href="https://en.wikipedia.org/wiki/Freewriting">Read the method write-up →</a></p>
+
+<h2>The method — 4 steps</h2>
+<ol>
+  <li><strong>Pick a prompt</strong> (one sentence). Use mine below, or invent your own: a standup update, your reaction to a dev article, what you did yesterday. Anything you already have thoughts on.</li>
+  <li><strong>Set a timer (5 min).</strong> Five is the default. Drop to 3 on a busy day; never zero.</li>
+  <li><strong>Write without stopping.</strong> No editing, no translating, no dictionary. If you stall, write "I'm stuck, I'm stuck…" until something comes — but <em>keep moving</em>. Lacking a word? Write around it ("the thing that…", "kind of…").</li>
+  <li><strong>Send it to me.</strong> Paste your draft in our chat. I'll mark <strong>2–3 things</strong> to sharpen — never 20. That correction is the loop: <em>produce → feedback → produce again tomorrow</em>.</li>
+</ol>
+<p>Total: about 10 minutes, read included. Then you're done for the day.</p>
+
+<div class="callout">
+  <span class="label">The 5-minute rule</span>
+  If 15 minutes feels like too much today, do <strong>5</strong>. Five minutes every day will beat two hours every Sunday, every single time. Consistency is the whole game.
+</div>
+
+<div class="task">
+  <span class="label">Do it now — your first sprint</span>
+  <p style="margin:0 0 .8rem">Pick a length, hit start, and write without stopping until the timer ends. Goal: <strong>keep your fingers moving</strong> — don't fix, don't translate, don't look anything up.</p>
+
+  <div class="drill">
+    <div class="wprompt">
+      <span class="pl">Today's prompt <button class="wnew" id="wnew">↻ another</button></span>
+      <span class="pq" id="wprompt">—</span>
+    </div>
+
+    <div class="row" style="margin-bottom:.8rem">
+      <div class="stat"><span class="big" id="wordcount">0</span><span class="cap">words</span></div>
+      <div class="stat"><span class="big" id="wtimer">5:00</span><span class="cap">remaining</span></div>
+      <div class="durs">
+        <span class="dl">length</span>
+        <button class="dur" data-d="3">3 min</button>
+        <button class="dur active" data-d="5">5 min</button>
+        <button class="dur" data-d="10">10 min</button>
+      </div>
+      <button class="go" id="wgo">Start sprint</button>
+    </div>
+    <p class="small muted" id="wstatus" style="margin:0 0 .6rem">Press <strong>Start</strong> and write without stopping until the timer ends. The text box unlocks when you start.</p>
+
+    <textarea class="wtext" id="wtext" placeholder="Your draft appears here…" disabled></textarea>
+
+    <div id="rresults"></div>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="label">Step 2 (later): revise — but not now</span>
+  Resist the urge to fix your draft the moment the timer stops. Revising is a <em>different</em> brain mode from generating, and they trip each other up. Better: paste the raw draft to me, see my 2–3 marks, and <em>then</em> rewrite the weak spots. Over time you'll borrow my fixes until they become yours.
+</div>
+
+<h2>Check your understanding</h2>
+
+<div class="quiz" data-right="Correct. Write around it and keep moving — you can sharpen the word later. Stopping to look it up breaks the chain." data-wrong="Not quite — see the highlighted answer. Write around the missing word and keep moving. Looking it up breaks the chain.">
+  <q>Mid-sprint, you can't think of the exact word. What do you do?</q>
+  <div class="options">
+    <button class="opt">Write around it, keep going</button>
+    <button class="opt">Stop and look it up</button>
+    <button class="opt">Switch to Chinese</button>
+    <button class="opt">Delete the sentence</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. Free-writing separates producing from editing — two modes that sabotage each other when mixed." data-wrong="Not quite — see the highlighted answer. Free-writing's power is separating producing from editing.">
+  <q>Free-writing works mainly because it…</q>
+  <div class="options">
+    <button class="opt">Separates producing from editing</button>
+    <button class="opt">Teaches brand-new vocabulary</button>
+    <button class="opt">Improves your spelling</button>
+    <button class="opt">Fixes your grammar directly</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. Revise in a separate pass afterward — ideally after feedback. Mixing it in kills flow." data-wrong="Not quite — see the highlighted answer. Revise in a separate pass afterward, not while you write.">
+  <q>When should you revise your sprint?</q>
+  <div class="options">
+    <button class="opt">In a separate pass afterward</button>
+    <button class="opt">While you're writing</button>
+    <button class="opt">Before you start</button>
+    <button class="opt">Never — it stays raw</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://en.wikipedia.org/wiki/Freewriting">Free-writing (overview of Peter Elbow's method)</a> — the technique behind this lesson, with links to the original work. Read it once this week. Pair with <em>The Elements of Style</em> (Strunk &amp; White) when you revise: strong verbs, needless words cut.
+  </div>
+
+  <p><strong>Keep this nearby:</strong> the <a href="../reference/writing-techniques.html">Writing Techniques reference sheet</a> condenses this lesson plus two more solo writing drills for quick review.</p>
+
+  <p><strong>Coming up — Lesson 04:</strong> <em>connected speech (連音)</em> — queued from your shadowing feedback. Why words blur together in fast English, and how to train your ear and mouth for linking, weak forms, and reductions.</p>
+  <p>Meantime, keep <a href="0001-shadowing-your-daily-speaking-workout.html">Lesson 01 (shadowing)</a> and <a href="0002-read-faster-by-reading-smarter.html">Lesson 02 (reading drill)</a> running daily — they share the same root cure as this one: stop translating, start producing.</p>
+
+  <p class="small muted"><strong>Did you finish your first sprint? Paste it here.</strong> I'll give you 2–3 things to sharpen. Ugly draft welcome — that's the whole point.</p>
+</div>
+
+</article>
+
+<script>
+/* drill: timed free-writing sprint — countdown timer, live word count, copy-out */
+(function () {
+  var prompts = [
+    "What's one feature you shipped recently, and what made it hard?",
+    "Describe your ideal code review — what should a reviewer do, and what should they avoid?",
+    "Tell the story of the last nasty bug you fixed. How did you find it?",
+    "What tool or library did you discover this month? Why did it click for you?",
+    "If a junior dev asked you 'how do I get good at CSS?', what would you answer?",
+    "React or Vue for a brand-new side project — which, and why?",
+    "Describe your yesterday, morning to night, in detail.",
+    "A friend asks: should I learn to code in 2026? What do you tell them?"
+  ];
+
+  var promptEl = document.getElementById("wprompt");
+  var newBtn = document.getElementById("wnew");
+  var ta = document.getElementById("wtext");
+  var wcEl = document.getElementById("wordcount");
+  var timerEl = document.getElementById("wtimer");
+  var goBtn = document.getElementById("wgo");
+  var results = document.getElementById("rresults");
+  var status = document.getElementById("wstatus");
+  var durChips = Array.prototype.slice.call(document.querySelectorAll(".dur"));
+
+  var duration = 5 * 60 * 1000;
+  var remaining = duration;
+  var startT = 0;
+  var interval = null;
+  var running = false;
+
+  function setPrompt() {
+    var p = prompts[Math.floor(Math.random() * prompts.length)];
+    if (promptEl) promptEl.textContent = p;
+  }
+  function countWords(s) { return s.trim().split(/\s+/).filter(Boolean).length; }
+  function fmt(ms) {
+    var s = Math.max(0, Math.round(ms / 1000));
+    var m = Math.floor(s / 60);
+    var ss = s % 60;
+    return m + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+  function updateWc() { if (wcEl) wcEl.textContent = countWords(ta.value); }
+  function selectDur(d) {
+    duration = d * 60 * 1000;
+    durChips.forEach(function (c) {
+      c.classList.toggle("active", parseInt(c.getAttribute("data-d"), 10) === d);
+    });
+    if (!running) { remaining = duration; if (timerEl) timerEl.textContent = fmt(remaining); }
+  }
+  function start() {
+    running = true;
+    startT = Date.now();
+    var orig = remaining;
+    ta.disabled = false;
+    ta.focus();
+    goBtn.textContent = "Done — I finished early";
+    status.innerHTML = "Sprinting… <strong>keep writing, don't stop.</strong> No editing, no translating, no dictionary.";
+    durChips.forEach(function (c) { c.classList.add("disabled"); });
+    interval = setInterval(function () {
+      var elapsed = Date.now() - startT;
+      remaining = Math.max(0, orig - elapsed);
+      if (timerEl) timerEl.textContent = fmt(remaining);
+      updateWc();
+      if (remaining <= 0) finish();
+    }, 250);
+  }
+  function finish() {
+    if (interval) { clearInterval(interval); interval = null; }
+    running = false;
+    var words = countWords(ta.value);
+    var usedMs = duration - remaining;
+    var wpm = usedMs > 0 ? Math.round(words / (usedMs / 60000)) : 0;
+    var mins = duration / 60000;
+    var h = '<span class="label">Your sprint</span><div class="wpm-row">';
+    h += '<div class="wpm-chip"><span class="n">' + words + '</span><span class="l">words</span></div>';
+    h += '<div class="wpm-chip"><span class="n">' + wpm + '</span><span class="l">wpm</span></div>';
+    h += '<div class="wpm-chip"><span class="n">' + Math.round(150 / mins) + '</span><span class="l">target / min</span></div>';
+    h += '</div>';
+    var msg;
+    if (words >= 150) {
+      msg = "That's a real chunk of English you just produced — you're inside the Mission target (150–250 words).";
+    } else if (words >= 80) {
+      msg = "Good — you kept moving. Push a little higher tomorrow; the target is 150–250 words per sprint.";
+    } else if (words > 0) {
+      msg = "Short, but you started — that's the hard part. Tomorrow, aim for more words and don't stop to fix.";
+    } else {
+      msg = "Nothing on the page yet — no shame. Try again; this time just keep your fingers moving no matter what.";
+    }
+    h += '<p style="margin:.7rem 0 0">' + msg + '</p>';
+    if (words > 0) {
+      h += '<p style="margin:.6rem 0 0">Now <strong>step 2</strong>: copy your draft and send it to me. I\'ll mark 2–3 things to sharpen — not 20. That feedback is the loop that grows you.</p>';
+    }
+    h += '<div class="wpm-row" style="margin-top:.7rem">';
+    if (words > 0) h += '<button class="opt" id="wcopy">Copy my draft</button>';
+    h += '<button class="opt" id="wreset">New sprint</button></div>';
+    results.innerHTML = h;
+    results.style.display = "block";
+    var copyBtn = document.getElementById("wcopy");
+    if (copyBtn) copyBtn.addEventListener("click", function () {
+      var text = ta.value;
+      function ok() { copyBtn.textContent = "Copied ✓"; setTimeout(function () { copyBtn.textContent = "Copy my draft"; }, 1500); }
+      function fallback() { ta.select(); try { document.execCommand("copy"); } catch (e) {} ok(); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      } else { fallback(); }
+    });
+    var resetBtn = document.getElementById("wreset");
+    if (resetBtn) resetBtn.addEventListener("click", reset);
+    results.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function reset() {
+    running = false;
+    if (interval) { clearInterval(interval); interval = null; }
+    ta.value = "";
+    ta.disabled = true;
+    remaining = duration;
+    if (timerEl) timerEl.textContent = fmt(remaining);
+    updateWc();
+    goBtn.textContent = "Start sprint";
+    goBtn.style.display = "";
+    status.innerHTML = 'Press <strong>Start</strong> and write without stopping until the timer ends. The text box unlocks when you start.';
+    results.style.display = "none"; results.innerHTML = "";
+    durChips.forEach(function (c) { c.classList.remove("disabled"); });
+    setPrompt();
+  }
+
+  if (newBtn) newBtn.addEventListener("click", setPrompt);
+  if (ta) ta.addEventListener("input", updateWc);
+  durChips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      if (running) return;
+      selectDur(parseInt(c.getAttribute("data-d"), 10));
+    });
+  });
+  if (goBtn) goBtn.addEventListener("click", function () { if (running) finish(); else start(); });
+
+  /* init */
+  ta.disabled = true;
+  selectDur(5);
+  setPrompt();
+})();
+</script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
