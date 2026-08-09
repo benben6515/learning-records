@@ -1,0 +1,13 @@
+# `CONTEXT.md` — the glossary rules
+
+`CONTEXT.md` is **a glossary and nothing else** — not a spec, not a scratchpad, not a decision log. That single sentence is load-bearing; everything else is consequence. The most common way people break it: stuffing implementation in (file paths, class names, "how it works"). The moment they do, it stops being a glossary and becomes a stale half-code/half-prose mess nobody trusts. Every downstream skill reads this file first — `to-spec` uses its vocabulary, `implement` reads it before building, `improve-codebase-architecture` names modules with it — so getting the rules wrong makes every later skill drift.
+
+**The four rules:** (1) **Be opinionated** — several words name one concept → pick the best, banish the rest to `_Avoid_:`; don't list synonyms as equals, *choose*. (2) **Keep it tight** — one or two sentences; define what it *is*, not what it *does*. (3) **Project-specific only** — general programming concepts (timeouts, error types) don't belong even if used everywhere; test: *is this unique to my domain?* (4) **Devoid of implementation** — no paths, classes, or tech; decisions/behaviours go in specs and ADRs, not here. Good entry: `Customer — A person or organization that places orders. _Avoid:_ Client, buyer, account.`
+
+**Written inline, lazily:** `domain-modeling` maintains the glossary *as terms resolve*, usually mid-`grill-with-docs` — the moment a term crystallises it gets written, no batch-at-the-end, no empty scaffold. The file is born when the first term is forced to resolve.
+
+**Evidence:** free-recall — stated the load-bearing sentence (glossary, nothing else); on the spot-the-broken-rule drill, correctly identified `OrderService` → Rule 4 (implementation) and `Timeout` → Rule 3 (not project-specific).
+
+**Misconception corrected:** on the `Account — Used for various things like logins and billing` entry, identified only Rule 1 (not opinionated / no `_Avoid_` list) and **missed Rule 2 (not tight)**. The authoritative answer is *both* Rules 1 & 2: the definition describes what Account *does* (logins, billing) rather than what it *is*, plus it is vague ("various things") and probably two concepts mashed together (split it). The sharp internalised distinction: **"define what it *is*, not what it *does*"** — `Customer — a person/org that places orders` (is) vs `Account — used for logins and billing` (does). Rule 2's is/does split is the easy one to overlook.
+
+**Implications:** Lesson 6 covers ADRs — the three-criteria gate. Where `CONTEXT.md` holds *terms*, ADRs hold *decisions* — but only the few that clear a high bar; most things that feel ADR-worthy aren't. Rule 4's "decisions go in ADRs, not the glossary" is the bridge between the two lessons.

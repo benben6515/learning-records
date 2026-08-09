@@ -1,0 +1,13 @@
+# The entry point: `grill-with-docs` — three nested skills
+
+`grill-with-docs` is **not one skill but three, nested like Russian dolls**, read inside-out: `grilling` (the primitive — the relentless interview) → `grill-me` (same interview, no codebase, leaves nothing) → `grill-with-docs` (same interview **plus `domain-modeling`**, writes `CONTEXT.md` + occasionally an ADR as it goes). The three are **identical in *how* they interview, different only in *what they leave behind***. Rule of thumb: **have a codebase → `grill-with-docs`, always**; no codebase (greenfield) → `grill-me`. The paper trail `grill-with-docs` writes is exactly what `to-spec`, `implement`, and `improve-codebase-architecture` will read later.
+
+**Four rules of a good grilling** (the off-the-rails signals): (1) **one question at a time** — a burst of five is a bug; (2) **it looks up facts, you own decisions** — anything findable on the filesystem it should look up, only genuine trade-offs get put to you; (3) **every question ships with a recommended answer** — you approve/reject/adjust, never face a blank; (4) **it will not act until you confirm shared understanding** — grilling produces *alignment*, not code.
+
+**Why the window must stay whole (connects to Lesson 3):** `grill-with-docs` is where shared thinking and the first glossary entries accumulate. Compact or clear the conversation here = throw away the very state the rest of the flow depends on. The unbroken-window rule exists to protect *this* stage's output.
+
+**Evidence:** free-recall — named all three nested skills and that only `grill-with-docs` leaves docs; recited all four grilling rules correctly (one-question-at-a-time, facts-looked-up/decisions-yours, recommended answer per question, no action pre-consensus).
+
+**Misconception corrected:** initially justified "`grill-with-docs` is the *stateful* choice" by "it asks based on the current codebase" — that is domain-modeling's *input* side (reading the codebase to look up facts). The load-bearing reason it is *stateful* is the **output** side: it **writes `CONTEXT.md` + ADRs that persist beyond the conversation** and feed the downstream skills. Contrast: `grill-me` is *stateless* (writes nothing). "Stateful" = leaves a paper trail downstream can read; that trail is what the unbroken window protects.
+
+**Implications:** Lessons 05–08 are the rest of the spec-driven stretch (`CONTEXT.md` → ADRs → `to-spec` → `to-tickets`). This lesson covered the *interview*; Lesson 05 covers the *discipline of writing the glossary well* (opinionated, tight, project-specific, no implementation). Keep the inside-out nesting and the stateful/stateless split in mind — they recur whenever choosing an entry point.
