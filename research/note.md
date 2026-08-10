@@ -24,7 +24,7 @@ research/
 | `science/`      | `entropy-simple.md`、`heliocentrism-deep-research.md`                                                                                                |
 | `spirituality/` | `chakra-research.md`、`rune-research.md`                                                                                                             |
 | `culture/`      | `flower-language-dictionary-491.md`、`hanakotoba-floriography-guide.md`                                                                              |
-| `engineering/`  | `injection-molding-machine.md`                                                                                                                       |
+| `engineering/`  | `injection-molding-machine.md`、`networking-fundamentals.tw.md`                                                                                      |
 | `education/`    | `omscs-review.md`                                                                                                                                    |
 | `games/`        | `expedition-33-english-guide.md`                                                                                                                     |
 | `epics/`        | 九大文化神話子站，入口 `index.html`，規範見 `DESIGN.md`                                                                                              |
