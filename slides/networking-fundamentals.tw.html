@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>網路基礎入門 · DHCP · 網段 · Ping · 路由器 · TCP</title>
+<style>
+  :root{
+    /* surface ladder — depth without shadows */
+    --canvas:#0b0e14;
+    --surface:#11151d;
+    --surface-2:#161b25;
+    --surface-3:#1d2330;
+    --border:#242b39;
+    --border-2:#2e3645;
+    /* text */
+    --text:#e6edf3;
+    --muted:#8b97a8;
+    --dim:#5c6675;
+    /* accents */
+    --accent:#38bdf8;       /* cyan — networking */
+    --accent-dim:rgba(56,189,248,.14);
+    --tcp:#34d399;          /* emerald — reliable */
+    --udp:#fbbf24;          /* amber — fast */
+    --danger:#f87171;
+    --violet:#a78bfa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--canvas);color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'PingFang TC','Microsoft JhengHei','Segoe UI',sans-serif;
+    font-feature-settings:'ss03' on;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+  .deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+  @media(min-aspect-ratio:16/9){
+    .deck{max-width:calc(100vh*16/9);max-height:calc(100vw*9/16);margin:auto;inset:0;position:absolute;border-left:1px solid var(--border);border-right:1px solid var(--border)}}
+
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;
+    padding:clamp(32px,5vh,68px) clamp(40px,7vw,110px);
+    opacity:0;transition:opacity .45s ease}
+  .slide.active{display:flex;opacity:1}
+
+  /* eyebrow + numbering */
+  .eyebrow{display:flex;align-items:center;gap:12px;color:var(--muted);
+    font-size:clamp(11px,1.2vw,14px);letter-spacing:.18em;text-transform:uppercase;font-weight:600;margin-bottom:auto}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .eyebrow .num{color:var(--accent)}
+
+  h1.title{font-size:clamp(34px,6.4vw,82px);font-weight:800;line-height:1.04;letter-spacing:-.02em;margin-bottom:14px}
+  h1.title .grad{background:linear-gradient(120deg,#fff 0%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h2.title{font-size:clamp(26px,4vw,52px);font-weight:700;line-height:1.1;letter-spacing:-.015em;margin-bottom:8px}
+  .lede{color:var(--muted);font-size:clamp(15px,1.8vw,22px);line-height:1.55;max-width:62ch}
+  .lede strong{color:var(--text);font-weight:600}
+
+  .slide-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,3vh,34px);min-height:0}
+  .footnote{margin-top:auto;color:var(--dim);font-size:clamp(10px,1.05vw,13px);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .footnote .tag{padding:3px 9px;border:1px solid var(--border);border-radius:6px;color:var(--muted);background:var(--surface);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  /* cards / chips */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:clamp(16px,2vh,26px)}
+  .chip{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;
+    border:1px solid var(--border-2);background:var(--surface-2);font-size:clamp(12px,1.2vw,15px);color:var(--text)}
+  .chip.cy{border-color:rgba(56,189,248,.4);background:var(--accent-dim);color:var(--accent)}
+  .chip.gr{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:var(--tcp)}
+  .chip.am{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.12);color:var(--udp)}
+  .chip.vi{border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.12);color:var(--violet)}
+
+  /* generic 2 / 3 col grids */
+  .grid{display:grid;gap:clamp(12px,1.6vw,22px);width:100%}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+
+  .card h3{font-size:clamp(15px,1.7vw,21px);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+  .card p,.card li{color:var(--muted);font-size:clamp(13px,1.4vw,17px);line-height:1.6}
+  .card .big{font-size:clamp(22px,3vw,38px);font-weight:800;color:var(--text);font-family:ui-monospace,Menlo,monospace;letter-spacing:-.01em}
+
+  /* DORA flow */
+  .flow{display:flex;align-items:stretch;gap:0;width:100%}
+  .flow .step{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 14px;text-align:center;position:relative}
+  .flow .step .k{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(14px,1.6vw,19px);color:var(--accent)}
+  .flow .step .d{color:var(--muted);font-size:clamp(11px,1.2vw,14px);margin-top:6px;line-height:1.4}
+  .flow .arrow{display:flex;align-items:center;color:var(--dim);font-size:22px;padding:0 6px}
+  .flow .step.broad{border-color:rgba(56,189,248,.35);background:var(--accent-dim)}
+  .flow .step.broad .k{color:var(--accent)}
+
+  /* layer stack */
+  .layers{display:flex;flex-direction:column;gap:10px;width:100%;max-width:780px}
+  .layer{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:18px;
+    padding:14px 20px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  .layer .lid{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--accent);font-size:clamp(15px,1.6vw,20px)}
+  .layer .lname{font-weight:700;font-size:clamp(14px,1.5vw,19px)}
+  .layer .lname small{display:block;color:var(--dim);font-weight:500;font-size:clamp(10px,1vw,12px);margin-top:2px}
+  .layer .protos{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .layer.hl{border-color:var(--accent);background:linear-gradient(90deg,var(--accent-dim),transparent)}
+
+  /* handshake */
+  .hs{display:grid;grid-template-columns:1fr auto 1fr;gap:0 20px;align-items:center;width:100%;max-width:760px;margin:0 auto}
+  .hs .peer{text-align:center;font-weight:700;color:var(--text);padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  .hs .mid{display:flex;flex-direction:column;gap:18px;padding:8px 0}
+  .hs .msg{position:relative;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;
+    font-size:clamp(12px,1.4vw,16px);padding:10px 16px;border-radius:10px;border:1px solid var(--border-2);background:var(--surface-2);white-space:nowrap}
+  .msg .arr{display:block;font-size:22px;color:var(--accent);line-height:1}
+  .msg .arr.r{}
+  .msg .arr.l{transform:scaleX(-1);color:var(--tcp)}
+  .msg small{display:block;color:var(--muted);font-family:'Inter',sans-serif;font-weight:500;font-size:clamp(9px,.9vw,11px);margin-top:3px}
+
+  /* router topology */
+  .topo{display:flex;align-items:center;justify-content:center;gap:clamp(16px,3vw,48px);width:100%}
+  .seg{border:1px dashed var(--border-2);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:180px;background:var(--surface)}
+  .seg .segnet{font-family:ui-monospace,Menlo,monospace;color:var(--accent);font-size:clamp(11px,1.2vw,14px);font-weight:600}
+  .seg .host{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:clamp(12px,1.3vw,15px);background:var(--surface-2);text-align:center}
+  .rt{padding:18px 22px;border:1px solid var(--accent);border-radius:14px;background:var(--accent-dim);text-align:center;font-weight:700}
+  .rt .ico{font-size:30px;display:block}
+  .rt small{display:block;color:var(--muted);font-weight:500;margin-top:4px;font-size:clamp(10px,1vw,12px)}
+  .wire{flex:0 0 auto;height:2px;background:var(--border-2);min-width:24px;position:relative}
+  .wire.v{width:2px;height:auto;min-height:30px}
+
+  /* compare table */
+  table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:clamp(12px,1.4vw,16px)}
+  table.cmp th,table.cmp td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border)}
+  table.cmp th{color:var(--dim);font-weight:600;font-size:clamp(11px,1.1vw,13px);text-transform:uppercase;letter-spacing:.06em}
+  table.cmp td{color:var(--muted)}
+  table.cmp tr td:first-child{color:var(--text);font-weight:600}
+  table.cmp .tcp{color:var(--tcp)}
+  table.cmp .udp{color:var(--udp)}
+
+  /* priv ip rows */
+  .priv{display:flex;flex-direction:column;gap:12px;width:100%}
+  .priv .row{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;
+    padding:16px 22px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  .priv .row .blk{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(16px,2vw,26px);color:var(--text)}
+  .priv .row .rng{color:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:clamp(11px,1.2vw,14px)}
+  .priv .row .tag{color:var(--accent);font-weight:700;font-size:clamp(12px,1.3vw,16px)}
+
+  /* nav */
+  .progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);transition:width .35s;z-index:50;width:0}
+  .nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:50}
+  .nav button{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .nav button:hover{background:var(--surface-3);border-color:var(--accent)}
+  .nav .count{color:var(--muted);font-size:13px;font-family:ui-monospace,Menlo,monospace;min-width:54px;text-align:center}
+  .hint{position:fixed;bottom:24px;right:26px;color:var(--dim);font-size:11px;z-index:50}
+
+  /* staggered entrance */
+  .slide.active .stagger>*{opacity:0;animation:fu .5s ease-out forwards}
+  .slide.active .stagger>*:nth-child(1){animation-delay:.10s}
+  .slide.active .stagger>*:nth-child(2){animation-delay:.20s}
+  .slide.active .stagger>*:nth-child(3){animation-delay:.30s}
+  .slide.active .stagger>*:nth-child(4){animation-delay:.40s}
+  .slide.active .stagger>*:nth-child(5){animation-delay:.50s}
+  @keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+  .center{text-align:center;align-items:center}
+  .quote{border-left:3px solid var(--accent);padding:6px 0 6px 20px;color:var(--muted);
+    font-size:clamp(14px,1.6vw,19px);line-height:1.6;font-style:italic;max-width:80ch}
+  .quote code{color:var(--accent);font-style:normal;font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="progress" id="bar"></div>
+<div class="deck">
+
+<!-- 1 TITLE -->
+<section class="slide active">
+  <div class="eyebrow"><span class="dot"></span> Networking Fundamentals · 入門</div>
+  <div class="slide-body stagger">
+    <h1 class="title">網路基礎，<br><span class="grad">一次看懂五件事</span></h1>
+    <p class="lede"><strong>DHCP</strong> · <strong>網段</strong> · <strong>Ping</strong> · <strong>路由器</strong> · <strong>TCP/UDP</strong><br>從「封包能不能送到位」到「資料可不可靠」。</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="chip">基於 IETF 第一方 RFC</span>
+      <span class="chip">RFC 2131 · 1918 · 4632 · 792 · 826 · 9293 · 768 · 1122</span>
+    </div>
+  </div>
+  <div class="footnote"><span class="tag">research/engineering/networking-fundamentals.tw.md</span></div>
+</section>
+
+<!-- 2 ROADMAP -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> Agenda · 本場要講</div>
+  <div class="slide-body stagger">
+    <h2 class="title">五個觀念，一條邏輯鏈</h2>
+    <div class="grid g2" style="max-width:1000px">
+      <div class="card"><h3><span class="chip cy">1</span> DHCP vs 固定 IP</h3><p>IP 是手動寫死，還是自動發派？DHCP 其實有三種模式。</p></div>
+      <div class="card"><h3><span class="chip cy">2</span> 網段與私有 IP</h3><p>192.168.x / 10.x 從哪來？為什麼不能直接上網？</p></div>
+      <div class="card"><h3><span class="chip cy">3</span> Ping 為何同網段才通</h3><p>背後是 ICMP 加上 ARP 廣播的先天限制。</p></div>
+      <div class="card"><h3><span class="chip cy">4</span> 跨網段為何要路由器</h3><p>不同網段 = 不同廣播網域，要靠 L3 設備轉送。</p></div>
+      <div class="card" style="grid-column:1 / -1"><h3><span class="chip vi">5</span> 傳輸層 TCP / UDP</h3><p>前面四節解決「送不送得到」；TCP/UDP 解決「可不可靠」。</p></div>
+    </div>
+  </div>
+  <div class="footnote"><span class="tag">按 → 或空白鍵 下一頁</span></div>
+</section>
+
+<!-- 3 DHCP vs STATIC -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">01</span> · IP 怎麼來的</div>
+  <div class="slide-body stagger">
+    <h2 class="title">DHCP vs 固定 IP</h2>
+    <p class="lede">不是二選一——兩者<strong>可以並存</strong>。</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>固定 IP（Static）</h3>
+        <p>人員手動把 IP、遮罩、閘道、DNS 逐一寫進裝置，不會自動改變，也不依賴伺服器。</p>
+      </div>
+      <div class="card">
+        <h3>DHCP（自動發派）</h3>
+        <p>主機開機後自動向 DHCP 伺服器索取 IP 與設定。<strong>RFC 2131</strong> 設計目標明文：「DHCP must coexist with statically configured hosts.」</p>
+      </div>
+    </div>
+    <p class="quote">很多人把 DHCP 直接等同於「每次拿到不一樣的 IP」——其實不然。它有三種模式。</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 2131 §1, §1.6</span></div>
+</section>
+
+<!-- 4 DHCP THREE MODES -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">01</span> · DHCP 的三種分配模式</div>
+  <div class="slide-body stagger">
+    <h2 class="title">三種模式，不只是「動態」</h2>
+    <div class="grid g3">
+      <div class="card">
+        <span class="chip">Automatic</span>
+        <h3 style="margin-top:10px">自動分配</h3>
+        <p>配給 client 一個<strong style="color:var(--text)">永久</strong> IP。結果也是固定 IP，只是由 DHCP 統一發派。</p>
+      </div>
+      <div class="card" style="border-color:var(--accent)">
+        <span class="chip cy">Dynamic</span>
+        <h3 style="margin-top:10px">動態分配</h3>
+        <p>配給<strong style="color:var(--text)">有限期</strong>的 IP（lease 租約），到期可回收再用。<strong>家用/企業最常見。</strong></p>
+      </div>
+      <div class="card">
+        <span class="chip gr">Manual</span>
+        <h3 style="margin-top:10px">手動分配</h3>
+        <p>IP 由網管指定，DHCP 只負責傳給主機。即「<strong style="color:var(--text)">保留位址 / 綁 MAC</strong>」。</p>
+      </div>
+    </div>
+    <p class="lede" style="font-size:clamp(13px,1.5vw,18px)">判斷原則：員工電腦用 <strong>Dynamic</strong>；印表機/伺服器要穩定，用 <strong>Manual</strong> 或純固定 IP。</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 2131 §1</span></div>
+</section>
+
+<!-- 5 DORA -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">01</span> · 主機怎麼拿到 IP</div>
+  <div class="slide-body stagger">
+    <h2 class="title">DHCP 四步交握 — DORA</h2>
+    <div class="flow">
+      <div class="step broad"><div class="k">DISCOVER</div><div class="d">Client 在本地子網<strong style="color:var(--text)">廣播</strong><br>「誰是 DHCP 伺服器？」</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">OFFER</div><div class="d">Server 回應<br>一個可用 IP + 設定</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">REQUEST</div><div class="d">Client 挑一個 Offer<br>正式請求該位址</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">ACK</div><div class="d">Server 確認配發<br>Client 正式取得 IP</div></div>
+    </div>
+    <p class="lede" style="font-size:clamp(13px,1.5vw,18px)">動態配發的 IP 有期限，稱為 <strong>lease（租約）</strong>——可延長、可主動釋放，也能要求「無限期租約」變成實質固定 IP。</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 2131 §2.2, §3.1</span></div>
+</section>
+
+<!-- 6 PRIVATE IP -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">02</span> · 私有 IP 網段</div>
+  <div class="slide-body stagger">
+    <h2 class="title">192.168.x / 10.x 從哪來？</h2>
+    <p class="lede"><strong>RFC 1918</strong> 保留了三個 IPv4 區塊供私有網路使用——不需申請、可重複使用，但<strong>不能直接在公開網路上路由</strong>。</p>
+    <div class="priv">
+      <div class="row"><span class="blk">10.0.0.0/8</span><span class="rng">10.0.0.0 – 10.255.255.255</span><span class="tag">24-bit 區塊</span></div>
+      <div class="row"><span class="blk">172.16.0.0/12</span><span class="rng">172.16.0.0 – 172.31.255.255</span><span class="tag">20-bit 區塊</span></div>
+      <div class="row"><span class="blk">192.168.0.0/16</span><span class="rng">192.168.0.0 – 192.168.255.255</span><span class="tag">16-bit 區塊</span></div>
+    </div>
+    <p class="quote">「packets with private source or destination addresses should not be forwarded across such links.」<br>→ 所以家用裝置要上網，必須靠路由器做 <code>NAT</code> 把私有 IP 換成公開 IP。</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 1918 §3, §5</span></div>
+</section>
+
+<!-- 7 CIDR -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">02</span> · 網段怎麼切</div>
+  <div class="slide-body stagger">
+    <h2 class="title">網段 = CIDR 前綴</h2>
+    <p class="lede">斜線後面的數字代表「網路部分」有幾個 bit。</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>192.168.1.0 <span style="color:var(--accent)">/24</span></h3>
+        <p style="font-family:ui-monospace,Menlo,monospace;color:var(--text);font-size:clamp(14px,1.6vw,20px);margin:10px 0">
+          <span style="color:var(--accent)">192.168.1</span> <span style="color:var(--dim)">|</span> <span style="color:var(--muted)">.0 – .255</span></p>
+        <p>前 24 bit 是網段，第四個數字是主機編號。<br>可用主機：<strong style="color:var(--text)">.1 ~ .254</strong>（共 254 個，.0 是網路、.255 是廣播）。</p>
+      </div>
+      <div class="card">
+        <h3>「同網段」怎麼判斷</h3>
+        <p>看的不是數字像不像，而是<strong style="color:var(--text)">前綴是否相同</strong>：</p>
+        <p style="margin-top:8px"><code style="color:var(--tcp)">192.168.1.10/24</code> ↔ <code style="color:var(--tcp)">192.168.1.20/24</code> → 同網段 ✓</p>
+        <p><code style="color:var(--danger)">192.168.1.10/24</code> ↔ <code style="color:var(--danger)">192.168.2.10/24</code> → 不同網段 ✗</p>
+      </div>
+    </div>
+  </div>
+  <div class="footnote"><span class="tag">RFC 4632 §3.1</span></div>
+</section>
+
+<!-- 8 PING ICMP -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">03</span> · Ping 走的協定</div>
+  <div class="slide-body stagger">
+    <h2 class="title">Ping = ICMP Echo</h2>
+    <p class="lede"><code>ping</code> 用的不是 TCP、不是 UDP，而是 <strong>ICMP</strong>（RFC 792）。</p>
+    <div class="flow" style="max-width:680px">
+      <div class="step"><div class="k">Type 8 · Echo</div><div class="d">來源主機送出「回聲請求」</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">Type 0 · Echo Reply</div><div class="d">目的地原封不動回傳</div></div>
+    </div>
+    <p class="quote">「The data received in the echo message must be returned in the echo reply message.」<br>→ 有沒有收到回應、往返多久，就判斷連線通不通。</p>
+    <p class="lede" style="font-size:clamp(14px,1.6vw,19px)">但 ICMP 封包要送達之前，還得先過 <strong>ARP</strong> 這一關 ⬇</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 792</span></div>
+</section>
+
+<!-- 9 ARP SAME SUBNET -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">03</span> · 為什麼同網段才通</div>
+  <div class="slide-body stagger">
+    <h2 class="title">關鍵：ARP 是「本地廣播」</h2>
+    <p class="lede">要在乙太網路上送封包，得先知道對方的 <strong>MAC 位址</strong>——靠 ARP（RFC 826）以<strong>廣播</strong>詢問。而<strong>廣播過不了網段邊界</strong>。</p>
+    <div class="grid g2">
+      <div class="card" style="border-color:var(--tcp)">
+        <h3><span style="color:var(--tcp)">✓</span> 同網段</h3>
+        <p>ARP 廣播找得到對方 MAC → ICMP Echo 直接送達 → 對方回 Reply → <strong style="color:var(--tcp)">ping 通</strong>。</p>
+      </div>
+      <div class="card" style="border-color:var(--danger)">
+        <h3><span style="color:var(--danger)">✗</span> 不同網段</h3>
+        <p>目的地不在本地廣播網域 → ARP 廣播到不了對方（路由器不轉送廣播）→ 封包送不出去 → <strong style="color:var(--danger)">ping 不通</strong>。</p>
+      </div>
+    </div>
+    <p class="quote">「It then causes this packet to be broadcast to all stations on the Ethernet cable.」<br>—— 廣播只在「同一條乙太網路 / 同一廣播網域」裡有效。</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 826</span></div>
+</section>
+
+<!-- 10 ROUTER -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">04</span> · 跨網段要路由器</div>
+  <div class="slide-body stagger">
+    <h2 class="title">不同網段 = 不同廣播網域</h2>
+    <p class="lede">兩個網段要互通，必須有一台在<strong>第三層（L3）</strong>轉送的設備——路由器。</p>
+    <div class="topo" style="margin-top:10px">
+      <div class="seg">
+        <div class="segnet">192.168.1.0/24</div>
+        <div class="host">PC-A<br><small style="color:var(--dim)">.10</small></div>
+        <div style="text-align:center;color:var(--dim);font-size:12px">閘道 .254</div>
+      </div>
+      <div class="wire"></div>
+      <div class="rt"><span class="ico">⚙️</span>路由器<small>L3 轉送 · 查路由表</small></div>
+      <div class="wire"></div>
+      <div class="seg">
+        <div class="segnet">192.168.2.0/24</div>
+        <div class="host">PC-B<br><small style="color:var(--dim)">.20</small></div>
+        <div style="text-align:center;color:var(--dim);font-size:12px">閘道 .254</div>
+      </div>
+    </div>
+    <p class="lede" style="font-size:clamp(13px,1.5vw,18px)">主機發現目的不在自己網段 → 把封包交給<strong>預設閘道</strong>（路由器的本地介面）→ 路由器查路由表轉送到目的網段。<strong>沒設閘道，跨網段封包就沒出路。</strong></p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 826 + RFC 4632</span></div>
+</section>
+
+<!-- 11 LAYER MODEL -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">05</span> · 把整個分層看清楚</div>
+  <div class="slide-body stagger">
+    <h2 class="title">Internet 協定四層（RFC 1122）</h2>
+    <div class="layers">
+      <div class="layer"><div class="lid">L4</div><div class="lname">Application<small>使用者服務</small></div><div class="protos"><span class="chip">HTTP</span><span class="chip">SMTP</span><span class="chip">DNS</span><span class="chip">SSH</span></div></div>
+      <div class="layer hl"><div class="lid">L3</div><div class="lname">Transport<small>端對端 · 可靠性 · 流量控制</small></div><div class="protos"><span class="chip gr">TCP</span><span class="chip am">UDP</span></div></div>
+      <div class="layer"><div class="lid">L2</div><div class="lname">Internet<small>跨網段定址與路由</small></div><div class="protos"><span class="chip">IP</span><span class="chip">ICMP</span><span class="chip">IGMP</span></div></div>
+      <div class="layer"><div class="lid">L1</div><div class="lname">Link<small>實體網段上傳送訊框</small></div><div class="protos"><span class="chip">Ethernet</span><span class="chip">Wi-Fi</span><span class="chip">ARP</span></div></div>
+    </div>
+    <p class="lede" style="font-size:clamp(13px,1.5vw,18px)">對號入座：<strong>ping = ICMP → L2</strong>（「ICMP is an integral part of IP」）· <strong>DHCP 跑在 UDP 上</strong> · <strong>路由器在 L2 看 IP</strong>。</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 1122 §1.1.3</span></div>
+</section>
+
+<!-- 12 TCP -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">05</span> · TCP 的核心</div>
+  <div class="slide-body stagger">
+    <h2 class="title">TCP：可靠 · 有序 · 連線導向</h2>
+    <p class="lede" style="font-size:clamp(14px,1.7vw,20px)">「TCP provides a <strong>reliable, in-order, byte-stream service</strong>.」IP 只保證「盡力送」，<strong>是 TCP 補上可靠性</strong>。</p>
+    <div class="hs">
+      <div class="peer">Client<br><small style="color:var(--dim)">A</small></div>
+      <div class="mid">
+        <div class="msg"><span class="arr r">➜</span>SYN<small>我想連線 · seq=100</small></div>
+        <div class="msg"><span class="arr l">➜</span>SYN + ACK<small>收到(ack=101) · 我也連線</small></div>
+        <div class="msg"><span class="arr r">➜</span>ACK<small>收到你的 SYN · 連線建立</small></div>
+      </div>
+      <div class="peer">Server<br><small style="color:var(--dim)">B</small></div>
+    </div>
+    <p class="lede center" style="font-size:clamp(13px,1.5vw,18px);max-width:none">三步走完才算 <strong>ESTABLISHED</strong>。<br>表頭關鍵欄位：<code style="color:var(--accent)">Port</code> · <code style="color:var(--accent)">Sequence</code> · <code style="color:var(--accent)">Ack</code> · <code style="color:var(--accent)">Window</code>（流量控制）</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 9293 §2.2, §3.5</span></div>
+</section>
+
+<!-- 13 TCP VS UDP -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> <span class="num">05</span> · 怎麼選</div>
+  <div class="slide-body stagger">
+    <h2 class="title">TCP vs UDP</h2>
+    <table class="cmp">
+      <thead><tr><th>特性</th><th class="tcp">TCP</th><th class="udp">UDP</th></tr></thead>
+      <tbody>
+        <tr><td>連線</td><td class="tcp">要（三向交握）</td><td class="udp">不用</td></tr>
+        <tr><td>可靠性</td><td class="tcp">保證送達、不丟、有序</td><td class="udp">不保證</td></tr>
+        <tr><td>速度 / 延遲</td><td class="tcp">較高（握手·確認·重傳）</td><td class="udp">較低</td></tr>
+        <tr><td>表頭大小</td><td class="tcp">20 bytes 起</td><td class="udp">固定 8 bytes</td></tr>
+        <tr><td>常見應用</td><td class="tcp">HTTP · SMTP · FTP · SSH</td><td class="udp">DNS · DHCP · 視訊／語音 · 遊戲</td></tr>
+      </tbody>
+    </table>
+    <p class="quote">判斷原則：<strong style="color:var(--text)">「資料不能錯、不能少」用 TCP</strong>；<strong style="color:var(--text)">「快比準確重要，或自己處理可靠性」用 UDP</strong>。</p>
+  </div>
+  <div class="footnote"><span class="tag">RFC 9293 · RFC 768</span></div>
+</section>
+
+<!-- 14 TAKEAWAY -->
+<section class="slide">
+  <div class="eyebrow"><span class="dot"></span> Takeaway · 核心邏輯鏈</div>
+  <div class="slide-body stagger">
+    <h2 class="title">兩條主軸，一句話各一行</h2>
+    <div class="grid g2">
+      <div class="card" style="border-color:var(--accent)">
+        <h3><span class="chip cy">連通層</span> L1 → L2</h3>
+        <p style="font-size:clamp(13px,1.5vw,17px)">IP 在網路層定址 → 網段由<strong style="color:var(--text)">前綴切分</strong> → 同網段靠 <strong style="color:var(--text)">ARP 廣播</strong>解析 MAC 直送 → <strong style="color:var(--text)">ping</strong> 用 ICMP Echo 測試 → 跨網段廣播過不去，必須交給<strong style="color:var(--text)">路由器</strong>轉送。</p>
+      </div>
+      <div class="card" style="border-color:var(--tcp)">
+        <h3><span class="chip gr">應用層</span> L3 → L4</h3>
+        <p style="font-size:clamp(13px,1.5vw,17px)">IP 只「盡力送」、不保證送達 → <strong style="color:var(--tcp)">TCP</strong> 用序號／確認／重傳補上可靠性與有序 → <strong style="color:var(--udp)">UDP</strong> 不加這些、換取低延遲。應用程式依需求挑選。</p>
+      </div>
+    </div>
+    <p class="lede center" style="max-width:none;font-size:clamp(15px,1.9vw,24px)">前四節解決<strong>「送不送得到」</strong>；<br>第五節解決<strong>「可不可靠」</strong>。</p>
+  </div>
+  <div class="footnote"><span class="tag">完整筆記</span><span class="tag">research/engineering/networking-fundamentals.tw.md</span></div>
+</section>
+
+</div>
+
+<div class="nav">
+  <button onclick="go(-1)" aria-label="prev">‹</button>
+  <span class="count"><span id="cur">1</span> / <span id="tot">14</span></span>
+  <button onclick="go(1)" aria-label="next">›</button>
+</div>
+<div class="hint">← → / 空白鍵 · F 全螢幕</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  document.getElementById('tot').textContent=slides.length;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    document.getElementById('cur').textContent=i+1;
+    document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+  }
+  function go(d){show(i+d);}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(1)}
+    else if(e.key==='ArrowLeft'){e.preventDefault();go(-1)}
+    else if(e.key==='Home'){show(0)}
+    else if(e.key==='End'){show(slides.length-1)}
+    else if(e.key==='f'||e.key==='F'){
+      if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+  document.addEventListener('click',e=>{if(!e.target.closest('.nav')&&!e.target.closest('.hint'))go(1)});
+  // hash deep-linking: #5 jumps to slide 5
+  function fromHash(){const m=location.hash.match(/#(\d+)/);return m?parseInt(m[1],10):null;}
+  window.addEventListener('hashchange',()=>{const n=fromHash();if(n)show(n-1);});
+  const init=fromHash();
+  show(init?init-1:0);
+</script>
+</body>
+</html>
