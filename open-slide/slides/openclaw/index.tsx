@@ -690,6 +690,7 @@ export const transition: SlideTransition = {
 export const meta: SlideMeta = {
   title: 'OpenClaw — 有靈魂的個人助理',
   description: 'OpenClaw 簡報：Getting Started、Soul 設定、Cron Job、安全、實戰案例',
+  theme: 'soul-dark',
   createdAt: '2026-08-13T14:13:45.830Z',
 };
 

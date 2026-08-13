@@ -9,15 +9,17 @@
 //   open-slide's own config factory (`createViteConfig`) and apply two tweaks:
 //
 //   1. base: '/slides/'                  — relocate every asset URL under /slides/
-//   2. <BrowserRouter basename=...>      — patch the core's app entry at build
-//                                          time so routes resolve under /slides/
+//   2. <BrowserRouter basename=...>      — ensure routes resolve under /slides/.
+//                                          @open-slide/core >= 1.18 sets this
+//                                          itself from import.meta.env.BASE_URL,
+//                                          so no patch is needed there. For
+//                                          older core, a build-time transform
+//                                          injects it into app.tsx.
 //
-// The router patch is a *build-time source transform*, re-applied on every
-// build. It does not touch node_modules, so it survives reinstalls, but it does
-// couple us to open-slide's internal app entry shape — see dev/docs/slides.md.
-// If a future @open-slide/core release renames/restructures app.tsx the patch
-// silently no-ops and this script prints a warning (routing will then 404, easy
-// to catch in QA).
+// The router transform is applied only when the core doesn't already provide a
+// basename; it does not touch node_modules (survives reinstalls) but couples to
+// open-slide's app entry shape — see dev/docs/slides.md. The script reports
+// which path it took, and warns only if it can't find <BrowserRouter> at all.
 //
 // Run from the open-slide project root (the npm script `embed` does that).
 
@@ -34,8 +36,9 @@ const cfg = await createViteConfig({
 // Relocate the whole app under /slides/.
 cfg.base = BASE
 
-// Inject a basename onto <BrowserRouter> in the core's app entry.
-let patchedRouter = false
+// Ensure <BrowserRouter> carries a basename so routes resolve under /slides/.
+// Newer @open-slide/core (>= 1.18) sets it natively; older core needs a patch.
+let routerState = 'missing' // 'native' | 'patched' | 'missing'
 cfg.plugins = [
   ...(Array.isArray(cfg.plugins) ? cfg.plugins : []),
   {
@@ -45,27 +48,37 @@ cfg.plugins = [
       // Scope to the core's app entry — posix path on this host.
       if (!id.includes('@open-slide/core') || !id.endsWith('/app.tsx'))
         return null
-      if (!code.includes('<BrowserRouter>'))
+      // Core already wires up a basename — nothing to do.
+      if (/<BrowserRouter\s+basename=/.test(code)) {
+        routerState = 'native'
         return null
-      patchedRouter = true
-      return {
-        code: code.replace(
-          '<BrowserRouter>',
-          '<BrowserRouter basename={import.meta.env.BASE_URL}>',
-        ),
-        map: null,
       }
+      // Older core: inject the basename.
+      if (code.includes('<BrowserRouter>')) {
+        routerState = 'patched'
+        return {
+          code: code.replace(
+            '<BrowserRouter>',
+            '<BrowserRouter basename={import.meta.env.BASE_URL}>',
+          ),
+          map: null,
+        }
+      }
+      return null
     },
   },
 ]
 
 await build(cfg)
 
-if (!patchedRouter) {
+if (routerState === 'native')
+  console.log('[embed] router basename: provided natively by @open-slide/core')
+else if (routerState === 'patched')
+  console.log('[embed] router basename: patched into @open-slide/core app.tsx')
+else
   console.warn(
-    '\n[embed] WARNING: <BrowserRouter> basename patch did not apply — '
-    + 'no match found in @open-slide/core .../app.tsx. Client routing under '
-    + '/slides/ will likely 404. open-slide may have changed its app entry; '
-    + 'update this script.\n',
+    '\n[embed] WARNING: <BrowserRouter> not found in @open-slide/core app.tsx '
+    + '(neither native nor patchable). Client routing under /slides/ will '
+    + 'likely 404. open-slide may have changed its app entry; update this '
+    + 'script.\n',
   )
-}
