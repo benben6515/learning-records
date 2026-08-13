@@ -1,35 +1,37 @@
 ---
 name: Benben
-description: Catppuccin-style pastel on a Mocha-dark canvas — a code/terminal-adjacent identity lifted from the opencode `benben` TUI theme.
+description: Neon cyan + electric violet on a near-black canvas — a code/terminal-adjacent identity lifted from the opencode `opencode.lua` editor palette.
 mode: dark
 ---
 
 # Benben
 
-A soft pastel palette on a Catppuccin Mocha-dark base, extracted verbatim from the opencode TUI theme at `~/.config/opencode/themes/benben.json`. The identity is **code/terminal-adjacent**: lavender-purple is the single accent, mono type carries every label, and the extended syntax palette (mint / sky / peach / pink / yellow) is available for status-coded section accents. Where the source theme leaves a slot `none` (transparent background, panel, element), this slide theme commits a real Mocha value so cards and layers separate cleanly on a static canvas.
+A neon accent palette on a near-black canvas, extracted from the opencode editor theme at `~/.config/nvim/lua/colors/opencode.lua`. The identity is **code/terminal-adjacent and cyber**: a single neon-cyan primary (`#22cfcf`) carries all the emphasis work — eyebrows, key numbers, titles — paired with one electric-violet accent (`#efaaef`) as its deliberate counterpoint for links and highlighted phrases. Mono type carries every label, and the extended syntax palette (mint / chartreuse / sky / peach / pink / yellow) is available for status-coded section accents. Where the source theme leaves a slot committed to a real value, this slide theme holds the source's near-black base so cards and layers separate cleanly on a static canvas.
 
 ## Palette
 
-| Role         | Value      | Notes                                                       |
-| ------------ | ---------- | ----------------------------------------------------------- |
-| bg           | `#1e1e2e`  | Catppuccin Mocha base (source bg is `none` → committed)     |
-| text         | `#F0F0FF`  | lavender-white primary copy (source `text`)                 |
-| accent       | `#AA97E9`  | soft purple — eyebrow, key numbers, tags (source `primary`) |
-| muted        | `#D0E0E0`  | secondary copy (source `textMuted`)                         |
-| surface      | `#313244`  | cards — Catppuccin surface0, lighter than base              |
-| surfaceHi    | `#45475a`  | card headers, inset panels — surface1                       |
-| surfaceMax   | `#585b70`  | deepest inset — surface2                                    |
-| border       | `#3D3D50`  | hairlines (source `border`)                                 |
-| borderBright | `#8A87E9`  | emphasized hairlines (source `borderActive`)                |
-| borderSubtle | `#2D2D3D`  | faintest hairline (source `borderSubtle`)                   |
-| mint         | `#77EFCF`  | section-coded accent (source `secondary`)                   |
-| sky          | `#89DCEB`  | links, cool counterpoint (source `info`)                    |
-| cyan         | `#00C4CC`  | source `accent`                                             |
-| green        | `#A6E3A1`  | success / diff-added (source `success`)                     |
-| peach        | `#FAB387`  | warning (source `warning`)                                  |
-| pink         | `#F38BA8`  | error / diff-removed (source `error`)                       |
-| yellow       | `#F9E2AF`  | headings highlight (source `markdownHeading` / `syntaxType`)|
-| lavender     | `#C4A8F9`  | list items (source `markdownListItem`)                      |
+| Role         | Value      | Notes                                                            |
+| ------------ | ---------- | ---------------------------------------------------------------- |
+| bg           | `#0a0a0f`  | near-black canvas (source bg0)                                   |
+| text         | `#F0F0FF`  | lavender-white primary copy (source fg0)                         |
+| primary      | `#22cfcf`  | neon cyan — eyebrow, key numbers, titles, emphasis (source purple3) |
+| accent       | `#efaaef`  | electric violet — counterpoint, links, highlights (source purple4) |
+| muted        | `#D0E0E0`  | secondary copy (source fg1)                                      |
+| dim          | `#8090A0`  | tertiary copy, footers, inactive (source fg3)                    |
+| surface      | `#12121a`  | cards (source bg1)                                               |
+| surfaceHi    | `#1a1a25`  | card headers, inset panels (source bg2)                          |
+| surfaceMax   | `#252533`  | deepest inset / floats (source bg3)                              |
+| border       | `#3D3D50`  | hairlines (source border)                                        |
+| borderBright | `#22cfcf`  | emphasized hairlines (primary, source purple3)                   |
+| borderSubtle | `#15151f`  | faintest hairline — one step above bg                            |
+| mint         | `#77EFCF`  | section-coded accent (source purple5)                            |
+| chartreuse   | `#E1FAA0`  | neon section accent (source purple2)                             |
+| sky          | `#89DCEB`  | cool counterpoint (source cyan syntax)                           |
+| blue         | `#BBA8F9`  | periwinkle (source blue syntax)                                  |
+| green        | `#A6E3A1`  | success / diff-added (source green)                              |
+| peach        | `#FAB387`  | warning (source orange)                                          |
+| pink         | `#F38BA8`  | error / diff-removed (source red)                                |
+| yellow       | `#F9E2AF`  | headings highlight (source yellow)                               |
 
 ## Typography
 
@@ -47,9 +49,9 @@ A soft pastel palette on a Catppuccin Mocha-dark base, extracted verbatim from t
 
 - Content padding: 100–140 px from canvas edges (1920 × 1080). Copy never touches the edge.
 - Alignment: left-aligned single column (editorial); reserve centered for the closing page.
-- Motif: a faint 88 px grid (`GridBg`), radially masked so it fades at the edges. Present on every page for continuity.
-- Card radius: 16 px (`--osd-radius`). Hairline borders `#3D3D50` (source `border`); lift to `#8A87E9` (source `borderActive`) on emphasis.
-- Layering: cards sit **lighter** than the base (surface0 `#313244` > bg `#1e1e2e`) — the Catppuccin convention. Inset panels step up through surface1 / surface2.
+- Motif: a faint 88 px grid (`GridBg`), radially masked so it fades at the edges, tinted faintly cyan to echo the primary on the near-black canvas. Present on every page for continuity.
+- Card radius: 16 px (`--osd-radius`). Hairline borders `#3D3D50` (source `border`); lift to `#22cfcf` (primary) on emphasis.
+- Layering: cards sit **lighter** than the base (surface `#12121a` > bg `#0a0a0f`) — cards step up through `bg1` / `bg2` / `bg3`, the same convention as the source editor's background ramp.
 
 ## Fixed components
 
@@ -68,7 +70,7 @@ const Title = ({ children, accent = false }: { children: React.ReactNode; accent
       fontWeight: 700,
       lineHeight: 1.02,
       letterSpacing: '-0.045em',
-      color: accent ? '#AA97E9' : '#F0F0FF',
+      color: accent ? '#22cfcf' : '#F0F0FF',
     }}
   >
     {children}
@@ -97,7 +99,7 @@ const Footer = () => {
         fontFamily: '"JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace',
         fontSize: 18,
         letterSpacing: '0.08em',
-        color: '#D0E0E0',
+        color: '#8090A0',
       }}
     >
       <span>BENBEN · 2026</span>
@@ -110,7 +112,7 @@ const Footer = () => {
 ### Eyebrow
 
 ```tsx
-const Eyebrow = ({ children, color = '#AA97E9' }: { children: React.ReactNode; color?: string }) => (
+const Eyebrow = ({ children, color = '#22cfcf' }: { children: React.ReactNode; color?: string }) => (
   <div
     className="fadeUp"
     style={{
@@ -136,7 +138,7 @@ const GridBg = () => (
       position: 'absolute',
       inset: 0,
       backgroundImage:
-        'linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px)',
+        'linear-gradient(rgba(34,207,207,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(34,207,207,0.028) 1px, transparent 1px)',
       backgroundSize: '88px 88px',
       maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 70%)',
       WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 70%)',
@@ -144,7 +146,7 @@ const GridBg = () => (
   />
 );
 
-const Tag = ({ text, color = '#AA97E9' }: { text: string; color?: string }) => (
+const Tag = ({ text, color = '#22cfcf' }: { text: string; color?: string }) => (
   <span
     style={{
       fontFamily: '"JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace',
@@ -214,7 +216,7 @@ export const transition: SlideTransition = {
 
 ## Aesthetic
 
-Soft Catppuccin pastel on a Mocha-dark canvas — the visual register of a well-themed terminal. One lavender-purple accent does all the emphasis work; mono type carries every label because this identity comes from a CLI tool. Cards sit a shade lighter than the base (the Catppuccin surface convention), separated by `#3D3D50` hairlines, over a faint masked grid. Quiet fade-up entrances only. The extended palette (mint / sky / green / peach / pink / yellow) exists for status-coded section eyebrows — never run two accents on the same page. Avoid: high-contrast neon, pure-white text, heavy drop shadows, decorative gradients, and any non-mono label font. When in doubt, soften.
+Neon cyan and electric violet on a near-black canvas — the visual register of a well-themed modern editor. The primary neon cyan (`#22cfcf`) does the dominant emphasis work; the electric-violet accent (`#efaaef`) is its deliberate counterpoint for links and highlighted phrases. The two coexist as a single neon pair (cyan + magenta) — never introduce a third competing accent. Cards sit a shade lighter than the near-black base (the editor's background ramp convention), separated by `#3D3D50` hairlines, over a faint cyan-tinted masked grid. Mono type carries every label because this identity comes from a CLI tool. Quiet fade-up entrances only. The extended palette (mint / chartreuse / sky / green / peach / pink / yellow) exists for status-coded section eyebrows — never run a status color as a primary emphasis. Avoid: pure-white text, heavy drop shadows, decorative gradients, muddy mid-tone backgrounds that wash out the neon, and any non-mono label font. When in doubt, go darker and let the neon carry the contrast.
 
 ## Example usage
 
@@ -224,7 +226,7 @@ const Cover: Page = () => (
     style={{
       width: '100%',
       height: '100%',
-      background: '#1e1e2e',
+      background: '#0a0a0f',
       color: '#F0F0FF',
       padding: 120,
       display: 'flex',
@@ -237,9 +239,10 @@ const Cover: Page = () => (
     <GridBg />
     <Eyebrow>BENBEN · THEME</Eyebrow>
     <div>
-      <Title>Benben</Title>
+      <Title accent>Benben</Title>
       <p style={{ marginTop: 36, maxWidth: 1000, fontSize: 44, lineHeight: 1.3, color: '#D0E0E0' }}>
-        Pastel on <span style={{ color: '#AA97E9' }}>Mocha dark</span> — a code-flavoured deck.
+        Neon <span style={{ color: '#22cfcf' }}>cyan</span> +{' '}
+        <span style={{ color: '#efaaef' }}>violet</span> on near-black — a code-flavoured deck.
       </p>
     </div>
     <Footer />

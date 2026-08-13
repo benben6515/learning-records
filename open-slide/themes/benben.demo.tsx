@@ -3,9 +3,9 @@ import type { DesignSystem } from '@open-slide/core';
 
 export const design: DesignSystem = {
   palette: {
-    bg: '#1e1e2e',
+    bg: '#0a0a0f',
     text: '#F0F0FF',
-    accent: '#AA97E9',
+    accent: '#22cfcf',
   },
   fonts: {
     display: '"Inter", "SF Pro Display", system-ui, -apple-system, sans-serif',
@@ -17,6 +17,9 @@ export const design: DesignSystem = {
   },
   radius: 16,
 };
+
+// Electric violet — the neon counterpoint to the primary cyan accent.
+const VIOLET = '#efaaef';
 
 const styles = `
   @keyframes bb-fadeUp {
@@ -46,7 +49,7 @@ const GridBg = () => (
       position: 'absolute',
       inset: 0,
       backgroundImage:
-        'linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px)',
+        'linear-gradient(rgba(34,207,207,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(34,207,207,0.028) 1px, transparent 1px)',
       backgroundSize: '88px 88px',
       maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 70%)',
       WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 70%)',
@@ -106,7 +109,7 @@ const Footer = () => {
         fontFamily: '"JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace',
         fontSize: 18,
         letterSpacing: '0.08em',
-        color: '#D0E0E0',
+        color: '#8090A0',
       }}
     >
       <span>BENBEN · 2026</span>
@@ -167,10 +170,10 @@ const Cover: Page = () => (
     <GridBg />
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <Eyebrow>BENBEN · THEME</Eyebrow>
-      <Tag text="opencode" color="#89DCEB" />
+      <Tag text="opencode" color={VIOLET} />
     </div>
     <div>
-      <Title>Benben</Title>
+      <Title accent>Benben</Title>
       <p
         className="bb-fadeUp"
         style={{
@@ -181,7 +184,8 @@ const Cover: Page = () => (
           color: '#D0E0E0',
         }}
       >
-        Catppuccin pastel on <span style={{ color: 'var(--osd-accent)' }}>Mocha dark</span>.
+        Neon <span style={{ color: 'var(--osd-accent)' }}>cyan</span> +{' '}
+        <span style={{ color: VIOLET }}>violet</span> on near-black.
       </p>
     </div>
     <Footer />
@@ -212,22 +216,22 @@ const Content: Page = () => (
         letterSpacing: '-0.03em',
         lineHeight: 1.1,
       }}
-    >
-      Mono labels. One accent.
-    </h2>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 16 }}>
-      <Bullet text="Lavender-purple is the single accent — hold the line" />
-      <Bullet text="Mono carries every label; this is a terminal tool's identity" />
-      <Bullet text="Extended palette exists for status-coded eyebrows only" />
-    </div>
-    <div className="bb-fadeUp" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8 }}>
-      <Tag text="primary" />
-      <Tag text="secondary" color="#77EFCF" />
-      <Tag text="info" color="#89DCEB" />
-      <Tag text="success" color="#A6E3A1" />
-      <Tag text="warning" color="#FAB387" />
-      <Tag text="error" color="#F38BA8" />
-    </div>
+      >
+        Mono labels. Neon accents.
+      </h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 16 }}>
+        <Bullet text="Neon cyan is the primary — violet is its counterpoint" />
+        <Bullet text="Mono carries every label; this is a terminal tool's identity" />
+        <Bullet text="Extended palette exists for status-coded eyebrows only" />
+      </div>
+      <div className="bb-fadeUp" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8 }}>
+        <Tag text="primary" />
+        <Tag text="accent" color={VIOLET} />
+        <Tag text="info" color="#89DCEB" />
+        <Tag text="success" color="#A6E3A1" />
+        <Tag text="warning" color="#FAB387" />
+        <Tag text="error" color="#F38BA8" />
+      </div>
     <Footer />
   </div>
 );
@@ -258,12 +262,12 @@ const Closer: Page = () => (
         lineHeight: 1.5,
         color: '#D0E0E0',
       }}
-    >
-      Benben — a pastel, code-flavoured theme.
-    </p>
-    <div className="bb-fadeUp">
-      <Tag text="Q & A" color="#77EFCF" />
-    </div>
+      >
+      Benben — a neon, code-flavoured theme.
+      </p>
+      <div className="bb-fadeUp">
+        <Tag text="Q & A" color={VIOLET} />
+      </div>
     <Footer />
   </div>
 );
