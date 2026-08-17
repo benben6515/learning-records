@@ -1016,6 +1016,8 @@
 
 ### 7.4 多物料射出成型（Multi-Material / Multi-Component Molding）
 
+> 📌 **深度研究**：本節為概覽。轉移機構詳解（旋轉盤／索引板／core-back／立方模具）、共射出、機台選型、材料接合技術，詳見專文 **[《多射／多組分射出成型深度研究報告》](./multi-shot-injection-molding.md)**
+
 #### 主要技術類型
 
 | 技術             | 英文名                  | 說明                                         | 典型應用                              |
