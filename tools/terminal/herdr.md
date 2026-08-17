@@ -38,6 +38,99 @@ herdr              # 啟動或接上預設背景 session（不用管 socket）
 - 丟 `claude` / `opencode` / `pi` 進 pane → 自動辨識為 agent
 - pane 會標示狀態：**working**（跑液中）/ **blocked**（等你回覆）/ **idle**
 
+## Keybindings
+
+### Beginner（官方建議：先學這五個）
+
+prefix = `Ctrl+B`（按完放開，再按下一鍵）
+
+| Action | Key |
+|---|---|
+| 新 tab | `prefix+c` |
+| 分割右 / 下 | `prefix+v` / `prefix+-` |
+| pane 間移動 | `prefix+h/j/k/l` |
+| Workspace 導航 | `prefix+w` |
+| Detach（全部繼續跑） | `prefix+q` |
+
+| 輔助 | Key |
+|---|---|
+| 全部鍵位說明（可按 `/` 過濾） | `prefix+?` |
+| 設定畫面 | `prefix+s` |
+
+### Pro（其餘鍵位）
+
+**Panes：**
+
+| Action | Key |
+|---|---|
+| Zoom 聚焦 pane | `prefix+z` |
+| 關 pane | `prefix+x` |
+| 交換 pane 位置 | `prefix+shift+h/j/k/l` |
+| 調整大小模式 | `prefix+r`（再用 h/j/k/l 調，Esc 離開） |
+| Copy mode | `prefix+[` |
+| 編輯 scrollback（送進 $EDITOR） | `prefix+e` |
+| 前一個 pane | `prefix+tab` |
+
+**Tabs：**
+
+| Action | Key |
+|---|---|
+| 下一 / 上一 tab | `prefix+n` / `prefix+p` |
+| 跳到 tab 1–9 | `prefix+1..9` |
+| 改名 tab | `prefix+shift+t` |
+| 關 tab | `prefix+shift+x` |
+
+**Workspace / Session：**
+
+| Action | Key |
+|---|---|
+| 新 workspace | `prefix+shift+n` |
+| 改名 workspace | `prefix+shift+w` |
+| 關 workspace | `prefix+shift+d` |
+| Goto picker（快速跳） | `prefix+g`（再用 `j/k` 導航，方向鍵永遠是 pane 左右移） |
+| 收 / 開 sidebar | `prefix+b` |
+| 新 git worktree | `prefix+shift+g` |
+| 重載設定 | `prefix+shift+r` |
+
+**Copy mode（`prefix+[` 進入後）：**
+
+| 按鍵 | 功能 |
+|---|---|
+| `h/j/k/l` | 單字元移動 |
+| `w` / `b` / `e` | 下一 / 上一單字、單字尾（tmux 慣例） |
+| `{` / `}`` | 段落上下 |
+| `PageUp/Down`、`Ctrl-B/F`、`Ctrl-U/D` | 翻頁 / 半頁 |
+| `/` / `?` | 向前 / 向後搜尋（大小寫敏感：查詢含大寫時） |
+| `n` / `N` | 重複搜尋同 / 反方向 |
+| `v` 或 `Space` | 開始選取 |
+| `y` 或 `Enter` | 複製選取 |
+| `q` / `Esc` | 離開（Esc 先清選取/搜尋，再按才離開） |
+
+注意：copy mode **不會暫停 pane 程序**，輸出繼續即時更新；滑鼠拖選不用進 copy mode 就能複製。
+
+### Prefix-free（進階：直接鍵，不按 prefix）
+
+`Ctrl+Alt` 家族幾乎在所有 terminal / OS 都沒被占用，最安全：
+
+```toml
+# ~/.config/herdr/config.toml
+[keys]
+focus_pane_left  = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+previous_tab     = ["prefix+p", "ctrl+alt+["]
+next_tab         = ["prefix+n", "ctrl+alt+]"]
+new_tab          = ["prefix+c", "ctrl+alt+c"]
+split_vertical   = ["prefix+v", "ctrl+alt+d"]
+split_horizontal = ["prefix+-", "ctrl+alt+shift+d"]
+zoom             = ["prefix+z", "ctrl+alt+z"]
+```
+
+避免這些已被占用的：`ctrl+alt+方向鍵`（GNOME/Ghostty 切桌面）、`ctrl+alt+t`（Linux 開 terminal）、`ctrl+alt+l/a`（KDE）。
+
+改完跑 `herdr server reload-config` 生效；回到預設鍵位用 `herdr config reset-keys`。
+
 ## 核心概念
 
 | 概念 | 說明 |
