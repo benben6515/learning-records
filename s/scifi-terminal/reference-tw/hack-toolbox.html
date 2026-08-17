@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hack 道具庫 — 所有「看起來很電影」的 TUI</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 第 4 層擴充</p>
+<h1>Hack 道具庫</h1>
+<p class="lead">讓畫面<em>看起來像電影</em>的每一個終端機工具——按艙位角色分組。全部已驗證這台 Mac 的 Homebrew 裝得到(2026-08 檢查)。離開鍵:除註明外都是 <kbd>q</kbd>。</p>
+
+<section class="grid">
+
+<div class="card">
+<h3>輪機室 — 系統監控</h3>
+<table>
+  <tr><th>工具</th><th>顯示</th><th>指令</th></tr>
+  <tr><td><strong>btop</strong> ★★★</td><td>CPU/GPU/記憶體/網路圖表,黃金標準</td><td><code>btop</code></td></tr>
+  <tr><td><strong>htop</strong> ★★</td><td>經典 process 樹,殺手綠</td><td><code>htop</code></td></tr>
+  <tr><td><strong>bottom</strong> ★★★</td><td>Rust 折線圖、網路歷史、可自訂 widget</td><td><code>btm</code></td></tr>
+  <tr><td><strong>glances</strong> ★★★</td><td>全部同時上——最密的儀表牆</td><td><code>glances</code></td></tr>
+  <tr><td><strong>zenith</strong> ★★</td><td>圖表 + 可縮放歷史,懂 GPU</td><td><code>zenith</code></td></tr>
+  <tr><td><strong>asitop</strong> ★★★</td><td>Apple Silicon 核心/功耗——M 晶片原生</td><td><code>asitop</code></td></tr>
+  <tr><td><strong>macmon</strong> ★★</td><td>Rust 寫的 Apple Silicon 監控,緊湊 HUD</td><td><code>macmon</code></td></tr>
+  <tr><td><strong>gtop</strong> ★★</td><td>圓弧儀表,純美學</td><td><code>gtop</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>船籍資料 — 系統資訊</h3>
+<table>
+  <tr><th>工具</th><th>顯示</th><th>指令</th></tr>
+  <tr><td><strong>fastfetch</strong> ★★★</td><td>OS/CPU/GPU + logo 面板(neofetch 接班人)</td><td><code>fastfetch</code></td></tr>
+  <tr><td><strong>macchina</strong> ★★</td><td>極簡、粉彩、小卡片——配任何主題都合</td><td><code>macchina</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>通訊台 — 網路</h3>
+<table>
+  <tr><th>工具</th><th>顯示</th><th>指令</th></tr>
+  <tr><td><strong>bandwhich</strong> ★★★</td><td>逐 process 頻寬,即時——像在追蹤入侵</td><td><code>sudo bandwhich</code></td></tr>
+  <tr><td><strong>nethogs</strong> ★★</td><td>逐 process 流量,老牌</td><td><code>sudo nethogs</code></td></tr>
+  <tr><td><strong>iftop</strong> ★★</td><td>連線矩陣加滾動流量條</td><td><code>sudo iftop</code></td></tr>
+  <tr><td><strong>termshark</strong> ★★★</td><td>Wireshark 的 TUI——終端機裡抓封包</td><td><code>termshark</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>作戰室 — git / docker / k8s</h3>
+<table>
+  <tr><th>工具</th><th>顯示</th><th>指令</th></tr>
+  <tr><td><strong>lazygit</strong> ★★★</td><td>Git 窗格:status/log/diff/stash 一屏網格</td><td><code>lazygit</code></td></tr>
+  <tr><td><strong>gitui</strong> ★★</td><td>Rust 的 git TUI,快又乾淨</td><td><code>gitui</code></td></tr>
+  <tr><td><strong>tig</strong> ★★</td><td>元祖級 git log 瀏覽器</td><td><code>tig</code></td></tr>
+  <tr><td><strong>lazydocker</strong> ★★★</td><td>Docker 容器/統計/日誌——美到犯規</td><td><code>lazydocker</code></td></tr>
+  <tr><td><strong>k9s</strong> ★★★</td><td>Kubernetes 駕駛艙,全世界最科幻的 TUI</td><td><code>k9s</code></td></tr>
+  <tr><td><strong>ctop</strong> ★★</td><td>容器版 top,一面計量牆</td><td><code>ctop</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>檔案庫 — 磁碟與檔案</h3>
+<table>
+  <tr><th>工具</th><th>顯示</th><th>指令</th></tr>
+  <tr><td><strong>gdu</strong> ★★★</td><td>磁碟用量分析,掃最快,彩虹長條</td><td><code>gdu</code></td></tr>
+  <tr><td><strong>dust</strong> ★★</td><td>du 加樹狀深度長條</td><td><code>dust</code></td></tr>
+  <tr><td><strong>duf</strong> ★★</td><td>df 變粉彩表格</td><td><code>duf</code></td></tr>
+  <tr><td><strong>yazi</strong> ★★★</td><td>檔案管理器,現代、可預覽圖片</td><td><code>yazi</code></td></tr>
+  <tr><td><strong>ranger / nnn / lf / mc</strong></td><td>檔案管理器王朝——選一個信就好</td><td><code>ranger</code> 等</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>日誌室與時鐘</h3>
+<table>
+  <tr><th>工具</th><th>顯示</th><th>指令</th></tr>
+  <tr><td><strong>lnav</strong> ★★★</td><td>日誌導航——tail + 過濾 + 高亮任何 log</td><td><code>lnav ~/path/log</code></td></tr>
+  <tr><td><strong>tty-clock</strong> ★★</td><td>大字數位鐘,儀表牆的正中央</td><td><code>tty-clock -c -C 6</code></td></tr>
+  <tr><td><strong>mapscii</strong> ★★</td><td>可縮放的 ASCII 世界地圖</td><td><code>mapscii</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>氣氛組 — 純電影感</h3>
+<table>
+  <tr><th>工具</th><th>效果</th><th>指令</th></tr>
+  <tr><td><strong>cmatrix</strong> ★★★</td><td>落下的綠色字符雨</td><td><code>cmatrix</code></td></tr>
+  <tr><td><strong>genact</strong> ★★★</td><td>假裝超忙:貨輪、挖礦、BIOS……全自動假駭客</td><td><code>genact</code>(<kbd>Ctrl-c</kbd>)</td></tr>
+  <tr><td><strong>no-more-secrets</strong> ★★★</td><td>《Sneakers》電影的解密瀑布</td><td><code>ls | nms</code></td></tr>
+  <tr><td><strong>pipes-sh</strong> ★★</td><td>終端機裡的 3D 水管螢幕保護程式</td><td><code>pipes-sh</code>(<kbd>Ctrl-c</kbd>)</td></tr>
+  <tr><td><strong>asciiquarium</strong> ★★</td><td>ASCII 水族箱——魚、城堡、鴨子</td><td><code>asciiquarium</code>(<kbd>q</kbd>)</td></tr>
+  <tr><td><strong>cbonsai</strong> ★★</td><td>慢慢長出來的程式生成盆栽</td><td><code>cbonsai -L 30</code></td></tr>
+  <tr><td><strong>lolcat / figlet / toilet</strong></td><td>彩虹管線 / ASCII 大字橫幅</td><td><code>figlet BRIDGE | lolcat</code></td></tr>
+  <tr><td><strong>sl</strong></td><td>打錯指令時開過的火車</td><td><code>sl</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>懶人包 — 一行全裝</h3>
+<p>最快蓋出一面電影牆(為 macOS 挑的密度 + 多樣性組合):</p>
+<pre class="term" style="margin-bottom:0"><span class="ps1">$</span> brew install btop glances asitop fastfetch bandwhich termshark \
+    lazygit lazydocker gdu yazi lnav tty-clock mapscii cmatrix \
+    cbonsai genact no-more-secrets pipes-sh asciiquarium figlet lolcat</pre>
+</div>
+
+</section>
+
+<div class="footer">
+  <p>★ = 駭客劇場值。所有 formula 名稱已對 Homebrew 驗證(2026-08)。<a href="tmux-cheatsheet.html">tmux 速查表</a> · <a href="tool-glossary.html">工具詞彙表</a> · <a href="../lessons-tw/0000-table-of-contents.html">課程地圖</a></p>
+</div>
+
+</article>
+</body>
+</html>

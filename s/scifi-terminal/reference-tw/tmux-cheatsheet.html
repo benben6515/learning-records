@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tmux 速查表 — 科幻終端機</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 第 2 層</p>
+<h1>tmux 速查表</h1>
+<p class="lead">課程用到的每個 tmux 按鍵與指令，一頁列印。<strong>Prefix</strong> = <kbd>Ctrl-b</kbd>（按住放開後再按指令鍵）。依 tmux 3.7b 驗證。</p>
+
+<section class="grid">
+
+<div class="card">
+<h3>Session — 工作區</h3>
+<table>
+  <tr><th>指令</th><th>作用</th></tr>
+  <tr><td><code>tmux new -s bridge</code></td><td>建立具名 session</td></tr>
+  <tr><td><code>tmux ls</code></td><td>列出 session</td></tr>
+  <tr><td><code>tmux attach -t bridge</code></td><td>重新掛上 session</td></tr>
+  <tr><td>Prefix <kbd>d</kbd></td><td>Detach（session 繼續跑）</td></tr>
+  <tr><td>Prefix <kbd>$</kbd></td><td>重新命名 session</td></tr>
+  <tr><td>Prefix <kbd>s</kbd></td><td>Session 選單</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Pane — 科幻面板</h3>
+<table>
+  <tr><th>指令</th><th>作用</th></tr>
+  <tr><td>Prefix <kbd>%</kbd></td><td>分左右</td></tr>
+  <tr><td>Prefix <kbd>"</kbd></td><td>分上下</td></tr>
+  <tr><td>Prefix <kbd>←→↑↓</kbd></td><td>窗格間移動</td></tr>
+  <tr><td>Prefix <kbd>z</kbd></td><td>窗格全螢幕（toggle）</td></tr>
+  <tr><td>Prefix <kbd>x</kbd></td><td>關閉窗格</td></tr>
+  <tr><td>Prefix <kbd>Ctrl-←→↑↓</kbd></td><td>調整大小（方向鍵全程按住 Ctrl）</td></tr>
+  <tr><td>Prefix <kbd>Ctrl+Opt+方向鍵</kbd></td><td>大步調整</td></tr>
+  <tr><td>Prefix <kbd>q</kbd></td><td>閃現窗格編號</td></tr>
+  <tr><td>Prefix <kbd>Space</kbd></td><td>循環預設布局（even-horizontal、main-pane…）</td></tr>
+  <tr><td>Prefix <kbd>{</kbd> / <kbd>}</kbd></td><td>與相鄰窗格交換</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Window — 全螢幕分頁</h3>
+<table>
+  <tr><th>指令</th><th>作用</th></tr>
+  <tr><td>Prefix <kbd>c</kbd></td><td>新 window</td></tr>
+  <tr><td>Prefix <kbd>n</kbd> / <kbd>p</kbd></td><td>下 / 上一個 window</td></tr>
+  <tr><td>Prefix <kbd>1</kbd>–<kbd>9</kbd></td><td>跳到第 N 個 window</td></tr>
+  <tr><td>Prefix <kbd>&amp;</kbd></td><td>關閉 window</td></tr>
+  <tr><td>Prefix <kbd>,</kbd></td><td>重新命名 window</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>設定與重載</h3>
+<table>
+  <tr><th>指令</th><th>作用</th></tr>
+  <tr><td>Prefix <kbd>:</kbd></td><td>命令提示</td></tr>
+  <tr><td><code>source-file ~/.config/tmux/tmux.conf</code></td><td>重載設定（在 Prefix <kbd>:</kbd> 輸入）</td></tr>
+  <tr><td>Prefix <kbd>I</kbd></td><td>TPM：安裝套件</td></tr>
+  <tr><td>Prefix <kbd>U</kbd></td><td>TPM：更新套件</td></tr>
+</table>
+<p style="margin-bottom:0"><strong>檔案：</strong><code>~/.config/tmux/tmux.conf</code>——設定用 <code>set -g</code>、套件用 <code>set -g @plugin</code>，TPM runner <code>run '…/tpm/tpm'</code> 永遠最後。</p>
+</div>
+
+<div class="card">
+<h3>課程完整版 tmux.conf</h3>
+<pre class="term" style="margin-bottom:0"><span class="cmt"># ~/.config/tmux/tmux.conf</span>
+set -g mouse on
+set -g status-position top
+set -g default-terminal "tmux-256color"
+
+<span class="cmt"># 主題（第 03 課）</span>
+set -g @plugin 'catppuccin/tmux'
+set -g @catppuccin_flavour 'mocha'
+set -g @catppuccin_window_tabs_style "right"
+set -g @catppuccin_date_time_text "%H:%M"
+
+<span class="cmt"># 套件管理器 — 最後一行</span>
+run '~/.config/tmux/plugins/tpm/tpm'</pre>
+</div>
+
+<div class="card">
+<h3>階層 — 記住順序</h3>
+<p style="margin-bottom:0">server → <strong>session</strong>（bridge）→ <strong>window</strong>（分頁）→ <strong>pane</strong>（面板）。Session 活過終端機關閉；所以駕駛艙隨時待命。完整詞彙：<a href="tool-glossary.html">工具詞彙表</a> · <a href="../lessons-tw/0000-table-of-contents.html">課程地圖</a>。</p>
+</div>
+
+</section>
+
+<div class="footer">
+  <p>權威來源：<code>man tmux</code>（對應你裝的 3.7b）· <a href="https://github.com/tmux/tmux/wiki/Getting-Started">tmux wiki</a> · <a href="https://github.com/catppuccin/tmux">catppuccin/tmux</a></p>
+</div>
+
+</article>
+</body>
+</html>

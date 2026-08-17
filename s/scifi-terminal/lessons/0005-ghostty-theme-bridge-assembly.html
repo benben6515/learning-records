@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 05 — Ghostty Theming + Bridge Assembly</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 05 · Sci-Fi Terminal Panes</p>
+<h1>Ghostty Theming + Bridge Assembly</h1>
+<p class="badges">
+  <span class="badge">~15 min</span>
+  <span class="badge">Layer 1</span>
+  <span class="badge">The payoff</span>
+</p>
+
+<p class="lead">One layer left: the emulator itself. Your Ghostty is already half-sci-fi — opacity 0.66, blur 20, a Nerd Font. All it's missing is the <em>right palette</em>. Then we assemble everything into the course's finished product: <strong>the bridge console</strong>.</p>
+
+<h2>Step 1 — the theme line</h2>
+<p>Ghostty ships Catppuccin built-in. Browse what's on offer:</p>
+
+<pre class="term"><span class="ps1">$</span> /Applications/Ghostty.app/Contents/MacOS/ghostty +list-themes | grep -i catppuccin</pre>
+
+<p>You'll see all four flavours (plus variants like <code>catppuccin-latte</code>). Edit <code>~/.config/ghostty/config</code> — change one line:</p>
+
+<pre class="term"><span class="cmt"># ~/.config/ghostty/config</span>
+theme = catppuccin-mocha</pre>
+
+<p>Press <kbd>⌘⇧,</kbd> in Ghostty to reload config live (all windows restyle instantly — no restart). Your tmux bar, prompt, and now the terminal itself share one palette. <strong>The trilogy is complete.</strong></p>
+
+<p class="small muted">Keep your existing <code>background-opacity</code>, <code>background-blur</code>, and font lines — they were already correct. You're changing one word of your config, not rewriting it.</p>
+
+<h2>Step 2 — assemble the bridge</h2>
+<p>Everything you've learned, in sequence. From a fresh shell:</p>
+
+<pre class="term"><span class="ps1">$</span> tmux new -s bridge
+<span class="cmt"># split: Ctrl-b %   (left/right)   Ctrl-b "   (top/bottom)</span>
+<span class="cmt"># resize:  Ctrl-b Ctrl-← / Ctrl-→ / Ctrl-↑ / Ctrl-↓  (hold Ctrl throughout)</span></pre>
+
+<p>A proven layout — make it roughly, mouse-drag to fine-tune:</p>
+<ul>
+  <li><strong>Left, tall</strong> — <code>btop</code> (engine room)</li>
+  <li><strong>Right, top</strong> — <code>fastfetch</code> (ship registry)</li>
+  <li><strong>Right, bottom</strong> — <code>cmatrix</code> (the mood) with <code>cbonsai -L 30</code> beside it if you made a fourth pane</li>
+</ul>
+
+<div class="callout">
+  <span class="label">The resize trick nobody teaches</span>
+  <kbd>Ctrl-b</kbd> then <strong>hold <kbd>Ctrl</kbd></strong> and tap arrow keys — each tap grows the pane in that direction. Add <kbd>Option</kbd> too for 5× bigger steps: <kbd>Ctrl-b</kbd> <kbd>Ctrl</kbd>+<kbd>Option</kbd>+<kbd>→</kbd>. With mouse on (Lesson 02), dragging dividers also works — but keyboard resize is the bridge-officer move.
+</div>
+
+<h2>Step 3 — live with it</h2>
+<p>Detach (<kbd>Ctrl-b</kbd> <kbd>d</kbd>) and leave the session running. Re-attach before you start work tomorrow: <code>tmux attach -t bridge</code>. A console you can leave and return to is the whole point of sessions — the movie look is a side effect of a genuinely better workflow.</p>
+
+<div class="task">
+  <span class="label">Do it now — the assembly</span>
+  <ul class="checklist" id="task" data-store="st-l05-task">
+    <li><span class="box"></span><span class="txt">List Ghostty themes; set theme = catppuccin-mocha; reload with ⌘⇧, .</span></li>
+    <li><span class="box"></span><span class="txt">Build the bridge: btop left, fastfetch right-top, cmatrix right-bottom.</span></li>
+    <li><span class="box"></span><span class="txt">Resize with Ctrl-b + Ctrl-arrows until proportions feel right.</span></li>
+    <li><span class="box"></span><span class="txt">Take the screenshot. This is the before/after of the whole course.</span></li>
+    <li><span class="box"></span><span class="txt">Detach, close the window, re-attach tomorrow — confirm persistence.</span></li>
+  </ul>
+</div>
+
+<h2>Check your understanding</h2>
+
+<div class="quiz" data-right="Correct. ⌘⇧, (Cmd-Shift-comma) reloads Ghostty config into running windows." data-wrong="Not quite — the highlighted answer is ⌘⇧, which reloads config live.">
+  <q>Reload Ghostty's config without restarting it…</q>
+  <div class="options">
+    <button class="opt">Press ⌘⇧, in Ghostty</button>
+    <button class="opt">Press ⌘R in Ghostty</button>
+    <button class="opt">Run ghostty --reload</button>
+    <button class="opt">Reboot the Mac</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. The emulator layer owns fonts, palette, transparency, and blur — window-level visuals." data-wrong="Not quite — see the highlight: those are emulator-level effects, Ghostty's department.">
+  <q>Opacity and blur belong to which layer?</q>
+  <div class="options">
+    <button class="opt">Layer 1: emulator</button>
+    <button class="opt">Layer 2: multiplexer</button>
+    <button class="opt">Layer 3: prompt</button>
+    <button class="opt">Layer 4: TUI props</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://ghostty.org/docs/config">Ghostty configuration docs</a> — authoritative reference for <code>theme</code>, <code>background-opacity</code>, <code>background-blur</code>, and every option you've touched.
+  </div>
+
+  <p><strong>Full stack reference:</strong> <a href="../reference/tmux-cheatsheet.html">tmux cheatsheet</a> · <a href="../reference/tool-glossary.html">tool glossary</a> — between them, every command and concept from the course.</p>
+
+  <p><strong>Next up — Lesson 06 (finale):</strong> <em>cool-retro-term</em> — pour your finished bridge console into a CRT simulator: scanlines, phosphor glow, curved glass. The movie-prop screenshot that started this whole mission.</p>
+
+  <p class="small muted"><strong>Layout keeps drifting? Panes too small?</strong> Ask me — there's a tmux answer for every layout annoyance, and I know which.</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

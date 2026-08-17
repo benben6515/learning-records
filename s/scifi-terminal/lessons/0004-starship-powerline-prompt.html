@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 04 — starship Powerline Prompt</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 04 · Sci-Fi Terminal Panes</p>
+<h1>starship Powerline Prompt</h1>
+<p class="badges">
+  <span class="badge">~10 min</span>
+  <span class="badge">Layer 3</span>
+  <span class="badge">One command</span>
+</p>
+
+<p class="lead">Layer 2 is themed; now the command line itself. Movie consoles never show a bare <code>$</code> — they show <strong>segmented status strips</strong>: where am I, what branch, is the reactor healthy. That look is a <strong>Powerline prompt</strong>, and starship (already installed on your machine) ships a Catppuccin one as a <em>preset</em> — a ready-made config published as a package. One command, zero scripts.</p>
+
+<h2>Step 0 — back up, like a professional</h2>
+<p>You already have a hand-tuned <code>~/.config/starship.toml</code>. Overwriting someone's config without a backup is a crime against your future self:</p>
+
+<pre class="term"><span class="ps1">$</span> cp ~/.config/starship.toml ~/.config/starship.toml.bak</pre>
+
+<h2>Step 1 — apply the preset</h2>
+<pre class="term"><span class="ps1">$</span> starship preset catppuccin-powerline -o ~/.config/starship.toml</pre>
+
+<p>Open a new shell (or restart tmux). Your prompt is now a row of colored powerline segments: directory, git branch + status, language versions, command duration — each an icon-bearing pill separated by  arrows, colored to match Catppuccin mocha.</p>
+
+<div class="callout">
+  <span class="label">Why "powerline"? Why it needs glyphs</span>
+  Powerline started as a set of vim scripts (2013) drawing angled separators between prompt segments. The angles aren't text characters — they're <strong>glyphs from a patched font</strong>. That's the whole dependency chain to remember: <em>powerline look → arrow glyphs → Nerd Font → Ghostty already has one</em>. Your Lesson-03 printf check confirmed this works.
+</div>
+
+<h2>Read the config you just got</h2>
+<p>Open <code>~/.config/starship.toml</code> and skim it. You'll find, for each segment: the palette's <code>fg</code>/<code>bg</code> colors, a <code>symbol</code> (a nerd-font glyph), and a <code>style</code>. Config literacy beats copy-paste — next week you might delete a segment you find noisy:</p>
+
+<pre class="term"><span class="cmt"># ~/.config/starship.toml (excerpt, preset-generated)</span>
+[directory]
+style = "fg:mochaText bg:mochaPeach"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"</pre>
+
+<p class="small muted">Don't like a color? The palette block at the top defines <code>mochaBlue</code> etc. — change values there and every segment updates. One palette, many effects.</p>
+
+<h2>Verify the three layers agree</h2>
+<p>You now have Catppuccin at two layers: tmux bar (Lesson 03) and prompt (today). Open a fresh tmux window and check the bar and prompt feel like one designed system — same pastels, same icons. That coherence is what separates "themed" from "thrown together". Layer 1 joins next lesson.</p>
+
+<div class="task">
+  <span class="label">Do it now — segment by segment</span>
+  <ul class="checklist" id="task" data-store="st-l04-task">
+    <li><span class="box"></span><span class="txt">Back up your existing starship.toml.</span></li>
+    <li><span class="box"></span><span class="txt">Apply the catppuccin-powerline preset.</span></li>
+    <li><span class="box"></span><span class="txt">cd into a git repo — watch the git segment appear.</span></li>
+    <li><span class="box"></span><span class="txt">Skim the generated toml; find directory's truncation_length and set it to 2.</span></li>
+    <li><span class="box"></span><span class="txt">Restore your backup, compare honestly, keep your winner.</span></li>
+  </ul>
+</div>
+
+<h2>Check your understanding</h2>
+
+<div class="quiz" data-right="Correct. Powerline arrows are glyphs from a patched (Nerd) font, not ordinary text." data-wrong="Not quite — the highlighted answer is right: they're Nerd Font glyphs, which is why the font matters.">
+  <q>The powerline arrow separators are…</q>
+  <div class="options">
+    <button class="opt">Nerd Font glyphs</button>
+    <button class="opt">Unicode plain text</button>
+    <button class="opt">Emulator drawing primitives</button>
+    <button class="opt">Shell script output</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. A preset is a published, ready-made config — package-managed theming, exactly our pattern." data-wrong="Not quite — see the highlight: a preset is a ready-made config applied with one command.">
+  <q>A starship "preset" is best described as…</q>
+  <div class="options">
+    <button class="opt">A packaged ready-made config</button>
+    <button class="opt">A shell theme script</button>
+    <button class="opt">A compiled binary plugin</button>
+    <button class="opt">An emulator color profile</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://starship.rs/presets/catppuccin-powerline">starship — Catppuccin Powerline preset</a> — official preset page with screenshots and the exact command. Explore neighboring presets to see the pattern generalize.
+  </div>
+
+  <p><strong>Two of three themed layers done.</strong> The prompt (Layer 3) and tmux (Layer 2) now speak the same palette.</p>
+
+  <p><strong>Next up — Lesson 05:</strong> <em>Ghostty theming + the bridge assembly</em> — <code>theme = catppuccin-mocha</code> completes the trilogy, and we assemble the finished console: fastfetch | btop | cmatrix in one themed grid. The payoff lesson.</p>
+
+  <p class="small muted"><strong>Prompt feels slow or crowded?</strong> Ask me — trimming segments is a two-line edit and I'll show you which.</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

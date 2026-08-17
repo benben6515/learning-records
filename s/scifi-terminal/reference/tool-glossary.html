@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tool Glossary — Sci-Fi Terminal Panes</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference · All layers</p>
+<h1>Tool Glossary</h1>
+<p class="lead">The full crew of the bridge console: which tool plays which role, which layer it lives in, and the one command you need. Concepts are defined in the workspace <a href="../GLOSSARY.md">GLOSSARY.md</a>.</p>
+
+<section class="grid">
+
+<div class="card">
+<h3>Layer 1 — Emulators (the glass)</h3>
+<table>
+  <tr><th>Tool</th><th>Role</th><th>Command</th></tr>
+  <tr><td><strong>Ghostty</strong></td><td>Daily driver. Fonts, palette, opacity, blur</td><td><code>theme = catppuccin-mocha</code> in config; ⌘⇧, reloads</td></tr>
+  <tr><td><strong>cool-retro-term</strong></td><td>The prop. CRT scanlines, phosphor, curvature</td><td><code>brew install --cask cool-retro-term</code>; <code>open -a cool-retro-term</code></td></tr>
+  <tr><td>Warp</td><td>Installed on this Mac; not part of the stack</td><td>—</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Layer 2 — Multiplexer (the panes)</h3>
+<table>
+  <tr><th>Tool</th><th>Role</th><th>Command</th></tr>
+  <tr><td><strong>tmux 3.7b</strong></td><td>Pane grid, borders, status bar; sessions that survive</td><td><code>tmux new -s bridge</code> → <a href="tmux-cheatsheet.html">cheatsheet</a></td></tr>
+  <tr><td><strong>TPM</strong></td><td>Plugin manager for tmux themes</td><td><code>git clone …/tpm ~/.config/tmux/plugins/tpm</code>; Prefix <kbd>I</kbd> installs</td></tr>
+  <tr><td><strong>catppuccin/tmux</strong></td><td>The pastel HUD status bar theme</td><td><code>set -g @plugin 'catppuccin/tmux'</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Layer 3 — Prompt (the command line)</h3>
+<table>
+  <tr><th>Tool</th><th>Role</th><th>Command</th></tr>
+  <tr><td><strong>starship</strong></td><td>Fast, themable prompt engine</td><td><code>starship preset catppuccin-powerline -o ~/.config/starship.toml</code></td></tr>
+  <tr><td>Nerd Font (0xProto)</td><td>Supplies powerline arrows &amp; icons</td><td>Verify: <code>printf '\ue0b0 \uf308\n'</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Layer 4 — TUI props (the readouts)</h3>
+<table>
+  <tr><th>Tool</th><th>Role on the bridge</th><th>Command</th></tr>
+  <tr><td><strong>btop</strong></td><td>Engine room — CPU/GPU/mem/net graphs</td><td><code>btop</code>; <kbd>1</kbd>–<kbd>9</kbd> layouts, <kbd>q</kbd> quit</td></tr>
+  <tr><td><strong>fastfetch</strong></td><td>Ship registry — OS/CPU/GPU + logo panel</td><td><code>fastfetch</code></td></tr>
+  <tr><td><strong>cmatrix</strong></td><td>The mood — falling green glyphs</td><td><code>cmatrix</code>; <kbd>q</kbd> quit</td></tr>
+  <tr><td><strong>cbonsai</strong></td><td>Bio-dome — procedural ASCII bonsai</td><td><code>cbonsai -L 30</code>; <kbd>Ctrl-c</kbd> exit</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>The bridge layout (course standard)</h3>
+<pre class="term" style="margin-bottom:0"><span class="cmt"># proportions are taste; structure is the standard</span>
+┌─────────────┬──────────────┐
+│             │  fastfetch   │
+│    btop     ├──────────────┤
+│  (engine    │   cmatrix    │
+│    room)    │  (+cbonsai)  │
+└─────────────┴──────────────┘</pre>
+</div>
+
+<div class="card">
+<h3>Palette — Catppuccin flavours</h3>
+<table>
+  <tr><th>Flavour</th><th>Character</th></tr>
+  <tr><td>latte</td><td>Light — daytime bridge</td></tr>
+  <tr><td>frappé</td><td>Soft dark</td></tr>
+  <tr><td>macchiato</td><td>Mid dark</td></tr>
+  <tr><td><strong>mocha</strong></td><td>Darkest — course default</td></tr>
+</table>
+<p style="margin-bottom:0">Same palette at every layer = one designed system. Switch: one word in tmux conf, one preset command, one theme line.</p>
+</div>
+
+</section>
+
+<div class="footer">
+  <p><a href="../lessons/0000-table-of-contents.html">Course map</a> · <a href="../RESOURCES.md">Full resource list</a></p>
+</div>
+
+</article>
+</body>
+</html>

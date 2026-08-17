@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 01 課 — 零設定的電影感</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 01 課 · 科幻終端機</p>
+<h1>零設定的電影感</h1>
+<p class="badges">
+  <span class="badge">約 10 分鐘</span>
+  <span class="badge">4 個指令</span>
+  <span class="badge">先不寫設定</span>
+</p>
+
+<p class="lead">每個科幻駕駛艙——從《異形》的 Nostromo 到《星際爭霸戰》的企業號——其實都是同一張圖：<strong>一整面活的系統儀表牆</strong>。在我們設定任何東西之前，先用四個指令、零設定得到那個畫面。這正是你任務的第一條規則：<em>現成工具優先，不寫 shell script。</em></p>
+
+<h2>四層堆疊（背起來）</h2>
+<p>網路上每一個「電影終端機」都是四個獨立工具疊出來的。每一層負責不同的視覺效果——這是貫穿全課的心智模型：</p>
+
+<div class="callout">
+  <span class="label">誰負責什麼</span>
+  <ul style="margin-bottom:0">
+    <li><strong>第 1 層 — Emulator 終端機</strong>（Ghostty）：字體、顏色、透明、模糊</li>
+    <li><strong>第 2 層 — Multiplexer 多工器</strong>（tmux）：窗格網格、邊框、狀態列</li>
+    <li><strong>第 3 層 — Prompt 提示符</strong>（starship）：分段的命令列</li>
+    <li><strong>第 4 層 — TUI 道具</strong>（btop、fastfetch…）：會動的儀表</li>
+  </ul>
+</div>
+
+<p>今天只動<strong>第 4 層</strong>。btop 你已經有了；我們補上另外兩個搭檔，用平凡的 Ghostty 分頁並排打開。有主題的窗格要等第 02–05 課。</p>
+
+<h2>安裝道具</h2>
+<p>一個指令，三個經典工具（Homebrew 已驗證有這些套件）：</p>
+
+<pre class="term"><span class="ps1">$</span> brew install fastfetch cmatrix cbonsai</pre>
+
+<p>你剛拿到了什麼：</p>
+<ul>
+  <li><strong>fastfetch</strong> — 系統資訊面板：OS、CPU、GPU、記憶體，加上 logo。是「船籍資料」儀表。</li>
+  <li><strong>cmatrix</strong> — 落下的綠色字符。純電影感，零用途。是氣氛。</li>
+  <li><strong>cbonsai</strong> — 用 ASCII 長出來的程式生成盆栽。是「生態艙」面板。</li>
+  <li><strong>btop</strong> — 已在你機器上：即時 CPU／記憶體／網路圖表。是「輪機室」。</li>
+</ul>
+
+<p class="small muted">這些全部是 <strong>TUI</strong>（Terminal User Interface）：畫在終端機裡的全螢幕互動程式，不是你自己寫的腳本。完整名單見 <a href="../reference-tw/tool-glossary.html">工具詞彙表</a>。</p>
+
+<h2>你的第一個電影畫面</h2>
+<p>在 Ghostty 開四個分頁（<kbd>⌘T</kbd>），每頁跑一個：</p>
+
+<pre class="term"><span class="ps1">$</span> btop
+<span class="ps1">$</span> fastfetch
+<span class="ps1">$</span> cmatrix
+<span class="ps1">$</span> cbonsai -L 30</pre>
+
+<p class="small muted">離開方式：<kbd>q</kbd>（btop、cmatrix）或 <kbd>Ctrl-c</kbd>。btop 裡用 <kbd>1</kbd>–<kbd>9</kbd> 切換版面——找一個你喜歡的。</p>
+
+<div class="callout">
+  <span class="label">為什麼這已經很像科幻</span>
+  電影駕駛艙的設計圍繞三件事：<strong>資訊密度 + 動態 + 不對稱</strong>：形狀各异的面板，每個都在忙著顯示即時資料。四個分頁的 TUI 意外三項全有。缺的只是<em>同時出現在一個畫面</em>——這正是下一課 tmux 窗格要解決的。
+</div>
+
+<div class="task">
+  <span class="label">現在就做 — 第一個戰果</span>
+  <p style="margin:0 0 0.4rem">蓋出四分頁電影牆，然後像艦橋軍官一樣巡視分頁。做完就打勾（進度存在這台裝置上）：</p>
+  <ul class="checklist" id="task" data-store="st-tw-l01-task">
+    <li><span class="box"></span><span class="txt">跑完 brew install 指令，等它結束。</span></li>
+    <li><span class="box"></span><span class="txt">開四個 Ghostty 分頁，啟動 btop、fastfetch、cmatrix、cbonsai。</span></li>
+    <li><span class="box"></span><span class="txt">在 btop 用 1–9 切版面，選一個最愛。</span></li>
+    <li><span class="box"></span><span class="txt">依序巡完四個分頁——好好享受。</span></li>
+  </ul>
+  <p class="small" style="margin:0.8rem 0 0">然後回答下面兩題，把模型鎖進記憶。</p>
+</div>
+
+<h2>測驗一下</h2>
+
+<div class="quiz" data-right="答對了。Emulator 負責視窗層級的視覺：字體、顏色、透明、模糊。" data-wrong="不對喔——看高亮解答。Emulator（Ghostty）負責字體、顏色、透明、模糊。">
+  <q>透明與模糊屬於哪一層？</q>
+  <div class="options">
+    <button class="opt">Emulator 終端機</button>
+    <button class="opt">Multiplexer 多工器</button>
+    <button class="opt">Shell 提示符</button>
+    <button class="opt">TUI 應用</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="答對了。TUI 是全螢幕互動程式；CLI 指令印完就退出。" data-wrong="不對喔——高亮的是正解。btop 互動且佔滿全螢幕：TUI。">
+  <q>btop 最適合描述為…</q>
+  <div class="options">
+    <button class="opt">終端互動介面 TUI</button>
+    <button class="opt">印完就退的指令</button>
+    <button class="opt">跑一次的腳本</button>
+    <button class="opt">視窗管理器功能</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課首選資源</strong><br>
+    <a href="https://github.com/fastfetch-cli/fastfetch">GitHub 上的 fastfetch</a> — 翻一下 README 截圖，每個面板你都認得。再看 <a href="https://github.com/aristocratos/btop">GitHub 上的 btop</a>，那就是輪機室。
+  </div>
+
+  <p><strong>下一課 — 第 02 課：</strong><em>tmux 窗格從零開始</em>——把四個儀表放上同一個畫面，學會 prefix 鍵，寫下 <code>tmux.conf</code> 的前三行（是設定檔，不是腳本）。</p>
+
+  <p><strong>課程地圖：</strong><a href="0000-table-of-contents.html">全部課程</a> · <a href="../reference-tw/tool-glossary.html">工具詞彙表</a> · <a href="../reference-tw/tmux-cheatsheet.html">tmux 速查表</a>（第 02 課長出來）</p>
+
+  <p class="small muted"><strong>套件裝不起來？字元顯示怪怪的？</strong>問我——我是你的老師，除錯也是技術的一部分。直接在對話裡回我。</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 04 課 — starship Powerline 提示符</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 04 課 · 科幻終端機</p>
+<h1>starship Powerline 提示符</h1>
+<p class="badges">
+  <span class="badge">約 10 分鐘</span>
+  <span class="badge">第 3 層</span>
+  <span class="badge">一行指令</span>
+</p>
+
+<p class="lead">第 2 層有主題了；換命令列本身。電影駕駛艙從不出現一個光禿禿的 <code>$</code>——它們顯示<strong>分段的狀態條</strong>：我在哪、哪個 branch、反應爐健康嗎。那個外觀叫 <strong>Powerline prompt</strong>，而 starship（你機器上已有）內建一個 Catppuccin 版的 <em>preset</em>——以套件形式發佈的現成設定。一行指令，零腳本。</p>
+
+<h2>步驟 0 — 先備份，像個專業人士</h2>
+<p>你已有一份手調的 <code>~/.config/starship.toml</code>。蓋掉別人的設定前不備份，是對未來自己的犯罪：</p>
+
+<pre class="term"><span class="ps1">$</span> cp ~/.config/starship.toml ~/.config/starship.toml.bak</pre>
+
+<h2>步驟 1 — 套用 preset</h2>
+<pre class="term"><span class="ps1">$</span> starship preset catppuccin-powerline -o ~/.config/starship.toml</pre>
+
+<p>開一個新 shell（或重啟 tmux）。你的提示符變成一排彩色 powerline 段落：目錄、git branch + 狀態、語言版本、指令耗時——每段都是帶圖示的膠囊，用  箭頭相接，顏色配 Catppuccin mocha。</p>
+
+<div class="callout">
+  <span class="label">為什麼叫 "powerline"？為什麼需要 glyph？</span>
+  Powerline 原本是 2013 年一群 vim 腳本，在提示符段落之間畫斜角分隔。那些斜角不是文字字元——是<strong>修補字體裡的 glyph</strong>。要記住的依賴鏈就這條：<em>powerline 外觀 → 箭頭 glyph → Nerd Font → Ghostty 已經有了</em>。上一課的 printf 檢查已證實可用。
+</div>
+
+<h2>讀懂你剛拿到的設定</h2>
+<p>打開 <code>~/.config/starship.toml</code> 瀏覽。每個段落你會看到：色盤的 <code>fg</code>/<code>bg</code> 顏色、一個 <code>symbol</code>（nerd-font glyph）、一個 <code>style</code>。設定素養勝過複製貼上——下週你可能就想刪掉吵的段落：</p>
+
+<pre class="term"><span class="cmt"># ~/.config/starship.toml（節錄，preset 生成）</span>
+[directory]
+style = "fg:mochaText bg:mochaPeach"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"</pre>
+
+<p class="small muted">不喜歡某個顏色？頂部的色盤區塊定義了 <code>mochaBlue</code> 等——改那裡的值，所有段落一起更新。一個色盤，多個效果。</p>
+
+<h2>驗證三層一致</h2>
+<p>你現在有兩層是 Catppuccin：tmux 狀態列（上一課）和提示符（今天）。開一個新的 tmux window，檢查狀態列和提示符像同一套設計系統——同樣的粉彩、同樣的圖示。這份一致性，就是「有主題」和「隨便湊」的差別。第 1 層下一課歸位。</p>
+
+<div class="task">
+  <span class="label">現在就做 — 一段一段看</span>
+  <ul class="checklist" id="task" data-store="st-tw-l04-task">
+    <li><span class="box"></span><span class="txt">備份現有 starship.toml。</span></li>
+    <li><span class="box"></span><span class="txt">套用 catppuccin-powerline preset。</span></li>
+    <li><span class="box"></span><span class="txt">cd 進某個 git repo——看 git 段落出現。</span></li>
+    <li><span class="box"></span><span class="txt">瀏覽生成的 toml；找到 directory 的 truncation_length 改成 2。</span></li>
+    <li><span class="box"></span><span class="txt">還原備份，誠實比較，留下你的贏家。</span></li>
+  </ul>
+</div>
+
+<h2>測驗一下</h2>
+
+<div class="quiz" data-right="答對了。Powerline 箭頭是修補字體（Nerd Font）裡的 glyph，不是普通文字。" data-wrong="不對喔——高亮是正解：它們是 Nerd Font glyph，所以字體才重要。">
+  <q>Powerline 箭頭分隔符是…</q>
+  <div class="options">
+    <button class="opt">Nerd Font 的 glyph</button>
+    <button class="opt">普通 Unicode 文字</button>
+    <button class="opt">終端機的繪圖元素</button>
+    <button class="opt">Shell script 的輸出</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="答對了。Preset 是發佈好的現成設定——套件化管理主題，正是我們的模式。" data-wrong="不對喔——看高亮：preset 是一行指令套用的現成設定。">
+  <q>starship 的「preset」最適合描述為…</q>
+  <div class="options">
+    <button class="opt">打包好的現成設定</button>
+    <button class="opt">一份 shell 主題腳本</button>
+    <button class="opt">編譯好的二進位套件</button>
+    <button class="opt">終端機色彩設定檔</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課首選資源</strong><br>
+    <a href="https://starship.rs/presets/catppuccin-powerline">starship — Catppuccin Powerline preset</a> — 官方 preset 頁，有截圖和那個精準指令。順便逛逛隔壁 presets，看模式如何通用。
+  </div>
+
+  <p><strong>三層裡完成兩層。</strong>提示符（第 3 層）和 tmux（第 2 層）現在講同一套色盤。</p>
+
+  <p><strong>下一課 — 第 05 課：</strong><em>Ghostty 主題 + 駕駛艙組裝</em>——<code>theme = catppuccin-mocha</code> 完成三部曲，然後組裝成品：fastfetch | btop | cmatrix 一個有主題的網格。收穫課。</p>
+
+  <p class="small muted"><strong>提示符變慢或太擠？</strong>問我——刪段落是兩行編輯的事，我告訴你刪哪個。</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

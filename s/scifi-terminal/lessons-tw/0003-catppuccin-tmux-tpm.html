@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 03 課 — Catppuccin tmux + TPM</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 03 課 · 科幻終端機</p>
+<h1>Catppuccin tmux + TPM</h1>
+<p class="badges">
+  <span class="badge">約 15 分鐘</span>
+  <span class="badge">第 2 層</span>
+  <span class="badge">套件 + 主題</span>
+</p>
+
+<p class="lead">綠色狀態列是 tmux 的 1990 年代胎記。今天你用<strong>任何工具換主題的標準動作</strong>把它移除：套件管理的主題，透過設定檔套用。這個模式學一次，fish、neovim、btop、新 Mac 都用同一招。</p>
+
+<h2>步驟 0 — 驗證 Nerd Font（30 秒）</h2>
+<p>有主題的狀態列和提示符充滿圖示——powerline 箭頭、OS logo、模組 glyph。這些來自 <strong>Nerd Font</strong>。你的 Ghostty 已在跑 <code>0xProto Nerd Font Mono</code>，應該直接可用。驗證：</p>
+
+<pre class="term"><span class="ps1">$</span> printf '\ue0b0 \uf308 \uf418 \uf425\n'</pre>
+
+<p>看到一個箭頭 、Apple logo 和兩個圖示——過關。看到方框或問號，先跟我說，我們把字體修好再繼續。</p>
+
+<h2>步驟 1 — 安裝 TPM（套件管理器）</h2>
+<p><strong>TPM</strong>（Tmux Plugin Manager）是 tmux 的套件管理器：你在 <code>tmux.conf</code> 宣告套件，它自動從 GitHub clone。一次性安裝：</p>
+
+<pre class="term"><span class="ps1">$</span> git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm</pre>
+
+<h2>步驟 2 — 宣告主題</h2>
+<p>把這幾行加進 <code>~/.config/tmux/tmux.conf</code>（保留第 02 課的行；TPM runner 放<strong>最後</strong>）：</p>
+
+<pre class="term"><span class="cmt"># ~/.config/tmux/tmux.conf — 接著寫</span>
+set -g @plugin 'catppuccin/tmux'
+set -g @catppuccin_flavour 'mocha'
+
+run '~/.config/tmux/plugins/tpm/tpm'   <span class="cmt"># 必須是最後一行</span></pre>
+
+<h2>步驟 3 — 安裝並重載</h2>
+<p>重載 tmux（<kbd>Ctrl-b</kbd> <kbd>:</kbd> 再 <code>source-file ~/.config/tmux/tmux.conf</code>），然後觸發安裝：</p>
+
+<pre class="term"><span class="ps1">$</span> <span class="cmt"># 在 tmux 裡按：</span>
+Ctrl-b  I      <span class="cmt"># 大寫 I = Install — TPM 會 clone catppuccin/tmux</span></pre>
+
+<p>狀態列會顯示安裝訊息。過一會兒你的狀態列變成 Catppuccin <strong>mocha</strong>：深色底、粉彩模組圖示——session 名、window 清單、日期時間。粉彩 HUD 就是這個。</p>
+
+<div class="callout">
+  <span class="label">為什麼是 "mocha"？為什麼粉彩？</span>
+  Catppuccin 有四種 <strong>flavour</strong>：latte（亮）、frappé、macchiato、mocha（最深）。深色終端機配 mocha：安靜的背景配彩色重點——「冷靜太空船」色盤，能連續讀幾小時。科幻 UI（和 Catppuccin 設計師）都懂：<em>低飽和背景、高訊號重點</em>。到 <a href="https://catppuccin.com">catppuccin.com</a> 看四種，之後改一個字就能換。
+</div>
+
+<h2>選配 HUD 微調</h2>
+<p>兩行大家很愛的（加在 TPM runner 上面）：</p>
+<pre class="term">set -g @catppuccin_window_tabs_style "right"
+set -g @catppuccin_date_time_text "%H:%M"</pre>
+
+<p>再試內建<em>膠囊</em>模組，例如 <code>set -g @catppuccin_status_module_text 'music'</code>——每一個都是一行宣告。完整選單在套件 README。</p>
+
+<div class="task">
+  <span class="label">現在就做 — 幹掉綠色狀態列</span>
+  <ul class="checklist" id="task" data-store="st-tw-l03-task">
+    <li><span class="box"></span><span class="txt">跑 printf 圖示檢查——確認 Ghostty 能渲染。</span></li>
+    <li><span class="box"></span><span class="txt">把 TPM clone 到 ~/.config/tmux/plugins/tpm。</span></li>
+    <li><span class="box"></span><span class="txt">加上 catppuccin 套件 + flavour 行，TPM runner 放最後。</span></li>
+    <li><span class="box"></span><span class="txt">重載設定，按 Ctrl-b I，看狀態列變身。</span></li>
+    <li><span class="box"></span><span class="txt">把 flavour 改成 macchiato，重載，比較。選一個。</span></li>
+  </ul>
+</div>
+
+<h2>測驗一下</h2>
+
+<div class="quiz" data-right="答對了。TPM runner 必須是 tmux.conf 最後一行，否則套件載入順序會亂。" data-wrong="不對喔——高亮是正解：TPM runner 放最後，套件才會按順序初始化。">
+  <q>TPM runner 那行該放哪？</q>
+  <div class="options">
+    <button class="opt">檔案結尾</button>
+    <button class="opt">檔案開頭</button>
+    <button class="opt">套件裡面</button>
+    <button class="opt">哪裡都可以</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="答對了。prefix + 大寫 I 是 TPM 的安裝鍵——I 就是 Install。" data-wrong="不對喔——看高亮：大寫 I 是 TPM 的安裝觸發鍵。">
+  <q>改完 tmux.conf，新套件用什麼裝？</q>
+  <div class="options">
+    <button class="opt">Prefix 再大寫 I</button>
+    <button class="opt">Prefix 再小寫 i</button>
+    <button class="opt">Prefix 再大寫 U</button>
+    <button class="opt">重開終端機</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課首選資源</strong><br>
+    <a href="https://github.com/catppuccin/tmux">GitHub 上的 catppuccin/tmux</a> — README 記錄我們用過的每個選項與模組，加上完整 flavour 清單。從現在起這是你的真相來源。
+  </div>
+
+  <p><strong>學到的模式：</strong><em>套件管理的主題 + 宣告式設定</em>——同一招也用在提示符（下一課：starship preset，一行指令）和終端機（第 05 課）。</p>
+
+  <p><strong>下一課 — 第 04 課：</strong><em>starship Powerline</em>——分段提示符。一行指令把整個提示符換成 Catppuccin powerline；你會先備份現有設定，像個專業人士。</p>
+
+  <p class="small muted"><strong>圖示變方框？狀態列沒變？</strong>問我——字體和套件問題佔 theming bug 的 90%，各一分鐘就能修。</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

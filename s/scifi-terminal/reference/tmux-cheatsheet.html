@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tmux Cheatsheet — Sci-Fi Terminal Panes</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference · Layer 2</p>
+<h1>tmux Cheatsheet</h1>
+<p class="lead">Every tmux key and command used in the course, on one printable page. <strong>Prefix</strong> = <kbd>Ctrl-b</kbd> (press and release, then the command key). Verified against tmux 3.7b.</p>
+
+<section class="grid">
+
+<div class="card">
+<h3>Sessions — the workspace</h3>
+<table>
+  <tr><th>Command</th><th>Does</th></tr>
+  <tr><td><code>tmux new -s bridge</code></td><td>Start named session</td></tr>
+  <tr><td><code>tmux ls</code></td><td>List sessions</td></tr>
+  <tr><td><code>tmux attach -t bridge</code></td><td>Re-attach to session</td></tr>
+  <tr><td>Prefix <kbd>d</kbd></td><td>Detach (session keeps running)</td></tr>
+  <tr><td>Prefix <kbd>$</kbd></td><td>Rename session</td></tr>
+  <tr><td>Prefix <kbd>s</kbd></td><td>Session picker</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Panes — the sci-fi panels</h3>
+<table>
+  <tr><th>Command</th><th>Does</th></tr>
+  <tr><td>Prefix <kbd>%</kbd></td><td>Split left/right</td></tr>
+  <tr><td>Prefix <kbd>"</kbd></td><td>Split top/bottom</td></tr>
+  <tr><td>Prefix <kbd>←→↑↓</kbd></td><td>Move between panes</td></tr>
+  <tr><td>Prefix <kbd>z</kbd></td><td>Zoom pane full-screen (toggle)</td></tr>
+  <tr><td>Prefix <kbd>x</kbd></td><td>Kill pane</td></tr>
+  <tr><td>Prefix <kbd>Ctrl-←→↑↓</kbd></td><td>Resize (hold Ctrl through arrows)</td></tr>
+  <tr><td>Prefix <kbd>Ctrl+Opt+arrow</kbd></td><td>Resize in bigger steps</td></tr>
+  <tr><td>Prefix <kbd>q</kbd></td><td>Flash pane numbers</td></tr>
+  <tr><td>Prefix <kbd>Space</kbd></td><td>Cycle preset layouts (even-horizontal, main-pane…)</td></tr>
+  <tr><td>Prefix <kbd>{</kbd> / <kbd>}</kbd></td><td>Swap pane with neighbor</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Windows — full-screen tabs</h3>
+<table>
+  <tr><th>Command</th><th>Does</th></tr>
+  <tr><td>Prefix <kbd>c</kbd></td><td>New window</td></tr>
+  <tr><td>Prefix <kbd>n</kbd> / <kbd>p</kbd></td><td>Next / previous window</td></tr>
+  <tr><td>Prefix <kbd>1</kbd>–<kbd>9</kbd></td><td>Jump to window N</td></tr>
+  <tr><td>Prefix <kbd>&amp;</kbd></td><td>Kill window</td></tr>
+  <tr><td>Prefix <kbd>,</kbd></td><td>Rename window</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Config &amp; reload</h3>
+<table>
+  <tr><th>Command</th><th>Does</th></tr>
+  <tr><td>Prefix <kbd>:</kbd></td><td>Command prompt</td></tr>
+  <tr><td><code>source-file ~/.config/tmux/tmux.conf</code></td><td>Reload config (type at Prefix <kbd>:</kbd>)</td></tr>
+  <tr><td>Prefix <kbd>I</kbd></td><td>TPM: install plugins</td></tr>
+  <tr><td>Prefix <kbd>U</kbd></td><td>TPM: update plugins</td></tr>
+</table>
+<p style="margin-bottom:0"><strong>File:</strong> <code>~/.config/tmux/tmux.conf</code> — settings with <code>set -g</code>, plugins with <code>set -g @plugin</code>, TPM runner <code>run '…/tpm/tpm'</code> always last.</p>
+</div>
+
+<div class="card">
+<h3>The course tmux.conf, complete</h3>
+<pre class="term" style="margin-bottom:0"><span class="cmt"># ~/.config/tmux/tmux.conf</span>
+set -g mouse on
+set -g status-position top
+set -g default-terminal "tmux-256color"
+
+<span class="cmt"># theme (Lesson 03)</span>
+set -g @plugin 'catppuccin/tmux'
+set -g @catppuccin_flavour 'mocha'
+set -g @catppuccin_window_tabs_style "right"
+set -g @catppuccin_date_time_text "%H:%M"
+
+<span class="cmt"># plugin manager — LAST line</span>
+run '~/.config/tmux/plugins/tpm/tpm'</pre>
+</div>
+
+<div class="card">
+<h3>Hierarchy — remember the order</h3>
+<p style="margin-bottom:0">server → <strong>session</strong> (bridge) → <strong>window</strong> (tab) → <strong>pane</strong> (panel). Sessions survive terminal closure; that's why the bridge is always ready. Full glossary: <a href="tool-glossary.html">tool glossary</a> · <a href="../lessons/0000-table-of-contents.html">course map</a>.</p>
+</div>
+
+</section>
+
+<div class="footer">
+  <p>Authority: <code>man tmux</code> (matches your installed 3.7b) · <a href="https://github.com/tmux/tmux/wiki/Getting-Started">tmux wiki</a> · <a href="https://github.com/catppuccin/tmux">catppuccin/tmux</a></p>
+</div>
+
+</article>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 06 課 — CRT 終章：cool-retro-term</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 06 課 · 科幻終端機</p>
+<h1>CRT 終章：cool-retro-term</h1>
+<p class="badges">
+  <span class="badge">約 10 分鐘</span>
+  <span class="badge">換終端機</span>
+  <span class="badge">課程終章</span>
+</p>
+
+<p class="lead">你的駕駛艙住在 Ghostty 裡——現代、清晰、耐操。最後一招是電影圈最老的技術：<strong>換一塊玻璃</strong>。<a href="https://github.com/Swordfish90/cool-retro-term">cool-retro-term</a> 是一個模擬 1980 年代陰極射線管（CRT）螢幕的終端機——你的 tmux session 原封不動搬進去跑。不用重設主題、不用新設定：<em>層層獨立，所以換掉第 1 層就換掉一切。</em></p>
+
+<h2>為什麼可行：層是可以換的</h2>
+<p>這是全課最深的道理。tmux 不知道（也不在乎）哪個 emulator 在畫它；starship 不知道自己在哪台終端機；btop 只管印顏色。因為每一層只負責<em>渲染</em>上一層，你可以換掉 emulator、保住整個堆疊。電影 UI 設計師管這叫「螢幕是道具」——內容與玻璃無關。</p>
+
+<h2>安裝與啟動</h2>
+<pre class="term"><span class="ps1">$</span> brew install --cask cool-retro-term
+<span class="ps1">$</span> open -a cool-retro-term</pre>
+
+<p>在 cool-retro-term 裡面，掛上你現有的 session：</p>
+<pre class="term"><span class="ps1">$</span> tmux attach -t bridge</pre>
+
+<p>同一個駕駛艙——現在是掃描線下透著螢光綠、微微彎曲的玻璃。截圖。<strong>那就是你要的電影畫面。</strong></p>
+
+<h2>調效果</h2>
+<p>cool-retro-term 的設定（右鍵 → Settings，或滑桿面板）就是 CRT 模擬旋鈕：</p>
+<ul>
+  <li><strong>Scanlines 掃描線</strong> — 橫向暗線。調低「掃描線強度」= 更淡、更現代 HUD。</li>
+  <li><strong>Glow 光暈</strong> — 亮像素往外暈開的程度。高光暈＋綠字 = 經典螢光。</li>
+  <li><strong>Curvature 曲面</strong> — 螢幕邊緣彎曲。一點點就很夠。</li>
+  <li><strong>Flicker / jitter / noise</strong> — 擬真 vs. 舒適。日常使用：趨近於零。</li>
+  <li><strong>內建 preset</strong> — 試 <em>Vintage</em>、<em>Green Screen</em>、<em>Modern</em>（淡、其實能天天用）。</li>
+</ul>
+
+<p class="small muted">把某個調好的樣式設為預設：Settings → Load Preset、微調、再 Current Settings → Set as Default。你的 tmux／starship 主題一行都不用動。</p>
+
+<div class="callout">
+  <span class="label">道具 vs. 日常主力</span>
+  電影 UI 是設計來<em>給人看</em>的，不是給人用的——密、對比低、會閃。你的 Ghostty 設定（第 01–05 課）才是日常主力：色盤冷靜、久看不累。cool-retro-term 是道具：電影感最大、人因最小。你學到的技術是分清楚誰是誰——而且因為堆疊分層，兩個都能要。
+</div>
+
+<div class="task">
+  <span class="label">現在就做 — 那張關鍵截圖</span>
+  <ul class="checklist" id="task" data-store="st-tw-l06-task">
+    <li><span class="box"></span><span class="txt">安裝並打開 cool-retro-term。</span></li>
+    <li><span class="box"></span><span class="txt">在裡面 attach bridge session。</span></li>
+    <li><span class="box"></span><span class="txt">調掃描線、光暈、曲面；試 Green Screen 和 Modern preset。</span></li>
+    <li><span class="box"></span><span class="txt">截圖——本課程最終作品。</span></li>
+    <li><span class="box"></span><span class="txt">重建挑戰：殺掉 session，3 分鐘內憑記憶重組整個 bridge。</span></li>
+  </ul>
+</div>
+
+<h2>測驗一下</h2>
+
+<div class="quiz" data-right="答對了。tmux 跑在自己的 server 裡；任何 emulator（Ghostty、CRT、iTerm）都能掛上去畫。" data-wrong="不對喔——高亮才是重點：tmux 與 emulator 無關，所以直接換。">
+  <q>把 Ghostty 換成 cool-retro-term 之所以可行，是因為…</q>
+  <div class="options">
+    <button class="opt">tmux 與 emulator 無關</button>
+    <button class="opt">CRT 會重刷主題</button>
+    <button class="opt">starship 會偵測終端機</button>
+    <button class="opt">兩者都用 OpenGL</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="答對了。Ghostty 是耐讀的日常主力；cool-retro-term 是電影道具。" data-wrong="不對喔——看高亮：Ghostty = 日常，CRT = 道具。兩個工具，兩種任務。">
+  <q>哪個是日常主力？</q>
+  <div class="options">
+    <button class="opt">Ghostty，冷靜主題</button>
+    <button class="opt">CRT，火力全開</button>
+    <button class="opt">Warp，保持預設</button>
+    <button class="opt">Terminal.app 預設</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課首選資源</strong><br>
+    <a href="https://github.com/Swordfish90/cool-retro-term">GitHub 上的 cool-retro-term</a> — 每個 preset 的截圖與完整設定參考。
+  </div>
+
+  <p><strong>課程完賽。</strong>回到<a href="0000-table-of-contents.html">課程地圖</a>——隔週重跑 02 和 05 建立長期記憶。<a href="../reference-tw/tmux-cheatsheet.html">tmux 速查表</a>是你長期的夥伴。</p>
+
+  <p><strong>下一步去哪：</strong>r/unixporn（搜「catppuccin tmux」）找靈感；其他任何事找我——主題彎路、window-manager 課程、或把駕駛艙變成開機儀式。</p>
+
+  <p class="small muted"><strong>效果強到看不清楚？</strong>問我——有一個能日常用的 CRT preset，一則訊息帶你調完。</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

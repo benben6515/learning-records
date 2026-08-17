@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sci-Fi Terminal Panes — 把終端機變成科幻電影駕駛艙</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Sci-Fi Terminal Panes · 科幻終端機課程</p>
+<h1>Build the Bridge Console</h1>
+<p class="lead"><strong>把終端機變成科幻電影裡的駕駛艙。</strong>Six short lessons from plain terminal to a sci-fi movie bridge console — split panes, pastel HUD, live readouts, CRT glow — built with <strong>existing tools only</strong>: tmux + Catppuccin + starship + Ghostty + cool-retro-term. Config over scripts; understanding over copy-paste.六堂短課，從素人終端機到科幻電影駕駛艙——分割窗格、粉彩 HUD、即時讀數、CRT 螢光。只用現成工具，設定檔而不寫腳本。</p>
+
+<section class="card">
+<h3>Lessons · 課程</h3>
+
+<p style="margin:0.6rem 0 0.2rem"><strong>English</strong> · <a href="lessons/0000-table-of-contents.html">all lessons</a></p>
+<ul>
+  <li><a href="lessons/0001-zero-config-movie-look.html"><strong>Lesson 01 — Zero-Config Movie Look</strong></a> · install the TUI props, first movie screen. <span class="small muted">(~10 min)</span></li>
+  <li><a href="lessons/0002-tmux-panes-from-scratch.html"><strong>Lesson 02 — tmux Panes From Scratch</strong></a> · the grid, the prefix key, surviving sessions. <span class="small muted">(~15 min)</span></li>
+  <li><a href="lessons/0003-catppuccin-tmux-tpm.html"><strong>Lesson 03 — Catppuccin tmux + TPM</strong></a> · plugin manager, pastel HUD status bar. <span class="small muted">(~15 min)</span></li>
+  <li><a href="lessons/0004-starship-powerline-prompt.html"><strong>Lesson 04 — starship Powerline Prompt</strong></a> · the segmented prompt in one command. <span class="small muted">(~10 min)</span></li>
+  <li><a href="lessons/0005-ghostty-theme-bridge-assembly.html"><strong>Lesson 05 — Ghostty Theming + Bridge Assembly</strong></a> · complete the trilogy, assemble the console. <span class="small muted">(~15 min · payoff)</span></li>
+  <li><a href="lessons/0006-crt-finale-cool-retro-term.html"><strong>Lesson 06 — CRT Finale: cool-retro-term</strong></a> · the movie-prop screenshot. <span class="small muted">(~10 min · finale)</span></li>
+</ul>
+
+<p style="margin:1rem 0 0.2rem"><strong>繁體中文</strong> · <a href="lessons-tw/0000-table-of-contents.html">全部課程</a></p>
+<ul>
+  <li><a href="lessons-tw/0001-zero-config-movie-look.html"><strong>第 01 課 — 零設定的電影感</strong></a> · 安裝 TUI 道具，第一個電影畫面。 <span class="small muted">（約 10 分鐘）</span></li>
+  <li><a href="lessons-tw/0002-tmux-panes-from-scratch.html"><strong>第 02 課 — tmux 窗格從零開始</strong></a> · 窗格網格、prefix 鍵、不死的 session。 <span class="small muted">（約 15 分鐘）</span></li>
+  <li><a href="lessons-tw/0003-catppuccin-tmux-tpm.html"><strong>第 03 課 — Catppuccin tmux + TPM</strong></a> · 套件管理器、粉彩 HUD 狀態列。 <span class="small muted">（約 15 分鐘）</span></li>
+  <li><a href="lessons-tw/0004-starship-powerline-prompt.html"><strong>第 04 課 — starship Powerline 提示符</strong></a> · 一行指令搞定分段提示符。 <span class="small muted">（約 10 分鐘）</span></li>
+  <li><a href="lessons-tw/0005-ghostty-theme-bridge-assembly.html"><strong>第 05 課 — Ghostty 主題 + 駕駛艙組裝</strong></a> · 完成三部曲、組出完整駕駛艙。 <span class="small muted">（約 15 分鐘 · 收穫課）</span></li>
+  <li><a href="lessons-tw/0006-crt-finale-cool-retro-term.html"><strong>第 06 課 — CRT 終章：cool-retro-term</strong></a> · 電影道具級截圖。 <span class="small muted">（約 10 分鐘 · 終章）</span></li>
+</ul>
+</section>
+
+<section class="card">
+<h3>Reference sheets · 參考卡</h3>
+<ul>
+  <li><a href="reference/hack-toolbox.html"><strong>Hack Toolbox</strong></a> / <a href="reference-tw/hack-toolbox.html">繁中版</a> — every "looks like a movie" TUI, grouped by bridge role, all brew-installable.</li>
+  <li><a href="reference/tmux-cheatsheet.html"><strong>tmux Cheatsheet</strong></a> / <a href="reference-tw/tmux-cheatsheet.html">繁中版</a> — every key, command, and the complete course tmux.conf.</li>
+  <li><a href="reference/tool-glossary.html"><strong>Tool Glossary</strong></a> / <a href="reference-tw/tool-glossary.html">繁中版</a> — which tool plays which role, layer by layer.</li>
+</ul>
+</section>
+
+<section class="card">
+<h3>About · 關於</h3>
+<p style="margin-top:0">Mission: learn the <em>techniques</em> behind the movie-console look — the 4-layer stack (emulator → multiplexer → prompt → TUI props) — so it can be rebuilt on any machine with brew + config files. No shell scripts.<br>
+<span lang="zh-Hant">任務：學會電影駕駛艙外觀背後的<em>技術</em>——四層堆疊（終端機 → 多工器 → 提示符 → TUI 道具）——只用 brew 與設定檔，就能在任何機器上重建。不寫 shell script。</span></p>
+<ul>
+  <li><a href="MISSION.md">Mission / 任務</a></li>
+  <li><a href="RESOURCES.md">Resources / 資源</a></li>
+  <li><a href="GLOSSARY.md">Glossary / 詞彙表</a></li>
+</ul>
+</section>
+
+<div class="footer">
+  <p>Sci-Fi Terminal Panes workspace · part of <a href="../">Benben — Learning Records</a> · grounded in the <a href="https://github.com/benben6515/learning-records">public repo</a>.</p>
+</div>
+
+</article>
+</body>
+</html>

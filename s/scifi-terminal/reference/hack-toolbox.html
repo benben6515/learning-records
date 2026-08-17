@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hack Toolbox — every "looks like a movie" TUI</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference · Layer 4 expanded</p>
+<h1>The Hack Toolbox</h1>
+<p class="lead">Every terminal tool that makes a screen <em>look like a movie</em> — grouped by the role it plays on the bridge. All verified installable via Homebrew on this Mac (checked 2026-08). Quit key: <kbd>q</kbd> unless noted.</p>
+
+<section class="grid">
+
+<div class="card">
+<h3>Engine room — system monitors</h3>
+<table>
+  <tr><th>Tool</th><th>Shows</th><th>Command</th></tr>
+  <tr><td><strong>btop</strong> ★★★</td><td>CPU/GPU/mem/net graphs, the gold standard</td><td><code>btop</code></td></tr>
+  <tr><td><strong>htop</strong> ★★</td><td>Classic process tree, killer-green</td><td><code>htop</code></td></tr>
+  <tr><td><strong>bottom</strong> ★★★</td><td>Rust graphs, network history, widgets</td><td><code>btm</code></td></tr>
+  <tr><td><strong>glances</strong> ★★★</td><td>Everything at once — the densest wall</td><td><code>glances</code></td></tr>
+  <tr><td><strong>zenith</strong> ★★</td><td>Charts + zoomable history, GPU aware</td><td><code>zenith</code></td></tr>
+  <tr><td><strong>asitop</strong> ★★★</td><td>Apple Silicon power/efficiency cores — M-series native</td><td><code>asitop</code></td></tr>
+  <tr><td><strong>macmon</strong> ★★</td><td>Rust Apple Silicon monitor, compact HUD</td><td><code>macmon</code></td></tr>
+  <tr><td><strong>gtop</strong> ★★</td><td>Rounded gauges, pure aesthetics</td><td><code>gtop</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Ship registry — system info</h3>
+<table>
+  <tr><th>Tool</th><th>Shows</th><th>Command</th></tr>
+  <tr><td><strong>fastfetch</strong> ★★★</td><td>OS/CPU/GPU + logo panel (neofetch's successor)</td><td><code>fastfetch</code></td></tr>
+  <tr><td><strong>macchina</strong> ★★</td><td>Minimal, pastel, tiny — pairs with any theme</td><td><code>macchina</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Comms — network</h3>
+<table>
+  <tr><th>Tool</th><th>Shows</th><th>Command</th></tr>
+  <tr><td><strong>bandwhich</strong> ★★★</td><td>Per-process bandwidth, live — looks like tracing a hack</td><td><code>sudo bandwhich</code></td></tr>
+  <tr><td><strong>nethogs</strong> ★★</td><td>Per-process traffic, the classic</td><td><code>sudo nethogs</code></td></tr>
+  <tr><td><strong>iftop</strong> ★★</td><td>Connection matrix with scrolling bars</td><td><code>sudo iftop</code></td></tr>
+  <tr><td><strong>termshark</strong> ★★★</td><td>Wireshark's TUI — packet capture in the terminal</td><td><code>termshark</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>War room — git / docker / k8s</h3>
+<table>
+  <tr><th>Tool</th><th>Shows</th><th>Command</th></tr>
+  <tr><td><strong>lazygit</strong> ★★★</td><td>Git panes: status/log/diff/stash in one grid</td><td><code>lazygit</code></td></tr>
+  <tr><td><strong>gitui</strong> ★★</td><td>Rust git TUI, fast and clean</td><td><code>gitui</code></td></tr>
+  <tr><td><strong>tig</strong> ★★</td><td>The original git log browser</td><td><code>tig</code></td></tr>
+  <tr><td><strong>lazydocker</strong> ★★★</td><td>Docker containers/stats/logs — gorgeous</td><td><code>lazydocker</code></td></tr>
+  <tr><td><strong>k9s</strong> ★★★</td><td>Kubernetes bridge console, the most sci-fi TUI alive</td><td><code>k9s</code></td></tr>
+  <tr><td><strong>ctop</strong> ★★</td><td>Container top, one metric wall</td><td><code>ctop</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Archive — disk &amp; files</h3>
+<table>
+  <tr><th>Tool</th><th>Shows</th><th>Command</th></tr>
+  <tr><td><strong>gdu</strong> ★★★</td><td>Disk usage analyzer, fastest scan, rainbow bars</td><td><code>gdu</code></td></tr>
+  <tr><td><strong>dust</strong> ★★</td><td>du with treemap-like depth bars</td><td><code>dust</code></td></tr>
+  <tr><td><strong>duf</strong> ★★</td><td>df as a pretty pastel table</td><td><code>duf</code></td></tr>
+  <tr><td><strong>yazi</strong> ★★★</td><td>File manager, modern, image previews</td><td><code>yazi</code></td></tr>
+  <tr><td><strong>ranger / nnn / lf / mc</strong></td><td>File manager dynasty — pick one religion</td><td><code>ranger</code> etc.</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Logs &amp; clocks</h3>
+<table>
+  <tr><th>Tool</th><th>Shows</th><th>Command</th></tr>
+  <tr><td><strong>lnav</strong> ★★★</td><td>Log navigator — tail + filter + highlight any log</td><td><code>lnav ~/path/log</code></td></tr>
+  <tr><td><strong>tty-clock</strong> ★★</td><td>Big digital clock, center of the wall</td><td><code>tty-clock -c -C 6</code></td></tr>
+  <tr><td><strong>mapscii</strong> ★★</td><td>Zoomable ASCII world map</td><td><code>mapscii</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Mood — pure cinema</h3>
+<table>
+  <tr><th>Tool</th><th>Effect</th><th>Command</th></tr>
+  <tr><td><strong>cmatrix</strong> ★★★</td><td>The falling green code</td><td><code>cmatrix</code></td></tr>
+  <tr><td><strong>genact</strong> ★★★</td><td>Fake busy-work: cargo, crypto, BIOS… full fake hacker</td><td><code>genact</code> (<kbd>Ctrl-c</kbd>)</td></tr>
+  <tr><td><strong>no-more-secrets</strong> ★★★</td><td><em>Sneakers</em>-movie decrypt cascade</td><td><code>ls | nms</code></td></tr>
+  <tr><td><strong>pipes-sh</strong> ★★</td><td>3D pipes screensaver in the terminal</td><td><code>pipes-sh</code> (<kbd>Ctrl-c</kbd>)</td></tr>
+  <tr><td><strong>asciiquarium</strong> ★★</td><td>ASCII aquarium — fish, castle, duck</td><td><code>asciiquarium</code> (<kbd>q</kbd>)</td></tr>
+  <tr><td><strong>cbonsai</strong> ★★</td><td>Growing procedural bonsai</td><td><code>cbonsai -L 30</code></td></tr>
+  <tr><td><strong>lolcat / figlet / toilet</strong></td><td>Rainbow pipes / ASCII banners</td><td><code>figlet BRIDGE | lolcat</code></td></tr>
+  <tr><td><strong>sl</strong></td><td>The locomotive for your typos</td><td><code>sl</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>The starter kit — one command</h3>
+<p>The shortest path to a full movie wall (picked for density + variety on macOS):</p>
+<pre class="term" style="margin-bottom:0"><span class="ps1">$</span> brew install btop glances asitop fastfetch bandwhich termshark \
+    lazygit lazydocker gdu yazi lnav tty-clock mapscii cmatrix \
+    cbonsai genact no-more-secrets pipes-sh asciiquarium figlet lolcat</pre>
+</div>
+
+</section>
+
+<div class="footer">
+  <p>★ = hack-theatre value. All formula names verified against Homebrew 2026-08. <a href="tmux-cheatsheet.html">tmux cheatsheet</a> · <a href="tool-glossary.html">tool glossary</a> · <a href="../lessons/0000-table-of-contents.html">course map</a></p>
+</div>
+
+</article>
+</body>
+</html>

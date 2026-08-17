@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 03 — Catppuccin tmux + TPM</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 03 · Sci-Fi Terminal Panes</p>
+<h1>Catppuccin tmux + TPM</h1>
+<p class="badges">
+  <span class="badge">~15 min</span>
+  <span class="badge">Layer 2</span>
+  <span class="badge">Plugin + theme</span>
+</p>
+
+<p class="lead">The green bar is tmux's 1990s birthmark. Today you remove it with <strong>the standard pattern for theming any tool</strong>: a package-managed theme applied through config. Learn the pattern once here, and you can theme fish, neovim, btop, or a fresh Mac the same way.</p>
+
+<h2>Step 0 — verify your Nerd Font (30 seconds)</h2>
+<p>Themed status bars and prompts are full of icons — powerline arrows, OS logos, module glyphs. Those come from a <strong>Nerd Font</strong>. Your Ghostty already runs <code>0xProto Nerd Font Mono</code>, so this should just work. Verify:</p>
+
+<pre class="term"><span class="ps1">$</span> printf '\ue0b0 \uf308 \uf418 \uf425\n'</pre>
+
+<p>If you see an arrow , the Apple logo, and two icons — you're set. If you see boxes or question marks, tell me and we'll fix the font before going on.</p>
+
+<h2>Step 1 — install TPM (the plugin manager)</h2>
+<p><strong>TPM</strong> (Tmux Plugin Manager) is tmux's package manager: you declare plugins in <code>tmux.conf</code>, it clones them from GitHub on demand. One-time setup:</p>
+
+<pre class="term"><span class="ps1">$</span> git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm</pre>
+
+<h2>Step 2 — declare the theme</h2>
+<p>Add these lines to <code>~/.config/tmux/tmux.conf</code> (keep your Lesson-02 lines; TPM's runner goes <strong>last</strong>):</p>
+
+<pre class="term"><span class="cmt"># ~/.config/tmux/tmux.conf — continued</span>
+set -g @plugin 'catppuccin/tmux'
+set -g @catppuccin_flavour 'mocha'
+
+run '~/.config/tmux/plugins/tpm/tpm'   <span class="cmt"># must be the LAST line</span></pre>
+
+<h2>Step 3 — install and reload</h2>
+<p>Reload tmux (<kbd>Ctrl-b</kbd> <kbd>:</kbd> then <code>source-file ~/.config/tmux/tmux.conf</code>), then trigger the install:</p>
+
+<pre class="term"><span class="ps1">$</span> <span class="cmt"># inside tmux, press:</span>
+Ctrl-b  I      <span class="cmt"># capital I = "Install" — TPM clones catppuccin/tmux</span></pre>
+
+<p>A status message confirms the install. A moment later your bar is Catppuccin <strong>mocha</strong>: dark background, pastel module icons — session name, window list, date-time. That's the pastel HUD.</p>
+
+<div class="callout">
+  <span class="label">Why "mocha"? Why pastel?</span>
+  Catppuccin comes in four <strong>flavours</strong>: latte (light), frappé, macchiato, mocha (darkest). Mocha on a dark terminal gives quiet backgrounds with colorful accents — the "calm spaceship" palette, readable for hours. Sci-fi UIs (and Catppuccin's designers) know: <em>low saturation background, high signal accents</em>. Browse all four at <a href="https://catppuccin.com">catppuccin.com</a> and switch flavours later by changing one word.
+</div>
+
+<h2>Optional HUD trim</h2>
+<p>Two more config lines people love (add above the TPM runner):</p>
+<pre class="term">set -g @catppuccin_window_tabs_style "right"
+set -g @catppuccin_date_time_text "%H:%M"</pre>
+
+<p>Also try the built-in <em>pill</em> modules, e.g. <code>set -g @catppuccin_status_module_text 'music'</code> — each is one declarative line. The full menu is in the plugin README.</p>
+
+<div class="task">
+  <span class="label">Do it now — kill the green bar</span>
+  <ul class="checklist" id="task" data-store="st-l03-task">
+    <li><span class="box"></span><span class="txt">Run the printf glyph check — confirm icons render in Ghostty.</span></li>
+    <li><span class="box"></span><span class="txt">Clone TPM to ~/.config/tmux/plugins/tpm.</span></li>
+    <li><span class="box"></span><span class="txt">Add the catppuccin plugin + flavour lines, TPM runner last.</span></li>
+    <li><span class="box"></span><span class="txt">Reload config, press Ctrl-b I, watch the bar transform.</span></li>
+    <li><span class="box"></span><span class="txt">Change the flavour to macchiato, reload, compare. Pick one.</span></li>
+  </ul>
+</div>
+
+<h2>Check your understanding</h2>
+
+<div class="quiz" data-right="Correct. TPM's runner must be the last line of tmux.conf, or plugins load out of order." data-wrong="Not quite — the highlighted answer wins: the TPM runner goes last so plugins initialize in order.">
+  <q>The TPM runner line belongs…</q>
+  <div class="options">
+    <button class="opt">At the file end</button>
+    <button class="opt">At the file top</button>
+    <button class="opt">In a plugin</button>
+    <button class="opt">Anywhere whatsoever</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. prefix + I is TPM's install keybinding — capital I for Install." data-wrong="Not quite — see the highlight: capital I is TPM's install trigger.">
+  <q>After editing tmux.conf, new plugins install via…</q>
+  <div class="options">
+    <button class="opt">Prefix then capital I</button>
+    <button class="opt">Prefix then lowercase i</button>
+    <button class="opt">Prefix then capital U</button>
+    <button class="opt">Restarting the terminal app</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://github.com/catppuccin/tmux">catppuccin/tmux on GitHub</a> — the README documents every option and module we used, plus the full flavour list. Your source of truth from here on.
+  </div>
+
+  <p><strong>Pattern learned:</strong> <em>package-managed theme + declarative config</em> — the same move works for your prompt (next lesson: starship preset, one command) and your emulator (Lesson 05).</p>
+
+  <p><strong>Next up — Lesson 04:</strong> <em>starship Powerline</em> — the segmented prompt. One command swaps your entire prompt for a Catppuccin powerline; you'll back up your existing config first, like a professional.</p>
+
+  <p class="small muted"><strong>Icons showing as boxes? Bar didn't change?</strong> Ask me — font and plugin issues are 90% of theming bugs and both take a minute to fix.</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 02 課 — tmux 窗格從零開始</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 02 課 · 科幻終端機</p>
+<h1>tmux 窗格從零開始</h1>
+<p class="badges">
+  <span class="badge">約 15 分鐘</span>
+  <span class="badge">第 2 層</span>
+  <span class="badge">第一份設定</span>
+</p>
+
+<p class="lead">四個分頁只是預告。電影是<strong>全部同時</strong>出現，排成網格。把一個終端機變成那個網格的工具叫 <strong>tmux</strong>——已裝在你機器上（3.7b），而且完全沒設定過。這其實很幸運：你會學得乾乾淨淨，沒有舊習慣。</p>
+
+<h2>階層：server → session → window → pane</h2>
+<p>tmux 是一個背景 <strong>server</strong>，你把 client 掛上去。Server 裡住著 <strong>session</strong>（有名字的工作區，例如 <code>bridge</code>）；session 裡有 <strong>window</strong>（全螢幕分頁）；每個 window 可切成多個 <strong>pane</strong>——你的科幻面板。魔力在於：<em>session 不會跟著終端機關閉而消失</em>。關掉 Ghostty、重開、重新 attach——你的駕駛艙還在跑。</p>
+
+<div class="callout">
+  <span class="label">Prefix 鍵</span>
+  tmux 指令是兩段式：<strong><kbd>Ctrl-b</kbd></strong>（兩鍵一起按住再放開）<em>然後</em>按一個鍵。<kbd>Ctrl-b</kbd> 的意思是「接下來我是在跟 tmux 講話，不是跟程式」。前一天會覺得怪，之後變肌肉記憶。
+</div>
+
+<h2>蓋網格</h2>
+<pre class="term"><span class="ps1">$</span> tmux new -s bridge        <span class="cmt"># 建立名為 "bridge" 的 session</span></pre>
+
+<p>開始分割——記住：先 prefix，再按鍵：</p>
+<ul>
+  <li><kbd>Ctrl-b</kbd> <kbd>%</kbd> — 分<strong>左右</strong>（垂直分隔線）</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>"</kbd> — 分<strong>上下</strong>（水平分隔線）</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> — 在窗格間移動</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>z</kbd> — 把一個窗格放大成全螢幕（toggle——專注時超好用）</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>x</kbd> — 關掉目前窗格（會問 y/n）</li>
+</ul>
+
+<p>分割三、四次，每格跑一個 TUI（<code>btop</code>、<code>fastfetch</code>、<code>cmatrix</code>、<code>cbonsai -L 30</code>）——<strong>這就是駕駛艙</strong>，而且完全沒寫任何設定。用 <kbd>Ctrl-b</kbd> <kbd>d</kbd>（detach）離開晃一下，再回來：</p>
+
+<pre class="term"><span class="ps1">$</span> tmux attach -t bridge      <span class="cmt"># 你的駕駛艙還活著</span></pre>
+
+<h2>第一份設定 — 三行，零腳本</h2>
+<p>tmux 會讀 <code>~/.config/tmux/tmux.conf</code>。建立檔案，寫這三行：</p>
+
+<pre class="term"><span class="cmt"># ~/.config/tmux/tmux.conf</span>
+set -g mouse on                <span class="cmt"># 可點擊窗格、拖分隔線、捲動</span>
+set -g status-position top     <span class="cmt"># 狀態列移到頂部，像 HUD</span>
+set -g default-terminal "tmux-256color"</pre>
+
+<p class="small muted">免重啟重載：<kbd>Ctrl-b</kbd> <kbd>:</kbd>，輸入 <code>source-file ~/.config/tmux/tmux.conf</code>，按 <kbd>Enter</kbd>。（<code>set -g</code> 是「全域設定」；<code>tmux-256color</code> 告訴 tmux 裡的程式可以放心用彩色。）</p>
+
+<div class="callout">
+  <span class="label">設定檔 ≠ 腳本</span>
+  Shell script 是你寫的<em>程式</em>——有邏輯。設定檔是工具讀的<em>設定清單</em>。你的任務禁腳本、擁抱設定：<code>tmux.conf</code> 是宣告式的——每一行都是「把選項 X 設成 Y」。這就是為什麼電影感不需要寫程式。
+</div>
+
+<h2>為什麼預設狀態列那麼醜？</h2>
+<p>那條綠色底欄是 tmux 的 1990 年代出廠妝。它完全可以換主題——顏色、內容、模組——但手刻很累。下一課我們用套件管理器裝 <strong>Catppuccin</strong> 主題，狀態列一秒變粉彩 HUD。記住這個模式：<em>主題是「用套件消費的設定」，不是你寫的程式。</em></p>
+
+<div class="task">
+  <span class="label">現在就做 — 蓋兩次</span>
+  <p style="margin:0 0 0.4rem">憑記憶蓋（而非複製貼上）才會留下來。第一輪照著課文；第二輪憑記憶：</p>
+  <ul class="checklist" id="task" data-store="st-tw-l02-task">
+    <li><span class="box"></span><span class="txt">建立 session "bridge"，切成 4 格，每格一個 TUI。</span></li>
+    <li><span class="box"></span><span class="txt">用 Ctrl-b z 放大一格，再切回來。</span></li>
+    <li><span class="box"></span><span class="txt">Ctrl-b d 脫離，關掉 Ghostty 分頁，再 tmux attach -t bridge 回來。</span></li>
+    <li><span class="box"></span><span class="txt">寫好 3 行 tmux.conf，現場重載。</span></li>
+    <li><span class="box"></span><span class="txt">全部殺掉，憑記憶重建整個網格。</span></li>
+  </ul>
+</div>
+
+<h2>測驗一下</h2>
+
+<div class="quiz" data-right="答對了。% 分左右；&quot; 分上下。" data-wrong="不對喔——高亮是正解：% = 左右，&quot; = 上下。">
+  <q>哪個按鍵把視窗分左右？</q>
+  <div class="options">
+    <button class="opt">Prefix 再 %</button>
+    <button class="opt">Prefix 再 &quot;</button>
+    <button class="opt">Prefix 再 z</button>
+    <button class="opt">Prefix 再 x</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="答對了。Session 活在 tmux server 裡，終端機關了它照跑。" data-wrong="不對喔——看高亮。tmux server 讓 session 活過終端機關閉；重新 attach 就好。">
+  <q>你 detach 並退出 Ghostty。你的 session…</q>
+  <div class="options">
+    <button class="opt">在 server 繼續跑</button>
+    <button class="opt">跟著 client 死了</button>
+    <button class="opt">暫停到重新開機</button>
+    <button class="opt">存檔後乾淨關閉</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課首選資源</strong><br>
+    <a href="https://github.com/tmux/tmux/wiki/Getting-Started">tmux Wiki — Getting Started</a> — 官方入門，本週讀一次，講的就是我們做的這些。任何鍵位疑問：<code>man tmux</code> 最權威。
+  </div>
+
+  <p><strong>放在手邊：</strong><a href="../reference-tw/tmux-cheatsheet.html">tmux 速查表</a>——本課所有按鍵加上調整大小／交換，一頁列印。</p>
+
+  <p><strong>下一課 — 第 03 課：</strong><em>Catppuccin tmux + TPM</em>——永遠告別綠色狀態列。套件管理器、粉彩狀態列、有主題的窗格邊框。還要驗證你的 Nerd Font 真的能渲染圖示。</p>
+
+  <p class="small muted"><strong>分割方向分錯了？Prefix : 沒反應？</strong>問我——我是你的老師。描述你看到的，我們一起修。</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

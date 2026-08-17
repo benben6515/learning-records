@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 01 — The Zero-Config Movie Look</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 01 · Sci-Fi Terminal Panes</p>
+<h1>The Zero-Config Movie Look</h1>
+<p class="badges">
+  <span class="badge">~10 min</span>
+  <span class="badge">4 commands</span>
+  <span class="badge">No config yet</span>
+</p>
+
+<p class="lead">Every sci-fi console — from <em>Alien</em>'s Nostromo to the <em>Enterprise</em> bridge — is really the same picture: <strong>a grid of live system readouts</strong>. Before we configure anything, you'll get that picture with four commands and zero configuration. This is your mission's first rule in action: <em>existing tools first, no shell scripts.</em></p>
+
+<h2>The 4-layer stack (memorize this)</h2>
+<p>Every "movie terminal" on the internet is a stack of four independent tools. Each layer owns different visual effects — this is the mental model for the whole course:</p>
+
+<div class="callout">
+  <span class="label">Who owns what</span>
+  <ul style="margin-bottom:0">
+    <li><strong>Layer 1 — Emulator</strong> (Ghostty): fonts, colors, transparency, blur</li>
+    <li><strong>Layer 2 — Multiplexer</strong> (tmux): the pane grid, borders, status bar</li>
+    <li><strong>Layer 3 — Prompt</strong> (starship): the segmented command line</li>
+    <li><strong>Layer 4 — TUI props</strong> (btop, fastfetch…): the moving readouts</li>
+  </ul>
+</div>
+
+<p>Today we only touch <strong>Layer 4</strong>. You already have btop; we'll add its two co-stars and open them side by side in plain Ghostty tabs. Themed panes arrive in Lessons 02–05.</p>
+
+<h2>Install the props</h2>
+<p>One command, three classic tools (Homebrew does the work — verified available):</p>
+
+<pre class="term"><span class="ps1">$</span> brew install fastfetch cmatrix cbonsai</pre>
+
+<p>What you just got:</p>
+<ul>
+  <li><strong>fastfetch</strong> — the system-info panel: OS, CPU, GPU, memory, plus a logo. The "ship registry" readout.</li>
+  <li><strong>cmatrix</strong> — falling green glyphs. Pure cinema, zero purpose. The mood.</li>
+  <li><strong>cbonsai</strong> — a growing procedural bonsai tree in ASCII. The "bio-dome" panel.</li>
+  <li><strong>btop</strong> — already on your machine: live CPU / memory / network graphs. The "engine room".</li>
+</ul>
+
+<p class="small muted">These are all <strong>TUI</strong>s — Terminal User Interfaces: full-screen interactive apps drawn inside the terminal, not scripts you wrote. See the <a href="../reference/tool-glossary.html">tool glossary</a> for the full crew.</p>
+
+<h2>Your first movie screen</h2>
+<p>In Ghostty, open four tabs (<kbd>⌘T</kbd>) and run one command per tab:</p>
+
+<pre class="term"><span class="ps1">$</span> btop
+<span class="ps1">$</span> fastfetch
+<span class="ps1">$</span> cmatrix
+<span class="ps1">$</span> cbonsai -L 30</pre>
+
+<p class="small muted">Quit each with <kbd>q</kbd> (btop, cmatrix) or <kbd>Ctrl-c</kbd>. In btop, <kbd>1</kbd>–<kbd>9</kbd> switch UI layouts — find one you like.</p>
+
+<div class="callout">
+  <span class="label">Why this already looks sci-fi</span>
+  Movie consoles are designed around <strong>information density + motion + asymmetry</strong>: different-shaped panels, each busy with live data. Four tabs of TUIs accidentally have all three. What they lack is <em>being on screen at once</em> — that's what tmux panes fix in Lesson 02.
+</div>
+
+<div class="task">
+  <span class="label">Do it now — your first win</span>
+  <p style="margin:0 0 0.4rem">Build the four-tab movie screen, then flip through the tabs like a bridge officer. Tick as you go (progress saved on this device):</p>
+  <ul class="checklist" id="task" data-store="st-l01-task">
+    <li><span class="box"></span><span class="txt">Run the brew install command and wait for it to finish.</span></li>
+    <li><span class="box"></span><span class="txt">Open four Ghostty tabs and launch btop, fastfetch, cmatrix, cbonsai.</span></li>
+    <li><span class="box"></span><span class="txt">In btop, cycle layouts with 1–9 and pick a favorite.</span></li>
+    <li><span class="box"></span><span class="txt">Flip through all four tabs in sequence — enjoy it.</span></li>
+  </ul>
+  <p class="small" style="margin:0.8rem 0 0">Then answer the two questions below to lock the model in.</p>
+</div>
+
+<h2>Check your understanding</h2>
+
+<div class="quiz" data-right="Correct. The emulator owns window-level visuals: fonts, colors, transparency, blur." data-wrong="Not quite — see the highlighted answer. The emulator (Ghostty) owns fonts, colors, transparency, blur.">
+  <q>Which layer owns transparency and blur?</q>
+  <div class="options">
+    <button class="opt">The emulator</button>
+    <button class="opt">The multiplexer</button>
+    <button class="opt">The shell prompt</button>
+    <button class="opt">The TUI app</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. A TUI is a full-screen interactive app; a CLI command prints and exits." data-wrong="Not quite — the highlighted answer is it. btop is interactive and takes over the whole screen: a TUI.">
+  <q>btop is best described as a…</q>
+  <div class="options">
+    <button class="opt">Terminal user interface</button>
+    <button class="opt">Command printing output</button>
+    <button class="opt">Script running once</button>
+    <button class="opt">Window manager feature</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://github.com/fastfetch-cli/fastfetch">fastfetch on GitHub</a> — skim the README screenshots; you'll recognize every panel. Then <a href="https://github.com/aristocratos/btop">btop on GitHub</a> for the engine room.
+  </div>
+
+  <p><strong>Next up — Lesson 02:</strong> <em>tmux panes from scratch</em> — put all four readouts on one screen, learn the prefix key, and write the first three lines of your <code>tmux.conf</code> (config, not scripts).</p>
+
+  <p><strong>Course map:</strong> <a href="0000-table-of-contents.html">all lessons</a> · <a href="../reference/tool-glossary.html">tool glossary</a> · <a href="../reference/tmux-cheatsheet.html">tmux cheatsheet</a> (grown in Lesson 02)</p>
+
+  <p class="small muted"><strong>A tool failed to install? A glyph looks wrong?</strong> Ask me — I'm your teacher, and debugging is part of the technique. Just reply in our chat.</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

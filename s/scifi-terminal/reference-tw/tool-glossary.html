@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工具詞彙表 — 科幻終端機</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 全部層</p>
+<h1>工具詞彙表</h1>
+<p class="lead">駕駛艙的完整班底：哪個工具演哪個角色、住在哪一層、需要的唯一指令。概念定義在工作區的 <a href="../GLOSSARY.md">GLOSSARY.md</a>。</p>
+
+<section class="grid">
+
+<div class="card">
+<h3>第 1 層 — Emulator 終端機（玻璃）</h3>
+<table>
+  <tr><th>工具</th><th>角色</th><th>指令</th></tr>
+  <tr><td><strong>Ghostty</strong></td><td>日常主力。字體、色盤、透明、模糊</td><td>設定檔 <code>theme = catppuccin-mocha</code>；⌘⇧, 重載</td></tr>
+  <tr><td><strong>cool-retro-term</strong></td><td>道具。CRT 掃描線、螢光、曲面</td><td><code>brew install --cask cool-retro-term</code>；<code>open -a cool-retro-term</code></td></tr>
+  <tr><td>Warp</td><td>這台 Mac 有裝；不屬於本堆疊</td><td>—</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>第 2 層 — Multiplexer 多工器（窗格）</h3>
+<table>
+  <tr><th>工具</th><th>角色</th><th>指令</th></tr>
+  <tr><td><strong>tmux 3.7b</strong></td><td>窗格網格、邊框、狀態列；不死的 session</td><td><code>tmux new -s bridge</code> → <a href="tmux-cheatsheet.html">速查表</a></td></tr>
+  <tr><td><strong>TPM</strong></td><td>tmux 的套件管理器</td><td><code>git clone …/tpm ~/.config/tmux/plugins/tpm</code>；Prefix <kbd>I</kbd> 安裝</td></tr>
+  <tr><td><strong>catppuccin/tmux</strong></td><td>粉彩 HUD 狀態列主題</td><td><code>set -g @plugin 'catppuccin/tmux'</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>第 3 層 — Prompt 提示符（命令列）</h3>
+<table>
+  <tr><th>工具</th><th>角色</th><th>指令</th></tr>
+  <tr><td><strong>starship</strong></td><td>快速、可主題化的提示符引擎</td><td><code>starship preset catppuccin-powerline -o ~/.config/starship.toml</code></td></tr>
+  <tr><td>Nerd Font（0xProto）</td><td>供應 powerline 箭頭與圖示</td><td>驗證：<code>printf '\ue0b0 \uf308\n'</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>第 4 層 — TUI 道具（儀表）</h3>
+<table>
+  <tr><th>工具</th><th>艙位角色</th><th>指令</th></tr>
+  <tr><td><strong>btop</strong></td><td>輪機室——CPU/GPU/記憶體/網路圖表</td><td><code>btop</code>；<kbd>1</kbd>–<kbd>9</kbd> 版面、<kbd>q</kbd> 離開</td></tr>
+  <tr><td><strong>fastfetch</strong></td><td>船籍資料——OS/CPU/GPU + logo 面板</td><td><code>fastfetch</code></td></tr>
+  <tr><td><strong>cmatrix</strong></td><td>氣氛——落下的綠色字符</td><td><code>cmatrix</code>；<kbd>q</kbd> 離開</td></tr>
+  <tr><td><strong>cbonsai</strong></td><td>生態艙——程式生成 ASCII 盆栽</td><td><code>cbonsai -L 30</code>；<kbd>Ctrl-c</kbd> 離開</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>駕駛艙標準布局</h3>
+<pre class="term" style="margin-bottom:0"><span class="cmt"># 比例是口味；結構是標準</span>
+┌─────────────┬──────────────┐
+│             │  fastfetch   │
+│    btop     ├──────────────┤
+│  (engine    │   cmatrix    │
+│    room)    │  (+cbonsai)  │
+└─────────────┴──────────────┘</pre>
+</div>
+
+<div class="card">
+<h3>色盤 — Catppuccin flavours</h3>
+<table>
+  <tr><th>Flavour</th><th>性格</th></tr>
+  <tr><td>latte</td><td>亮色——日班艦橋</td></tr>
+  <tr><td>frappé</td><td>柔深</td></tr>
+  <tr><td>macchiato</td><td>中深</td></tr>
+  <tr><td><strong>mocha</strong></td><td>最深——課程預設</td></tr>
+</table>
+<p style="margin-bottom:0">每層同色盤 = 一套設計系統。切換：tmux 改一個字、preset 一行指令、theme 一行。</p>
+</div>
+
+</section>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0000-table-of-contents.html">課程地圖</a> · <a href="../RESOURCES.md">完整資源清單</a></p>
+</div>
+
+</article>
+</body>
+</html>

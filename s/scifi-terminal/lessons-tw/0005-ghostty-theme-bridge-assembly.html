@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 05 課 — Ghostty 主題 + 駕駛艙組裝</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 05 課 · 科幻終端機</p>
+<h1>Ghostty 主題 + 駕駛艙組裝</h1>
+<p class="badges">
+  <span class="badge">約 15 分鐘</span>
+  <span class="badge">第 1 層</span>
+  <span class="badge">收穫課</span>
+</p>
+
+<p class="lead">剩最後一層：終端機本身。你的 Ghostty 已經半科幻——opacity 0.66、blur 20、Nerd Font。只缺<em>對的色盤</em>。然後我們把一切組成本課程的成品：<strong>駕駛艙</strong>。</p>
+
+<h2>步驟 1 — 主題那一行</h2>
+<p>Ghostty 內建 Catppuccin。先看看有哪些：</p>
+
+<pre class="term"><span class="ps1">$</span> /Applications/Ghostty.app/Contents/MacOS/ghostty +list-themes | grep -i catppuccin</pre>
+
+<p>四種 flavour 都會出現（還有 <code>catppuccin-latte</code> 等變體）。編輯 <code>~/.config/ghostty/config</code>——改一行：</p>
+
+<pre class="term"><span class="cmt"># ~/.config/ghostty/config</span>
+theme = catppuccin-mocha</pre>
+
+<p>在 Ghostty 按 <kbd>⌘⇧,</kbd> 即時重載（所有視窗立刻換裝——免重啟）。tmux 狀態列、提示符、現在連終端機本體都同一套色盤。<strong>三部曲完成。</strong></p>
+
+<p class="small muted">保留現有的 <code>background-opacity</code>、<code>background-blur</code> 和字體行——它們本來就對。你只改設定的一個字，不是重寫。</p>
+
+<h2>步驟 2 — 組裝駕駛艙</h2>
+<p>把學過的全部依序用上。從新 shell 開始：</p>
+
+<pre class="term"><span class="ps1">$</span> tmux new -s bridge
+<span class="cmt"># 分割：Ctrl-b %   (左右)      Ctrl-b "   (上下)</span>
+<span class="cmt"># 調整：Ctrl-b Ctrl-← / Ctrl-→ / Ctrl-↑ / Ctrl-↓  (Ctrl 全程按住)</span></pre>
+
+<p>一個好用的布局——先切大概，再用滑鼠微調：</p>
+<ul>
+  <li><strong>左側，高</strong> — <code>btop</code>（輪機室）</li>
+  <li><strong>右側，上</strong> — <code>fastfetch</code>（船籍資料）</li>
+  <li><strong>右側，下</strong> — <code>cmatrix</code>（氣氛）＋有第四格就旁邊放 <code>cbonsai -L 30</code></li>
+</ul>
+
+<div class="callout">
+  <span class="label">沒人教的調整大小技巧</span>
+  <kbd>Ctrl-b</kbd> 之後<strong>按住 <kbd>Ctrl</kbd></strong>再敲方向鍵——每敲一下窗格就往那個方向長。加 <kbd>Option</kbd> 一次跳 5 倍：<kbd>Ctrl-b</kbd> <kbd>Ctrl</kbd>+<kbd>Option</kbd>+<kbd>→</kbd>。第 02 課開了滑鼠後拖分隔線也行——但鍵盤調整才是艦橋軍官的動作。
+</div>
+
+<h2>步驟 3 — 跟它一起生活</h2>
+<p>Detach（<kbd>Ctrl-b</kbd> <kbd>d</kbd>）讓 session 繼續跑。明天開工前 <code>tmux attach -t bridge</code> 回來。一個可以離開又回來的儀表，才是 session 的全部意義——電影感是更好工作流的副作用。</p>
+
+<div class="task">
+  <span class="label">現在就做 — 組裝</span>
+  <ul class="checklist" id="task" data-store="st-tw-l05-task">
+    <li><span class="box"></span><span class="txt">列出 Ghostty 主題；設 theme = catppuccin-mocha；⌘⇧, 重載。</span></li>
+    <li><span class="box"></span><span class="txt">組橋：左 btop、右上 fastfetch、右下 cmatrix。</span></li>
+    <li><span class="box"></span><span class="txt">用 Ctrl-b + Ctrl-方向鍵調到比例順眼。</span></li>
+    <li><span class="box"></span><span class="txt">截圖。這是整門課的 before/after。</span></li>
+    <li><span class="box"></span><span class="txt">脫離、關視窗、明天重新 attach——驗證續命。</span></li>
+  </ul>
+</div>
+
+<h2>測驗一下</h2>
+
+<div class="quiz" data-right="答對了。⌘⇧,（Cmd-Shift-逗號）把設定重載進執行中的視窗。" data-wrong="不對喔——高亮是 ⌘⇧,，即時重載設定。">
+  <q>不重啟 Ghostty 重載設定的方法…</q>
+  <div class="options">
+    <button class="opt">在 Ghostty 按 ⌘⇧,</button>
+    <button class="opt">在 Ghostty 按 ⌘R</button>
+    <button class="opt">跑 ghostty --reload</button>
+    <button class="opt">重開 Mac</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="答對了。Emulator 層管字體、色盤、透明、模糊——視窗層級的視覺。" data-wrong="不對喔——看高亮：那些是 emulator 層的效果，Ghostty 的管區。">
+  <q>透明與模糊屬於哪一層？</q>
+  <div class="options">
+    <button class="opt">第 1 層：emulator</button>
+    <button class="opt">第 2 層：multiplexer</button>
+    <button class="opt">第 3 層：prompt</button>
+    <button class="opt">第 4 層：TUI 道具</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>本課首選資源</strong><br>
+    <a href="https://ghostty.org/docs/config">Ghostty 設定文件</a> — <code>theme</code>、<code>background-opacity</code>、<code>background-blur</code> 與你碰過的每個選項的權威參考。
+  </div>
+
+  <p><strong>全堆疊參考：</strong><a href="../reference-tw/tmux-cheatsheet.html">tmux 速查表</a> · <a href="../reference-tw/tool-glossary.html">工具詞彙表</a>——課程所有指令與概念都在這兩頁之間。</p>
+
+  <p><strong>下一課 — 第 06 課（終章）：</strong><em>cool-retro-term</em>——把成品駕駛艙倒進 CRT 模擬器：掃描線、螢光、曲面玻璃。這門任務一開始想要的那張電影道具截圖。</p>
+
+  <p class="small muted"><strong>布局一直跑掉？窗格太小？</strong>問我——每種布局疑難雜症 tmux 都有答案，而且我知道是哪個。</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

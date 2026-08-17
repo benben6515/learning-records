@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 02 — tmux Panes From Scratch</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 02 · Sci-Fi Terminal Panes</p>
+<h1>tmux Panes From Scratch</h1>
+<p class="badges">
+  <span class="badge">~15 min</span>
+  <span class="badge">Layer 2</span>
+  <span class="badge">First config</span>
+</p>
+
+<p class="lead">Four tabs was a teaser. Movies show <strong>everything at once</strong>, in a grid. The tool that turns one terminal into that grid is <strong>tmux</strong> — already installed on your machine (3.7b) and completely unconfigured, which makes you lucky: you'll learn it clean, with no inherited habits.</p>
+
+<h2>The hierarchy: server → session → window → pane</h2>
+<p>tmux runs as a background <strong>server</strong>. You attach clients to it. Inside the server lives a <strong>session</strong> (a named workspace, e.g. <code>bridge</code>); a session contains <strong>windows</strong> (full-screen tabs); each window is split into <strong>panes</strong> — your sci-fi panels. The magic property: <em>sessions survive terminal closure</em>. Close Ghostty, reopen, re-attach — your bridge console is still running.</p>
+
+<div class="callout">
+  <span class="label">The prefix key</span>
+  tmux commands are two keystrokes: <strong><kbd>Ctrl-b</kbd></strong> (hold both, release) <em>then</em> a key. <kbd>Ctrl-b</kbd> is the "now I'm talking to tmux, not to the program" signal. It feels odd for a day, then becomes muscle memory.
+</div>
+
+<h2>Build the grid</h2>
+<pre class="term"><span class="ps1">$</span> tmux new -s bridge        <span class="cmt"># start a session named "bridge"</span></pre>
+
+<p>Now split — remember: prefix first, then the key:</p>
+<ul>
+  <li><kbd>Ctrl-b</kbd> <kbd>%</kbd> — split <strong>left/right</strong> (vertical divider)</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>"</kbd> — split <strong>top/bottom</strong> (horizontal divider)</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> — move between panes</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>z</kbd> — zoom one pane full-screen (toggle — brilliant for focusing)</li>
+  <li><kbd>Ctrl-b</kbd> <kbd>x</kbd> — kill the current pane (asks y/n)</li>
+</ul>
+
+<p>Split three or four times, launch one TUI per pane (<code>btop</code>, <code>fastfetch</code>, <code>cmatrix</code>, <code>cbonsai -L 30</code>) — <strong>this is the bridge console</strong>, and it took no configuration at all. Ride it with <kbd>Ctrl-b</kbd> <kbd>d</kbd> (detach), then come back:</p>
+
+<pre class="term"><span class="ps1">$</span> tmux attach -t bridge      <span class="cmt"># your console is still alive</span></pre>
+
+<h2>Your first config — three lines, zero scripts</h2>
+<p>tmux reads <code>~/.config/tmux/tmux.conf</code>. Create the file with these three lines:</p>
+
+<pre class="term"><span class="cmt"># ~/.config/tmux/tmux.conf</span>
+set -g mouse on                <span class="cmt"># click panes, drag dividers, scroll</span>
+set -g status-position top     <span class="cmt"># status bar up top, like a HUD</span>
+set -g default-terminal "tmux-256color"</pre>
+
+<p class="small muted">Then reload without restarting: <kbd>Ctrl-b</kbd> <kbd>:</kbd>, type <code>source-file ~/.config/tmux/tmux.conf</code>, press <kbd>Enter</kbd>. (<code>set -g</code> means "global setting"; <code>tmux-256color</code> tells programs inside tmux that colors are safe to use.)</p>
+
+<div class="callout">
+  <span class="label">Config ≠ script</span>
+  A shell script is a <em>program</em> — logic you write. A config file is a <em>list of settings</em> a tool reads. Your mission bans scripts, embraces config: <code>tmux.conf</code> is declarative — every line is "set option X to Y". That's why the movie look needs no programming.
+</div>
+
+<h2>Why is the default bar ugly?</h2>
+<p>That green bottom bar is tmux's 1990s default. It's fully themeable — colors, content, modules — but by hand it's tedious. Next lesson we install the <strong>Catppuccin</strong> theme via a plugin manager, and the bar becomes a pastel HUD in one shot. That's the pattern to remember: <em>themes are config consumed from packages, not code you write.</em></p>
+
+<div class="task">
+  <span class="label">Do it now — build it twice</span>
+  <p style="margin:0 0 0.4rem">Building it from memory (not copy-paste) is what makes it stick. Round one with the lesson open; round two from memory:</p>
+  <ul class="checklist" id="task" data-store="st-l02-task">
+    <li><span class="box"></span><span class="txt">Create session "bridge", split into 4 panes, one TUI per pane.</span></li>
+    <li><span class="box"></span><span class="txt">Zoom a pane with Ctrl-b z, then toggle back.</span></li>
+    <li><span class="box"></span><span class="txt">Detach with Ctrl-b d, close the Ghostty tab, re-attach with tmux attach -t bridge.</span></li>
+    <li><span class="box"></span><span class="txt">Write the 3-line tmux.conf and reload it live.</span></li>
+    <li><span class="box"></span><span class="txt">Kill everything, rebuild the whole grid from memory.</span></li>
+  </ul>
+</div>
+
+<h2>Check your understanding</h2>
+
+<div class="quiz" data-right="Correct. % splits left/right; &quot; splits top/bottom." data-wrong="Not quite — the highlighted answer is right: % = left/right, &quot; = top/bottom.">
+  <q>Which key splits the window left/right?</q>
+  <div class="options">
+    <button class="opt">Prefix then %</button>
+    <button class="opt">Prefix then &quot;</button>
+    <button class="opt">Prefix then z</button>
+    <button class="opt">Prefix then x</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. Sessions live in the tmux server, which keeps running when the terminal closes." data-wrong="Not quite — see the highlighted answer. The tmux server keeps sessions alive after the terminal closes; you just re-attach.">
+  <q>You detach and quit Ghostty. Your session…</q>
+  <div class="options">
+    <button class="opt">Keeps running server-side</button>
+    <button class="opt">Dies with the client</button>
+    <button class="opt">Suspends until reboot</button>
+    <button class="opt">Saves then closes cleanly</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://github.com/tmux/tmux/wiki/Getting-Started">tmux Wiki — Getting Started</a> — the official introduction. Read it once this week; it covers exactly what we did. For any keybinding: <code>man tmux</code> is authoritative.
+  </div>
+
+  <p><strong>Keep this nearby:</strong> the <a href="../reference/tmux-cheatsheet.html">tmux cheatsheet</a> — every key from this lesson plus resize/swap, on one printable page.</p>
+
+  <p><strong>Next up — Lesson 03:</strong> <em>Catppuccin tmux + TPM</em> — kill the green bar forever. Plugin manager, pastel status bar, themed pane borders. Also: verify your Nerd Font is really rendering.</p>
+
+  <p class="small muted"><strong>Split went the wrong way? Prefix : not working?</strong> Ask me — I'm your teacher. Describe what you saw and we'll fix it together.</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

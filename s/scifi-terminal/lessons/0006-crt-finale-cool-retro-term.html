@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 06 — CRT Finale: cool-retro-term</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 06 · Sci-Fi Terminal Panes</p>
+<h1>CRT Finale: cool-retro-term</h1>
+<p class="badges">
+  <span class="badge">~10 min</span>
+  <span class="badge">Emulator swap</span>
+  <span class="badge">Course finale</span>
+</p>
+
+<p class="lead">Your bridge console lives in Ghostty — modern, crisp, productive. The final technique is the oldest one in cinema: <strong>change the glass</strong>. <a href="https://github.com/Swordfish90/cool-retro-term">cool-retro-term</a> is a terminal emulator that simulates a 1980s cathode-ray-tube monitor — and it runs your tmux session inside it, unchanged. No re-theming, no new config: <em>the layers are independent, so swapping Layer 1 changes everything.</em></p>
+
+<h2>Why this works: layers are swappable</h2>
+<p>This is the deepest lesson of the course. tmux doesn't know (or care) which emulator is drawing it; starship doesn't know which terminal it's in; btop just prints colors. Because each layer only <em>renders</em> the layer above, you can replace the emulator and keep the entire stack. Movie UI designers call the same idea "the screen is a prop" — the content is independent of the glass.</p>
+
+<h2>Install and launch</h2>
+<pre class="term"><span class="ps1">$</span> brew install --cask cool-retro-term
+<span class="ps1">$</span> open -a cool-retro-term</pre>
+
+<p>Inside cool-retro-term, attach your existing session:</p>
+<pre class="term"><span class="ps1">$</span> tmux attach -t bridge</pre>
+
+<p>The same bridge console — now glowing phosphor green under scanlines, on gently curved glass. Take the screenshot. <strong>That's the movie frame you asked for.</strong></p>
+
+<h2>Dial the effects</h2>
+<p>cool-retro-term's settings (right-click → Settings, or the sliders overlay) expose the CRT simulation knobs:</p>
+<ul>
+  <li><strong>Scanlines</strong> — the horizontal dark lines. Lower "scanline intensity" = subtler, more modern-HUD.</li>
+  <li><strong>Glow / blooming</strong> — how much bright pixels bleed outward. High glow + green text = classic phosphor.</li>
+  <li><strong>Curvature</strong> — screen edge bending. A little goes far.</li>
+  <li><strong>Flicker / jitter / noise</strong> — realism vs. comfort. For daily use: near zero.</li>
+  <li><strong>Built-in profiles</strong> — try <em>Vintage</em>, <em>Green Screen</em>, <em>Modern</em> (subtle, actually usable daily).</li>
+</ul>
+
+<p class="small muted">To make a profile the default: settings → "Load Preset", tune, then "Current Settings → Set as Default". Your tmux/starship theme lines never change.</p>
+
+<div class="callout">
+  <span class="label">Prop vs. daily driver</span>
+  Movie UIs are designed to be <em>looked at</em>, not used — dense, low contrast, flickering. Your Ghostty setup (Lessons 01–05) is the daily driver: calm palette, readable for hours. cool-retro-term is the prop: maximum cinema, minimum ergonomics. The technique you learned is knowing which tool is which — and that you can have both, because the stack is layered.
+</div>
+
+<div class="task">
+  <span class="label">Do it now — the money shot</span>
+  <ul class="checklist" id="task" data-store="st-l06-task">
+    <li><span class="box"></span><span class="txt">Install and open cool-retro-term.</span></li>
+    <li><span class="box"></span><span class="txt">Attach the bridge session inside it.</span></li>
+    <li><span class="box"></span><span class="txt">Dial scanlines, glow, curvature; try the Green Screen and Modern presets.</span></li>
+    <li><span class="box"></span><span class="txt">Capture the screenshot — the course's final artifact.</span></li>
+    <li><span class="box"></span><span class="txt">Rebuild challenge: kill the session, rebuild the whole bridge from memory in under 3 minutes.</span></li>
+  </ul>
+</div>
+
+<h2>Check your understanding</h2>
+
+<div class="quiz" data-right="Correct. tmux runs in its own server; any emulator (Ghostty, CRT, iTerm) can attach and draw it." data-wrong="Not quite — the highlight is the point: tmux is emulator-independent, so the swap just works.">
+  <q>Swapping Ghostty for cool-retro-term works because…</q>
+  <div class="options">
+    <button class="opt">tmux is emulator-independent</button>
+    <button class="opt">CRT re-themes everything</button>
+    <button class="opt">starship detects the emulator</button>
+    <button class="opt">Both use OpenGL</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct. Ghostty is the readable daily driver; cool-retro-term is the cinematic prop." data-wrong="Not quite — see the highlight: Ghostty = daily, CRT = prop. Two tools, two jobs.">
+  <q>Which setup is the daily driver?</q>
+  <div class="options">
+    <button class="opt">Ghostty, themed calmly</button>
+    <button class="opt">CRT, glowing hard</button>
+    <button class="opt">Warp, unconfigured</button>
+    <button class="opt">Terminal.app defaults</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="next">
+    <strong>Primary source for this lesson</strong><br>
+    <a href="https://github.com/Swordfish90/cool-retro-term">cool-retro-term on GitHub</a> — screenshots of every preset and the full settings reference.
+  </div>
+
+  <p><strong>Course complete.</strong> Revisit the <a href="0000-table-of-contents.html">course map</a> — spaced re-runs of lessons 02 and 05 build storage strength. The <a href="../reference/tmux-cheatsheet.html">tmux cheatsheet</a> is your long-term companion.</p>
+
+  <p><strong>Where to go next:</strong> r/unixporn (search "catppuccin tmux") for inspiration, and me for anything — theming detours, a window-manager course, or turning the bridge console into a startup habit.</p>
+
+  <p class="small muted"><strong>Effects too strong to read?</strong> Ask me — there's a usable-CRT preset I can walk you through in one message.</p>
+</div>
+
+</article>
+
+<script src="../assets/checklist.js"></script>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
