@@ -115,16 +115,19 @@ prefix = `Ctrl+B`（按完放開，再按下一鍵）
 ```toml
 # ~/.config/herdr/config.toml
 [keys]
-focus_pane_left  = ["prefix+h", "ctrl+alt+h"]
-focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
-focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
-focus_pane_right = ["prefix+l", "ctrl+alt+l"]
-previous_tab     = ["prefix+p", "ctrl+alt+["]
-next_tab         = ["prefix+n", "ctrl+alt+]"]
-new_tab          = ["prefix+c", "ctrl+alt+c"]
-split_vertical   = ["prefix+v", "ctrl+alt+d"]
-split_horizontal = ["prefix+-", "ctrl+alt+shift+d"]
-zoom             = ["prefix+z", "ctrl+alt+z"]
+focus_pane_left    = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down    = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up      = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right   = ["prefix+l", "ctrl+alt+l"]
+previous_tab       = ["prefix+p", "ctrl+alt+["]
+next_tab           = ["prefix+n", "ctrl+alt+]"]
+new_tab            = ["prefix+c", "ctrl+alt+c"]
+previous_workspace = ["prefix+shift+p", "ctrl+alt+shift+["]
+next_workspace     = ["prefix+shift+n", "ctrl+alt+shift+]"]
+new_workspace      = ["prefix+shift+c", "ctrl+alt+shift+c"]
+split_vertical     = ["prefix+v", "ctrl+alt+d"]
+split_horizontal   = ["prefix+-", "ctrl+alt+shift+d"]
+zoom               = ["prefix+z", "ctrl+alt+z"]
 ```
 
 避免這些已被占用的：`ctrl+alt+方向鍵`（GNOME/Ghostty 切桌面）、`ctrl+alt+t`（Linux 開 terminal）、`ctrl+alt+l/a`（KDE）。
