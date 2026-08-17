@@ -30,6 +30,7 @@ background-blur-radius = 10
 window-padding-x = 4
 window-padding-y = 4
 macos-titlebar-style = transparent
+window-theme = dark
 
 # ── Panes ────────────────────────────────────────
 unfocused-split-opacity = 1.0
@@ -78,18 +79,18 @@ selection-foreground = #0a0a0a
 
 ## 目前設定
 
-| 項目 | 設定值 | 備註 |
-|---|---|---|
-| 主題 | `theme = opencode` | 16 色 palette + cursor + selection |
-| 字型 | FiraCode Nerd Font Propo 13 | |
-| 行高 | `adjust-cell-height = 2` | 用點數 delta 調整 |
-| 游標 | `cursor-style = block` + blink | 也可 bar / underline |
-| 視窗 | `background-opacity = 0.37` + `background-blur-radius = 10` | 太透可調 0.7–0.8 |
-| Padding | `window-padding-x/y = 4` + `macos-titlebar-style = transparent` | |
-| 分割 pane | `unfocused-split-opacity = 1.0`（不暗化）+ `focus-follows-mouse = true` | |
-| Option 鍵 | `macos-option-as-alt = left` | 左 opt 當 meta |
-| 剪貼簿 | `clipboard-write = allow` | 允許 osc52 寫入 |
-| 最大化 pane | `keybind = cmd+opt+j=toggle_split_zoom` | 自訂 |
+| 項目        | 設定值                                                                  | 備註                               |
+| ----------- | ----------------------------------------------------------------------- | ---------------------------------- |
+| 主題        | `theme = opencode`                                                      | 16 色 palette + cursor + selection |
+| 字型        | FiraCode Nerd Font Propo 13                                             |                                    |
+| 行高        | `adjust-cell-height = 2`                                                | 用點數 delta 調整                  |
+| 游標        | `cursor-style = block` + blink                                          | 也可 bar / underline               |
+| 視窗        | `background-opacity = 0.37` + `background-blur-radius = 10`             | 太透可調 0.7–0.8                   |
+| Padding     | `window-padding-x/y = 4` + `macos-titlebar-style = transparent`         |                                    |
+| 分割 pane   | `unfocused-split-opacity = 1.0`（不暗化）+ `focus-follows-mouse = true` |                                    |
+| Option 鍵   | `macos-option-as-alt = left`                                            | 左 opt 當 meta                     |
+| 剪貼簿      | `clipboard-write = allow`                                               | 允許 osc52 寫入                    |
+| 最大化 pane | `keybind = cmd+opt+j=toggle_split_zoom`                                 | 自訂                               |
 
 ## 沒有的東西
 
@@ -100,31 +101,31 @@ selection-foreground = #0a0a0a
 
 ### Beginner（跟瀏覽器 / 一般 macOS app 同邏輯）
 
-| 按鍵 | 功能 |
-|---|---|
-| `Cmd+N` | 新視窗 |
-| `Cmd+T` / `Cmd+W` | 新 tab / 關 tab（或分割 pane） |
-| `Cmd+D` / `Cmd+Shift+D` | 垂直 / 水平分割 |
-| `Cmd+[` / `Cmd+]` | 切換分割 pane |
-| `Cmd+1…8` / `Cmd+9` | 跳到第 N 個 tab / 最後一個 tab |
-| `Cmd+-` / `Cmd+=` / `Cmd+0` | 字級小 / 大 / 重設 |
-| `Cmd+Enter` | 全螢幕切換 |
+| 按鍵                        | 功能                           |
+| --------------------------- | ------------------------------ |
+| `Cmd+N`                     | 新視窗                         |
+| `Cmd+T` / `Cmd+W`           | 新 tab / 關 tab（或分割 pane） |
+| `Cmd+D` / `Cmd+Shift+D`     | 垂直 / 水平分割                |
+| `Cmd+[` / `Cmd+]`           | 切換分割 pane                  |
+| `Cmd+1…8` / `Cmd+9`         | 跳到第 N 個 tab / 最後一個 tab |
+| `Cmd+-` / `Cmd+=` / `Cmd+0` | 字級小 / 大 / 重設             |
+| `Cmd+Enter`                 | 全螢幕切換                     |
 
 ### Pro
 
-| 按鍵 | 功能 |
-|---|---|
-| `Cmd+Shift+Enter` | Zoom 目前分割 pane（同 `Cmd+Opt+J`） |
-| `Cmd+Shift+P` | Command palette（搜尋所有指令） |
-| `Cmd+K` | 清空畫面（同 shell `clear`） |
-| `Cmd+Shift+,` | 重載設定檔 |
-| `Cmd+,` | 開啟設定檔（在 $EDITOR） |
-| `Cmd+Shift+J` | 把畫面內容寫入剪貼簿（純文字） |
-| `Cmd+Home` / `Cmd+End` | 捲到頂 / 底 |
-| `Cmd+PageUp` / `Cmd+PageDown` | 向上 / 下翻頁 |
-| `Cmd+J` | 捲到選取處 |
-| `Ctrl+Tab` / `Ctrl+Shift+Tab` | 下一 / 上一 tab |
-| `Cmd+Opt+J` | 最大化 pane（自訂） |
+| 按鍵                          | 功能                                 |
+| ----------------------------- | ------------------------------------ |
+| `Cmd+Shift+Enter`             | Zoom 目前分割 pane（同 `Cmd+Opt+J`） |
+| `Cmd+Shift+P`                 | Command palette（搜尋所有指令）      |
+| `Cmd+K`                       | 清空畫面（同 shell `clear`）         |
+| `Cmd+Shift+,`                 | 重載設定檔                           |
+| `Cmd+,`                       | 開啟設定檔（在 $EDITOR）             |
+| `Cmd+Shift+J`                 | 把畫面內容寫入剪貼簿（純文字）       |
+| `Cmd+Home` / `Cmd+End`        | 捲到頂 / 底                          |
+| `Cmd+PageUp` / `Cmd+PageDown` | 向上 / 下翻頁                        |
+| `Cmd+J`                       | 捲到選取處                           |
+| `Ctrl+Tab` / `Ctrl+Shift+Tab` | 下一 / 上一 tab                      |
+| `Cmd+Opt+J`                   | 最大化 pane（自訂）                  |
 
 ### 自訂語法
 
