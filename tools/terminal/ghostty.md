@@ -1,6 +1,6 @@
 # Ghostty 設定筆記 (macOS)
 
-> 版本 1.3.1 · 設定在 `~/.config/ghostty/config` · 自訂主題在 `~/.config/ghostty/themes/opencode`
+> 版本 1.3.1 · 設定在 `~/.config/ghostty/config` · 自訂主題在 `~/.config/ghostty/themes/`
 > 驗證指令：`/Applications/Ghostty.app/Contents/MacOS/ghostty +validate-config`
 > 重載：視窗內 `Cmd+Shift+,`
 
@@ -9,92 +9,130 @@
 ## 實際設定檔（`~/.config/ghostty/config`）
 
 ```toml
-# Ghostty — translated from Warp settings (~/.warp/settings.toml)
+# Ghostty
 
-# ── Theme ─────────────────────────────────────────
-theme = opencode
+# ── Theme (custom: night-owl) ─────────────────────
+# 內建主題位置：/Applications/Ghostty.app/Contents/Resources/ghostty/themes
+theme = custom-night-owl
+window-theme = dark
 
-# ── Font ─────────────────────────────────────────
-font-family = FiraCode Nerd Font Propo
+# ── Font (13, line-height 1.2) ────────────────────
+font-family = 0xProtoNerdFont
 font-size = 13
-# Warp line_height_ratio 1.2 ≈ +2pt on a 13pt font (Ghostty uses a point delta)
+
+# -calt：關掉 Contextual Alternates（如 != 變 ≠）
+# -liga / dlig：關掉標準 ligatures、開啟 discretionary ligatures
+font-feature = -calt
+font-feature = dlig
+
+# line_height_ratio 1.2 ≈ +2pt on a 13pt font (Ghostty uses a point delta)
 adjust-cell-height = 2
 
-# ── Cursor ───────────────────────────────────────
+# ── Cursor ────────────────────────────────────────
 cursor-style = block
 cursor-style-blink = true
 
-# ── Window ───────────────────────────────────────
-background-opacity = 0.37
-background-blur-radius = 10
+# no-cursor：讓 vim/nvfs 完全掌控游標形狀（insert=bar, normal=block）
+shell-integration-features = no-cursor,sudo,title,path
+
+# Option+click 直接把游標移過去（同 iTerm）
+cursor-click-to-move = true
+
+# 打字時隱藏滑鼠指標
+mouse-hide-while-typing = true
+
+# ── Window ────────────────────────────────────────
+background-opacity = 0.6
+background-blur-radius = 8
 window-padding-x = 4
 window-padding-y = 4
 macos-titlebar-style = transparent
-window-theme = dark
 
-# ── Panes ────────────────────────────────────────
+# ── Panes（不暗化未聚焦 pane、hover 即聚焦）────────
 unfocused-split-opacity = 1.0
 focus-follows-mouse = true
 
-# ── Option key ───────────────────────────────────
+# ── Option key（左 opt 當 meta）───────────────────
 macos-option-as-alt = left
 
-# ── Clipboard ────────────────────────────────────
+# ── Clipboard（osc52 write_only）──────────────────
 clipboard-write = allow
 
-# ── Close without confirm ────────────────────────
-confirm-close-surface = false
+# ── Close ─────────────────────────────────────────
+confirm-close-surface = true
 
-# ── Keybindings ──────────────────────────────────
+# ── Keybindings ───────────────────────────────────
 keybind = cmd+opt+j=toggle_split_zoom
+
+# ── Quality of life ───────────────────────────────
+# bold 不額外變色（主題渲染更乾淨）
+bold-is-bright = false
+
+# 啟動時還原上次 session 的視窗/tabs/splits
+window-save-state = always
+
+# 最後一個視窗關閉就整個離開（預設會留在背景）
+quit-after-last-window-closed = true
+
+# 真全螢幕（menu bar 隱藏），Cmd+Ctrl+F 或 Cmd+Enter
+macos-non-native-fullscreen = visible-menu
 ```
 
-## 自訂主題（`~/.config/ghostty/themes/opencode`）
+## 目前使用主題（`~/.config/ghostty/themes/custom-night-owl`）
 
 ```
-palette = 0=#1e1e1e
-palette = 1=#e06c75
-palette = 2=#7fd88f
-palette = 3=#e5c07b
-palette = 4=#5c9cf5
-palette = 5=#9d7cd8
-palette = 6=#56b6c2
-palette = 7=#eeeeee
-palette = 8=#323232
-palette = 9=#e06c75
-palette = 10=#7fd88f
-palette = 11=#e5c07b
-palette = 12=#5c9cf5
-palette = 13=#9d7cd8
-palette = 14=#56b6c2
-palette = 15=#eeeeee
-background = #0a0a0a
-foreground = #eeeeee
-cursor-color = #efefef
-selection-background = #5c9cf5
-selection-foreground = #0a0a0a
+palette = 0=#011627
+palette = 1=#ef5350
+palette = 2=#22da6e
+palette = 3=#addb67
+palette = 4=#82aaff
+palette = 5=#c792ea
+palette = 6=#21c7a8
+palette = 7=#ffffff
+palette = 8=#577686
+palette = 9=#ef5350
+palette = 10=#22da6e
+palette = 11=#ffeb95
+palette = 12=#82aaff
+palette = 13=#c792ea
+palette = 14=#7fdbca
+palette = 15=#ffffff
+background = #011627
+foreground = #d6deeb
+cursor-color = #7e57c2
+cursor-text = #ffffff
+selection-background = #5f7e97
+selection-foreground = #dfe5ee
 ```
+
+（同目錄另有舊主題 `opencode` 備用）
 
 ---
 
 ## 目前設定
 
-| 項目        | 設定值                                                                  | 備註                               |
-| ----------- | ----------------------------------------------------------------------- | ---------------------------------- |
-| 主題        | `theme = opencode`                                                      | 16 色 palette + cursor + selection |
-| 字型        | FiraCode Nerd Font Propo 13                                             |                                    |
-| 行高        | `adjust-cell-height = 2`                                                | 用點數 delta 調整                  |
-| 游標        | `cursor-style = block` + blink                                          | 也可 bar / underline               |
-| 視窗        | `background-opacity = 0.37` + `background-blur-radius = 10`             | 太透可調 0.7–0.8                   |
-| Padding     | `window-padding-x/y = 4` + `macos-titlebar-style = transparent`         |                                    |
-| 分割 pane   | `unfocused-split-opacity = 1.0`（不暗化）+ `focus-follows-mouse = true` |                                    |
-| Option 鍵   | `macos-option-as-alt = left`                                            | 左 opt 當 meta                     |
-| 剪貼簿      | `clipboard-write = allow`                                               | 允許 osc52 寫入                    |
-| 最大化 pane | `keybind = cmd+opt+j=toggle_split_zoom`                                 | 自訂                               |
+| 項目        | 設定值                                                                   | 備註                                       |
+| ----------- | ------------------------------------------------------------------------ | ------------------------------------------ |
+| 主題        | `theme = custom-night-owl`                                               | Night Owl 變體，16 色 + cursor + selection |
+| 字型        | 0xProtoNerdFont 13                                                       | `-calt` + `dlig`（關注音符號化、開 dlig）  |
+| 行高        | `adjust-cell-height = 2`                                                 | 用點數 delta 調整                          |
+| 游標        | `cursor-style = block` + blink                                           | shell-integration 用 `no-cursor` 讓 vim 接手形狀 |
+| 游標移動    | `cursor-click-to-move = true`                                            | Option+click 跳游標（同 iTerm）            |
+| 滑鼠        | `mouse-hide-while-typing = true`                                         | 打字時隱藏指標                             |
+| 視窗        | `background-opacity = 0.6` + `background-blur-radius = 8`                | 太透可調 0.7–0.8                           |
+| Padding     | `window-padding-x/y = 4` + `macos-titlebar-style = transparent`          |                                            |
+| 分割 pane   | `unfocused-split-opacity = 1.0`（不暗化）+ `focus-follows-mouse = true`  |                                            |
+| Option 鍵   | `macos-option-as-alt = left`                                             | 左 opt 當 meta                             |
+| 剪貼簿      | `clipboard-write = allow`                                                | 允許 osc52 寫入                            |
+| 關閉確認    | `confirm-close-surface = true`                                           | 關閉前會確認                               |
+| 最大化 pane | `keybind = cmd+opt+j=toggle_split_zoom`                                  | 自訂                                       |
+| Session     | `window-save-state = always` + `quit-after-last-window-closed = true`    | 還原上次狀態、關完視窗即離開               |
+| 全螢幕      | `macos-non-native-fullscreen = visible-menu`                             | Cmd+Ctrl+F / Cmd+Enter                     |
+| 其他        | `bold-is-bright = false`                                                 | bold 不變色                                |
 
 ## 沒有的東西
 
-- **側邊 tab**：macOS 版只有系統原生水平 tab bar（Linux GTK 版有 `gtk-tab-location`）。側邊欄需求由 herdr 的 sidebar 滿足（見 `atuin.md` 同目錄的 `herdr.md`）
+- **側邊 tab**：macOS 版只有系統原生水平 tab bar（Linux GTK 版有 `gtk-tab-location`）。側邊欄需求由 herdr 的 sidebar 滿足（見同目錄的 `herdr.md`）
 - **AI 功能**：純 terminal，無雲端、無 telemetry
 
 ## 常用 keybind
@@ -126,6 +164,7 @@ selection-foreground = #0a0a0a
 | `Cmd+J`                       | 捲到選取處                           |
 | `Ctrl+Tab` / `Ctrl+Shift+Tab` | 下一 / 上一 tab                      |
 | `Cmd+Opt+J`                   | 最大化 pane（自訂）                  |
+| `Opt+Click`                   | 游標移到點擊處（`cursor-click-to-move`）|
 
 ### 自訂語法
 
@@ -137,3 +176,32 @@ keybind = cmd+opt+j=toggle_split_zoom
 # 解綁（讓按鍵穿透給 shell 內的程式）：
 keybind = alt+one=unbind
 ```
+
+## 主題檔：custom-night-owl（`~/.config/ghostty/themes/custom-night-owl`）
+
+```
+palette = 0=#011627
+palette = 1=#ef5350
+palette = 2=#22da6e
+palette = 3=#addb67
+palette = 4=#82aaff
+palette = 5=#c792ea
+palette = 6=#21c7a8
+palette = 7=#ffffff
+palette = 8=#577686
+palette = 9=#ef5350
+palette = 10=#22da6e
+palette = 11=#ffeb95
+palette = 12=#82aaff
+palette = 13=#c792ea
+palette = 14=#7fdbca
+palette = 15=#ffffff
+background = #011627
+foreground = #d6deeb
+cursor-color = #7e57c2
+cursor-text = #ffffff
+selection-background = #5f7e97
+selection-foreground = #dfe5ee
+```
+
+> 原始版（官方 Night Owl）的 `palette 8 = #575656`，已調亮為 `#577686`
