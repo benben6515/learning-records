@@ -12,10 +12,10 @@
 # Ghostty — translated from Warp settings (~/.warp/settings.toml)
 
 # ── Theme ─────────────────────────────────────────
-theme = opencode
+theme = custom-night-owl
 
 # ── Font ─────────────────────────────────────────
-font-family = FiraCode Nerd Font Propo
+font-family = 0xProto Nerd Font Propo
 font-size = 13
 # Warp line_height_ratio 1.2 ≈ +2pt on a 13pt font (Ghostty uses a point delta)
 adjust-cell-height = 2
@@ -25,8 +25,8 @@ cursor-style = block
 cursor-style-blink = true
 
 # ── Window ───────────────────────────────────────
-background-opacity = 0.37
-background-blur-radius = 10
+background-opacity = 0.6
+background-blur = 10
 window-padding-x = 4
 window-padding-y = 4
 macos-titlebar-style = transparent
@@ -40,13 +40,36 @@ focus-follows-mouse = true
 macos-option-as-alt = left
 
 # ── Clipboard ────────────────────────────────────
+clipboard-read = allow
 clipboard-write = allow
 
 # ── Close without confirm ────────────────────────
 confirm-close-surface = false
 
 # ── Keybindings ──────────────────────────────────
-keybind = cmd+opt+j=toggle_split_zoom
+# zoom on z, hjkl for split navigation
+keybind = cmd+opt+z=toggle_split_zoom
+keybind = cmd+opt+h=goto_split:left
+keybind = cmd+opt+j=goto_split:down
+keybind = cmd+opt+k=goto_split:up
+keybind = cmd+opt+l=goto_split:right
+
+# ── Quick terminal ───────────────────────────────
+quick-terminal-position = top
+quick-terminal-animation-duration = 0.15
+
+# ── Scrollback / mouse / session ─────────────────
+scrollback-limit = 100000000
+mouse-hide-while-typing = true
+window-save-state = always
+
+# ── Font / rendering ─────────────────────────────
+font-feature = -calt
+grapheme-width-method = unicode
+window-colorspace = display-p3
+
+# ── Fullscreen ───────────────────────────────────
+macos-non-native-fullscreen = visible-menu
 ```
 
 ## 自訂主題（`~/.config/ghostty/themes/opencode`）
