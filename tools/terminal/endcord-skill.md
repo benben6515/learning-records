@@ -93,18 +93,19 @@ curl -s -H "Authorization: $TOKEN" \
 輸入 `/` 開 assist → 過濾 app → `Alt+Enter` 選取 → 打子指令 → `Alt+Enter` → 打 `--opt=value` → popup 停在 `EXECUTE` → `Alt+Enter` 執行。
 
 ```
-i → /athena → (popup) Alt+Enter 選 app
+i → /exampleapp → (popup) Alt+Enter 選 app
   → " mute" → (popup) Alt+Enter 選指令
-  → " --who=26" → (popup EXECUTE) Alt+Enter 執行
+  → " --who=<USER_ID>" → (popup EXECUTE) Alt+Enter 執行
 ```
 
 指令字串格式（README）：`/[bot_name] [command] [subcommand] --[option]=[value]`
-- `bot_name` = app 全名 lower + 空格換 `_`（**含中文**，如 `雅典娜_athena`）→ 自動化打不出來，必須靠 assist 插入
+
+- `bot_name` = app 全名 lower + 空格換 `_`（**可能含中文**，如 `中文名_englishname`）→ 自動化打不出來，必須靠 assist 插入
 - popup 導航一律 `Alt+↑/↓` + `Alt+Enter`（vim mode 下也一樣）
 
 ### 巨坑：endcord 1.5.3 bug — `Unknown Integration (10005)`
 
-**症狀**：TUI 送 slash command 給 2026 新式 guild apps（雅典娜/狄俄尼索斯等）→ log 出現 `send_interaction: Response code 400; Error code: 10005 - Unknown Integration`。老 app（Craig）正常。
+**症狀**：TUI 送 slash command 給 2026 新式 guild apps（自訂整合型 app）→ log 出現 `send_interaction: Response code 400; Error code: 10005 - Unknown Integration`。老 app（Craig）正常。
 
 **根因**：endcord `discord.py send_interaction` 的 payload 缺 **`data.guild_id`** — 新式 Apps 系統（有 `integration_types` 的）必須帶，老 app 不用。
 
@@ -113,11 +114,11 @@ i → /athena → (popup) Alt+Enter 選 app
 ```python
 def send_interaction(guild_id, ...):
     if interaction_type == 2 and guild_id:
-        interaction_data.setdefault("guild_id", guild_id)  # 关鍵一行
+        interaction_data.setdefault("guild_id", guild_id)  # 關鍵一行
     return original(...)
 ```
 
-附贈自訂指令 `:mute26` — 直接用 endcord 真正的 `session_id` 送 interaction（REST 直送用隨機 session_id 會 204 成功但 **ephemeral 回應遺失**，因為回應是經 gateway session 推回來的）。
+附贈自訂指令 `:mute` — 直接用 endcord 真正的 `session_id` 送 interaction（REST 直送用隨機 session_id 會 204 成功但 **ephemeral 回應遺失**，因為回應是經 gateway session 推回來的）。
 
 ### REST 直送 interaction（免 TUI，除錯用）
 
@@ -126,13 +127,13 @@ def send_interaction(guild_id, ...):
 curl -s -H "Authorization: $TOKEN" \
   "https://discord.com/api/v9/guilds/<GUILD_ID>/application-command-index"
 
-# payload 关鍵：data 內必須有 guild_id（新式 apps）
+# payload 關鍵：data 內必須有 guild_id（新式 apps）
 curl -s -X POST -H "Authorization: $TOKEN" -H "Content-Type: application/json" \
   -d '{"type":2,"application_id":"<APP_ID>","guild_id":"<GID>","channel_id":"<CID>",
        "session_id":"<uuid4.hex>","nonce":"<rand64>",
        "data":{"version":"<CMD_VERSION>","id":"<CMD_ID>","name":"mute","type":1,
                "guild_id":"<GID>",   ← 沒這行就 10005
-               "options":[{"type":3,"name":"who","value":"26"}],"attachments":[]},
+               "options":[{"type":3,"name":"who","value":"<USER_ID>"}],"attachments":[]},
        "analytics_location":"slash_ui"}' \
   "https://discord.com/api/v9/interactions"   # 204 = 成功
 ```
@@ -147,11 +148,27 @@ curl -s -X POST -H "Authorization: $TOKEN" -H "Content-Type: application/json" \
 - `Input code: N` in log = 按鍵代碼；`28`=Esc、`27`=Alt+Enter 相關、`26`=popup 導航
 - `:show_log`、`:dump_chat`、`:redraw`（UI 亂掉時）
 
-## 自動觸發 slash command（mute26loop，方案 A 設計）
+## REST 發訊息與 mention bot（實戰驗證，2026-08-19）
+
+### 發訊息（比 TUI 可靠，中文沒問題）
+
+```bash
+TOKEN=$(security find-generic-password -s endcord -a profiles -w \
+  | python3 -c "import json,sys; print(json.load(sys.stdin)['profiles'][0]['token'])")
+curl -s -X POST -H "Authorization: $TOKEN" -H "Content-Type: application/json" \
+  -d '{"content":"<@APP_ID> 你的問題"}' \
+  "https://discord.com/api/v10/channels/<CHANNEL_OR_THREAD_ID>/messages"
+```
+
+- mention bot：content 開頭 `<@APP_ID>` 即觸發（範例 bot 屬純 mention 型，無 slash command）
+- python urllib 記得帶 `User-Agent: curl/8.0`（Cloudflare 擋 python UA）
+- 回應輪詢：`GET /channels/<id>/messages?limit=N&after=<最後一則id>`，bot 約 20–30s 回
+
+## 自動觸發 slash command（muteloop，方案 A 設計）
 
 ### 需求
 
-- 每 65 秒觸發一次雅典娜 /mute who:26（配合 60s cooldown + 5s 緩衝）
+- 每 65 秒觸發一次目標 app 的 /mute who:<USER_ID>（配合 60s cooldown + 5s 緩衝）
 - 預設跑 1 小時（~55 次），可隨時延長/停止
 - 觸發要走 endcord 內部（session_id 正確 → ephemeral 回應可見）
 
@@ -173,23 +190,23 @@ def on_main_loop(self):
     now = time.monotonic()
     if now - self.loop_started >= self.loop_duration:
         self.loop_enabled = False          # 到時自動停
-        self.app.update_extra_line("mute26loop: done")
+        self.app.update_extra_line("muteloop: done")
         return
     if now - self.loop_last_sent >= self.loop_interval:
-        self._send_mute26()                # 重用 mute26 的 send_interaction
+        self._send_mute()                # 重用 mute 的 send_interaction
         self.loop_last_sent = now
 
 # 指令（on_execute_command 擴充）
-# :mute26loop            → toggle on/off（off 保留剩餘時間，重新 on 繼續）
-# :mute26loop 90         → toggle + 自訂 interval
-# :mute26loop 65 7200    → interval + duration 秒
+# :muteloop            → toggle on/off（off 保留剩餘時間，重新 on 繼續）
+# :muteloop 90         → toggle + 自訂 interval
+# :muteloop 65 7200    → interval + duration 秒
 ```
 
 ### 使用
 
 ```
-:mute26loop          # 開跑（65s × 1h）；再打一次 = 停
-:mute26loop 65 1800  # 自訂 interval / duration
+:muteloop          # 開跑（65s × 1h）；再打一次 = 停
+:muteloop 65 1800  # 自訂 interval / duration
 ```
 
 ### 為什麼選 extension 內建計時器（vs 外部迴圈）
@@ -204,20 +221,24 @@ def on_main_loop(self):
 
 ## 已知坑
 
-| 症狀                    | 原因                                | 解法                                                    |
-| ----------------------- | ----------------------------------- | ------------------------------------------------------- |
-| `goto <#id>` 沒反應     | 目標 thread 在樹中隱藏（收合）      | 樹狀導航：parent 上 `M-h` 展開 → `M-j` → `M-l`          |
-| 樹中看不到某個新 thread | 同步資料其實在，只是收合            | 同上；`🡲` 前綴＝有隱藏 threads                          |
-| send-keys 打中文掉字    | tmux send-keys 對多位元組字元不可靠 | `pbcopy` + endcord `C-v` 貼上                           |
-| `C-x` 在輸入框          | 觸發 cancel downloads 確認（Y/n）   | 誤觸時按 `n` + Enter 脫困                               |
-| capture 全空            | 視窗太小 endcord 不渲染             | `tmux resize-window -x 200 -y 50` 或開 session 時指定   |
-| thread 建立時間想確認   | —                                   | snowflake：`((id>>22)+1420070400000)/1000` 轉 timestamp |
-| slash command 送不出（log 10005） | endcord bug：payload 缺 `data.guild_id`（新式 guild apps） | extension `fix-interaction-guild-id` 已修；REST 直送參考上方 |
-| `/athena` parse 失敗（Invalid app command） | bot_name 必須是 app 全名（含中文如 `雅典娜_athena`） | 靠 assist 選取插入全名，不要手打 |
-| 指令列出現雙空格（`athena␣␣mute`）→ parse 失敗 | assist 插入後又手動補空白 | `Alt+Enter` 插入後接續打的字自帶前導空白即可 |
-| REST 送 interaction 204 但沒看到 ephemeral 回應 | 回應綁 gateway `session_id`，隨機 UUID 收不到 | 走 endcord 內（TUI 或 extension 用 `app.session_id`） |
-| herdr send-text 打中文掉字 | 同 tmux 問題，多位元組被吃 | 純靠 assist 插入；或 `pbcopy`+`C-v`（在 INSERT 有效） |
-| vim INSERT 下 Enter 不送出 | INSERT 的 Enter = 換行（`␤`） | 送出：`Esc` 回 NORMAL → `Enter` |
-| voice channel 上按 `Space`（vim tree） | 直接觸發「加入語音」不是開聊天 | 語音頻道沒有文字聊天；Esc 不一定能取消，用 `:voice_leave_call` |
-| 輸入列殘留幽靈文字（如 `:26`）刪不掉 | slash command 狀態的 rendering glitch | `:redraw` 指令修復 |
-| log 裡有 traceback（mouse_events ValueError） | endcord 1.5.3 背景_thread bug，不影響 TUI | 忽略；TUI 仍可操作 |
+| 症狀                                            | 原因                                                       | 解法                                                                              |
+| ----------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `goto <#id>` 沒反應                             | 目標 thread 在樹中隱藏（收合）                             | 樹狀導航：parent 上 `M-h` 展開 → `M-j` → `M-l`                                    |
+| 樹中看不到某個新 thread                         | 同步資料其實在，只是收合                                   | 同上；`🡲` 前綴＝有隱藏 threads                                                    |
+| send-keys 打中文掉字                            | tmux send-keys 對多位元組字元不可靠                        | `pbcopy` + endcord `C-v` 貼上                                                     |
+| `C-x` 在輸入框                                  | 觸發 cancel downloads 確認（Y/n）                          | 誤觸時按 `n` + Enter 脫困                                                         |
+| capture 全空                                    | 視窗太小 endcord 不渲染                                    | `tmux resize-window -x 200 -y 50` 或開 session 時指定                             |
+| thread 建立時間想確認                           | —                                                          | snowflake：`((id>>22)+1420070400000)/1000` 轉 timestamp                           |
+| slash command 送不出（log 10005）               | endcord bug：payload 缺 `data.guild_id`（新式 guild apps） | extension `fix-interaction-guild-id` 已修；REST 直送參考上方                      |
+| `/exampleapp` parse 失敗（Invalid app command）     | bot_name 必須是 app 全名（含中文如 `中文名_englishname`）       | 靠 assist 選取插入全名，不要手打                                                  |
+| 指令列出現雙空格（`app␣␣cmd`）→ parse 失敗  | assist 插入後又手動補空白                                  | `Alt+Enter` 插入後接續打的字自帶前導空白即可                                      |
+| REST 送 interaction 204 但沒看到 ephemeral 回應 | 回應綁 gateway `session_id`，隨機 UUID 收不到              | 走 endcord 內（TUI 或 extension 用 `app.session_id`）                             |
+| herdr send-text 打中文掉字                      | 同 tmux 問題，多位元組被吃                                 | 純靠 assist 插入；或 `pbcopy`+`C-v`（在 INSERT 有效）                             |
+| vim INSERT 下 Enter 不送出                      | INSERT 的 Enter = 換行（`␤`）                              | 送出：`Esc` 回 NORMAL → `Enter`                                                   |
+| voice channel 上按 `Space`（vim tree）          | 直接觸發「加入語音」不是開聊天                             | 語音頻道沒有文字聊天；Esc 不一定能取消，用 `:voice_leave_call`                    |
+| 輸入列殘留幽靈文字（如 `:26`）刪不掉            | slash command 狀態的 rendering glitch                      | `:redraw` 指令修復                                                                |
+| log 裡有 traceback（mouse_events ValueError）   | endcord 1.5.3 背景\_thread bug，不影響 TUI                 | 忽略；TUI 仍可操作                                                                |
+| 訊息發到 channel 而非 thread                    | channel 與 thread 都是 snowflake id，肉眼難分              | 先 `GET /channels/<id>` 確認 `type`（0=channel、11=thread）再發                   |
+| 畫面停在舊訊息、看不到新訊息                    | buffer 快取損壞（重啟前）或捲動位置不在底                  | `Ctrl+b` 跳底；無效則重啟 endcord 重新同步                                        |
+| REST 突然 403 Missing Access（50001）           | 頻道權限被動態調整（管理員在改）                           | 等⼀下再試；TUI gateway 可能仍看得到                                              |
+| mention bot 測試（純 mention 型 bot）          | 純 mention 觸發、無 slash command                          | `POST /channels/<thread_id>/messages` content 帶 `<@APP_ID>` 即可；回應在 ~25s 內 |
