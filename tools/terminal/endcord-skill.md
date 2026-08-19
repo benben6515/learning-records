@@ -25,16 +25,16 @@ tmux capture-pane -t endcord -p | grep -v '^$' | head -30   # 去空行
 
 ## 關鍵 keybindings（config.ini，vim_mode）
 
-| 按鍵 | 作用 |
-|------|------|
-| `M-k` / `M-j` | 樹狀圖上/下移 |
-| `M-l` | 開啟選取的頻道/thread |
-| `M-h` | 收合/展開選取頻道的 threads（toggle） |
-| `C-/` | 進入 command mode |
-| `i` / Esc | INSERT / NORMAL 模式切換 |
-| `C-v` | 貼上（endcord 自己的 paste，走 clipboard） |
-| `Enter` | 發送訊息 |
-| `C-b` | 跳到聊天底部 |
+| 按鍵          | 作用                                       |
+| ------------- | ------------------------------------------ |
+| `M-k` / `M-j` | 樹狀圖上/下移                              |
+| `M-l`         | 開啟選取的頻道/thread                      |
+| `M-h`         | 收合/展開選取頻道的 threads（toggle）      |
+| `C-/`         | 進入 command mode                          |
+| `i` / Esc     | INSERT / NORMAL 模式切換                   |
+| `C-v`         | 貼上（endcord 自己的 paste，走 clipboard） |
+| `Enter`       | 發送訊息                                   |
+| `C-b`         | 跳到聊天底部                               |
 
 ## Command mode（C-/ 後輸入）
 
@@ -88,16 +88,11 @@ curl -s -H "Authorization: $TOKEN" \
 
 ## 已知坑
 
-| 症狀 | 原因 | 解法 |
-|------|------|------|
-| `goto <#id>` 沒反應 | 目標 thread 在樹中隱藏（收合） | 樹狀導航：parent 上 `M-h` 展開 → `M-j` → `M-l` |
-| 樹中看不到某個新 thread | 同步資料其實在，只是收合 | 同上；`🡲` 前綴＝有隱藏 threads |
-| send-keys 打中文掉字 | tmux send-keys 對多位元組字元不可靠 | `pbcopy` + endcord `C-v` 貼上 |
-| `C-x` 在輸入框 | 觸發 cancel downloads 確認（Y/n） | 誤觸時按 `n` + Enter 脫困 |
-| capture 全空 | 視窗太小 endcord 不渲染 | `tmux resize-window -x 200 -y 50` 或開 session 時指定 |
-| thread 建立時間想確認 | — | snowflake：`((id>>22)+1420070400000)/1000` 轉 timestamp |
-
-## 相關
-
-- Interceptor/Chrome 版（trusted events、DOM 讀取）：`scripts/discord.md`
-- Webhook 單向發送：`scripts/discord-webhook.sh`
+| 症狀                    | 原因                                | 解法                                                    |
+| ----------------------- | ----------------------------------- | ------------------------------------------------------- |
+| `goto <#id>` 沒反應     | 目標 thread 在樹中隱藏（收合）      | 樹狀導航：parent 上 `M-h` 展開 → `M-j` → `M-l`          |
+| 樹中看不到某個新 thread | 同步資料其實在，只是收合            | 同上；`🡲` 前綴＝有隱藏 threads                          |
+| send-keys 打中文掉字    | tmux send-keys 對多位元組字元不可靠 | `pbcopy` + endcord `C-v` 貼上                           |
+| `C-x` 在輸入框          | 觸發 cancel downloads 確認（Y/n）   | 誤觸時按 `n` + Enter 脫困                               |
+| capture 全空            | 視窗太小 endcord 不渲染             | `tmux resize-window -x 200 -y 50` 或開 session 時指定   |
+| thread 建立時間想確認   | —                                   | snowflake：`((id>>22)+1420070400000)/1000` 轉 timestamp |
