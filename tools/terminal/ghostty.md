@@ -17,7 +17,12 @@ theme = custom-night-owl
 window-theme = dark
 
 # ── Font (13, line-height 1.2) ────────────────────
-font-family = 0xProtoNerdFont
+# Cascadia Code NF（cursive italic 超美，目前愛用）
+font-family = Cascadia Code NF
+# 試過的候選（想換回去取消註解即可）：
+# font-family = 0xProto Nerd Font Mono
+# font-family = GeistMono Nerd Font Mono   ← Berkeley Mono 最接近的免費替代
+# font-family = CommitMono Nerd Font Mono  ← 刻意中性、fixed spacing
 font-size = 13
 
 # -calt：關掉 Contextual Alternates（如 != 變 ≠）
@@ -114,7 +119,7 @@ selection-foreground = #dfe5ee
 | 項目        | 設定值                                                                   | 備註                                       |
 | ----------- | ------------------------------------------------------------------------ | ------------------------------------------ |
 | 主題        | `theme = custom-night-owl`                                               | Night Owl 變體，16 色 + cursor + selection |
-| 字型        | 0xProtoNerdFont 13                                                       | `-calt` + `dlig`（關注音符號化、開 dlig）  |
+| 字型        | Cascadia Code NF 13                                                      | cursive italic；`-calt` + `dlig`           |
 | 行高        | `adjust-cell-height = 2`                                                 | 用點數 delta 調整                          |
 | 游標        | `cursor-style = block` + blink                                           | shell-integration 用 `no-cursor` 讓 vim 接手形狀 |
 | 游標移動    | `cursor-click-to-move = true`                                            | Option+click 跳游標（同 iTerm）            |
@@ -205,3 +210,17 @@ selection-foreground = #dfe5ee
 ```
 
 > 原始版（官方 Night Owl）的 `palette 8 = #575656`，已調亮為 `#577686`
+
+## 字型安裝筆記（2026-08-20）
+
+- 字型來源：`brew install --cask font-cascadia-code-nf`（Nerd Font 版才有 icon）
+- **地雷：macOS `fontd` 字型資料庫會卡住** — 手動把 `.ttf` 丟進 `~/Library/Fonts/` 卻不生效（`system_profiler SPFontsDataType` 看不到、Ghostty fallback 到別的字型）時，解法：
+  1. 把該字型檔移出 `~/Library/Fonts/`
+  2. `killall fontd`（macOS 14 沒有 `atsutil` 了）
+  3. 移回去，fontd 重建資料庫後即正常註冊
+- 驗證 Ghostty 實際用哪個字型（顯示 fallback 的 face 名稱就是沒吃到）：
+  ```bash
+  /Applications/Ghostty.app/Contents/MacOS/ghostty +show-face --font-family="Cascadia Code NF" --string="Hi"
+  ```
+- 已安裝的 Nerd Font 一覽：Cascadia Code NF、0xProto、GeistMono、CommitMono、JetBrainsMono、FiraCode、Hack、Monoid、Mononoki、RobotoMono、GohuFont、Departure、Operator
+- 想找類 Berkeley Mono：GeistMono（形似）與 CommitMono（神似）都是免費 Nerd Font
