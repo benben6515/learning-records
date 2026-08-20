@@ -99,6 +99,7 @@ i → /exampleapp → (popup) Alt+Enter 選 app
 ```
 
 指令字串格式（README）：`/[bot_name] [command] [subcommand] --[option]=[value]`
+
 - `bot_name` = app 全名 lower + 空格換 `_`（**含中文**，如 `<BOT_APP_NAME>`）→ 自動化打不出來，必須靠 assist 插入
 - popup 導航一律 `Alt+↑/↓` + `Alt+Enter`（vim mode 下也一樣）
 
@@ -282,20 +283,20 @@ herdr pane send-keys <PANE_ID> Enter; sleep 2
 
 ## 已知坑
 
-| 症狀                    | 原因                                | 解法                                                    |
-| ----------------------- | ----------------------------------- | ------------------------------------------------------- |
-| `goto <#id>` 沒反應     | 目標 thread 在樹中隱藏（收合）      | 樹狀導航：parent 上 `M-h` 展開 → `M-j` → `M-l`          |
-| 樹中看不到某個新 thread | 同步資料其實在，只是收合            | 同上；`🡲` 前綴＝有隱藏 threads                          |
-| send-keys 打中文掉字    | tmux send-keys 對多位元組字元不可靠 | `pbcopy` + endcord `C-v` 貼上                           |
-| `C-x` 在輸入框          | 觸發 cancel downloads 確認（Y/n）   | 誤觸時按 `n` + Enter 脫困                               |
-| capture 全空            | 視窗太小 endcord 不渲染             | `tmux resize-window -x 200 -y 50` 或開 session 時指定   |
-| thread 建立時間想確認   | —                                   | snowflake：`((id>>22)+1420070400000)/1000` 轉 timestamp |
-| slash command 送不出（log 10005） | endcord bug：payload 缺 `data.guild_id`（新式 guild apps） | extension `fix-interaction-guild-id` 已修；REST 直送參考上方 |
-| `/athena` parse 失敗（Invalid app command） | bot_name 必須是 app 全名（含中文如 `<BOT_APP_NAME>`） | 靠 assist 選取插入全名，不要手打 |
-| 指令列出現雙空格（`athena␣␣mute`）→ parse 失敗 | assist 插入後又手動補空白 | `Alt+Enter` 插入後接續打的字自帶前導空白即可 |
-| REST 送 interaction 204 但沒看到 ephemeral 回應 | 回應綁 gateway `session_id`，隨機 UUID 收不到 | 走 endcord 內（TUI 或 extension 用 `app.session_id`） |
-| herdr send-text 打中文掉字 | 同 tmux 問題，多位元組被吃 | 純靠 assist 插入；或 `pbcopy`+`C-v`（在 INSERT 有效） |
-| vim INSERT 下 Enter 不送出 | INSERT 的 Enter = 換行（`␤`） | 送出：`Esc` 回 NORMAL → `Enter` |
-| voice channel 上按 `Space`（vim tree） | 直接觸發「加入語音」不是開聊天 | 語音頻道沒有文字聊天；Esc 不一定能取消，用 `:voice_leave_call` |
-| 輸入列殘留幽靈文字（如 `:_target`）刪不掉 | slash command 狀態的 rendering glitch | `:redraw` 指令修復 |
-| log 裡有 traceback（mouse_events ValueError） | endcord 1.5.3 背景_thread bug，不影響 TUI | 忽略；TUI 仍可操作 |
+| 症狀                                            | 原因                                                       | 解法                                                           |
+| ----------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
+| `goto <#id>` 沒反應                             | 目標 thread 在樹中隱藏（收合）                             | 樹狀導航：parent 上 `M-h` 展開 → `M-j` → `M-l`                 |
+| 樹中看不到某個新 thread                         | 同步資料其實在，只是收合                                   | 同上；`🡲` 前綴＝有隱藏 threads                                 |
+| send-keys 打中文掉字                            | tmux send-keys 對多位元組字元不可靠                        | `pbcopy` + endcord `C-v` 貼上                                  |
+| `C-x` 在輸入框                                  | 觸發 cancel downloads 確認（Y/n）                          | 誤觸時按 `n` + Enter 脫困                                      |
+| capture 全空                                    | 視窗太小 endcord 不渲染                                    | `tmux resize-window -x 200 -y 50` 或開 session 時指定          |
+| thread 建立時間想確認                           | —                                                          | snowflake：`((id>>22)+1420070400000)/1000` 轉 timestamp        |
+| slash command 送不出（log 10005）               | endcord bug：payload 缺 `data.guild_id`（新式 guild apps） | extension `fix-interaction-guild-id` 已修；REST 直送參考上方   |
+| `/athena` parse 失敗（Invalid app command）     | bot_name 必須是 app 全名（含中文如 `<BOT_APP_NAME>`）      | 靠 assist 選取插入全名，不要手打                               |
+| 指令列出現雙空格（`athena␣␣mute`）→ parse 失敗  | assist 插入後又手動補空白                                  | `Alt+Enter` 插入後接續打的字自帶前導空白即可                   |
+| REST 送 interaction 204 但沒看到 ephemeral 回應 | 回應綁 gateway `session_id`，隨機 UUID 收不到              | 走 endcord 內（TUI 或 extension 用 `app.session_id`）          |
+| herdr send-text 打中文掉字                      | 同 tmux 問題，多位元組被吃                                 | 純靠 assist 插入；或 `pbcopy`+`C-v`（在 INSERT 有效）          |
+| vim INSERT 下 Enter 不送出                      | INSERT 的 Enter = 換行（`␤`）                              | 送出：`Esc` 回 NORMAL → `Enter`                                |
+| voice channel 上按 `Space`（vim tree）          | 直接觸發「加入語音」不是開聊天                             | 語音頻道沒有文字聊天；Esc 不一定能取消，用 `:voice_leave_call` |
+| 輸入列殘留幽靈文字（如 `:_target`）刪不掉       | slash command 狀態的 rendering glitch                      | `:redraw` 指令修復                                             |
+| log 裡有 traceback（mouse_events ValueError）   | endcord 1.5.3 背景\_thread bug，不影響 TUI                 | 忽略；TUI 仍可操作                                             |
