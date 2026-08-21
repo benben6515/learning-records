@@ -16,14 +16,17 @@
 theme = custom-night-owl
 window-theme = dark
 
-# ── Font (13, line-height 1.2) ────────────────────
-# Cascadia Code NF（cursive italic 超美，目前愛用）
-font-family = Cascadia Code NF
-# 試過的候選（想換回去取消註解即可）：
+# ── Font  ────────────────────
+# font-family = CaskaydiaCove Nerd Font Mono
+# font-family-italic = JetBrainsMono Nerd Font Mono
 # font-family = 0xProto Nerd Font Mono
-# font-family = GeistMono Nerd Font Mono   ← Berkeley Mono 最接近的免費替代
-# font-family = CommitMono Nerd Font Mono  ← 刻意中性、fixed spacing
-font-size = 13
+# Berkeley Mono 最接近的免費替代
+# font-family = GeistMono Nerd Font Mono
+# 刻意中性、fixed spacing
+font-family = CommitMono Nerd Font Mono
+font-size = 14
+font-feature = -calt
+adjust-cell-height = 18%
 
 # -calt：關掉 Contextual Alternates（如 != 變 ≠）
 # -liga / dlig：關掉標準 ligatures、開啟 discretionary ligatures
@@ -116,24 +119,24 @@ selection-foreground = #dfe5ee
 
 ## 目前設定
 
-| 項目        | 設定值                                                                   | 備註                                       |
-| ----------- | ------------------------------------------------------------------------ | ------------------------------------------ |
-| 主題        | `theme = custom-night-owl`                                               | Night Owl 變體，16 色 + cursor + selection |
-| 字型        | Cascadia Code NF 13                                                      | cursive italic；`-calt` + `dlig`           |
-| 行高        | `adjust-cell-height = 2`                                                 | 用點數 delta 調整                          |
-| 游標        | `cursor-style = block` + blink                                           | shell-integration 用 `no-cursor` 讓 vim 接手形狀 |
-| 游標移動    | `cursor-click-to-move = true`                                            | Option+click 跳游標（同 iTerm）            |
-| 滑鼠        | `mouse-hide-while-typing = true`                                         | 打字時隱藏指標                             |
-| 視窗        | `background-opacity = 0.6` + `background-blur-radius = 8`                | 太透可調 0.7–0.8                           |
-| Padding     | `window-padding-x/y = 4` + `macos-titlebar-style = transparent`          |                                            |
-| 分割 pane   | `unfocused-split-opacity = 1.0`（不暗化）+ `focus-follows-mouse = true`  |                                            |
-| Option 鍵   | `macos-option-as-alt = left`                                             | 左 opt 當 meta                             |
-| 剪貼簿      | `clipboard-write = allow`                                                | 允許 osc52 寫入                            |
-| 關閉確認    | `confirm-close-surface = true`                                           | 關閉前會確認                               |
-| 最大化 pane | `keybind = cmd+opt+j=toggle_split_zoom`                                  | 自訂                                       |
-| Session     | `window-save-state = always` + `quit-after-last-window-closed = true`    | 還原上次狀態、關完視窗即離開               |
-| 全螢幕      | `macos-non-native-fullscreen = visible-menu`                             | Cmd+Ctrl+F / Cmd+Enter                     |
-| 其他        | `bold-is-bright = false`                                                 | bold 不變色                                |
+| 項目        | 設定值                                                                  | 備註                                             |
+| ----------- | ----------------------------------------------------------------------- | ------------------------------------------------ |
+| 主題        | `theme = custom-night-owl`                                              | Night Owl 變體，16 色 + cursor + selection       |
+| 字型        | Cascadia Code NF 13                                                     | cursive italic；`-calt` + `dlig`                 |
+| 行高        | `adjust-cell-height = 2`                                                | 用點數 delta 調整                                |
+| 游標        | `cursor-style = block` + blink                                          | shell-integration 用 `no-cursor` 讓 vim 接手形狀 |
+| 游標移動    | `cursor-click-to-move = true`                                           | Option+click 跳游標（同 iTerm）                  |
+| 滑鼠        | `mouse-hide-while-typing = true`                                        | 打字時隱藏指標                                   |
+| 視窗        | `background-opacity = 0.6` + `background-blur-radius = 8`               | 太透可調 0.7–0.8                                 |
+| Padding     | `window-padding-x/y = 4` + `macos-titlebar-style = transparent`         |                                                  |
+| 分割 pane   | `unfocused-split-opacity = 1.0`（不暗化）+ `focus-follows-mouse = true` |                                                  |
+| Option 鍵   | `macos-option-as-alt = left`                                            | 左 opt 當 meta                                   |
+| 剪貼簿      | `clipboard-write = allow`                                               | 允許 osc52 寫入                                  |
+| 關閉確認    | `confirm-close-surface = true`                                          | 關閉前會確認                                     |
+| 最大化 pane | `keybind = cmd+opt+j=toggle_split_zoom`                                 | 自訂                                             |
+| Session     | `window-save-state = always` + `quit-after-last-window-closed = true`   | 還原上次狀態、關完視窗即離開                     |
+| 全螢幕      | `macos-non-native-fullscreen = visible-menu`                            | Cmd+Ctrl+F / Cmd+Enter                           |
+| 其他        | `bold-is-bright = false`                                                | bold 不變色                                      |
 
 ## 沒有的東西
 
@@ -156,20 +159,20 @@ selection-foreground = #dfe5ee
 
 ### Pro
 
-| 按鍵                          | 功能                                 |
-| ----------------------------- | ------------------------------------ |
-| `Cmd+Shift+Enter`             | Zoom 目前分割 pane（同 `Cmd+Opt+J`） |
-| `Cmd+Shift+P`                 | Command palette（搜尋所有指令）      |
-| `Cmd+K`                       | 清空畫面（同 shell `clear`）         |
-| `Cmd+Shift+,`                 | 重載設定檔                           |
-| `Cmd+,`                       | 開啟設定檔（在 $EDITOR）             |
-| `Cmd+Shift+J`                 | 把畫面內容寫入剪貼簿（純文字）       |
-| `Cmd+Home` / `Cmd+End`        | 捲到頂 / 底                          |
-| `Cmd+PageUp` / `Cmd+PageDown` | 向上 / 下翻頁                        |
-| `Cmd+J`                       | 捲到選取處                           |
-| `Ctrl+Tab` / `Ctrl+Shift+Tab` | 下一 / 上一 tab                      |
-| `Cmd+Opt+J`                   | 最大化 pane（自訂）                  |
-| `Opt+Click`                   | 游標移到點擊處（`cursor-click-to-move`）|
+| 按鍵                          | 功能                                     |
+| ----------------------------- | ---------------------------------------- |
+| `Cmd+Shift+Enter`             | Zoom 目前分割 pane（同 `Cmd+Opt+J`）     |
+| `Cmd+Shift+P`                 | Command palette（搜尋所有指令）          |
+| `Cmd+K`                       | 清空畫面（同 shell `clear`）             |
+| `Cmd+Shift+,`                 | 重載設定檔                               |
+| `Cmd+,`                       | 開啟設定檔（在 $EDITOR）                 |
+| `Cmd+Shift+J`                 | 把畫面內容寫入剪貼簿（純文字）           |
+| `Cmd+Home` / `Cmd+End`        | 捲到頂 / 底                              |
+| `Cmd+PageUp` / `Cmd+PageDown` | 向上 / 下翻頁                            |
+| `Cmd+J`                       | 捲到選取處                               |
+| `Ctrl+Tab` / `Ctrl+Shift+Tab` | 下一 / 上一 tab                          |
+| `Cmd+Opt+J`                   | 最大化 pane（自訂）                      |
+| `Opt+Click`                   | 游標移到點擊處（`cursor-click-to-move`） |
 
 ### 自訂語法
 
