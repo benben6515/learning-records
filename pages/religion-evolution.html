@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宗教演變 · The Evolution of Religion</title>
+<style>
+  :root {
+    --gold: #d4af37;
+    --gold-light: #f0d97c;
+    --ink: #0b0e17;
+    --ink-2: #12172a;
+    --paper: #f3ead8;
+    --muted: #9aa0b5;
+    --crimson: #a33;
+    --line: rgba(212, 175, 55, .25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Noto Serif TC", "Songti TC", Georgia, serif;
+    background: var(--ink);
+    color: var(--paper);
+    overflow-x: hidden;
+    line-height: 1.8;
+  }
+
+  /* ---------- 星空背景 ---------- */
+  #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .star { position: absolute; background: #fff; border-radius: 50%; opacity: .5; animation: twinkle var(--d) infinite ease-in-out; }
+  @keyframes twinkle { 0%,100% { opacity:.15 } 50% { opacity:.85 } }
+
+  section { position: relative; z-index: 1; padding: 110px 24px; max-width: 1180px; margin: 0 auto; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    perspective: 900px; position: relative;
+  }
+  .halo {
+    width: 340px; height: 340px; margin-bottom: 48px;
+    transform-style: preserve-3d; animation: spin3d 22s linear infinite;
+  }
+  .ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 1px solid var(--line);
+    box-shadow: 0 0 40px rgba(212,175,55,.12), inset 0 0 60px rgba(212,175,55,.06);
+  }
+  .ring::before {
+    content: ""; position: absolute; inset: -14px; border-radius: 50%;
+    border: 1px dashed rgba(212,175,55,.35);
+  }
+  .r2 { transform: rotateX(70deg); }
+  .r3 { transform: rotateY(65deg); }
+  .core {
+    position: absolute; top: 50%; left: 50%; width: 120px; height: 120px;
+    translate: -50% -50%; display: grid; place-items: center;
+    font-size: 52px; filter: drop-shadow(0 0 26px rgba(240,217,124,.55));
+    animation: breathe 5s ease-in-out infinite;
+  }
+  @keyframes spin3d { from { transform: rotateZ(0) rotateX(18deg);} to { transform: rotateZ(360deg) rotateX(18deg);} }
+  @keyframes breathe { 0%,100% { scale:1 } 50% { scale:1.12 } }
+  .hero h1 {
+    font-size: clamp(44px, 8vw, 88px); letter-spacing: .28em; font-weight: 700;
+    background: linear-gradient(180deg, var(--gold-light), var(--gold) 60%, #8a6d1f);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 20px 60px rgba(212,175,55,.15);
+  }
+  .hero p.sub { margin-top: 18px; color: var(--muted); letter-spacing: .5em; font-size: 14px; text-transform: uppercase; }
+  .scroll-hint { margin-top: 64px; color: var(--gold); font-size: 26px; animation: bob 2s infinite; text-decoration: none; }
+  @keyframes bob { 0%,100% { transform: translateY(0)} 50% { transform: translateY(10px)} }
+
+  h2.title { text-align: center; font-size: clamp(30px, 5vw, 46px); letter-spacing: .18em; margin-bottom: 12px; }
+  .title span { color: var(--gold); }
+  .subtitle { text-align: center; color: var(--muted); margin-bottom: 80px; font-size: 16px; letter-spacing: .12em; }
+  .rule { width: 90px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 22px auto 0; }
+
+  /* ---------- 時間軸 ---------- */
+  .timeline { position: relative; max-width: 960px; margin: 0 auto; padding: 20px 0; }
+  .timeline::before {
+    content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(180deg, transparent, var(--gold) 8%, var(--gold) 92%, transparent);
+    box-shadow: 0 0 14px rgba(212,175,55,.4);
+    transform: translateX(-50%);
+  }
+  .tl-item { position: relative; width: 50%; padding: 0 48px 72px 0; opacity: 0; transform: translateY(36px); transition: all .9s cubic-bezier(.2,.7,.2,1); }
+  .tl-item:nth-child(even) { left: 50%; padding: 0 0 72px 48px; }
+  .tl-item.show { opacity: 1; transform: translateY(0); }
+  .tl-dot {
+    position: absolute; top: 8px; right: -9px; width: 18px; height: 18px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-light), #7a5c14);
+    box-shadow: 0 0 0 5px rgba(212,175,55,.15), 0 0 18px rgba(212,175,55,.6);
+  }
+  .tl-item:nth-child(even) .tl-dot { right: auto; left: -9px; }
+  .tl-year { color: var(--gold); font-size: 15px; letter-spacing: .2em; margin-bottom: 6px; }
+  .tl-card {
+    background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px;
+    backdrop-filter: blur(6px);
+    transition: transform .45s, border-color .45s, box-shadow .45s;
+  }
+  .tl-card:hover { transform: translateY(-5px) scale(1.015); border-color: var(--gold); box-shadow: 0 18px 46px rgba(0,0,0,.5), 0 0 24px rgba(212,175,55,.12); }
+  .tl-card h3 { font-size: 21px; margin-bottom: 6px; }
+  .tl-card h3 em { font-style: normal; font-size: 13px; color: var(--muted); margin-left: 10px; letter-spacing: .08em; }
+  .tl-card p { color: #cfd3e0; font-size: 15px; }
+  .tag { display: inline-block; margin-top: 12px; padding: 3px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; color: var(--gold); letter-spacing: .15em; }
+
+  /* ---------- 經典 3D 翻牌 ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .flip { height: 360px; perspective: 1200px; cursor: pointer; }
+  .flip-inner { position: relative; width: 100%; height: 100%; transition: transform .9s cubic-bezier(.2,.7,.2,1); transform-style: preserve-3d; }
+  .flip.flipped .flip-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; border-radius: 18px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 34px; text-align: center;
+    border: 1px solid var(--line);
+  }
+  .front { background: linear-gradient(165deg, #171d33, #0e1222); box-shadow: 0 20px 50px rgba(0,0,0,.45); }
+  .front .glyph { font-size: 54px; margin-bottom: 20px; filter: drop-shadow(0 0 18px rgba(212,175,55,.45)); }
+  .front h3 { font-size: 26px; letter-spacing: .1em; }
+  .front small { color: var(--muted); margin-top: 10px; letter-spacing: .25em; font-size: 11px; text-transform: uppercase; }
+  .front .tap { position: absolute; bottom: 20px; font-size: 11px; color: var(--gold); letter-spacing: .3em; opacity: .7; }
+  svg.i { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .glyph svg.i { width: 58px; height: 58px; color: var(--gold); }
+  .core svg.i { width: 68px; height: 68px; color: var(--gold-light); }
+  .site-info .icon svg.i { width: 36px; height: 36px; color: var(--gold-light); }
+  .sigil { width: 20px; height: 20px; color: var(--gold); opacity: .9; margin: 0 7px; vertical-align: middle; }
+  .back { background: linear-gradient(165deg, #20182c, #10131f); transform: rotateY(180deg); border-color: var(--gold); justify-content: flex-start; }
+  .back h4 { color: var(--gold); font-size: 17px; margin-bottom: 12px; letter-spacing: .12em; }
+  .back p { font-size: 14px; color: #d8dbe6; line-height: 1.9; }
+
+  /* ---------- 戰爭 ---------- */
+  .wars-wrap { background: linear-gradient(180deg, transparent, rgba(120,20,25,.07) 20%, rgba(120,20,25,.07) 80%, transparent); border-block: 1px solid rgba(163,51,51,.2); }
+  .war-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 26px; }
+  .war {
+    border: 1px solid rgba(200,80,80,.3); border-radius: 16px; overflow: hidden;
+    background: linear-gradient(170deg, rgba(140,35,40,.16), rgba(20,10,14,.5));
+    transition: transform .4s, box-shadow .4s;
+  }
+  .war:hover { transform: translateY(-7px); box-shadow: 0 24px 54px rgba(0,0,0,.55), 0 0 30px rgba(163,51,51,.15); }
+  .war-head { padding: 20px 24px 12px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .war-head h3 { font-size: 19px; }
+  .war-years { color: #e0938f; font-size: 13px; white-space: nowrap; letter-spacing: .06em; }
+  .war-body { padding: 0 24px 20px; color: #ddd0cd; font-size: 14.5px; }
+  .war-stat { margin: 14px 24px 22px; padding: 12px 16px; border-left: 3px solid var(--crimson); background: rgba(163,51,51,.1); border-radius: 0 10px 10px 0; font-size: 13px; color: #f0cfc9; }
+  .war-stat b { font-size: 20px; color: #ff9d94; display: block; }
+
+  /* ---------- 聖地 ---------- */
+  .sites { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+  .site {
+    border-radius: 18px; overflow: hidden; position: relative; height: 380px;
+    border: 1px solid var(--line); transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .5s;
+    cursor: default;
+  }
+  .site:hover { transform: translateY(-8px) rotateX(3deg); box-shadow: 0 30px 70px rgba(0,0,0,.6); }
+  .site-bg { position: absolute; inset: 0; transition: scale 1.2s ease; }
+  .site:hover .site-bg { scale: 1.08; }
+  .site-bg::after { content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(11,14,23,.1) 30%, rgba(11,14,23,.94)); }
+  .site-info { position: absolute; bottom: 0; padding: 26px; z-index: 2; }
+  .site-info .icon { font-size: 34px; }
+  .site-info h3 { font-size: 24px; margin: 8px 0 2px; letter-spacing: .08em; }
+  .site-info .rel { color: var(--gold); font-size: 12px; letter-spacing: .22em; margin-bottom: 8px; }
+  .site-info p { font-size: 13.5px; color: #cdd1de; }
+
+  /* ---------- 今日版圖 ---------- */
+  .bars { max-width: 820px; margin: 0 auto; }
+  .bar-row { display: grid; grid-template-columns: 130px 1fr 70px; align-items: center; gap: 16px; margin-bottom: 20px; font-size: 15px; }
+  .bar-track { height: 16px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #8a6d1f, var(--gold), var(--gold-light)); transition: width 1.6s cubic-bezier(.2,.7,.2,1); box-shadow: 0 0 14px rgba(212,175,55,.4); }
+  .pct { text-align: right; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+  footer { text-align: center; padding: 60px 20px 80px; color: var(--muted); font-size: 13px; letter-spacing: .2em; border-top: 1px solid rgba(255,255,255,.06); position: relative; z-index: 1; }
+  footer .glyphs { display: flex; justify-content: center; align-items: center; gap: 7px; margin-bottom: 14px; }
+
+  @media (max-width: 720px) {
+    .timeline::before { left: 12px; }
+    .tl-item, .tl-item:nth-child(even) { width: 100%; left: 0; padding: 0 0 60px 44px; }
+    .tl-dot, .tl-item:nth-child(even) .tl-dot { left: 3px; right: auto; }
+    .bar-row { grid-template-columns: 90px 1fr 56px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="halo">
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
+    <div class="core"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></div>
+  </div>
+  <h1>宗教演變</h1>
+  <p class="sub">The Evolution of Religion</p>
+  <p style="color:var(--muted); margin-top:22px; max-width:560px;">從遠古的星辰崇拜到今日的全球信仰 —— 一場跨越五千年的心靈之旅</p>
+  <a href="#timeline" class="scroll-hint">⌄</a>
+</header>
+
+<!-- ============ 時序圖 ============ -->
+<section id="timeline">
+  <h2 class="title">五千年<span>時序圖</span></h2>
+  <p class="subtitle">Timeline of Faith · 公元前 2000 年至今</p>
+
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">約公元前 2000 年</div>
+      <div class="tl-card"><h3>亞伯拉罕 <em>Abraham</em></h3>
+        <p>族長亞伯拉罕離開吾珥，前往迦南。猶太教、基督教、伊斯蘭教的共同源頭——「亞伯拉罕諸教」自此展開。</p>
+        <span class="tag">猶太教起源</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">公元前 1500–1000 年</div>
+      <div class="tl-card"><h3>吠陀時代 <em>Vedic Age</em></h3>
+        <p>雅利安人在印度河河谷編成《梨俱吠陀》，種姓制度與輪迴觀念成形，印度教的前身「婆羅門教」確立。</p>
+        <span class="tag">印度教成形</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">公元前 13 世紀</div>
+      <div class="tl-card"><h3>出埃及與摩西 <em>Moses & Exodus</em></h3>
+        <p>傳說中摩西率以色列人出埃及、在西奈山領受十誡，一神信仰正式立約——《妥拉》(Torah) 核心成形。</p>
+        <span class="tag">十誡 · 妥拉</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">公元前 6–5 世紀</div>
+      <div class="tl-card"><h3>軸心時代 <em>Axial Age</em></h3>
+        <p>釋迦牟尼悟道創立佛教；孔子講仁、老子著《道德經》；瑣羅亞斯德在波斯宣揚善惡二元論。人類思想同時爆發。</p>
+        <span class="tag">佛道儒並起</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">公元 30 年前後</div>
+      <div class="tl-card"><h3>耶穌基督 <em>Jesus Christ</em></h3>
+        <p>耶穌在羅馬帝國猶太行省傳道、被釘十字架，門徒見證復活。基督教從猶太教中分出，四福音書成書。</p>
+        <span class="tag">基督教誕生</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">公元 70 年</div>
+      <div class="tl-card"><h3>第二聖殿被毀 <em>Fall of Jerusalem</em></h3>
+      <p>羅馬軍團攻陷耶路撒冷、夷平聖殿。猶太人開始近兩千年的大流散 (Diaspora)，拉比猶太教取而代之。</p>
+        <span class="tag">猶太流散</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">公元 610–632 年</div>
+      <div class="tl-card"><h3>穆罕默德領受啟示 <em>Muhammad</em></h3>
+        <p>穆罕默德在麥加希拉山洞領受天使加百列啟示，二十三年集成《古蘭經》。伊斯蘭教統一阿拉伯半島。</p>
+        <span class="tag">伊斯蘭興起</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1054 年</div>
+      <div class="tl-card"><h3>東西教會大分裂 <em>Great Schism</em></h3>
+        <p>羅馬主教與君士坦丁堡牧首互相絕罰。基督教分裂為天主教（西方）與東正教（東方），延續至今。</p>
+        <span class="tag">天主教 × 東正教</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1096–1291 年</div>
+      <div class="tl-card"><h3>十字軍東征 <em>The Crusades</em></h3>
+        <p>教宗烏爾班二世號召收復聖地，歐洲騎士八度東征，奪取又失去耶路撒冷，深刻塑造基督教與伊斯蘭世界的對峙記憶。</p>
+        <span class="tag">宗教戰爭</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1517 年</div>
+      <div class="tl-card"><h3>宗教改革 <em>Reformation</em></h3>
+        <p>馬丁·路德將《九十五條論綱》貼上威登堡教堂大門，反對贖罪券。新教诞生，歐洲宗教版圖永久改寫。</p>
+        <span class="tag">新教改革</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1618–1648 年</div>
+      <div class="tl-card"><h3>三十年戰爭 <em>Thirty Years' War</em></h3>
+        <p>新舊教諸侯在神聖羅馬帝國境內開戰，演變為全歐大戰。《西發里亞和約》確立「教隨國定」，政教分離萌芽。</p>
+        <span class="tag">宗教戰爭終章</span></div>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1948 年</div>
+      <div class="tl-card"><h3>以色列復國 <em>State of Israel</em></h3>
+        <p>經歷大屠殺後，猶太人在巴勒斯坦故土建國，耶路撒冷主權爭議延續至今，成為三大一神教最敏感的神經末梢。</p>
+        <span class="tag">現代聖地之爭</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 重要經典 ============ -->
+<section id="scriptures">
+  <h2 class="title">重要<span>經典</span></h2>
+  <p class="subtitle">Sacred Texts · 點擊卡片翻面閱讀</p>
+
+  <div class="cards">
+    <div class="flip" onclick="this.classList.toggle('flipped')">
+      <div class="face front"><div class="glyph"><svg class="i" viewBox="0 0 24 24"><path d="M6 4.5h12v15H6Z"/><path d="M9 9h6M9 12h6M9 15h4"/></svg></div><h3>創世紀</h3><small>Genesis · 約前 6–5 世紀</small><span class="tap">— TAP —</span></div>
+      <div class="face back"><h4>創世紀 · Genesis</h4><p>《妥拉》與《舊約》首卷。「起初，神創造天地」——七日創世、伊甸園、挪亞方舟、巴別塔，奠定亞伯拉罕諸教的宇宙觀與人性觀。</p></div>
+    </div>
+    <div class="flip" onclick="this.classList.toggle('flipped')">
+      <div class="face front"><div class="glyph"><svg class="i" viewBox="0 0 24 24"><path d="M5 4.5h13a1 1 0 0 1 1 1v13H6a1 1 0 0 0-1 1Z"/><path d="M5 19.5a1 1 0 0 1 1-1h13"/><path d="M9 8.5h6"/></svg></div><h3>聖經</h3><small>Bible · 全球印量第一</small><span class="tap">— TAP —</span></div>
+      <div class="face back"><h4>聖經 · Bible</h4><p>舊約三十九卷＋新約二十七卷，跨越逾千年寫作史。史上印刷量最高的書（超過 50 億冊），譯本逾 700 種語言。</p></div>
+    </div>
+    <div class="flip" onclick="this.classList.toggle('flipped')">
+      <div class="face front"><div class="glyph"><svg class="i" viewBox="0 0 24 24"><path d="M20 12.8A8.5 8.5 0 1 1 11.2 4a7 7 0 1 0 8.8 8.8Z"/><path d="M17 5.5l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7Z"/></svg></div><h3>古蘭經</h3><small>Qur'ān · 公元 632 年定本</small><span class="tap">— TAP —</span></div>
+      <div class="face back"><h4>古蘭經 · Qur'ān</h4><p>穆斯林視之為真主逐次降示給穆罕默德的直接言語，共 114 章（Surah）。阿拉伯原文誦讀不譯，是伊斯蘭法與生活的一切準則。</p></div>
+    </div>
+    <div class="flip" onclick="this.classList.toggle('flipped')">
+      <div class="face front"><div class="glyph"><svg class="i" viewBox="0 0 24 24"><path d="M12 4.5c1.7 1.8 2.6 3.9 2.6 6s-.9 4.2-2.6 6c-1.7-1.8-2.6-3.9-2.6-6s.9-4.2 2.6-6Z"/><path d="M4.8 9c2.7.7 4.6 2 5.9 4M19.2 9c-2.7.7-4.6 2-5.9 4"/><path d="M3.5 14c2.2 2.8 5.2 4.3 8.5 4.3s6.3-1.5 8.5-4.3"/></svg></div><h3>吠陀經</h3><small>Vedas · 約前 1500 年</small><span class="tap">— TAP —</span></div>
+      <div class="face back"><h4>吠陀經 · Vedas</h4><p>四部吠陀（《梨俱》《夜柔》《娑摩》《阿闥婆》）是人類现存最古老的宗教文獻之一，口傳千年才書寫，孕育印度教哲學。</p></div>
+    </div>
+    <div class="flip" onclick="this.classList.toggle('flipped')">
+      <div class="face front"><div class="glyph"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5M6 6l3.5 3.5M14.5 14.5 18 18M18 6l-3.5 3.5M9.5 14.5 6 18"/></svg></div><h3>大藏經</h3><small>Tripitaka · 前 1 世紀起結集</small><span class="tap">— TAP —</span></div>
+      <div class="face back"><h4>三藏 · Tripitaka</h4><p>經（佛陀教導）、律（僧團戒條）、論（註釋體系）三藏總集。《金剛經》《法華經》等大乘經典隨絲路東傳，深刻影響東亞文明。</p></div>
+    </div>
+    <div class="flip" onclick="this.classList.toggle('flipped')">
+      <div class="face front"><div class="glyph"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a4.5 4.5 0 0 1 0 9 4.5 4.5 0 0 0 0 9"/><circle cx="16.5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="7.5" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></div><h3>道德經</h3><small>Tao Te Ching · 約前 4 世紀</small><span class="tap">— TAP —</span></div>
+      <div class="face back"><h4>道德經 · Tao Te Ching</h4><p>老子五千言，「道可道，非常道」。全世界被翻譯次數第二多的經典，僅次於《聖經》，道家與道教的思想泉源。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 宗教戰爭 ============ -->
+<section id="wars" class="wars-wrap" style="max-width:none;">
+  <div style="max-width:1180px;margin:0 auto;">
+    <h2 class="title">宗教<span>戰爭</span></h2>
+    <p class="subtitle">Wars of Faith · 當信仰化為刀劍</p>
+
+    <div class="war-grid">
+      <div class="war"><div class="war-head"><h3>十字軍東征</h3><span class="war-years">1096–1291</span></div>
+        <div class="war-body">八次主要東征，口號「Deus vult!」（天主所願）。1099 年第一次東征血洗耶路撒冷；1187 年薩拉丁重奪聖城。基督教、伊斯蘭與拜占庭三方角力兩百年。</div>
+        <div class="war-stat"><b>~100 萬+</b>估計死亡人數 · 聖殿騎士團、醫院騎士團等軍事修會崛起</div>
+      </div>
+      <div class="war"><div class="war-head"><h3>三十年戰爭</h3><span class="war-years">1618–1648</span></div>
+        <div class="war-body">由布拉格擲窗事件點燃的新教 vs 天主教天主教戰爭，捲入西班牙、法國、瑞典等強權，德意志地區人口銳減過半，《西發里亞和約》重塑歐洲秩序。</div>
+        <div class="war-stat"><b>~800 萬</b>死亡 · 歐洲當時死傷最慘烈的衝突</div>
+      </div>
+      <div class="war"><div class="war-head"><h3>法國宗教戰爭</h3><span class="war-years">1562–1598</span></div>
+        <div class="war-body">天主教吉斯派與胡格諾派（喀爾文派）內戰三十七年。1572 年聖巴泰勒米大屠殺，數萬新教徒遇害；1598 年《南特詔令》首開宗教容忍先例。</div>
+        <div class="war-stat"><b>300 萬</b>估計死亡（含饑荒瘟疫）· 法國人口損失近五分之一</div>
+      </div>
+      <div class="war"><div class="war-head"><h3>阿拉伯大征服</h3><span class="war-years">632–750</span></div>
+        <div class="war-body">穆罕默德逝世後百年間，哈里發大軍席捲波斯、敘利亞、埃及、北非直至伊比利半島。751 年怛羅斯之戰與唐朝相遇，造紙術西傳。</div>
+        <div class="war-stat"><b>100 年</b>建立橫跨三大洲的帝國 · 伊斯蘭世界與基督教世界的千年邊界由此劃定</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 聖地 ============ -->
+<section id="sites">
+  <h2 class="title">世界<span>聖地</span></h2>
+  <p class="subtitle">Holy Sites · 信仰的地標</p>
+
+  <div class="sites">
+    <div class="site">
+      <div class="site-bg" style="background:linear-gradient(160deg,#c9a86a,#7a5c2e 55%,#2c2113);"></div>
+      <div class="site-info"><span class="icon"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5c2.5-.3 4-1.8 4.9-4.4 1 2.6 3 4 6 4.4h6.6l-1.8 2.4c-1.6 2.1-4.4 3-7.2 2.6-2.9-.4-5.7-1.6-8.5-5Z"/><path d="M9.5 12.5l-1.2 1.6"/></svg></span><h3>耶路撒冷</h3><div class="rel">JUDAISM · CHRISTIANITY · ISLAM</div>
+        <p>三大一神教共同聖城：哭牆、聖墓教堂、岩石圓頂清真寺在同一座老城內比鄰而立。</p></div>
+    </div>
+    <div class="site">
+      <div class="site-bg" style="background:linear-gradient(160deg,#2b2b2b,#111 60%,#000);"></div>
+      <div class="site-info"><span class="icon"><svg class="i" viewBox="0 0 24 24"><rect x="4.5" y="5" width="15" height="14" rx="1"/><path d="M4.5 11h15"/><rect x="9.5" y="14.5" width="5" height="4.5"/></svg></span><h3>麥加</h3><div class="rel">ISLAM · SAUDI ARABIA</div>
+        <p>克爾白（天房）所在。全球每年逾 200 萬穆斯林完成朝覲 (Hajj)，是世上規模最大的年度聚會。</p></div>
+    </div>
+    <div class="site">
+      <div class="site-bg" style="background:linear-gradient(160deg,#e8dcc0,#a89468 55%,#4a3f28);"></div>
+      <div class="site-info"><span class="icon"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v5M9.5 5.5h5"/><path d="M9.8 8h4.4v4.2l4.6 2.9V19H5.2v-3.9L9.8 12.2Z"/><path d="M12 12.6V17"/></svg></span><h3>梵蒂岡</h3><div class="rel">CATHOLICISM · ROME</div>
+        <p>聖彼得大教堂與西斯汀禮拜堂所在，全球最小國家、十四億天主教徒的精神中樞。</p></div>
+    </div>
+    <div class="site">
+      <div class="site-bg" style="background:linear-gradient(160deg,#ff9944,#c1440e 55%,#5a1a02);"></div>
+      <div class="site-info"><span class="icon"><svg class="i" viewBox="0 0 24 24"><path d="M4 9.5 12 5l8 4.5"/><path d="M6 9.5v1.8h12V9.5"/><path d="M5 13.5h14"/><path d="M6.5 13.5v3h11v-3"/><path d="M8.5 16.5v2h7v-2"/><path d="M7 18.5V20h10v-1.5"/></svg></span><h3>瓦拉納西</h3><div class="rel">HINDUISM · INDIA</div>
+        <p>恆河岸邊的世界最古老活城之一。印度教徒相信在此沐浴能洗淨業障，火葬階梯晝夜不息。</p></div>
+    </div>
+    <div class="site">
+      <div class="site-bg" style="background:linear-gradient(160deg,#7ec8a9,#2e7d5b 55%,#123527);"></div>
+      <div class="site-info"><span class="icon"><svg class="i" viewBox="0 0 24 24"><path d="M12 20.5C10.7 16 6.5 13.8 6.5 9.6 6.5 6.4 8.9 4 12 4s5.5 2.4 5.5 5.6c0 4.2-4.2 6.4-5.5 10.9Z"/><path d="M12 20.5V4.5"/></svg></span><h3>菩提伽耶</h3><div class="rel">BUDDHISM · INDIA</div>
+        <p>悉達多太子在此的畢缽羅樹下悟道成佛，摩訶菩提寺的大菩提樹被視為那棵聖樹的直系後代。</p></div>
+    </div>
+    <div class="site">
+      <div class="site-bg" style="background:linear-gradient(160deg,#8fa8c8,#46618c 55%,#16233a);"></div>
+      <div class="site-info"><span class="icon"><svg class="i" viewBox="0 0 24 24"><path d="M3 18.5 9.3 7.5l3.2 5.4 2.1-3.2 6.4 8.8Z"/><path d="M8.2 18.5h11"/></svg></span><h3>西奈山</h3><div class="rel">JUDAISM · CHRISTIANITY · EGYPT</div>
+        <p>傳說中摩西領受十誡之地。日出時分的山頂，至今仍有朝聖者沿三千級「悔改階梯」攀行而上。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 今日版圖 ============ -->
+<section id="today">
+  <h2 class="title">今日<span>版圖</span></h2>
+  <p class="subtitle">World Religions Today · 全球信眾比例（2025 估計）</p>
+
+  <div class="bars">
+    <div class="bar-row"><span>基督教</span><div class="bar-track"><div class="bar-fill" data-w="31"></div></div><span class="pct">31%</span></div>
+    <div class="bar-row"><span>伊斯蘭教</span><div class="bar-track"><div class="bar-fill" data-w="25"></div></div><span class="pct">25%</span></div>
+    <div class="bar-row"><span>無宗教</span><div class="bar-track"><div class="bar-fill" data-w="16"></div></div><span class="pct">16%</span></div>
+    <div class="bar-row"><span>印度教</span><div class="bar-track"><div class="bar-fill" data-w="15"></div></div><span class="pct">15%</span></div>
+    <div class="bar-row"><span>佛教</span><div class="bar-track"><div class="bar-fill" data-w="4"></div></div><span class="pct">4%</span></div>
+    <div class="bar-row"><span>民俗 / 其他</span><div class="bar-track"><div class="bar-fill" data-w="6"></div></div><span class="pct">6%</span></div>
+    <div class="bar-row"><span>猶太教</span><div class="bar-track"><div class="bar-fill" data-w="0.2" min-w="2"></div></div><span class="pct">0.2%</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="glyphs">
+    <svg class="sigil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a4.5 4.5 0 0 1 0 9 4.5 4.5 0 0 0 0 9"/><circle cx="16.5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="7.5" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+    <svg class="sigil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5M6 6l3.5 3.5M14.5 14.5 18 18M18 6l-3.5 3.5M9.5 14.5 6 18"/></svg>
+    <svg class="sigil" viewBox="0 0 24 24"><path d="M12 3v18M6 8h12"/></svg>
+    <svg class="sigil" viewBox="0 0 24 24"><path d="M20 12.8A8.5 8.5 0 1 1 11.2 4a7 7 0 1 0 8.8 8.8Z"/><path d="M17 5.5l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7Z"/></svg>
+    <svg class="sigil" viewBox="0 0 24 24"><path d="M12 4.5c1.7 1.8 2.6 3.9 2.6 6s-.9 4.2-2.6 6c-1.7-1.8-2.6-3.9-2.6-6s.9-4.2 2.6-6Z"/><path d="M4.8 9c2.7.7 4.6 2 5.9 4M19.2 9c-2.7.7-4.6 2-5.9 4"/><path d="M3.5 14c2.2 2.8 5.2 4.3 8.5 4.3s6.3-1.5 8.5-4.3"/></svg>
+    <svg class="sigil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>
+  </div>
+  宗教演變 · THE EVOLUTION OF RELIGION<br><br>
+  「諸法殊途，其歸一也。」
+</footer>
+
+<script>
+  // ---- 星空 ----
+  const cv = document.getElementById('stars'), ctx = cv.getContext('2d');
+  let stars = [];
+  function initStars() {
+    cv.width = innerWidth; cv.height = innerHeight;
+    stars = Array.from({length: Math.floor(innerWidth * innerHeight / 4200)}, () => ({
+      x: Math.random() * cv.width, y: Math.random() * cv.height,
+      r: Math.random() * 1.3 + .2,
+      p: Math.random() * Math.PI * 2,
+      s: Math.random() * .02 + .005
+    }));
+  }
+  function drawStars(t) {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (const s of stars) {
+      const a = .25 + Math.abs(Math.sin(s.p)) * .65;
+      ctx.globalAlpha = a;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+      s.p += s.s;
+    }
+    requestAnimationFrame(drawStars);
+  }
+  initStars(); drawStars();
+  addEventListener('resize', initStars);
+
+  // ---- 時軸滾動顯現 ----
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('show')), { threshold: .18 });
+  document.querySelectorAll('.tl-item').forEach(el => io.observe(el));
+
+  // ---- 比例條動畫 ----
+  const bio = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('.bar-fill').forEach((b, i) =>
+      setTimeout(() => b.style.width = Math.max(b.dataset.w, b.dataset['minW'] || 0) + '%', i * 140));
+    bio.unobserve(e.target);
+  }), { threshold: .3 });
+  const todaySec = document.querySelector('.bars');
+  if (todaySec) bio.observe(todaySec);
+
+  // ---- Hero 視差 ----
+  addEventListener('scroll', () => {
+    const halo = document.querySelector('.halo');
+    if (scrollY < innerHeight) halo.style.translate = `0 ${scrollY * .25}px`;
+  }, { passive: true });
+</script>
+</body>
+</html>
