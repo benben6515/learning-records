@@ -4,7 +4,7 @@
 > 計價方式跟 opencode Go 完全不同：**不是 per-token 計費，而是以 GPU 時間 / 模型用量等級（Usage Level 1–4）吃方案額度**，沒有 token 上限。
 > 本檔把 Ollama 官方每個 cloud tag 的 Context / Usage / Size / 多模態整理出來，方便挑模型與估算額度消耗。
 >
-> ⚠️ **2026-08-17 觀察到計價轉型起點**（2026-08-21 核對 live 目錄：16 family / 18 tag 無新增、無退役，計價與額度結構不變）：新上架的 `kimi-k3:cloud` 不再有 Usage badge，改掛 **Cost /1M tokens badge**（$3.00 input / $0.30 cached / $15.00 output）——per-token 計價開始落地（先前官方列為 coming soon）。其餘 17 個 tag 仍是 Usage level 計量。
+> ⚠️ **2026-08-17 觀察到計價轉型起點**（2026-08-21 全量複查：16 family / 18 tag 無新增、無退役；18 個 tag 的 Usage / Context / Size / caps badge 逐一重抓，全數與本檔一致，`kimi-k3` Cost badge $3/$0.30/$15 亦未變）：新上架的 `kimi-k3:cloud` 不再有 Usage badge，改掛 **Cost /1M tokens badge**（$3.00 input / $0.30 cached / $15.00 output）——per-token 計價開始落地（先前官方列為 coming soon）。其餘 17 個 tag 仍是 Usage level 計量。
 
 ---
 
@@ -30,7 +30,7 @@ Usage / Context / Size badge，以及 capabilities badge（vision/tools/thinking
 - Ollama Cloud 來源：<https://docs.ollama.com/cloud>
 - 方案/計量來源：<https://ollama.com/pricing>
 - 模型清單來源：<https://ollama.com/search?c=cloud>（各 `:cloud` tag 頁 badge）
-- 資料抓取日：**2026-08-21**（live 核對：`ollama.com/search?c=cloud` 仍列 16 family / 18 tag、`docs.ollama.com/cloud` 退役表與 `ollama.com/pricing` 方案均無變動；並實測 `qwen3.5:cloud` 與 `qwen3.5:397b-cloud` 皆解析為 397B / medium / 256K，確認既有 claim 正確）
+- 資料抓取日：**2026-08-21**（全量複查：`search?c=cloud` 16 family 不變、`docs.ollama.com/cloud` 退役表與 `ollama.com/pricing` 方案不變；18 個 `:cloud` tag 頁的 Usage / Context / Size / caps badge 逐一 curl 重抓，結果與 08-17 快照完全一致——含 `qwen3.5:cloud`=`qwen3.5:397b-cloud`=397B/medium/256K、`minimax-m3` 仍無 Size badge、`kimi-k3` Cost badge $3/$0.30/$15）
 
 ---
 
