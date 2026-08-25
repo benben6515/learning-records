@@ -39,9 +39,9 @@ Keep steps 1–3 in <strong>one unbroken context window</strong>. Don't compact 
 </div>
 
 <h2>The smart-zone limit</h2>
-<p>The window within which the model still reasons sharply is ~120k tokens — the <strong>smart zone</strong>. If a session approaches it before <code>/to-tickets</code>, don't push on degraded: <code>/handoff</code> and continue in a fresh thread.</p>
+<p>The window within which the model still reasons sharply is ~150k tokens — the <strong>smart zone</strong>. If a session approaches it before <code>/to-tickets</code>, don't push on degraded: <code>/compact</code> at the nearest <strong>phase boundary</strong> (never mid-phase) and carry on.</p>
 
-<p>That's the whole flow. On-ramps (triage, wayfinder) and standalone tools (prototype, research) attach to it — coming in later lessons.</p>
+<p>That's the whole flow. On-ramps (triage, diagnosing-bugs, wayfinder) and standalone tools (prototype, research) attach to it — coming in later lessons.</p>
 
 <div class="quiz"><script type="application/json">
 {
@@ -94,12 +94,12 @@ Keep steps 1–3 in <strong>one unbroken context window</strong>. Don't compact 
   "options": [
     "Push on, just keep going",
     "Compact mid-phase to save room",
-    "Handoff, continue fresh after",
+    "Compact at the nearest phase boundary",
     "Skip to-tickets, go to implement"
   ],
   "answer": 2,
-  "explainRight": "Handoff forks to a fresh session. Don't push on degraded or compact mid-phase.",
-  "explainWrong": "Pushing on degrades reasoning. Handoff preserves the thread across the break."
+  "explainRight": "Compact at a phase boundary, never mid-phase — the agent loses its way mid-phase.",
+  "explainWrong": "Pushing on degrades reasoning, and compacting mid-phase breaks the thread. Find the nearest boundary."
 }
 </script></div>
 

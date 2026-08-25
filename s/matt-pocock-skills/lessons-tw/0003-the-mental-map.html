@@ -38,24 +38,26 @@
 
   <div class="callout accent">
     <span class="label">單一視窗紀律（context hygiene）</span>
-    把 <code>grill-with-docs → to-spec → to-tickets</code> 留在<strong>同一個未中斷的上下文視窗</strong>裡完成。盤問、規格、票必須建立在同一份思考上——所以在票誕生之前，不要壓縮、也不要清空對話。之後每一張 <code>implement</code> 都從<strong>全新</strong>的視窗開始，只讀自己的那張票。若你在 <code>to-tickets</code> <em>之前</em>就逼近<a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">智慧區（smart zone）</a>（約 12 萬 token），就交接（<code>/handoff</code>）——別在衰退的推理上硬撐。
+    把 <code>grill-with-docs → to-spec → to-tickets</code> 留在<strong>同一個未中斷的上下文視窗</strong>裡完成。盤問、規格、票必須建立在同一份思考上——所以在票誕生之前，不要壓縮、也不要清空對話。之後每一張 <code>implement</code> 都從<strong>全新</strong>的視窗開始，只讀自己的那張票。若你在 <code>to-tickets</code> <em>之前</em>就逼近<a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">智慧區（smart zone）</a>（約 15 萬 token），別在衰退的推理上硬撐——在最近的<strong>階段邊界（phase boundary）</strong>執行 <code>/compact</code>（絕不在階段中途）。
   </div>
 
   <h2>為什麼這對你很重要</h2>
   <p>你已經很會操作代理了。把這套工具用得跌跌撞撞的人，和用得交付順利的人，差別不在於知道每個指令做什麼，而在於<strong>知道自己此刻位於路線的哪一站</strong>，以及「同一個連續視窗、之後再分艙施工」這項紀律。把地圖和這條規則握住，其他都是你查得到的細節。</p>
 
-  <h2>當視窗快滿：<code>handoff</code> vs <code>compact</code></h2>
-  <p>上面的方塊說「交接（hand off）」。其實是兩個不同的動作、兩個不同的時機——別搞混：</p>
+  <h2>階段邊界：五個選項</h2>
+  <p><strong>階段（phase）</strong>是 session 內的一塊工作——盤問、實作、QA。<strong>階段邊界</strong>是兩個階段之間的空檔，也是這個決策唯一屬於的地方：階段中途沒什麼好決定的，只有<em>繼續</em>（或把剩下的拆成子代理）。在邊界上你有五個選項，由上往下過——第一個<strong>「是」</strong>獲勝：</p>
   <table>
-    <thead><tr><th></th><th><code>/handoff</code></th><th><code>/compact</code>（內建）</th></tr></thead>
+    <thead><tr><th>#</th><th>選項</th><th>什麼時候選它</th></tr></thead>
     <tbody>
-      <tr><td>做什麼</td><td>把對話壓縮成交接文件；你開一個<em>全新</em>的 session</td><td>留在<em>同一個</em>對話裡；較早的回合被摘要</td></tr>
-      <tr><td>心智模型</td><td><strong>分叉（fork）</strong>——新執行緒繼承動能，不繼承雜訊</td><td><strong>延續</strong>——同一條執行緒，壓縮過</td></tr>
-      <tr><td>何時</td><td>在 <code>to-tickets</code> 之前逼近智慧區、收工、或要分叉（例如跑 <code>prototype</code>）</td><td>在階段<em>之間</em>刻意休息，不在乎失去逐字紀錄時</td></tr>
-      <tr><td>絕不</td><td>—</td><td>階段進行中——代理會迷失</td></tr>
+      <tr><td>1</td><td><strong>Continue（繼續）</strong></td><td>下一階段需要這一階段當<em>主要來源</em>（盤問 → 實作是標準的「是」），或者<a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">智慧區</a>（約 15 萬 token）還夠它塞得下。不花成本、不損失——先排除它再考慮別的。</td></tr>
+      <tr><td>2</td><td><code>/clear</code></td><td>這裡的一切——探索、決策、死路——對接下來都不相關。棋盤上最便宜的招；舊 session 仍可回溯。</td></tr>
+      <tr><td>3</td><td><code>/handoff</code></td><td>有東西要<em>旅行</em>：換 harness（Claude → Codex）、換目錄或 repo、交給同事、或階段中途分岔出一項支線任務。買到的是可攜性——一份能帶著走的文件。沒有東西要旅行？就不需要它。</td></tr>
+      <tr><td>4</td><td><strong>子代理（Subagent）</strong></td><td>任務範圍夠緊，可以 AFK 跑。送去它自己的視窗、拿報告回來，這個 session 原封不動。自動化審查是標準案例。</td></tr>
+      <tr><td>5</td><td><code>/compact</code></td><td>其他情況：上下文相關、同 harness、同目錄，而且你需要留在迴圈裡。樹底的預設值——<em>不是</em>第一個伸手拿的。</td></tr>
     </tbody>
   </table>
-  <p>交接文件只帶<em>進行中</em>的執行緒、建議的技能，以及指向規格／ADR／issue 的<strong>參照</strong>（而非副本）——它存在 OS 暫存目錄、永不進 repo，所以不會變成另一個要維護的成品。</p>
+  <p>單向的錯誤是把<em>相關</em>的上下文 <code>/clear</code> 掉：你失去蓋東西背後的<strong>為什麼</strong>，而且把 diff 讀回去也換不回來。在<em>階段中途</em>壓縮是另一個扯斷執行緒的方式。在邊界上決定，而且由上往下決定。</p>
+  <p>事實來源：repo 裡的 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/PHASE-BOUNDARIES.md"><code>PHASE-BOUNDARIES.md</code></a>——含排序樹與每個分支背後的理由。</p>
 
   <div class="checklist">
     <h3>你的具體收穫 — 把這些說出口</h3>

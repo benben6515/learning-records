@@ -14,7 +14,7 @@
   <h1>The Matt Pocock Skills — Workflow Map &amp; Glossary</h1>
   <p class="subtitle">One system, one main flow, a spec-driven spine, and a shared vocabulary underneath.</p>
 
-  <p class="lead">These skills are not a pile of isolated commands. They form <strong>one main flow — idea → ship</strong> — with two on-ramps that merge onto it, and a documentation layer that runs underneath the whole thing. This page is the compressed map. Every claim traces back to the skills' own <code>SKILL.md</code> files (the ground truth) and the <a href="https://github.com/mattpocock/skills">public repo</a>.</p>
+  <p class="lead">These skills are not a pile of isolated commands. They form <strong>one main flow — idea → ship</strong> — with three on-ramps that merge onto it, and a documentation layer that runs underneath the whole thing. This page is the compressed map. Every claim traces back to the skills' own <code>SKILL.md</code> files (the ground truth) and the <a href="https://github.com/mattpocock/skills">public repo</a>.</p>
 
   <hr class="rule">
 
@@ -50,13 +50,15 @@
 
   <div class="callout accent">
     <span class="label">Context hygiene — the rule that breaks most people</span>
-    Keep steps 1–3 (grill → spec → tickets) in <strong>one unbroken context window</strong>. Don't compact or clear until after <code>/to-tickets</code> — the grilling, spec, and tickets must all build on the same thinking. Each <code>/implement</code> then starts <em>fresh</em>, working from its ticket alone. The limit is the <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">smart zone</a> (~120k tokens). If a session nears it <em>before</em> <code>/to-tickets</code>, don't push on degraded reasoning — <code>/handoff</code> and continue fresh.
+    Keep steps 1–3 (grill → spec → tickets) in <strong>one unbroken context window</strong>. Don't compact or clear until after <code>/to-tickets</code> — the grilling, spec, and tickets must all build on the same thinking. Each <code>/implement</code> then starts <em>fresh</em>, working from its ticket alone. The limit is the <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">smart zone</a> (~150k tokens). If a session nears it <em>before</em> <code>/to-tickets</code>, don't push on degraded reasoning — <code>/compact</code> at the <strong>nearest phase boundary</strong> and carry on (never mid-phase; see <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/PHASE-BOUNDARIES.md">PHASE-BOUNDARIES.md</a>).
   </div>
 
-  <h2 id="on-ramps">The two on-ramps</h2>
+  <h2 id="on-ramps">The three on-ramps</h2>
   <p>Starting situations that generate work, then merge onto the main flow.</p>
   <ul>
     <li><strong>Bugs and requests piling up → <code>/triage</code>.</strong> It moves issues through the five triage roles and produces <em>agent-ready</em> issues, which <code>/implement</code> later picks up.</li>
+    <li><strong>Something's broken → <code>/diagnosing-bugs</code>.</strong> The hard ones — the bug that resists a first glance, the intermittent flake, the regression between two known-good states. It refuses to theorise until it has a <em>tight feedback loop</em>, then fixes with a regression test. Its post-mortem hands off to <code>/improve-codebase-architecture</code> when the real finding is a missing seam.</li>
+    <li><strong>A huge, foggy effort → <code>/wayfinder</code>.</strong> A greenfield project or huge feature too big for one session. It charts a <em>shared map</em> of <em>decision tickets</em> and resolves them one at a time, producing <em>decisions, not deliverables</em>. When the map clears it hands off (via <code>/to-spec</code>), it doesn't build.</li>
   </ul>
 
   <div class="callout warn">
@@ -139,7 +141,7 @@
   <h2 id="principles">Best-practice principles</h2>
   <ol>
     <li><strong>One window for grill → spec → tickets; fresh per implement.</strong> The thinking must be continuous; the building is compartmentalised.</li>
-    <li><strong>Respect the smart zone.</strong> Near ~120k tokens before <code>to-tickets</code>? Handoff, don't push.</li>
+    <li><strong>Respect the smart zone.</strong> Near ~150k tokens before <code>to-tickets</code>? Compact at the nearest phase boundary, don't push on degraded.</li>
     <li><strong><code>CONTEXT.md</code> is a glossary, not a spec.</strong> Keep implementation out.</li>
     <li><strong>Use the ubiquitous language everywhere.</strong> Every output (issue title, spec, test name) uses <code>CONTEXT.md</code> terms. Don't drift to synonyms.</li>
     <li><strong>ADRs sparingly.</strong> Only the three criteria. Don't record the obvious or the easily reversible.</li>
@@ -157,7 +159,7 @@
     <tbody>
       <tr><td><code>flow</code></td><td>A path through the skills. Most work travels the <em>main flow</em>.</td></tr>
       <tr><td><code>main flow</code></td><td>idea → ship: <code>grill-with-docs → to-spec → to-tickets → implement → code-review</code>.</td></tr>
-      <tr><td><code>on-ramp</code></td><td>A starting situation that generates work then merges onto the main flow (e.g. <code>triage</code>).</td></tr>
+      <tr><td><code>on-ramp</code></td><td>A starting situation that generates work then merges onto the main flow (<code>triage</code>, <code>diagnosing-bugs</code>, <code>wayfinder</code>).</td></tr>
       <tr><td><code>spec / PRD</code></td><td>The fixed-shape document <code>to-spec</code> synthesizes from the conversation.</td></tr>
       <tr><td><code>ubiquitous language</code></td><td>The project's agreed domain vocabulary, captured in <code>CONTEXT.md</code>.</td></tr>
       <tr><td><code>CONTEXT.md</code></td><td>The glossary. Opinionated, tight, project-specific, devoid of implementation.</td></tr>
@@ -167,9 +169,10 @@
       <tr><td><code>deletion test</code></td><td>"Would deleting it concentrate complexity, or just move it?" Concentrates = keep looking; it may be shallow.</td></tr>
       <tr><td><code>tracer bullet</code></td><td>A ticket that drives a thin end-to-end slice through the system.</td></tr>
       <tr><td><code>blocking edge</code></td><td>A native dependency between tickets; a ticket is unblocked when all its blockers close.</td></tr>
-      <tr><td><code>smart zone</code></td><td>The ~120k-token window within which the model still reasons sharply. Drives context hygiene.</td></tr>
-      <tr><td><code>grilling</code></td><td>The relentless interview primitive. <code>grill-with-docs</code> = <code>grilling</code> + <code>domain-modeling</code>.</td></tr>
-      <tr><td><code>model-invoked / user-invoked</code></td><td>Whether a skill can fire autonomously (pays context load) or only by typing its name (pays cognitive load).</td></tr>
+      <tr><td><code>smart zone</code></td><td>The ~150k-token window within which the model still reasons sharply. Drives context hygiene and the phase-boundary decision.</td></tr>
+      <tr><td><code>grilling</code></td><td>The relentless interview primitive, run in rounds against the frontier. <code>grill-with-docs</code> = <code>grilling</code> + <code>domain-modeling</code>; <code>triage</code>, <code>wayfinder</code>, and <code>improve-codebase-architecture</code> also run it internally.</td></tr>
+      <tr><td><code>phase boundary</code></td><td>The gap between two phases inside a session (grilling, implementation, QA). The only place to decide continue / <code>/clear</code> / <code>/handoff</code> / subagent / <code>/compact</code> — work the tree top-down, first “yes” wins.</td></tr>
+      <tr><td><code>model-invoked / user-invoked</code></td><td>Whether a skill can fire autonomously (pays context load) or only by typing its name (pays cognitive load). A user-invoked skill may invoke model-invoked skills, but never another user-invoked one.</td></tr>
     </tbody>
   </table>
 

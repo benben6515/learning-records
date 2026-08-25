@@ -39,9 +39,9 @@
 </div>
 
 <h2>智慧區上限</h2>
-<p>模型還能銳利推理的那個視窗，大約是 12 萬 token——稱為<strong>智慧區（smart zone）</strong>。若某次 session 在 <code>/to-tickets</code> 之前就逼近它，別在衰退的推理上硬撐：<code>/handoff</code>，在全新的執行緒裡繼續。</p>
+<p>模型還能銳利推理的那個視窗，大約是 15 萬 token——稱為<strong>智慧區（smart zone）</strong>。若某次 session 在 <code>/to-tickets</code> 之前就逼近它，別在衰退的推理上硬撐：在最近的<strong>階段邊界（phase boundary）</strong>執行 <code>/compact</code>（絕不在階段中途），然後繼續。</p>
 
-<p>整個流程就是這樣。入口坡道（triage、wayfinder）與獨立工具（prototype、research）掛在它上面——之後的課會講。</p>
+<p>整個流程就是這樣。入口坡道（triage、diagnosing-bugs、wayfinder）與獨立工具（prototype、research）掛在它上面——之後的課會講。</p>
 
 <div class="quiz"><script type="application/json">
 {
@@ -94,12 +94,12 @@
   "options": [
     "硬撐下去，繼續就好",
     "中途壓縮來騰出空間",
-    "handoff，之後在全新視窗續",
+    "在最近的階段邊界執行 compact",
     "跳過 to-tickets，直接 implement"
   ],
   "answer": 2,
-  "explainRight": "handoff 分叉到全新 session。別在衰退的推理上硬撐，也別中途壓縮。",
-  "explainWrong": "硬撐會讓推理衰退。handoff 在跨斷點之間保全執行緒。"
+  "explainRight": "在階段邊界 compact，絕不在階段中途——中途壓縮會讓代理迷失。",
+  "explainWrong": "硬撐會讓推理衰退，中途壓縮則會扯斷執行緒。找最近的邊界。"
 }
 </script></div>
 

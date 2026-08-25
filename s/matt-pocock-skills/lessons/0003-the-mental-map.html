@@ -38,24 +38,26 @@
 
   <div class="callout accent">
     <span class="label">The rule that breaks most people</span>
-    Keep <code>grill-with-docs → to-spec → to-tickets</code> in <strong>one unbroken context window</strong>. The grilling, the spec, and the tickets must build on the same thinking — so don't compact or clear the conversation until the tickets exist. Then each <code>implement</code> starts <em>fresh</em>, working from its ticket alone. If you near the <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">smart zone</a> (~120k tokens) <em>before</em> the tickets, hand off — don't grind on degraded reasoning.
+    Keep <code>grill-with-docs → to-spec → to-tickets</code> in <strong>one unbroken context window</strong>. The grilling, the spec, and the tickets must build on the same thinking — so don't compact or clear the conversation until the tickets exist. Then each <code>implement</code> starts <em>fresh</em>, working from its ticket alone. If you near the <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">smart zone</a> (~150k tokens) <em>before</em> the tickets, don't grind on degraded reasoning — <code>/compact</code> at the nearest phase boundary (never mid-phase).
   </div>
 
   <h2>Why this matters for you</h2>
   <p>You're already comfortable driving an agent. The skill that separates people who fumble these tools from people who ship with them isn't knowing what each command does — it's knowing <strong>where you are on the route</strong>, and the single discipline of <em>one continuous window, then compartmentalised builds</em>. Hold the map and that rule, and the rest is detail you can look up.</p>
 
-  <h2>When the window fills: <code>handoff</code> vs <code>compact</code></h2>
-  <p>The callout above says "hand off" near the smart zone. Two different moves, two different moments — don't confuse them:</p>
+  <h2>Phase boundaries: the five options</h2>
+  <p>A <strong>phase</strong> is a chunk of work inside a session — the grilling, the implementation, the QA. The <strong>phase boundary</strong> between two phases is the only place this decision belongs: mid-phase there is nothing to decide but <em>continue</em> (or split the rest into subagents). At a boundary you have five options, and you work them top-down — the first <strong>yes</strong> wins:</p>
   <table>
-    <thead><tr><th></th><th><code>/handoff</code></th><th><code>/compact</code> (built-in)</th></tr></thead>
+    <thead><tr><th>#</th><th>Option</th><th>Take it when</th></tr></thead>
     <tbody>
-      <tr><td>Does</td><td>Compacts the thread into a handoff doc; you open a <em>new</em> session</td><td>Stays in the <em>same</em> conversation; earlier turns summarized</td></tr>
-      <tr><td>Model</td><td><strong>Forks</strong> — a fresh thread inherits the momentum, not the noise</td><td><strong>Continues</strong> — one thread, compressed</td></tr>
-      <tr><td>When</td><td>Near the smart zone before <code>to-tickets</code>, wrapping for the day, or branching off (e.g. into a prototype)</td><td>Intentional breaks <em>between</em> phases, when you don't mind losing verbatim history</td></tr>
-      <tr><td>Never</td><td>—</td><td>Mid-phase — the agent can lose its way</td></tr>
+      <tr><td>1</td><td><strong>Continue</strong></td><td>The next phase needs this one as a <em>primary source</em> (grilling → implementation is the standard yes), or you have enough <a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone">smart zone</a> left (~150k tokens) for it to fit. Costs nothing, loses nothing — rule it out before anything else.</td></tr>
+      <tr><td>2</td><td><code>/clear</code></td><td>Everything here — the exploration, the decisions, the dead ends — is irrelevant to what comes next. The cheapest move on the board; the old session stays resumable.</td></tr>
+      <tr><td>3</td><td><code>/handoff</code></td><td>Something is <em>travelling</em>: a new harness (Claude → Codex), a new directory or repo, a colleague, or forking a side task mid-phase. Buys portability — a file that travels. Nothing travelling? You don't need it.</td></tr>
+      <tr><td>4</td><td><strong>Subagent</strong></td><td>The task is scoped tightly enough to run AFK. Send it to its own window, get a report back, leave this session untouched. Automated review is the standard case.</td></tr>
+      <tr><td>5</td><td><code>/compact</code></td><td>Otherwise: relevant context, same harness, same directory, and you need to stay in the loop. The default at the bottom of the tree — <em>not</em> the first reach.</td></tr>
     </tbody>
   </table>
-  <p>The handoff doc carries only the <em>live</em> thread, suggested skills, and <strong>references</strong> (not copies) to the specs/ADRs/issues that hold the settled detail — and it's saved to your OS temp directory, never into the repo, so it never becomes another artefact to maintain.</p>
+  <p>The one-way mistake is <code>/clear</code>-ing a <em>relevant</em> context: you lose the <strong>why</strong> behind what you built, and reading the diff back never returns it. Compacting <em>mid-phase</em> is the other way to lose the thread. Decide <strong>at</strong> boundaries, and decide top-down.</p>
+  <p>Ground truth: <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/PHASE-BOUNDARIES.md"><code>PHASE-BOUNDARIES.md</code></a> in the repo — the ordered tree with the reasoning behind each branch.</p>
 
   <div class="checklist">
     <h3>Your tangible win — say these out loud</h3>

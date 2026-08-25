@@ -23,7 +23,7 @@
       <tr><td><strong>Issue（議題）</strong></td><td><strong>議題追蹤器</strong>裡單一被追蹤的工作單位——bug、任務、規格、或 <code>to-tickets</code> 產出的切片。<em>避免 “ticket”</em>，除非引述外部系統對它的稱呼，或指<strong>決策票（Decision ticket）</strong>。</td></tr>
       <tr><td><strong>決策票（Decision ticket）</strong></td><td><code>wayfinder</code> 的單位——<code>wayfinder:map</code> 底下的一個子 <strong>Issue</strong>，持有一個<em>問題</em>，其解答是一個<em>決策</em>，不是待施工的建置切片。正是<em>決策</em>這個限定詞讓它有別於實作 issue。</td></tr>
       <tr><td><strong>分級角色（Triage role）</strong></td><td>分級時貼在 <strong>Issue</strong> 上的標準狀態機標籤（如 <code>needs-triage</code>、<code>ready-for-agent</code>）。每個角色經由 <code>docs/agents/triage-labels.md</code> 對應到<strong>議題追蹤器</strong>裡的真實標籤字串。</td></tr>
-      <tr><td><strong>智慧區（Smart zone）</strong></td><td>模型仍能敏銳推理的上下文視窗大小（最先進模型約 12 萬 token）。session 在 <code>to-tickets</code> 前逼近它，應該 <code>/handoff</code>，別硬撐退化中的推理。<a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone" target="_blank" rel="noopener">aihero.dev 字典</a>。</td></tr>
+      <tr><td><strong>智慧區（Smart zone）</strong></td><td>模型仍能敏銳推理的上下文視窗大小（最先進模型約 15 萬 token）。session 在 <code>to-tickets</code> 前逼近它，應該在最近的<strong>階段邊界（phase boundary）</strong>執行 <code>/compact</code>，別硬撐退化中的推理。<a href="https://www.aihero.dev/ai-coding-dictionary/smart-zone" target="_blank" rel="noopener">aihero.dev 字典</a>。</td></tr>
       <tr><td><strong>接縫（Seam）</strong></td><td>（Feathers 的術語）不改那里的程式碼就能改變行為的地方。功能接受測試的穩定介面。接縫放得好，測試就有耐久的瞄準點，底下的程式碼可以自由變動。<em>在任何程式碼寫下之前選定</em>（<code>to-spec</code> 期間）。</td></tr>
       <tr><td><strong>深模組（Deep module）</strong></td><td>在小而穩定的介面後面藏住大量行為的模組。深度以<strong>槓桿</strong>衡量——呼叫者（或測試）每學一單位介面，能驅動多少東西。相反：<strong>淺</strong>（介面幾乎跟實作一樣複雜）。</td></tr>
       <tr><td><strong>深度（Depth）</strong></td><td><em>介面</em>的屬性，不是實作的。深模組內部可以由許多小而可替換、永不浮現給呼叫者的部件組成。</td></tr>
@@ -34,6 +34,7 @@
       <tr><td><strong>ADR</strong></td><td>架構決策紀錄，在 <code>docs/adr/</code> 底下。門檻很高：只在選擇<strong>難以逆轉</strong>、<strong>沒上下文會令人意外</strong>、且是<strong>真實取捨的結果</strong>時才提出。缺任何一個就沒有 ADR。</td></tr>
       <tr><td><strong>HITL / AFK</strong></td><td>（wayfinder）Human-in-the-loop vs away-from-keyboard。每張 wayfinder 票非 HITL（盤問、原型——需要活生生的一來一往）即 AFK（研究——代理獨自跑）。代理絕不自己回答 HITL 票上的問題。</td></tr>
       <tr><td><strong>單一視窗紀律（Context hygiene）</strong></td><td>讓主流程步驟 1–3（grill-with-docs → to-spec → to-tickets）留在<em>同一個不中斷的上下文視窗</em>——<code>to-tickets</code> 結束前不 compact、不清空——讓盤問、規格與票建立在同一份思考上。之後每個 <code>implement</code> 全新開始。</td></tr>
+      <tr><td><strong>階段邊界（Phase boundary）</strong></td><td>（ask-matt）session 內兩個階段（盤問、實作、QA）之間的空檔。唯一能在我們的五個選項——<strong>Continue</strong>、<code>/clear</code>、<code>/handoff</code>、<strong>子代理</strong>、<code>/compact</code>——之間做選擇的地方：由上往下過樹，第一個「是」獲勝。階段中途沒有決策可做：繼續，或拆成子代理。</td></tr>
       <tr><td><strong>紅—綠迴圈（Red-green loop）</strong></td><td>寫一個失敗的測試（紅），加剛好足以通過的程式碼（綠），然後對下一個行為重複。只在綠時重構，絕不在紅時。<code>tdd</code> 與 <code>implement</code> 裡的引擎。</td></tr>
     </tbody>
   </table>

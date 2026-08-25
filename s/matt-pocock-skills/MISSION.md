@@ -30,4 +30,4 @@ The skills are already installed. The gap isn't installation — it's fluency in
 ## Out of scope
 - The **plugin / marketplace** mechanics, `.claude-plugin/` manifest, versioning, `scripts/link-skills.sh`.
 - The `personal/`, `misc/`, `in-progress/`, `deprecated/` skill buckets — only the promoted `engineering/` and `productivity/` sets.
-- **Authoring** custom skills (`writing-great-skills`) beyond awareness — it is the subject of Lesson 18, not a hands-on drill.
+- **Authoring** custom skills (`writing-for-agents`, renamed from `writing-great-skills` 2026-07) beyond awareness — it is the subject of Lesson 18, not a hands-on drill.

@@ -13,7 +13,7 @@ Curated trusted sources for this workspace. Knowledge is drawn from here, not fr
 - [`improve-codebase-architecture/SKILL.md`](https://github.com/mattpocock/skills/blob/main/skills/engineering/improve-codebase-architecture/SKILL.md) — the *consumer* of CONTEXT.md + ADRs. Surfaces "deepening opportunities" (shallow → deep modules). Introduces the design vocabulary.
 - [`grill-with-docs/SKILL.md`](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/SKILL.md) — the entry point of the main flow; = `/grilling` + `/domain-modeling`. One line, but load-bearing.
 - [`setup-matt-pocock-skills/SKILL.md`](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md) — the scaffolder. Defines `docs/agents/*`.
-- [`writing-great-skills/SKILL.md`](https://github.com/mattpocock/skills/blob/main/skills/productivity/writing-great-skills/SKILL.md) — the meta-skill. Defines predictability, model- vs user-invocation, context vs cognitive load. Out of scope for now, but it explains *why* the skills are shaped as they are.
+- [`writing-for-agents/SKILL.md`](https://github.com/mattpocock/skills/blob/main/skills/productivity/writing-for-agents/SKILL.md) — the meta-skill (renamed from `writing-great-skills`, 2026-07). Defines predictability, model- vs user-invocation, context vs cognitive load. Out of scope for now, but it explains *why* the skills are shaped as they are.
 
 ### Primary: public home & catalog
 - [mattpocock/skills (GitHub)](https://github.com/mattpocock/skills) — the canonical repo. Read the root `CONTEXT.md` as a real example of a glossary done right.

@@ -34,7 +34,7 @@
 15. Prototype & Research *(EN + 繁中, quiz)*
 16. Setup & Triage *(EN + 繁中, quiz)*
 17. Ask Matt & Routers *(EN + 繁中, quiz)*
-18. The Meta Skills: teach & writing-great-skills *(EN + 繁中, quiz)*
+18. The Meta Skills: teach & writing-for-agents *(EN + 繁中, quiz)*
 19. The Full Routing Drill — capstone *(EN + 繁中, quiz)*
 
 Reference shelf (9): Workflow Map & Glossary · Four Failure Modes · Glossary · Skills Catalog · Spec Anatomy · CONTEXT.md Format · ADR Format · Ticket Anatomy · Deep-Module Vocabulary.
@@ -46,6 +46,7 @@ Reference shelf (9): Workflow Map & Glossary · Four Failure Modes · Glossary �
 - All internal links re-pointed; global link audit passes (zero broken local links).
 - **繁中 full translation (2026-07):** translated the remaining 12 breadth lessons (01, 02, 09–12, 14–19) to 繁中; rebuilt the 繁中 TOC for all 19; rewired the forward-nav chain (08→09, 13→14) and upgraded spine lessons 03–07 nav-next to clickable links. 繁中 now mirrors EN 1:1.
 - **reference-tw (2026-08):** translated the 8 EN reference pages to 繁中; moved `skills-catalog.html` (already TW) from `reference/` → `reference-tw/` and wrote a new EN `reference/skills-catalog.html`; re-pointed all ~50 `../reference/` links in `lessons-tw/*.html` to `../reference-tw/`; updated `index.html` 快速參考 to link both languages.
+- **Upstream sync (2026-08-25, upstream HEAD `6654f6b`):** refreshed both skills-catalogs to the new roster (29 stable: wizard promoted to Engineering model-invoked, to-questionnaire graduated, wait-what added, writing-great-skills → writing-for-agents, Personal bucket + batch-grill-me removed; in-progress now 8: +implement-spec +retro). Doctrine updates everywhere: smart zone ~120k → **~150k**; "handoff near the smart zone" → **compact at the nearest phase boundary** (new PHASE-BOUNDARIES.md tree: Continue → /clear → /handoff → subagent → /compact) — Lesson 03's handoff-vs-compact section rewritten into the five-option tree (EN+TW); on-ramps 2 → 3 (triage, diagnosing-bugs, wayfinder) in Lesson 02 + workflow map; Lesson 15 prototype logic branch now a shareable HTML file (was a terminal app); Lesson 17 map refreshed + phase boundaries line; Lesson 18 + TOC renamed to writing-for-agents; Lesson 19 count 22 → 25 promoted.
 
 ## Verification plan
 - Each breadth lesson's MC quiz passed → write a `learning-records/NNNN-*.md` capturing demonstrated understanding (with "Evidence" per the format).
