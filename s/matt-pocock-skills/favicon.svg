@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Matt Pocock Skills</title>
+  <rect width="64" height="64" rx="12" fill="#1a1916" stroke="#3b3833" stroke-width="2"/>
+  <path d="M32 46 V36 M32 36 C32 26 22 26 18 20 M32 36 C32 26 42 26 46 20" fill="none" stroke="#6fb4c6" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="32" cy="48" r="5" fill="#e8e3d6"/>
+  <circle cx="17" cy="18" r="5" fill="none" stroke="#6fb4c6" stroke-width="3.5"/>
+  <circle cx="47" cy="18" r="5" fill="#6fb4c6"/>
+</svg>
