@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>四種失敗模式 — Matt Pocock 技能</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · 繁中版</p>
+  <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
+  <h1>四種失敗模式</h1>
+  <p class="subtitle">整套技能的主幹。每個技能都是其中一種的修復。</p>
+
+  <p class="lead">Matt Pocock 技能集裡的每一個技能，都是對「AI 寫程 session 出錯的四種方式」之一的修復。把情境歸類好，你就知道該用哪個技能。出自 <a href="https://github.com/mattpocock/skills/blob/main/README.md" target="_blank" rel="noopener">README——「Why These Skills Exist」</a>。</p>
+
+  <table>
+    <thead><tr><th>#</th><th>失敗模式</th><th>根本原因</th><th>修復（技能）</th><th>思想源頭</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>失準（Misalignment）</strong><br>代理沒做你想要的。</td>
+        <td>「沒有人確切知道自己要什麼。」你以為開發者懂了；看到成品才發現沒有。溝通落差。</td>
+        <td><code>/grill-me</code>（無 codebase、無狀態）<br><code>/grill-with-docs</code>（有 codebase、有狀態）</td>
+        <td>The Pragmatic Programmer — Thomas &amp; Hunt</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>冗長／沒有共用語言</strong><br>代理用 20 個字講 1 個字的事。</td>
+        <td>代理被丟進來，被要求邊做邊自己搞懂行話。沒有共用語言可錨定。</td>
+        <td><code>/grill-with-docs</code> 邊盤問邊建立 <code>CONTEXT.md</code> + ADR。<code>/domain-modeling</code> 磨利術語。</td>
+        <td>Domain-Driven Design — Eric Evans</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>程式碼動不起來</strong><br>對做什麼有共識，產出的還是爛東西。</td>
+        <td>沒有回饋迴圈。少了「程式實際怎麼跑」的回饋，代理矇著眼飛。</td>
+        <td><code>/tdd</code>——紅—綠—重構，一次一道垂直切片。<code>/diagnosing-bugs</code>——先建立緊回饋迴圈，再假設。</td>
+        <td>The Pragmatic Programmer——「回饋速率就是你的速限」</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>泥球（A ball of mud）</strong><br>Codebase 複雜難改；熵加速累積。</td>
+        <td>代理能極端加速寫碼，所以也同樣加速軟體熵。沒有人在投資設計。</td>
+        <td><code>/to-spec</code> 先考你的模組選擇。<code>/improve-codebase-architecture</code> 做週期保養。<code>/codebase-design</code> 詞彙（深模組）。</td>
+        <td>Extreme Programming — Kent Beck（「每天投資設計」）<br>A Philosophy of Software Design — Ousterhout（「最好的模組是深的」）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>模式</h2>
+  <p>每一種失敗模式都是<em>溝通或回饋</em>問題，不是聰明才智問題。修復不是「換個更好的 prompt」——而是借自數十年軟體工程、做成可重複技能的<strong>紀律</strong>（窮追不捨地訪談、把語言寫下來、跑程式碼、投資設計）。</p>
+
+  <p>當你能把任何情境歸進這四種之一，你就知道該伸手拿哪個技能。</p>
+
+  <p style="margin-top:2rem;font-size:0.85rem;color:var(--muted);">另見：<a href="spec-driven-workflow.html">流程圖與詞彙表</a> · <a href="glossary.html">詞彙表</a> · <a href="skills-catalog.html">技能目錄</a>。</p>
+
+</div>
+</body>
+</html>

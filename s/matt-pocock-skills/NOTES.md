@@ -3,7 +3,7 @@
 ## Preferences
 - Conceptual / reference-first for the spec-driven spine; quiz-based retrieval for the breadth tour.
 - **Dark theme preferred** — the shared stylesheet (`assets/styles.css`) is dark-themed. Keep all lessons/reference docs dark-friendly: use the CSS variables, avoid hardcoded light-only colours. Print media stays light (set in the `@media print` block).
-- **Dual language:** EN throughout; 繁中 now covers **all 19 lessons** (full translation complete, 2026-07).
+- **Dual language:** EN throughout; 繁中 now covers **all 19 lessons** (full translation complete, 2026-07) **+ all 9 reference pages** (2026-08). Reference dirs mirror the lessons pattern: `reference/` (EN) ↔ `reference-tw/` (繁中). `skills-catalog.html` was originally written in 繁中 inside `reference/`; it moved to `reference-tw/` and an EN counterpart was written in `reference/` in its place.
 - **Generic running example.** Lessons reference no specific real project — the shared examples are a `permissionBits` auth bitmask, a new/old coexistence migration, and neutral domain terms like "Order".
 - **Quizzes:** the 12 breadth lessons (01, 02, 09–12, 14–19) carry multiple-choice quizzes via `assets/quiz.js` (`.quiz` blocks + `<script type="application/json">`). The 7 spine lessons (03–08, 13) are quiz-free for now — quizzes can be added later.
 
@@ -45,6 +45,7 @@ Reference shelf (9): Workflow Map & Glossary · Four Failure Modes · Glossary �
 - Folded reference docs: A's `main-flow` + `skill-map` → already covered by `spec-driven-workflow.html`; added `failure-modes.html` + `glossary.html` as new reference pages.
 - All internal links re-pointed; global link audit passes (zero broken local links).
 - **繁中 full translation (2026-07):** translated the remaining 12 breadth lessons (01, 02, 09–12, 14–19) to 繁中; rebuilt the 繁中 TOC for all 19; rewired the forward-nav chain (08→09, 13→14) and upgraded spine lessons 03–07 nav-next to clickable links. 繁中 now mirrors EN 1:1.
+- **reference-tw (2026-08):** translated the 8 EN reference pages to 繁中; moved `skills-catalog.html` (already TW) from `reference/` → `reference-tw/` and wrote a new EN `reference/skills-catalog.html`; re-pointed all ~50 `../reference/` links in `lessons-tw/*.html` to `../reference-tw/`; updated `index.html` 快速參考 to link both languages.
 
 ## Verification plan
 - Each breadth lesson's MC quiz passed → write a `learning-records/NNNN-*.md` capturing demonstrated understanding (with "Evidence" per the format).

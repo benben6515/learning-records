@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考 — ADR 格式與閘門</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .gate { margin: 1.75rem 0; font-family: var(--sans); text-align: center; }
+  .gate .crit {
+    display: inline-block; border: 1.5px solid var(--ink-soft); border-radius: 6px;
+    padding: 0.55rem 0.8rem; font-size: 0.82rem; background: var(--paper); line-height: 1.25;
+    vertical-align: middle; max-width: 11rem;
+  }
+  .gate .and { display:inline-block; color: var(--accent); font-weight:700; margin: 0 0.35rem; font-size: 0.85rem; vertical-align: middle; }
+  .gate .yields { display:block; color: var(--muted); margin: 0.7rem 0 0.4rem; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .gate .result { display:inline-block; background: var(--accent-fill); color:#fff; border-radius: 6px; padding: 0.5rem 1rem; font-size: 0.85rem; }
+  .gate .skip { display:block; margin-top: 0.7rem; font-size: 0.8rem; color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · 繁中版</p>
+  <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
+  <h1>ADR — 格式與三條件閘門</h1>
+  <p class="subtitle">架構決策紀錄。節制供給。這門紀律就是克制。</p>
+
+  <div class="principle">只在<strong>三個條件全數成立</strong>時才提 ADR。缺一個——跳過。閘門是 AND，不是 OR。</div>
+
+  <p><code>CONTEXT.md</code> 收<em>術語</em>，ADR 收<em>決策</em>——但只有那種未來的探索者真的需要有人解釋的罕見決策。事實來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/ADR-FORMAT.md"><code>ADR-FORMAT.md</code></a>與 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/SKILL.md"><code>domain-modeling</code> 技能</a>。</p>
+
+  <hr class="rule">
+
+  <h2 id="gate">三條件閘門</h2>
+  <div class="gate">
+    <span class="crit"><strong>1. 難以逆轉</strong><br><span style="color:var(--muted);font-size:0.74rem;">之後反悔的代價很高</span></span>
+    <span class="and">AND</span>
+    <span class="crit"><strong>2. 沒上下文會令人意外</strong><br><span style="color:var(--muted);font-size:0.74rem;">未來的讀者會問「為什麼？」</span></span>
+    <span class="and">AND</span>
+    <span class="crit"><strong>3. 真實取捨</strong><br><span style="color:var(--muted);font-size:0.74rem;">真的存在過替代方案</span></span>
+    <span class="yields">三個全中 ⇒</span>
+    <span class="result">ADR</span>
+    <span class="skip">缺任何一個 ⇒ 跳過</span>
+  </div>
+  <ul>
+    <li><strong>容易逆轉？</strong>反正你會直接逆轉——跳過。</li>
+    <li><strong>不令人意外？</strong>沒有人會問為什麼——跳過。</li>
+    <li><strong>沒有真正的替代方案？</strong>除了「我們做了顯然的事」沒什麼好記——跳過。</li>
+  </ul>
+
+  <h2 id="format">格式</h2>
+  <p>住在 <code>docs/adr/</code>，流水編號：<code>0001-slug.md</code>、<code>0002-slug.md</code>。<strong>懶建立</strong>——第一則 ADR 需要出現時，目錄才出現。</p>
+  <pre><code># {決策的短標題}
+
+{1–3 句：背景是什麼、我們決定了什麼、為什麼。}</code></pre>
+  <p>範本就這麼多。一則 ADR 可以只有一段。價值在記下<em>有</em>這個決策與<em>為什麼</em>——不是把欄位填滿。</p>
+  <p><strong>可選區段</strong>（只在真的加值時用）：<code>Status</code> frontmatter（<code>proposed | accepted | deprecated | superseded by ADR-NNNN</code>）、<strong>Considered Options</strong>（被否決的方案值得記住時）、<strong>Consequences</strong>（不明顯的下游效應需要點出時）。</p>
+
+  <h2 id="qualifies">什麼算數</h2>
+  <ul>
+    <li><strong>架構形狀。</strong>「我們是 monorepo。」「寫入模型走 event sourcing；讀取模型投影進 Postgres。」</li>
+    <li><strong>Context 之間的整合模式。</strong>「Ordering 與 Billing 用領域事件溝通，不是同步 HTTP。」</li>
+    <li><strong>帶鎖定的技術選型。</strong>資料庫、訊息匯流排、驗證供應商、部署目標——<em>不是每個 library</em>，只有那些換掉要花一季的。</li>
+    <li><strong>邊界與範圍決策。</strong>「客戶資料歸 Customer context 擁有；其他人只憑 ID 參照。」明確的<em>不</em>跟<em>要</em>一樣值錢。</li>
+    <li><strong>對顯然路徑的刻意偏離。</strong>「因為 X 所以手寫 SQL 而不用 ORM。」阻止下一位工程師把刻意的東西「修好」。</li>
+    <li><strong>程式碼看不出來的約束。</strong>「因為法規遵循不能用 AWS。」「回應時間必須低於 200ms，因為合作夥伴 API 合約。」</li>
+    <li><strong>不顯然的被否決方案。</strong>考慮過 GraphQL、因細微理由選了 REST——否則六個月後又有人提 GraphQL。</li>
+  </ul>
+
+  <h2 id="not-qualifies">什麼不算數</h2>
+  <ul>
+    <li>任何容易逆轉的東西（lint 設定、工具函式的形狀、變數名稱）。</li>
+    <li>任何讀程式碼就顯而易見的東西（<code>package.json</code> 裡的框架）。</li>
+    <li>沒有真正替代方案的決策（「我們用了標準庫」）。</li>
+    <li>一時性的理由（「現在不值得」）——那幫不了未來的探索者。</li>
+  </ul>
+
+  <h2 id="contrast">術語 vs 決策——放哪裡</h2>
+  <table>
+    <thead><tr><th>產物</th><th>收什麼</th><th>閘門</th></tr></thead>
+    <tbody>
+      <tr><td><code>CONTEXT.md</code></td><td><strong>術語</strong>（共用語言）</td><td>是專案專屬概念嗎？是就收。</td></tr>
+      <tr><td><code>docs/adr/*.md</code></td><td><strong>決策</strong>（承重選擇）</td><td>閘門三條件全中。</td></tr>
+    </tbody>
+  </table>
+  <p>不確定屬於哪邊？如果它回答<em>「這個我們叫什麼？」</em>→ 詞彙表。如果它回答<em>「這個我們為什麼選它？」</em>→ ADR（如果過得了閘門）。</p>
+
+  <h2 id="when">技能何時提出 ADR</h2>
+  <ul>
+    <li><strong><code>domain-modeling</code></strong>——內嵌，session 中決策一過閘門的那一刻。是提出，不是強加。</li>
+    <li><strong><code>improve-codebase-architecture</code></strong>——當你用承重的理由<em>否決</em>某個深化候選時，它會問：<em>「要不要記成一則 ADR，讓未來的審查不再重提？」</em>只在理由真的能幫到未來探索者時。</li>
+  </ul>
+  <p>反面是：如果某候選<em>牴觸</em>既有 ADR，會被明講（<em>「牴觸 ADR-0007——但值得重開，因為……」</em>）而不是默默蓋過。ADR 被尊重、不被重新審判——除非摩擦是真的。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》工作區的參考文件。權威來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/ADR-FORMAT.md"><code>domain-modeling/ADR-FORMAT.md</code></a>。另見 <a href="context-md-format.html"><code>CONTEXT.md</code> 格式</a> · <a href="spec-driven-workflow.html">流程圖</a> · <a href="../lessons-tw/0006-adrs-the-gate.html">第 6 課</a>。</p>
+  </div>
+
+</div>
+</body>
+</html>

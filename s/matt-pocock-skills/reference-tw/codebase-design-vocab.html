@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考 — 深模組詞彙（codebase-design）</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+  .ds { display:flex; gap:1.75rem; flex-wrap:wrap; margin:1.5rem 0 0.5rem; font-family: var(--sans); }
+  .ds .mod { flex:1 1 13rem; text-align:center; }
+  .ds .mod .cap { font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; }
+  .ds .mod .iface, .ds .mod .body { border:1.5px solid var(--ink-soft); border-radius:6px; padding:0.45rem 0.5rem; margin:0 auto 0.4rem; font-size:0.78rem; }
+  .ds .mod .iface { background:var(--accent-fill); color:#fff; border-color:var(--accent-fill); }
+  .ds .mod .body { background:var(--paper-edge); color:var(--ink-soft); }
+  .ds .mod.deep .iface { width:48%; }
+  .ds .mod.deep .body { width:100%; min-height:5.5rem; display:flex; align-items:center; justify-content:center; }
+  .ds .mod.shallow .iface { width:100%; }
+  .ds .mod.shallow .body { width:48%; min-height:1.4rem; display:flex; align-items:center; justify-content:center; }
+  .ds .note { font-size:0.78rem; color:var(--muted); margin-top:0.4rem; }
+</style>
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · 繁中版</p>
+  <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
+  <h1>深模組詞彙 — <code>codebase-design</code></h1>
+  <p class="subtitle">所有設計技能共用的架構語言。精確使用這些術語。</p>
+
+  <div class="principle">設計<strong>深模組（deep module）</strong>：小介面後面藏大量行為，放在乾淨的接縫上，透過介面可測。呼叫者得到槓桿、維護者得到局部性、所有人都得到可測性。</div>
+
+  <p>事實來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/SKILL.md"><code>codebase-design/SKILL.md</code></a>與 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DEEPENING.md"><code>DEEPENING.md</code></a>。這是 <code>improve-codebase-architecture</code> 賴以建立 的詞彙，必須<em>精確</em>使用——別漂移到「component」「service」「API」或「boundary」。</p>
+
+  <hr class="rule">
+
+  <h2 id="deep-vs-shallow">深 vs 淺</h2>
+  <div class="ds">
+    <div class="mod deep">
+      <div class="cap">深模組——目標</div>
+      <div class="iface">小介面</div>
+      <div class="body">深實作<br><span style="font-size:0.72rem;">複雜邏輯被藏住</span></div>
+      <div class="note">方法少、參數簡單 · 後面藏很多</div>
+    </div>
+    <div class="mod shallow">
+      <div class="cap">淺模組——避免</div>
+      <div class="iface">大介面</div>
+      <div class="body">薄實作</div>
+      <div class="note">方法多、參數複雜 · 只是直通</div>
+    </div>
+  </div>
+  <p>設計介面時問自己：<em>方法能減嗎？參數能簡化嗎？裡面還能多藏點複雜度嗎？</em></p>
+
+  <h2 id="glossary">詞彙表</h2>
+  <table>
+    <thead><tr><th>術語</th><th>意義</th><th>避免</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Module（模組）</strong></td><td>任何有介面與實作的東西。不限尺度：函式、類別、套件、或跨層切片。</td><td>unit、component、service</td></tr>
+      <tr><td><strong>Interface（介面）</strong></td><td>呼叫者要正確使用模組必須知道的一切——型別簽名<em>以及</em>不變量、順序、錯誤模式、組態、效能。（比 TS 的 <code>interface</code> 關鍵字更廣。）</td><td>API、signature</td></tr>
+      <tr><td><strong>Implementation（實作）</strong></td><td>模組裡面的東西——它的程式碼主體。</td><td>—</td></tr>
+      <tr><td><strong>Adapter（轉接器）</strong></td><td>在接縫上具體滿足某介面的東西。描述的是<em>角色</em>（填哪個槽），不是份量。（小轉接器可以有很大實作，如 Postgres repo。）</td><td>—</td></tr>
+      <tr><td><strong>Depth（深度）</strong></td><td>介面上的槓桿：呼叫者／測試每學一單位介面，能驅動多少行為。<strong>深</strong> = 小介面後藏大量行為；<strong>淺</strong> = 介面幾乎跟實作一樣複雜。</td><td>—</td></tr>
+      <tr><td><strong>Seam（接縫）</strong></td><td><em>（Michael Feathers）</em>不改某處程式碼就能改變行為的地方——模組介面所在的<em>位置</em>。接縫放哪裡本身就是一個設計決策。</td><td>boundary（與 DDD 的 bounded context 撞名）</td></tr>
+      <tr><td><strong>Leverage（槓桿）</strong></td><td><em>呼叫者</em>從深度得到的：每學一單位介面換到更多能力。一份實作在 N 個呼叫點與 M 個測試間回收。</td><td>—</td></tr>
+      <tr><td><strong>Locality（局部性）</strong></td><td><em>維護者</em>從深度得到的：變更、bug、知識與驗證集中一處。修一次，處處修好。</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="principles">原則</h2>
+  <ul>
+    <li><strong>深度是介面的屬性，不是實作的。</strong>深模組內部可以由許多小而可 mock 的部件組成——它們只是不屬於介面。內部接縫（私有、供模組自己的測試用）與外部接縫並存沒問題。</li>
+    <li><strong>刪除測試（deletion test）。</strong>想像刪掉這個模組。複雜度若消失，它是直通層。複雜度若在 N 個呼叫者身上重現，它有在賺自己的飯。</li>
+    <li><strong>介面即測試面。</strong>呼叫者與測試跨越同一道接縫。如果你需要<em>穿過</em>介面去測，模組八成形狀不對。</li>
+    <li><strong>一個轉接器 = 假設性的接縫。兩個轉接器 = 真的接縫。</strong>除非真的有東西跨著它變化，否則別引入接縫。單轉接器的接縫只是間接層。</li>
+  </ul>
+
+  <h2 id="categories">依依賴類別深化</h2>
+  <p>出自 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DEEPENING.md"><code>DEEPENING.md</code></a>。深化一群淺模組時，其依賴的類別決定深化後的模組怎麼跨接縫受測：</p>
+  <table>
+    <thead><tr><th>類別</th><th>例子</th><th>怎麼深化／測試</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1. 同進程（In-process）</strong></td><td>純計算、記憶體內狀態</td><td>永遠可深化。合併並透過新介面測試。不需要轉接器。</td></tr>
+      <tr><td><strong>2. 本地可替換（Local-substitutable）</strong></td><td>PGLite 代替 Postgres、記憶體 FS</td><td>有替身就可深化。測試在套件裡用替身跑。接縫保持內部。</td></tr>
+      <tr><td><strong>3. 遠端但自有（Remote but owned）</strong>（Ports &amp; Adapters）</td><td>跨網路的自家服務</td><td>在接縫上定義<em>port</em>。深模組持有邏輯；傳輸是注入的轉接器。測試用記憶體轉接器，正式環境用 HTTP／gRPC／佇列。</td></tr>
+      <tr><td><strong>4. 真外部（True external）</strong>（Mock）</td><td>Stripe、Twilio——第三方</td><td>把依賴視為注入的 port；測試提供 mock 轉接器。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout note">
+    <span class="label">替換，不要疊加——測深化後的模組時</span>
+    淺模組上的舊單元測試，在深化介面處的測試出現後就成了廢料——<strong>刪掉它們</strong>。在介面上寫新測試；斷言可觀察結果，不是內部狀態。測試應該活得過內部重構——如果實作一變測試就跟著變，它就是在穿過介面測。
+  </div>
+
+  <h2 id="relationships">術語之間的關係</h2>
+  <ul>
+    <li>一個<strong>模組</strong>恰有一個<strong>介面</strong>。</li>
+    <li><strong>深度</strong>是<strong>模組</strong>的屬性，相對其<strong>介面</strong>衡量。</li>
+    <li><strong>接縫</strong>是模組<strong>介面</strong>所在之處；<strong>轉接器</strong>坐在那裡滿足它。</li>
+    <li><strong>深度</strong>產出<strong>槓桿</strong>（給呼叫者）與<strong>局部性</strong>（給維護者）。</li>
+  </ul>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》工作區的參考文件。權威來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/SKILL.md"><code>codebase-design/SKILL.md</code></a> · <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DEEPENING.md"><code>DEEPENING.md</code></a>。另見 <a href="spec-driven-workflow.html">流程圖</a> · <a href="../lessons-tw/0013-improve-architecture-consumes-the-docs.html">第 13 課</a>。</p>
+  </div>
+
+</div>
+</body>
+</html>

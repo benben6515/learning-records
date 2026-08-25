@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考 — CONTEXT.md 格式</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · 繁中版</p>
+  <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
+  <h1><code>CONTEXT.md</code> — 格式與規則</h1>
+  <p class="subtitle">詞彙表。有立場、精練、專案專屬、零實作。</p>
+
+  <div class="principle"><code>CONTEXT.md</code> 是詞彙表，除此無他。不是規格、不是草稿、不是決策紀錄。</div>
+
+  <p>這是專案的<strong>共用語言（ubiquitous language）</strong>——其他所有技能在 issue 標題、規格、測試名稱、重構提案裡使用的標準名稱。事實來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>CONTEXT-FORMAT.md</code></a>與 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/SKILL.md"><code>domain-modeling</code> 技能</a>。</p>
+
+  <hr class="rule">
+
+  <h2 id="rules">四條規則</h2>
+  <table>
+    <thead><tr><th>規則</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1. 要有立場</strong></td>
+        <td>多個詞指同一概念時，挑<em>最好</em>的那個，其餘列在 <code>_Avoid_:</code> 底下。別把同義詞平起平坐地列著——要選。</td>
+      </tr>
+      <tr>
+        <td><strong>2. 保持精練</strong></td>
+        <td>一到兩句為限。定義它<em>是什麼</em>，不是它<em>做什麼</em>。</td>
+      </tr>
+      <tr>
+        <td><strong>3. 只收專案專屬</strong></td>
+        <td>通用程式概念（timeout、錯誤類型、工具模式）不屬於這裡——就算專案用得再兇。檢驗：<em>這是這個 context 獨有的，還是通用概念？</em>只有前者算數。</td>
+      </tr>
+      <tr>
+        <td><strong>4. 零實作</strong></td>
+        <td>沒有檔案路徑、沒有類別名稱、沒有技術選型、沒有「它怎麼運作」。如果是決策或行為，它屬於規格或 ADR——不屬於這裡。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="template">範本</h2>
+  <pre><code># {Context 名稱}
+
+{一到兩句描述：這個 context 是什麼、為何存在。}
+
+## Language
+
+**Order（訂單）**:
+{術語的一到兩句描述}
+_Avoid_: Purchase, transaction
+
+**Invoice（發票）**:
+送貨後開給客戶的付款請求。
+_Avoid_: Bill, payment request
+
+**Customer（客戶）**:
+下訂單的個人或組織。
+_Avoid_: Client, buyer, account</code></pre>
+  <p>出現自然聚類時，用小標題分組術語；術語屬於單一內聚領域時，平面清單也可以。</p>
+
+  <h2 id="good">好條目（權威範例）</h2>
+  <div class="callout note">
+    <span class="label">好</span>
+    <strong>Customer（客戶）</strong>——下訂單的個人或組織。<em>避免：</em>Client、buyer、account。<br>
+    <span style="font-size:0.86rem;color:var(--muted);">一句話。說它<em>是什麼</em>。同義詞放逐到 <code>_Avoid_</code>。零實作。專案專屬。</span>
+  </div>
+
+  <h2 id="bad">反模式——找出被打破的規則</h2>
+
+  <div class="callout warn">
+    <span class="label">壞——打破規則 4（實作）</span>
+    <strong>OrderService</strong>——<code>src/services/</code> 裡負責建立訂單的類別，屬於訂購模組。用 PostgreSQL 並發出領域事件。<br>
+    <span style="font-size:0.86rem;color:var(--muted);">檔案路徑、類別名稱、技術棧、行為——全是實作。它屬於程式碼＋也許一則 ADR，永遠不屬於詞彙表。</span>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">壞——打破規則 3（非專案專屬）</span>
+    <strong>Timeout</strong>——失敗前等待回應的最長時間。<br>
+    <span style="font-size:0.86rem;color:var(--muted);">通用程式概念。就算專案到處用 timeout，它也不是這個領域獨有的。</span>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">壞——打破規則 1 與 2（沒立場／不精練）</span>
+    <strong>Account</strong>——系統裡各種東西都用它，像登入和帳務。<br>
+    <span style="font-size:0.86rem;color:var(--muted);">含糊（「各種東西」），描述它<em>做什麼</em>而非<em>是什麼</em>，也沒列 <code>_Avoid_</code> 同義詞。很可能是兩個概念糊在一起——拆開。</span>
+  </div>
+
+  <h2 id="discipline">內嵌紀律（出自 <code>domain-modeling</code>）</h2>
+  <p>詞彙表不是最後一批補寫的文件。它<strong>隨術語落定、內嵌維護</strong>——通常在 <code>grill-with-docs</code> session 進行中：</p>
+  <ul>
+    <li><strong>挑戰衝突。</strong>有人用了與詞彙表相衝突的術語時，立刻指出：<em>「你的詞彙表把『cancellation』定義為 X，但你似乎指 Y——是哪個？」</em></li>
+    <li><strong>磨利模糊語言。</strong>模糊／超載的詞一出現，提出精確的標準詞。</li>
+    <li><strong>內嵌更新，別囤積。</strong>術語一落定就寫。別收集起來等之後。</li>
+    <li><strong>懶建立。</strong>第一個術語真正落定之前不寫 <code>CONTEXT.md</code>。別先搭一個空的。</li>
+  </ul>
+
+  <h2 id="layout">單一 vs 多 context</h2>
+  <ul>
+    <li><strong>單一 context（多數 repo）：</strong>repo 根目錄一個 <code>CONTEXT.md</code>。典型專案就是這樣。</li>
+    <li><strong>多 context：</strong>根目錄的 <code>CONTEXT-MAP.md</code> 列出各 context、各自位置、彼此關係；每個 context 有自己的 <code>CONTEXT.md</code>。技能會推斷適用哪個——不清楚就問。</li>
+  </ul>
+  <p>monorepo 裡有真正分離的 bounded context（如 <code>ordering/</code>、<code>billing/</code>）就用 map。單一內聚應用，根目錄一個檔案才是對的——別憑空發明 context。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》工作區的參考文件。權威來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>domain-modeling/CONTEXT-FORMAT.md</code></a>。另見 <a href="spec-driven-workflow.html">流程圖</a> · <a href="../lessons-tw/0005-context-md-glossary.html">第 5 課</a>。</p>
+  </div>
+
+</div>
+</body>
+</html>

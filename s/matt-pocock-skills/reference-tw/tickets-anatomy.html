@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考 — 票解剖（to-tickets）</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · 繁中版</p>
+  <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
+  <h1>票解剖 — <code>to-tickets</code></h1>
+  <p class="subtitle">把規格拆成會宣告自己阻塞邊的曳光彈票。</p>
+
+  <div class="principle"><strong>票</strong>是一枚<em>曳光彈（tracer bullet）</em>：窄但完整的垂直切片，代理能在單一全新上下文視窗內建完。每張票宣告哪些票<strong>阻塞</strong>它。你永遠在打理<strong>前緣（frontier）</strong>——阻塞者全部完工的那些票。</div>
+
+  <p>事實來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a>。這是規格驅動主幹的最後一站：接下一份已發布的規格，展開成一張張標著 <code>ready-for-agent</code> 的票——之後不再分級。</p>
+
+  <hr class="rule">
+
+  <h2 id="process">流程——五步</h2>
+  <ol>
+    <li><strong>蒐集上下文。</strong>從對話中已有的內容出發，加上任何傳入的參考（規格路徑、issue、URL）。讀完正文與留言。</li>
+    <li><strong>探索 codebase（可選）。</strong>標題使用 <code>CONTEXT.md</code> 詞彙；尊重你觸及範圍內的 ADR。找機會<em>前置重構（prefactor）</em>——「先把改動變簡單，再做那個簡單的改動」。</li>
+    <li><strong>草擬垂直切片。</strong>把工作拆成曳光彈票，每張帶自己的阻塞邊（規則見下）。</li>
+    <li><strong>考使用者。</strong>給一份編號清單：每張票的標題、交付什麼、被什麼阻塞。問顆粒度、邊、該合併／拆分的地方對不對。反覆到核准。</li>
+    <li><strong>發布到設定的追蹤器</strong>，依依賴順序（阻塞者在前）。形式依追蹤器而定——見下。</li>
+  </ol>
+
+  <h2 id="slice">垂直切片規則——曳光彈</h2>
+  <div class="callout accent">
+    <span class="label">曳光彈是垂直的</span>
+    <ul style="margin:0.3rem 0 0;">
+      <li>在每一層——schema、API、UI、測試——切出一條窄但<strong>完整</strong>的路徑。是垂直的，<em>不是</em>只切一層的水平切片。</li>
+      <li>完成的切片<strong>自己就能 demo／驗證</strong>。</li>
+      <li>大小以<strong>塞進一個全新上下文視窗</strong>為準。</li>
+      <li>任何<strong>前置重構先做</strong>，當作自己的前導票。</li>
+    </ul>
+  </div>
+  <table>
+    <thead><tr><th>水平切片——避免</th><th>垂直切片／曳光彈——目標</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>「把整個 schema 蓋完。」<br><span style="color:var(--muted);font-size:0.86rem;">單獨無法 demo。</span></td>
+        <td>「使用者能登入並看到一個受保護頁面，端到端。」<br><span style="color:var(--muted);font-size:0.86rem;">落地那一刻就能 demo。</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="frontier">阻塞邊與前緣</h2>
+  <p>每張票宣告自己的<strong>阻塞邊（blocking edges）</strong>——必須先完工它才能開工的票。沒有阻塞者的票立刻可開工。目前未被阻塞的票集合就是<strong>前緣</strong>，而你打理的永遠是它：</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage accent">T1 · 登入端到端</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ 阻塞</div>
+    <div class="row">
+      <span class="stage">T2 · 選單依 permissionBits 過濾</span>
+    </div>
+    <div class="row" style="color:var(--muted);font-size:0.8rem;">↓ 阻塞</div>
+    <div class="row">
+      <span class="stage">T3 · 依角色管理選單</span>
+    </div>
+    <div class="under">起始：前緣 = {T1} · T1 關閉後：{T2} · T2 之後：{T3}</div>
+  </div>
+  <p>因為票是帶<em>明確</em>邊的獨立切片，每個 <code>implement</code> 都能全新執行、只讀自己的票、打理前緣而不干擾其他 session。這正是「不中斷視窗規則」（盤問 → 規格 → <strong>票</strong>）要在思考還熱的時候把邊捕捉下來的原因。</p>
+
+  <h2 id="exception">例外——寬幅重構 → 擴張—收縮</h2>
+  <p><strong>寬幅重構</strong>是單一機械式改動——改欄位名、改共用符號型別——其<strong>波及半徑</strong>橫跨整個 codebase。一次編輯同時弄壞幾千個呼叫點，所以<em>沒有任何垂直切片能綠著落地</em>。別用曳光彈打它。把它排成<strong>擴張—收縮（expand–contract）</strong>：</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">expand</span>
+      <span class="arrow">→</span>
+      <span class="stage">migrate（分批）</span>
+      <span class="arrow">→</span>
+      <span class="stage">contract</span>
+    </div>
+    <div class="under">在舊形式旁加上新形式（什麼都不壞）· 分批遷移呼叫點，每批一張票、被 expand 阻塞，CI 批批保綠 · 沒有呼叫者後刪掉舊形式</div>
+  </div>
+  <div class="callout warn">
+    <span class="label">最後手段變體</span>
+    連單批都無法獨自保綠時，保留順序，但讓各批共用一條<strong>整合分支</strong>，全部阻塞最後一張<strong>整合並驗證</strong>票——只有那裡承諾變綠。
+  </div>
+
+  <h2 id="publish">怎麼發布——兩種形態</h2>
+  <p>票本身兩邊一樣；變的只有阻塞邊的形態，取決於 <code>setup-matt-pocock-skills</code> 設定了什麼：</p>
+  <ul>
+    <li><strong>本地檔案</strong> → 每票一檔，放在 <code>.scratch/&lt;feature&gt;/issues/&lt;NN&gt;-&lt;slug&gt;.md</code>，依依賴順序從 <code>01</code> 編號。「Blocked by」用文字寫。一票一檔——絕不合併成單檔。</li>
+    <li><strong>真追蹤器（GitHub、Linear……）</strong> → 依依賴順序每票一個 issue，用平台的<em>原生</em>阻塞／子 issue 連結。打上 <code>ready-for-agent</code> 標籤——天生代理可抓，<strong>不分級</strong>。</li>
+  </ul>
+  <pre><code># &lt;NN&gt; — &lt;票標題&gt;
+
+What to build: 這張票讓什麼端到端行為成立，
+從使用者視角描述——不是逐層的實作清單。
+
+Blocked by: 卡住這張票的編號／標題，
+或「None — 可立即開工」。
+
+Status: ready-for-agent
+
+- [ ] 驗收條件 1
+- [ ] 驗收條件 2</code></pre>
+
+  <h2 id="rules">最常被打破的四條規則</h2>
+  <table>
+    <thead><tr><th>規則</th><th>為什麼</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1. 垂直切，不要水平切</strong></td>
+        <td>「先做完全部 schema，再做完所有 API」是水平切片——最後一層落地前什麼都不能 demo。曳光彈以<em>薄薄</em>一行為貫穿<em>所有</em>層。</td>
+      </tr>
+      <tr>
+        <td><strong>2. 每張票宣告阻塞者</strong></td>
+        <td>前緣靠它。沒有明確的邊，session 無法獨立執行、無法挑安全的工作。邊清單就是趁熱視窗捕捉這件事的全部意義。</td>
+      </tr>
+      <tr>
+        <td><strong>3. 寬幅重構別用曳光彈</strong></td>
+        <td>波及全 codebase 的單一機械改動不可能在垂直切片裡綠著落地。用擴張—收縮：加新形式 → 分批遷移 → 刪舊形式。硬塞進曳光彈只會得到壞掉的建置。</td>
+      </tr>
+      <tr>
+        <td><strong>4. 票裡不放檔案路徑或程式碼</strong></td>
+        <td>跟規格同一條規則——它們會爛掉。記<em>行為</em>，從使用者視角。唯一例外：比散文更能編碼決策的原型片段（狀態機、schema），裁到只剩決策密集的部分。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="bridge">交接</h2>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage accent">to-tickets</span>
+      <span class="arrow">→</span>
+      <span class="stage ghost">前緣 · ready-for-agent</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement（全新視窗）</span>
+    </div>
+  </div>
+  <ul>
+    <li>單 session 建置？<code>implement</code> 可以直接吃規格——<code>to-tickets</code> 可省。</li>
+    <li>多 session 建置？<code>to-tickets</code> 把規格拆成前緣票；每個 <code>implement</code> 全新開始、只讀自己的票。</li>
+    <li>絕不關閉或修改父 issue。</li>
+  </ul>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》工作區的參考文件。權威來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/to-tickets/SKILL.md"><code>to-tickets/SKILL.md</code></a>。另見 <a href="spec-anatomy.html">規格解剖</a> · <a href="spec-driven-workflow.html">流程圖</a> · <a href="../lessons-tw/0008-to-tickets-tracer-bullets.html">第 8 課</a>。</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>參考 — 規格解剖（to-spec）</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div class="container wide">
+
+  <p class="kicker">Reference · 繁中版</p>
+  <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
+  <h1>規格解剖 — <code>to-spec</code></h1>
+  <p class="subtitle">把對話綜合成固定形狀的規格。不訪談。</p>
+
+  <div class="principle"><code>to-spec</code> 接住<em>已經談定</em>的東西並把它凍結。思考發生在 <code>grill-with-docs</code>；這個技能只負責捕捉。如果你在這裡訪談，代表你跳過了盤問。</div>
+
+  <p>事實來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/to-spec/SKILL.md"><code>to-spec/SKILL.md</code></a>。規格（你也許叫它 PRD）發布到議題追蹤器，標上 <code>ready-for-agent</code>——之後不再分級。</p>
+
+  <hr class="rule">
+
+  <h2 id="process">流程——三步</h2>
+  <ol>
+    <li><strong>探索</strong> repo（如果還沒）。全程使用 <code>CONTEXT.md</code> 詞彙；尊重你觸及範圍內的任何 ADR。</li>
+    <li><strong>先草描測試接縫。</strong>優先用現成接縫，別開新的；用<em>最高</em>的可用接縫；接縫愈少愈好——<strong>理想數字是一</strong>。寫之前先跟使用者確認接縫。</li>
+    <li><strong>寫規格</strong>，依照下方範本，發布到議題追蹤器並打上 <code>ready-for-agent</code> 標籤。</li>
+  </ol>
+
+  <h2 id="anatomy">解剖</h2>
+  <pre><code>## Problem Statement（問題陳述）
+問題，從使用者視角。
+
+## Solution（解法）
+解法，從使用者視角。
+
+## User Stories（使用者故事）
+一份很長的編號清單。每則：
+  「作為〈角色〉，我想要〈功能〉，以便〈效益〉。」
+要廣——涵蓋功能的所有面向。
+
+## Implementation Decisions（實作決策）
+- 建立／修改的模組，以及它們的介面
+- Schema 變更、API 合約、具體互動
+- 架構決策、技術釐清
+不放檔案路徑或程式碼片段（它們會腐爛）。例外：比散文
+更能編碼決策的原型片段（狀態機、reducer、schema、
+型別形狀）——內嵌，裁到只剩決策密集的部分。
+
+## Testing Decisions（測試決策）
+- 什麼算好測試：只測外部行為，不測實作細節
+- 哪些模組會被測
+- 前例：codebase 裡已有的類似測試
+
+## Out of Scope（不在範圍內）
+明確不在這份規格裡的東西。
+
+## Further Notes（備註）
+其他一切。</code></pre>
+
+  <h2 id="rules">最常被打破的三條規則</h2>
+  <table>
+    <thead><tr><th>規則</th><th>為什麼</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1. 綜合——不要訪談</strong></td>
+        <td><code>to-spec</code> 自帶 <code>disable-model-invocation</code> 的氣場：它寫下已定案的事，不重啟它。問題屬於 <code>grill-with-docs</code>。如果真的有未定的事，停下來去盤問——別在規格裡假裝有個決策。</td>
+      </tr>
+      <tr>
+        <td><strong>2. 接縫愈少愈好；理想 = 1</strong></td>
+        <td>每道接縫都是讓測試變脆的耦合點。透過你能用的<em>最高</em>（最外部）邊界測——一道接縫涵蓋整個功能，勝過五個針對內部函式的單元測試。「介面即測試面。」</td>
+      </tr>
+      <tr>
+        <td><strong>3. 不放檔案路徑或程式碼</strong></td>
+        <td>路徑與片段在 codebase 一動就爛。用散文記<em>決策</em>（介面、合約、schema）——才穩。只有編碼決策的原型（如狀態機）能存活，因為它說了散文說不出的東西。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="bridge"><code>ready-for-agent</code> 橋接</h2>
+  <p>規格驅動主幹在這裡把棒子交給建置階段：</p>
+  <div class="flow">
+    <div class="row">
+      <span class="stage">to-spec</span>
+      <span class="arrow">→</span>
+      <span class="stage ghost">發布 issue、標籤</span>
+      <span class="arrow">→</span>
+      <span class="stage accent">ready-for-agent</span>
+      <span class="arrow">→</span>
+      <span class="stage">implement</span>
+    </div>
+  </div>
+  <ul>
+    <li>規格帶著 <code>ready-for-agent</code> 分級標籤發布——<strong>不再額外分級</strong>。（記得：別分級自己的產出。）</li>
+    <li>多 session 建置時，<code>to-tickets</code> 接著把這份規格拆成曳光彈票；每個 <code>implement</code> 全新執行，只讀自己的票。</li>
+    <li>單 session 建置時，<code>implement</code> 可以直接吃規格。</li>
+  </ul>
+
+  <h2 id="vocab">詞彙提醒</h2>
+  <p>規格 Problem／Solution／Stories 裡的每一個術語都必須來自 <code>CONTEXT.md</code>。如果你伸手抓了一個詞彙表沒定義的詞，那是個訊號——要么鑄造它（跑 <code>domain-modeling</code>），要么你正在漂離共用語言。見 <a href="context-md-format.html"><code>CONTEXT.md</code> 參考</a>。</p>
+
+  <div class="footer">
+    <p>《Matt Pocock 技能》工作區的參考文件。權威來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/to-spec/SKILL.md"><code>to-spec/SKILL.md</code></a>。另見 <a href="spec-driven-workflow.html">流程圖</a> · <a href="context-md-format.html"><code>CONTEXT.md</code></a> · <a href="../lessons-tw/0007-to-spec-anatomy.html">第 7 課</a>。</p>
+  </div>
+
+</div>
+</body>
+</html>

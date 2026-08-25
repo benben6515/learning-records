@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reference — Matt Pocock 技能目錄</title>
+<title>Reference — Skills Catalog</title>
 <link rel="stylesheet" href="../assets/styles.css">
 <style>
   .legend { font-family: var(--sans); font-size: 0.82rem; color: var(--ink-soft); margin: 1rem 0 0; line-height: 1.7; }
@@ -13,10 +13,8 @@
   .cat h3 { font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 1.6rem 0 0.3rem; }
   table.cat th, table.cat td { font-size: 0.9rem; }
   table.cat td.name { font-family: var(--sans); }
-  table.cat td.tw { white-space: nowrap; }
   .archived h2 { color: var(--muted); }
   .archived table.cat td { color: var(--muted); }
-  .archived table.cat td.tw strong { color: var(--ink-soft); font-weight: 500; }
   .badge { display: inline-block; font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 3px; margin-left: 0.4rem; vertical-align: middle; }
   .badge.inprog { background: var(--warn-soft); color: var(--warn); }
   .badge.dep { background: var(--rule-soft); color: var(--muted); }
@@ -26,101 +24,101 @@
 <div class="container wide">
 
   <p class="kicker">Reference · v1</p>
-  <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
-  <h1>Matt Pocock 技能目錄</h1>
-  <p class="subtitle">依官方 repo（<code>mattpocock/skills</code>）分類，附一句話中文說明。技能名即為呼叫名稱。</p>
+  <p class="back-nav"><a href="../index.html">↑ Course home</a></p>
+  <h1>Matt Pocock Skills Catalog</h1>
+  <p class="subtitle">Categorised per the official repo (<code>mattpocock/skills</code>), with one-line descriptions. The skill name is the invocation name.</p>
 
-  <div class="principle">共 <strong>28 個穩定技能</strong>，分為 Engineering（工程）、Productivity（生產力）、Misc（雜項）、Personal（個人）四類；另有開發中與已棄用者列於末段。每一個都由它自己的 <code>SKILL.md</code> 權威定義。</div>
+  <div class="principle"><strong>28 stable skills</strong> across four categories — Engineering, Productivity, Misc, and Personal — plus in-progress and deprecated ones listed at the end. Each is authoritatively defined by its own <code>SKILL.md</code>.</div>
 
-  <p>本工作區目前學的是其中的<strong>規格驅動主幹</strong>——<code>ask-matt → grill-with-docs → to-spec → to-tickets → implement</code>——由 <code>domain-modeling</code> 撰寫文件、<code>improve-codebase-architecture</code> 消化。見 <a href="spec-driven-workflow.html">流程圖</a>。</p>
+  <p>This workspace teaches the <strong>spec-driven spine</strong> among them — <code>ask-matt → grill-with-docs → to-spec → to-tickets → implement</code> — documented by <code>domain-modeling</code> and consumed by <code>improve-codebase-architecture</code>. See the <a href="spec-driven-workflow.html">workflow map</a>.</p>
 
   <div class="legend">
-    <span class="mk u"></span><strong>使用者觸發（user-invoked）</strong>：只在「你打字輸入」時觸發（<code>disable-model-invocation</code>）。　
-    <span class="mk m"></span><strong>模型觸發（model-invoked）</strong>：模型可憑觸發詞自行抓取。
+    <span class="mk u"></span><strong>User-invoked</strong>: fires only when you type it (<code>disable-model-invocation</code>).
+    <span class="mk m"></span><strong>Model-invoked</strong>: the model can grab it on trigger words autonomously.
   </div>
 
   <!-- ============ ENGINEERING ============ -->
   <div class="cat">
-  <h2 id="engineering">Engineering — 工程（日常程式工作）</h2>
+  <h2 id="engineering">Engineering (day-to-day code work)</h2>
 
-  <h3><span class="mk u" style="display:inline-block;width:0.7rem;height:0.7rem;border-radius:50%;background:var(--accent);vertical-align:middle;margin-right:0.3rem;"></span>使用者觸發</h3>
+  <h3><span class="mk u" style="display:inline-block;width:0.7rem;height:0.7rem;border-radius:50%;background:var(--accent);vertical-align:middle;margin-right:0.3rem;"></span>User-invoked</h3>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>ask-matt</code></td><td>問「我的情況該用哪個技能或流程」，是本 repo 所有 user-invoked 技能的入口路由。</td></tr>
-      <tr><td class="name"><code>grill-with-docs</code></td><td>一場窮追不捨的訪談，把計畫或設計磨利，同時就地建立專案領域模型（更新 <code>CONTEXT.md</code> 與 ADR）。</td></tr>
-      <tr><td class="name"><code>triage</code></td><td>讓議題走過一套分級角色的狀態機（分類、驗證、必要時盤問），寫出代理可直接施工的簡報。</td></tr>
-      <tr><td class="name"><code>improve-codebase-architecture</code></td><td>掃描程式庫尋找深化機會，以視覺化 HTML 報告呈現，再就你挑中的項目盤問到底。</td></tr>
-      <tr><td class="name"><code>setup-matt-pocock-skills</code></td><td>為此 repo 設定議題追蹤器、分級標籤詞彙與領域文件版面；每個 repo 跑一次。</td></tr>
-      <tr><td class="name"><code>to-spec</code></td><td>把當前對話綜合成一份規格並發布到議題追蹤器——不訪談，只綜合已談定的內容。</td></tr>
-      <tr><td class="name"><code>to-tickets</code></td><td>把計畫／規格／對話拆成一套曳光彈票，每張宣告自己的阻塞邊，發布到設定的追蹤器。</td></tr>
-      <tr><td class="name"><code>implement</code></td><td>依規格或一組票實作工作，在預先約定的接縫驅動 <code>/tdd</code>，並在提交前以 <code>/code-review</code> 收尾。</td></tr>
-      <tr><td class="name"><code>wayfinder</code></td><td>把一件大到單一工作階段塞不下的工作，規劃成議題追蹤器上的決策票地圖，逐一解開直到路徑清晰。</td></tr>
+      <tr><td class="name"><code>ask-matt</code></td><td>Ask “which skill or flow fits my situation” — the entry router for every user-invoked skill in the repo.</td></tr>
+      <tr><td class="name"><code>grill-with-docs</code></td><td>A relentless interview that sharpens a plan or design while building the project's domain model in place (updating <code>CONTEXT.md</code> and ADRs).</td></tr>
+      <tr><td class="name"><code>triage</code></td><td>Moves issues through a state machine of triage roles (categorise, verify, grill if needed), writing agent-ready briefs.</td></tr>
+      <tr><td class="name"><code>improve-codebase-architecture</code></td><td>Scans the codebase for deepening opportunities, presents them as a visual HTML report, then grills you on whichever you pick.</td></tr>
+      <tr><td class="name"><code>setup-matt-pocock-skills</code></td><td>Sets up this repo's issue tracker, triage-label vocabulary, and domain-doc layout; run once per repo.</td></tr>
+      <tr><td class="name"><code>to-spec</code></td><td>Synthesizes the current conversation into a spec and publishes it to the issue tracker — no interviewing, just what's already settled.</td></tr>
+      <tr><td class="name"><code>to-tickets</code></td><td>Breaks a plan/spec/conversation into tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker.</td></tr>
+      <tr><td class="name"><code>implement</code></td><td>Implements work from a spec or set of tickets, driving <code>/tdd</code> at pre-agreed seams and closing with <code>/code-review</code> before committing.</td></tr>
+      <tr><td class="name"><code>wayfinder</code></td><td>Plans a chunk of work too big for one agent session as a map of decision tickets on the issue tracker, resolving them one at a time until the way is clear.</td></tr>
     </tbody>
   </table>
 
-  <h3><span class="mk m"></span>模型觸發</h3>
+  <h3><span class="mk m"></span>Model-invoked</h3>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>prototype</code></td><td>做一個拋棄式原型來回答設計問題：用終端機程式驗證狀態／邏輯，或用可切換的 UI 變體探索介面。</td></tr>
-      <tr><td class="name"><code>diagnosing-bugs</code></td><td>診斷難纏 bug 與效能回歸的紀律化迴圈：重現 → 最小化 → 假設 → 儀器化 → 修復 → 回歸測試。</td></tr>
-      <tr><td class="name"><code>research</code></td><td>針對高信任主要來源調查一個問題，把發現寫成帶引用的 Markdown 檔，以背景代理執行。</td></tr>
-      <tr><td class="name"><code>tdd</code></td><td>以紅—綠—重構迴圈做 TDD；一次一道垂直切片地開發功能或修 bug。</td></tr>
-      <tr><td class="name"><code>domain-modeling</code></td><td>主動建立並磨利專案的領域模型——挑戰用語、用情境壓力測試、就地更新 <code>CONTEXT.md</code> 與 ADR。</td></tr>
-      <tr><td class="name"><code>codebase-design</code></td><td>設計「深模組」的共用紀律與詞彙：小介面、乾淨接縫、透過介面可測。</td></tr>
-      <tr><td class="name"><code>code-review</code></td><td>自某基準點起對 diff 做雙軸審查——標準（是否符合 repo 規範＋Fowler 壞味道基線）與規格（是否如實實作原始 issue／PRD），以並行子代理執行。</td></tr>
-      <tr><td class="name"><code>resolving-merge-conflicts</code></td><td>逐一 hunk 處理進行中的 git merge／rebase 衝突，依兩側各自的原始意圖求解，再完成操作——絕不 <code>--abort</code>。</td></tr>
+      <tr><td class="name"><code>prototype</code></td><td>Builds a throwaway prototype to answer a design question: verify state/logic via a terminal program, or explore UI via togglable variants.</td></tr>
+      <tr><td class="name"><code>diagnosing-bugs</code></td><td>A disciplined loop for hard bugs and performance regressions: reproduce → minimise → hypothesise → instrument → fix → regression-test.</td></tr>
+      <tr><td class="name"><code>research</code></td><td>Investigates a question against high-trust primary sources, capturing findings as a cited Markdown file; runs as a background agent.</td></tr>
+      <tr><td class="name"><code>tdd</code></td><td>TDD via the red-green-refactor loop; build features or fix bugs one vertical slice at a time.</td></tr>
+      <tr><td class="name"><code>domain-modeling</code></td><td>Proactively builds and sharpens the project's domain model — challenges terminology, stress-tests with scenarios, updates <code>CONTEXT.md</code> and ADRs inline.</td></tr>
+      <tr><td class="name"><code>codebase-design</code></td><td>The shared discipline and vocabulary for designing deep modules: small interfaces, clean seams, testable through the interface.</td></tr>
+      <tr><td class="name"><code>code-review</code></td><td>Reviews the diff since a fixed point along two axes — Standards (repo conventions + Fowler smell baseline) and Spec (faithful to the originating issue/PRD) — via parallel sub-agents.</td></tr>
+      <tr><td class="name"><code>resolving-merge-conflicts</code></td><td>Works through in-progress git merge/rebase conflicts hunk by hunk, resolving per each side's original intent, then completes the operation — never <code>--abort</code>.</td></tr>
     </tbody>
   </table>
   </div>
 
   <!-- ============ PRODUCTIVITY ============ -->
   <div class="cat">
-  <h2 id="productivity">Productivity — 生產力（通用工作流程）</h2>
+  <h2 id="productivity">Productivity (general workflows)</h2>
 
-  <h3><span class="mk u"></span>使用者觸發</h3>
+  <h3><span class="mk u"></span>User-invoked</h3>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>grill-me</code></td><td>被窮追不捨地訪談你的計畫或設計，直到決策樹每一條分支都被解開。</td></tr>
-      <tr><td class="name"><code>handoff</code></td><td>把當前對話壓縮成一份交接文件，讓另一個代理能接續工作。</td></tr>
-      <tr><td class="name"><code>teach</code></td><td>跨多次 session 教使用者一項新技能或概念，以當前目錄作為有狀態的教學工作區。</td></tr>
-      <tr><td class="name"><code>writing-great-skills</code></td><td>撰寫與編輯技能的參考——讓技能可預測的詞彙與原則。</td></tr>
+      <tr><td class="name"><code>grill-me</code></td><td>Relentlessly interviews your plan or design until every branch of the decision tree is resolved.</td></tr>
+      <tr><td class="name"><code>handoff</code></td><td>Compresses the current conversation into a handoff document another agent can pick up.</td></tr>
+      <tr><td class="name"><code>teach</code></td><td>Teaches you a new skill or concept across multiple sessions, using the current directory as a stateful teaching workspace.</td></tr>
+      <tr><td class="name"><code>writing-great-skills</code></td><td>The reference for writing and editing skills — vocabulary and principles that make skills predictable.</td></tr>
     </tbody>
   </table>
 
-  <h3><span class="mk m"></span>模型觸發</h3>
+  <h3><span class="mk m"></span>Model-invoked</h3>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>grilling</code></td><td>對使用者的計畫、決策或點子窮追不捨地訪談，直到決策樹每一條分支都被解開。是 <code>grill-me</code>／<code>grill-with-docs</code> 的底層基本工具。</td></tr>
+      <tr><td class="name"><code>grilling</code></td><td>Relentlessly interviews the user's plan, decision, or idea until every branch of the decision tree is resolved. The underlying primitive of <code>grill-me</code>/<code>grill-with-docs</code>.</td></tr>
     </tbody>
   </table>
   </div>
 
   <!-- ============ MISC ============ -->
   <div class="cat">
-  <h2 id="misc">Misc — 雜項（環境與遷移工具）</h2>
+  <h2 id="misc">Misc (environment & migration tooling)</h2>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>git-guardrails-claude-code</code></td><td>為 Claude Code 設定 hook，在危險 git 指令（push、<code>reset --hard</code>、clean、<code>branch -D</code> 等）執行前攔截。</td></tr>
-      <tr><td class="name"><code>migrate-to-shoehorn</code></td><td>把測試檔從 <code>as</code> 型別斷言遷移到 <code>@total-typescript/shoehorn</code>。</td></tr>
-      <tr><td class="name"><code>scaffold-exercises</code></td><td>建立含章節、題目、解答與解析、且能通過 lint 的練習目錄結構。</td></tr>
-      <tr><td class="name"><code>setup-pre-commit</code></td><td>為當前 repo 設定 Husky pre-commit hook（lint-staged／Prettier、型別檢查、測試）。</td></tr>
+      <tr><td class="name"><code>git-guardrails-claude-code</code></td><td>Sets up Claude Code hooks that block dangerous git commands (push, <code>reset --hard</code>, clean, <code>branch -D</code>, …) before they execute.</td></tr>
+      <tr><td class="name"><code>migrate-to-shoehorn</code></td><td>Migrates test files from <code>as</code> type assertions to <code>@total-typescript/shoehorn</code>.</td></tr>
+      <tr><td class="name"><code>scaffold-exercises</code></td><td>Creates exercise directory structures with sections, problems, solutions, and explainers that pass linting.</td></tr>
+      <tr><td class="name"><code>setup-pre-commit</code></td><td>Sets up Husky pre-commit hooks (lint-staged/Prettier, type checking, tests) for the current repo.</td></tr>
     </tbody>
   </table>
   </div>
 
   <!-- ============ PERSONAL ============ -->
   <div class="cat">
-  <h2 id="personal">Personal — 個人（寫作與筆記）</h2>
+  <h2 id="personal">Personal (writing & notes)</h2>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>edit-article</code></td><td>重組章節、提升清晰度、收緊文字來編輯並改善文章。</td></tr>
-      <tr><td class="name"><code>obsidian-vault</code></td><td>在 Obsidian 筆記庫中搜尋、建立與管理筆記（含 wikilink 與索引筆記）。</td></tr>
+      <tr><td class="name"><code>edit-article</code></td><td>Edits and improves an article — restructuring sections, boosting clarity, tightening prose.</td></tr>
+      <tr><td class="name"><code>obsidian-vault</code></td><td>Searches, creates, and manages notes in an Obsidian vault (wikilinks and index notes included).</td></tr>
     </tbody>
   </table>
   </div>
@@ -129,41 +127,41 @@
 
   <!-- ============ IN-PROGRESS ============ -->
   <div class="cat archived">
-  <h2 id="in-progress">In-progress — 開發中（尚不穩定）<span class="badge inprog">9</span></h2>
-  <p style="color:var(--muted);font-size:0.88rem;margin-top:-0.3rem;">Matt 仍在實驗、隨時可能變動的技能；認識即可，先別依賴。</p>
+  <h2 id="in-progress">In-progress (not yet stable)<span class="badge inprog">9</span></h2>
+  <p style="color:var(--muted);font-size:0.88rem;margin-top:-0.3rem;">Skills Matt is still experimenting with; know they exist, don't depend on them yet.</p>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>batch-grill-me</code></td><td>一次拋出所有「前緣」問題的窮追訪談，一輪一輪進行。</td></tr>
-      <tr><td class="name"><code>claude-handoff</code></td><td>把當前對話交給一個能立即接手的全新背景代理。</td></tr>
-      <tr><td class="name"><code>loop-me</code></td><td>針對我想建立的工作流程規格，在工作區內盤問我。</td></tr>
-      <tr><td class="name"><code>setup-ts-deep-modules</code></td><td>把 dependency-cruiser 接進 TypeScript repo，讓每個 package 成為深模組——實作藏在子資料夾，只能透過入口檔觸及。</td></tr>
-      <tr><td class="name"><code>to-questionnaire</code></td><td>把一個你無法完全回答的決策，轉成給別人填寫的問卷。</td></tr>
-      <tr><td class="name"><code>wizard</code></td><td>產生一個互動式 bash 精靈，帶人類走過手動程序——開 URL、抓值、逐步確認，並寫 <code>.env</code> 與 GitHub Actions。</td></tr>
-      <tr><td class="name"><code>writing-beats</code></td><td>把原料組成一段拍點旅程，在每個拍點依靠某詞前先把該詞奠基。</td></tr>
-      <tr><td class="name"><code>writing-fragments</code></td><td>挖掘原始碎片，尚未有結構。</td></tr>
-      <tr><td class="name"><code>writing-shape</code></td><td>把原料逐段塑形成一篇文章。</td></tr>
+      <tr><td class="name"><code>batch-grill-me</code></td><td>A relentless interview that fires all “frontier” questions at once, round by round.</td></tr>
+      <tr><td class="name"><code>claude-handoff</code></td><td>Hands the current conversation to a fresh background agent that picks up the work immediately.</td></tr>
+      <tr><td class="name"><code>loop-me</code></td><td>Grills me about specs for the workflows I want to build, within this workspace.</td></tr>
+      <tr><td class="name"><code>setup-ts-deep-modules</code></td><td>Wires dependency-cruiser into a TypeScript repo so each package is a deep module — implementation hidden in subfolders, reachable only through entry-point files.</td></tr>
+      <tr><td class="name"><code>to-questionnaire</code></td><td>Turns a decision you can't fully answer into a questionnaire for someone else to fill in.</td></tr>
+      <tr><td class="name"><code>wizard</code></td><td>Generates an interactive bash wizard that walks a human through manual steps — opens URLs, grabs values, confirms each step, and writes <code>.env</code> + GitHub Actions.</td></tr>
+      <tr><td class="name"><code>writing-beats</code></td><td>Assembles raw material into a journey of beats, grounding each term before a beat leans on it.</td></tr>
+      <tr><td class="name"><code>writing-fragments</code></td><td>Mines raw fragments; no structure yet.</td></tr>
+      <tr><td class="name"><code>writing-shape</code></td><td>Shapes raw material into an article, paragraph by paragraph.</td></tr>
     </tbody>
   </table>
   </div>
 
   <!-- ============ DEPRECATED ============ -->
   <div class="cat archived">
-  <h2 id="deprecated">Deprecated — 已棄用<span class="badge dep">4</span></h2>
-  <p style="color:var(--muted);font-size:0.88rem;margin-top:-0.3rem;">已被取代或併入其他技能（例如 <code>ubiquitous-language</code> 已由 <code>domain-modeling</code> 取代）。</p>
+  <h2 id="deprecated">Deprecated<span class="badge dep">4</span></h2>
+  <p style="color:var(--muted);font-size:0.88rem;margin-top:-0.3rem;">Replaced or folded into other skills (e.g. <code>ubiquitous-language</code> was superseded by <code>domain-modeling</code>).</p>
   <table class="cat">
-    <thead><tr><th>技能</th><th>一句話說明</th></tr></thead>
+    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
-      <tr><td class="name"><code>design-an-interface</code></td><td>用並行子代理為一個模組產生多個截然不同的介面設計。</td></tr>
-      <tr><td class="name"><code>qa</code></td><td>使用者口頭回報 bug、代理探索程式庫並開 GitHub issue 的互動式 QA。</td></tr>
-      <tr><td class="name"><code>request-refactor-plan</code></td><td>透過訪談產出含小步提交的詳細重構計畫，並以 GitHub issue 提交。</td></tr>
-      <tr><td class="name"><code>ubiquitous-language</code></td><td>從當前對話萃取 DDD 風格的詞彙表，標記歧義並提議標準用語（存到 <code>UBIQUITOUS_LANGUAGE.md</code>）。</td></tr>
+      <tr><td class="name"><code>design-an-interface</code></td><td>Generated multiple distinct interface designs for a module via parallel sub-agents.</td></tr>
+      <tr><td class="name"><code>qa</code></td><td>Interactive QA where the user reports bugs verbally and the agent explores the codebase and opens GitHub issues.</td></tr>
+      <tr><td class="name"><code>request-refactor-plan</code></td><td>Interviewed its way to a detailed refactor plan with small commits, submitted as GitHub issues.</td></tr>
+      <tr><td class="name"><code>ubiquitous-language</code></td><td>Extracted a DDD-style glossary from the current conversation, flagging ambiguity and proposing canonical terms (saved to <code>UBIQUITOUS_LANGUAGE.md</code>).</td></tr>
     </tbody>
   </table>
   </div>
 
   <div class="footer">
-    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a>（每個技能由各自的 <code>SKILL.md</code> 定義；分類與 user／model-invoked 標記皆出自 repo 的分類 README）。見 <a href="spec-driven-workflow.html">流程圖</a> · <a href="../RESOURCES.md">資源</a>。</p>
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> (each skill defined by its own <code>SKILL.md</code>; categories and user/model-invoked markers come from the repo's per-category READMEs). See the <a href="spec-driven-workflow.html">workflow map</a> · <a href="../RESOURCES.md">resources</a>. 繁中版：<a href="../reference-tw/skills-catalog.html">技能目錄</a>.</p>
   </div>
 
 </div>
