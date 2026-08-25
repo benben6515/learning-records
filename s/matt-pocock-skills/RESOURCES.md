@@ -19,7 +19,7 @@ Curated trusted sources for this workspace. Knowledge is drawn from here, not fr
 - [mattpocock/skills (GitHub)](https://github.com/mattpocock/skills) — the canonical repo. Read the root `CONTEXT.md` as a real example of a glossary done right.
 - [README — "Why These Skills Exist"](https://github.com/mattpocock/skills/blob/main/README.md) — the thesis: the four failure modes and the skill that fixes each. The spine of the whole set.
 - [AI Skills for Real Engineers — catalog](https://www.aihero.dev/skills-catalog) — Matt's human-facing index of the skills, with rationale. Best browsable entry point.
-- [AI Coding Dictionary: "smart zone"](https://www.aihero.dev/ai-coding-dictionary/smart-zone) — defines the ~120k-token reasoning window that drives the context-hygiene rule.
+- [AI Coding Dictionary: "smart zone"](https://www.aihero.dev/ai-coding-dictionary/smart-zone) — defines the ~150k-token reasoning window that drives the context-hygiene rule.
 
 ### The four cited books (the philosophy the skills operationalize)
 - [The Pragmatic Programmer — Thomas & Hunt](https://www.amazon.co.uk/Pragmatic-Programmer-Anniversary-Journey-Mastery/dp/B0833F1T3V) — "No-one knows exactly what they want" (→ grilling); "the rate of feedback is your speed limit" (→ TDD, diagnosing-bugs). The misalignment + feedback-loop failure modes.

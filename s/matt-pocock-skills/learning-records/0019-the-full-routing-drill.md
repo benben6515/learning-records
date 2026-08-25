@@ -1,0 +1,7 @@
+# The full routing drill — capstone
+
+The learner correctly routed all five realistic scenarios to the right skill(s) in order: grill-with-docs for a fuzzy feature with unsettled vocabulary; diagnosing-bugs with a tight loop for an intermittent flaky test; triage with verification-first for raw incoming issues; wayfinder→to-spec for a foggy multi-session greenfield project; and handoff to fork a fresh session when approaching the smart zone mid-grill. The bonus correctly stated code-review's two-axis report (Standards and Spec side by side, never merged). This matters because the drill compresses the whole course into one verification — get all five and the mission's "success looks like" is met.
+
+**Evidence:** 5/5 scenarios routed correctly with reasoning; bonus two-axis report passed. The learner can reach for the right skill at the right moment, knowing when to grill, when to wayfinder, when to triage, how to diagnose flakes, and when to handoff vs compact. The router (`ask-matt`) is the safety net when fluency fails.
+
+**Implications:** the course is complete. 19 lessons, 25 promoted skills (Engineering + Productivity). Keep doing: revisit reference docs (Skill Map, Main Flow, Four Failure Modes, Glossary) and type `/ask-matt` in the real moment.
