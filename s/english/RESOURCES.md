@@ -25,7 +25,7 @@ Grounded in the official CEFR framework and the science of second-language acqui
 - **Tech-in-English practice (ties career + language):** contributing to open-source front-end projects, and lurking/posting in English-speaking dev communities (e.g., the React/JS Discord servers, r/Frontend). Use for: practicing English *inside* a domain the learner already dominates — low fear, high relevance.
 
 ## Gaps
-- **Speaking feedback loop at home:** shadowing is solo but gives no *external* correction. A tutor (iTalki) or community (Tandem) is needed for real conversational feedback once habits are established. Flag for ~Lesson 04+.
+- **Speaking feedback loop at home:** shadowing is solo but gives no *external* correction. A tutor (iTalki) or community (Tandem) is needed for real conversational feedback once habits are established. Flag for ~Lesson 06+.
 - **Pronunciation diagnosis:** no resource yet for pinpointing a specific first-language→English interference (likely: /θ/ vs /s/, vowel length, final consonants, stress-timed rhythm). To source when relevant.
 
 ## Preferences
