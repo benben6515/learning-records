@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 01 課 · 不用框架寫伺服器 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 01 課 · node:http</p>
+<h1>不用框架寫伺服器</h1>
+<p class="lead">你已經呼叫過 <code>fetch()</code> 上千次了。今天，你來建造<em>回答它的那一方</em>——不用任何框架，也沒有任何你看不見的東西。</p>
+<p class="badges">
+  <span class="badge">約 30 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">Node.js</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>你的任務宣言寫著：<strong>沒有任何一層是魔法</strong>。在 Express、Next API routes、資料庫之前——先有一個平凡的 Node 程序，收到位元組、寫出位元組。你未來用到的每個框架，都只是包裝你現在要親手寫的這個東西。寫過一次之後，<code>req</code> 與 <code>res</code> 就再也不是咒語了。</p>
+
+<h2>核心觀念</h2>
+<p>Web 伺服器就是<strong>一個每個請求都會被呼叫的函式</strong>。它收到一個請求物件，然後對一個回應物件寫入。工作內容就這麼多。</p>
+
+<div class="callout" style="text-align:center; font-family:var(--sans); font-size:0.92rem;">
+  <span style="display:inline-block; padding:0.4rem 0.8rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">用戶端 <span class="muted">(fetch, curl)</span></span>
+  &nbsp;─ 請求 ─▶
+  <span style="display:inline-block; padding:0.4rem 0.8rem; border:1px solid var(--accent-border); border-radius:8px; background:var(--accent-soft); font-weight:700;">你的函式 <code>(req, res)</code></span>
+  &nbsp;─ 回應 ─▶
+  <span style="display:inline-block; padding:0.4rem 0.8rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">用戶端</span>
+</div>
+
+<p>HTTP <strong>請求（request）</strong>是：一個<em>方法（method）</em>＋<em>路徑（path）</em>（合稱「起始行」）、<em>標頭（headers）</em>（詮釋資料）、以及可省略的<em>內文（body）</em>。<strong>回應（response）</strong>是：一個<em>狀態碼（status code）</em>、<em>標頭</em>、以及可省略的<em>內文</em>。Node 把請求交給你成為 <code>req</code>，把「即將送出的回應」交給你成為 <code>res</code>（<a href="https://nodejs.org/api/http.html#httphttpcreateserveroptions-requestlistener">Node <code>http</code> 文件</a>；<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages">MDN：HTTP 訊息</a>）。</p>
+
+<h3>狀態碼：五大家族</h3>
+<p>狀態碼是你與用戶端之間合約的那一半——在用戶端解析內文<em>之前</em>，伺服器就用它說明了發生什麼事（<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN：HTTP 回應狀態碼</a>）。</p>
+<table>
+  <thead><tr><th>家族</th><th>意義</th><th>你會用到</th></tr></thead>
+  <tbody>
+    <tr><td><code>1xx</code></td><td>資訊</td><td>—（少見，低層自動處理）</td></tr>
+    <tr><td><code>2xx</code></td><td>成功</td><td><code>200</code> OK、<code>201</code> Created、<code>204</code> No content</td></tr>
+    <tr><td><code>3xx</code></td><td>重新導向</td><td><code>301</code> 搬家了、<code>304</code> 沒變</td></tr>
+    <tr><td><code>4xx</code></td><td><em>用戶端</em>出錯</td><td><code>400</code>、<code>401</code>、<code>403</code>、<code>404</code>、<code>429</code></td></tr>
+    <tr><td><code>5xx</code></td><td><em>伺服器</em>出錯</td><td><code>500</code>、<code>502</code>、<code>503</code></td></tr>
+  </tbody>
+</table>
+
+<h2>程式碼——約 25 行，每個 import 你都看得懂</h2>
+<p>存成 <code>server.mjs</code>（<code>.mjs</code> 副檔名告訴 Node 使用現代 ES modules，不需要任何設定）：</p>
+
+<pre><code>import { createServer } from "node:http";
+
+const server = createServer((req, res) =&gt; {
+  const { method, url } = req;
+  console.log(`${method} ${url}`);        <span class="c">// 每個請求都會在這裡留下紀錄</span>
+
+  <span class="c">// GET / — 純 JSON 的 hello</span>
+  if (method === "GET" &amp;&amp; url === "/") {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ hello: "server" }));
+    return;
+  }
+
+  <span class="c">// POST /echo — 先讀請求內文，再回話</span>
+  if (method === "POST" &amp;&amp; url === "/echo") {
+    let body = "";
+    req.on("data", (chunk) =&gt; (body += chunk));   <span class="c">// 內文是一塊一塊抵達的</span>
+    req.on("end", () =&gt; {
+      res.writeHead(201, { "content-type": "application/json" });
+      res.end(JSON.stringify({ youSent: body }));
+    });
+    return;
+  }
+
+  <span class="c">// 其他路徑 — 是我們「決定」要回 404。沒有任何自動行為。</span>
+  res.writeHead(404, { "content-type": "application/json" });
+  res.end(JSON.stringify({ error: "not found" }));
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<p>執行之前，有三件事值得注意：</p>
+<ul>
+  <li><strong>路由就只是 <code>if</code> 陳述式。</strong>方法＋路徑進來，決策出去。路由的全部就是這樣。</li>
+  <li><strong>請求內文是一個串流（stream）。</strong>它分批以 <code>data</code> 事件抵達，你再把它組回來——HTTP 不保證內文「一次到齊」（<a href="https://nodejs.org/api/http.html#class-httpincomingmessage"><code>IncomingMessage</code></a> 是一個 readable stream）。</li>
+  <li><strong>沒有任何人替你回答。</strong>忘記 <code>res.end()</code>，請求就懸在那裡。那個 404 會存在，只因為你親手寫了它。</li>
+</ul>
+
+<h2>實戰練習——跑起來，讀懂線上的原始訊息</h2>
+<div class="task">
+  <span class="label">動手做 · 回饋迴路就是你的終端機</span>
+  <p>每一步都會產生看得見的輸出——如果看到的和預期不符，停下來看：那個落差<em>就是</em>學習本身。</p>
+  <ul class="checklist" data-store="bd-l01-drill-tw">
+    <li><span class="box"></span><span class="txt">建一個資料夾 <code>hello-server</code>，把上面的程式碼存成 <code>server.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">啟動：<code>node server.mjs</code>——看到它印出 <code>listening on http://localhost:3000</code></span></li>
+    <li><span class="box"></span><span class="txt">開第二個終端機：<code>curl http://localhost:3000/</code>——應該收到 <code>{"hello":"server"}</code></span></li>
+    <li><span class="box"></span><span class="txt">張開眼睛看：<code>curl -i http://localhost:3000/</code>——狀態行、標頭、空行、內文</span></li>
+    <li><span class="box"></span><span class="txt">送內文：<code>curl -i -X POST -d "ping" http://localhost:3000/echo</code>——預期 <code>201</code> 與回聲</span></li>
+    <li><span class="box"></span><span class="txt">弄壞它：<code>curl -i http://localhost:3000/nope</code>——預期你自己寫的 <code>404</code></span></li>
+    <li><span class="box"></span><span class="txt">對照：把 <code>curl -i</code> 輸出的每一部分，對應到 <code>server.mjs</code> 裡產生它的那一行</span></li>
+  </ul>
+</div>
+
+<p>最後這個 curl 應該長這樣——在程式碼裡找出每一行的出處：</p>
+<pre><span class="p">$</span> curl -i http://localhost:3000/
+<span class="hl">HTTP/1.1 200 OK</span>
+<span class="hl">content-type: application/json</span>
+Date: Tue, 25 Aug 2026 09:12:41 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+<span class="c">                                          ← 空行：標頭結束、內文開始</span>
+{"hello":"server"}</pre>
+
+<div class="callout">
+  <span class="label">你剛剛證明了什麼</span>
+  <p style="margin:0">Express 的 <code>app.get("/", handler)</code> 只是一個比較漂亮的 <code>if</code>。它的 <code>res.json()</code> 就是 <code>writeHead</code> ＋ <code>end(JSON.stringify(...))</code>。它的 <code>express.json()</code> 中介軟體（middleware），就是你在 <code>/echo</code> 裡寫的「收集資料塊」。你已經親自擁有過每一個零件——框架往後只會重新整理你已經理解的東西。</p>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——這一對物件就是介面的全部。" data-wrong="不盡然——正確答案已標出。">
+  <q>在 node:http 裡，createServer 的回呼函式會收到什麼？</q>
+  <div class="options">
+    <button class="opt">請求與回應物件</button>
+    <button class="opt">路由器與中介層</button>
+    <button class="opt">標頭與狀態資訊</button>
+    <button class="opt">串流與事件來源</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——用戶端要求的東西，伺服器沒有。" data-wrong="不盡然——正確答案已標出。">
+  <q>狀態碼 404 屬於哪一個家族？</q>
+  <div class="options">
+    <button class="opt">客戶端的錯誤</button>
+    <button class="opt">伺服器的錯誤</button>
+    <button class="opt">成功類的回應</button>
+    <button class="opt">重新導向訊息</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——-i 在內文之前先揭示一切。" data-wrong="不盡然——正確答案已標出。">
+  <q>curl 的 -i 旗標會揭示什麼？</q>
+  <div class="options">
+    <button class="opt">狀態行與標頭</button>
+    <button class="opt">回應體與時間</button>
+    <button class="opt">請求路徑參數</button>
+    <button class="opt">連接埠與方法</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——沒有狀態碼，就沒有回應。" data-wrong="不盡然——正確答案已標出。">
+  <q>每個 HTTP 回應都必須以什麼開頭？</q>
+  <div class="options">
+    <button class="opt">三位數的狀態碼</button>
+    <button class="opt">編碼過的回應體</button>
+    <button class="opt">有效的連線權杖</button>
+    <button class="opt">允許跨域的標頭</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview">MDN — An overview of HTTP</a>。關於你剛摸到的東西，這是全世界最好的短文；本課每一個論點都能回溯到它，或 <a href="https://nodejs.org/api/http.html">Node <code>http</code> 文件</a>。順手再掃過 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages">HTTP Messages</a>。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 02 課——<em>一個執行緒，多個請求</em>：這個單執行緒的函式，如何同時服務數百個連線（事件迴圈）。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——關於這課的任何問題、程式碼、或「為什麼 Node 要這樣做」都歡迎。老師就是用來問的。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/http-anatomy.html">HTTP 解剖與 curl 速查表</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0001-a-server-with-no-framework.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+</body>
+</html>

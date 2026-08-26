@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 · A Server With No Framework — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 01 · node:http</p>
+<h1>A Server With No Framework</h1>
+<p class="lead">You have called <code>fetch()</code> thousands of times. Today you build the thing that answers — with zero frameworks, and nothing you cannot see.</p>
+<p class="badges">
+  <span class="badge">~30 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">Node.js</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>Your mission says: <strong>no layer is magic</strong>. Before Express, before Next API routes, before databases — there is a plain Node process that receives bytes and writes bytes. Every framework you'll ever use is a wrapper around what you're about to write by hand. Once you've done this, <code>req</code> and <code>res</code> stop being incantations.</p>
+
+<h2>The one idea</h2>
+<p>A web server is <strong>one function that gets called for every request</strong>. It receives a request object, and writes to a response object. That's the whole job.</p>
+
+<div class="callout" style="text-align:center; font-family:var(--sans); font-size:0.92rem;">
+  <span style="display:inline-block; padding:0.4rem 0.8rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">client <span class="muted">(fetch, curl)</span></span>
+  &nbsp;─ request ─▶
+  <span style="display:inline-block; padding:0.4rem 0.8rem; border:1px solid var(--accent-border); border-radius:8px; background:var(--accent-soft); font-weight:700;">your function <code>(req, res)</code></span>
+  &nbsp;─ response ─▶
+  <span style="display:inline-block; padding:0.4rem 0.8rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">client</span>
+</div>
+
+<p>An HTTP <strong>request</strong> is: a <em>method</em> + <em>path</em> (the "start line"), <em>headers</em> (metadata), and an optional <em>body</em>. A <strong>response</strong> is: a <em>status code</em>, <em>headers</em>, and an optional <em>body</em>. Node hands you the request as <code>req</code> and the response-to-be as <code>res</code> (<a href="https://nodejs.org/api/http.html#httphttpcreateserveroptions-requestlistener">Node <code>http</code> docs</a>; <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages">MDN: HTTP messages</a>).</p>
+
+<h3>Status codes: the five families</h3>
+<p>The status code is your half of the contract with the client — it's how the server says what happened <em>before</em> the client parses the body (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN: HTTP response status codes</a>).</p>
+<table>
+  <thead><tr><th>Family</th><th>Means</th><th>You'll use</th></tr></thead>
+  <tbody>
+    <tr><td><code>1xx</code></td><td>informational</td><td>— (rare, handled low-level)</td></tr>
+    <tr><td><code>2xx</code></td><td>success</td><td><code>200</code> OK, <code>201</code> Created, <code>204</code> No content</td></tr>
+    <tr><td><code>3xx</code></td><td>redirection</td><td><code>301</code> Moved, <code>304</code> Not modified</td></tr>
+    <tr><td><code>4xx</code></td><td>the <em>client</em> messed up</td><td><code>400</code>, <code>401</code>, <code>403</code>, <code>404</code>, <code>429</code></td></tr>
+    <tr><td><code>5xx</code></td><td>the <em>server</em> messed up</td><td><code>500</code>, <code>502</code>, <code>503</code></td></tr>
+  </tbody>
+</table>
+
+<h2>The code — ~25 lines, no imports you can't read</h2>
+<p>Save this as <code>server.mjs</code> (the <code>.mjs</code> extension tells Node to use modern ES modules, no config needed):</p>
+
+<pre><code>import { createServer } from "node:http";
+
+const server = createServer((req, res) =&gt; {
+  const { method, url } = req;
+  console.log(`${method} ${url}`);        <span class="c">// every request logs here</span>
+
+  <span class="c">// GET / — plain JSON hello</span>
+  if (method === "GET" &amp;&amp; url === "/") {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ hello: "server" }));
+    return;
+  }
+
+  <span class="c">// POST /echo — read the request body, then answer</span>
+  if (method === "POST" &amp;&amp; url === "/echo") {
+    let body = "";
+    req.on("data", (chunk) =&gt; (body += chunk));   <span class="c">// body arrives in chunks</span>
+    req.on("end", () =&gt; {
+      res.writeHead(201, { "content-type": "application/json" });
+      res.end(JSON.stringify({ youSent: body }));
+    });
+    return;
+  }
+
+  <span class="c">// anything else — we decide it's a 404. Nothing automatic.</span>
+  res.writeHead(404, { "content-type": "application/json" });
+  res.end(JSON.stringify({ error: "not found" }));
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<p>Three things worth noticing before you run it:</p>
+<ul>
+  <li><strong>Routing is just <code>if</code> statements.</strong> Method + path in, decision out. That's all routing is.</li>
+  <li><strong>The request body is a stream.</strong> It arrives in <code>data</code> chunks and you reassemble it — nothing in HTTP guarantees it arrived "at once" (<a href="https://nodejs.org/api/http.html#class-httpincomingmessage"><code>IncomingMessage</code></a> is a readable stream).</li>
+  <li><strong>Nothing answers for you.</strong> Forget <code>res.end()</code> and the request hangs. The 404 exists only because you wrote it.</li>
+</ul>
+
+<h2>The drill — run it and read the wire</h2>
+<div class="task">
+  <span class="label">Hands-on · the feedback loop is your terminal</span>
+  <p>Each step produces visible output — if what you see doesn't match, stop and look: that gap <em>is</em> the learning.</p>
+  <ul class="checklist" data-store="bd-l01-drill">
+    <li><span class="box"></span><span class="txt">Create a folder <code>hello-server</code>, save the code above as <code>server.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">Start it: <code>node server.mjs</code> — watch it log <code>listening on http://localhost:3000</code></span></li>
+    <li><span class="box"></span><span class="txt">In a second terminal: <code>curl http://localhost:3000/</code> — you should get <code>{"hello":"server"}</code></span></li>
+    <li><span class="box"></span><span class="txt">Now with eyes: <code>curl -i http://localhost:3000/</code> — status line, headers, blank line, body</span></li>
+    <li><span class="box"></span><span class="txt">Send a body: <code>curl -i -X POST -d "ping" http://localhost:3000/echo</code> — expect <code>201</code> and the echo</span></li>
+    <li><span class="box"></span><span class="txt">Break it: <code>curl -i http://localhost:3000/nope</code> — expect your <code>404</code></span></li>
+    <li><span class="box"></span><span class="txt">Map it: for each part of the <code>curl -i</code> output, find the exact line in <code>server.mjs</code> that produced it</span></li>
+  </ul>
+</div>
+
+<p>The last curl should look like this — find each line's source in your code:</p>
+<pre><span class="p">$</span> curl -i http://localhost:3000/
+<span class="hl">HTTP/1.1 200 OK</span>
+<span class="hl">content-type: application/json</span>
+Date: Tue, 25 Aug 2026 09:12:41 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+<span class="c">                                          ← blank line: headers end, body begins</span>
+{"hello":"server"}</pre>
+
+<div class="callout">
+  <span class="label">What you just proved</span>
+  <p style="margin:0">Express's <code>app.get("/", handler)</code> is a prettier <code>if</code>. Its <code>res.json()</code> is <code>writeHead</code> + <code>end(JSON.stringify(...))</code>. Its <code>express.json()</code> middleware is the chunk-collecting you wrote in <code>/echo</code>. You have now personally owned every piece — the framework will only ever organise what you already understand.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — that pair is the entire interface." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>In node:http, what does the createServer callback receive?</q>
+  <div class="options">
+    <button class="opt">Request and response objects</button>
+    <button class="opt">The router and middleware</button>
+    <button class="opt">Headers and status codes</button>
+    <button class="opt">Sockets and event emitters</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — the client asked for something the server doesn't have." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Status code 404 belongs to which family?</q>
+  <div class="options">
+    <button class="opt">Client-side errors</button>
+    <button class="opt">Server-side errors</button>
+    <button class="opt">Success responses</button>
+    <button class="opt">Redirect messages</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — -i shows everything before the body." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>What does the curl flag -i reveal?</q>
+  <div class="options">
+    <button class="opt">Status line and headers</button>
+    <button class="opt">Response body and timing</button>
+    <button class="opt">Request path and query</button>
+    <button class="opt">Port number and method</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — no status, no response." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Every HTTP response must start with…</q>
+  <div class="options">
+    <button class="opt">A three-digit status code</button>
+    <button class="opt">An encoded JSON body</button>
+    <button class="opt">A valid session token</button>
+    <button class="opt">A permissive CORS header</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview">MDN — An overview of HTTP</a>. The single best short read on what you just touched; every claim in this lesson traces back to it or to the <a href="https://nodejs.org/api/http.html">Node <code>http</code> docs</a>. Skim <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages">HTTP Messages</a> while you're there.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 02 — <em>One Thread, Many Requests</em>: how this single-threaded function serves hundreds of connections at once (the event loop). <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — any question about this lesson, the code, or "why does Node do X" is fair game. That's what a teacher is for.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/http-anatomy.html">HTTP Anatomy &amp; curl cheat sheet</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0001-a-server-with-no-framework.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+</body>
+</html>

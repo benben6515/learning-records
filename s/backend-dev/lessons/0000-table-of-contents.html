@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Index — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+<style>
+  .toc { list-style:none; padding:0; margin:1.5rem 0; }
+  .toc li { border-bottom:1px solid var(--rule); }
+  .toc li:first-child { border-top:1px solid var(--rule); }
+  .toc a, .toc .row { display:flex; gap:1rem; padding:0.9rem 0.55rem; align-items:baseline; }
+  .toc a { text-decoration:none; border-bottom:none; border-left:3px solid transparent; }
+  .toc a:hover { border-left-color:var(--accent); background:var(--surface-hover); }
+  .toc .num { font-family:var(--sans); font-size:1.4rem; font-weight:300; color:var(--accent); flex:0 0 2.6rem; line-height:1; }
+  .toc .meta { display:flex; flex-direction:column; gap:0.15rem; }
+  .toc .t { font-size:1.1rem; color:var(--ink); font-weight:600; }
+  .toc .s { font-size:0.92rem; color:var(--muted); font-style:italic; line-height:1.45; }
+  .toc .d { font-family:var(--sans); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); margin-top:0.15rem; }
+  .toc li.upcoming .num { color:var(--faint); }
+  .toc li.upcoming .t { color:var(--muted); }
+  .toc .tag { font-family:var(--sans); font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--warm); border:1px solid var(--warm-border); border-radius:9999px; padding:0.1rem 0.5rem; margin-left:0.4rem; vertical-align:middle; }
+</style>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Course Index</p>
+<h1>Backend Fluency — Course Index</h1>
+<p class="lead">Frontend dev → full-stack on Node + TypeScript. Concepts first, frameworks second, no magic allowed. One tight idea and one tangible win per lesson, ~30 minutes a day.</p>
+
+<h2>Lessons</h2>
+<ol class="toc">
+  <li>
+    <a href="0001-a-server-with-no-framework.html">
+      <span class="num">01</span>
+      <span class="meta">
+        <span class="t">A Server With No Framework</span>
+        <span class="s">Build a real HTTP server with raw node:http — and never wonder what Express is hiding again.</span>
+        <span class="d">~30 min · node:http · hands-on</span>
+      </span>
+    </a>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">02</span>
+      <span class="meta">
+        <span class="t">One Thread, Many Requests<span class="tag">queued</span></span>
+        <span class="s">The event loop: how a single-threaded function serves hundreds of connections without waiting.</span>
+        <span class="d">~30 min · concurrency</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">03</span>
+      <span class="meta">
+        <span class="t">Routing Without a Framework<span class="tag">queued</span></span>
+        <span class="s">Paths, methods, and body parsing by hand — then meet Express as an old friend, not a stranger.</span>
+        <span class="d">~30 min · routing</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">04</span>
+      <span class="meta">
+        <span class="t">REST Semantics Done Right<span class="tag">queued</span></span>
+        <span class="s">Methods, status codes, idempotency, and errors as a contract your frontend can trust.</span>
+        <span class="d">~30 min · API design</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">05</span>
+      <span class="meta">
+        <span class="t">Persistence: Files → SQLite → PostgreSQL<span class="tag">queued</span></span>
+        <span class="s">Where data actually lives: schema, SQL, and migrations — no ORM magic until SQL is yours.</span>
+        <span class="d">multi-lesson · data</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">06</span>
+      <span class="meta">
+        <span class="t">Auth: Sessions vs Tokens<span class="tag">queued</span></span>
+        <span class="s">Who is calling? Hashing, cookies vs JWTs, and the OWASP basics of doing it safely.</span>
+        <span class="d">~30 min · security</span>
+      </span>
+    </div>
+  </li>
+</ol>
+
+<h2>Reference sheets</h2>
+<ul>
+  <li><a href="../reference/http-anatomy.html">HTTP Anatomy &amp; curl Cheat Sheet</a> — request/response structure, methods, status codes, headers, and the curl commands that reveal them.</li>
+</ul>
+
+<div class="footer">
+  <p><strong>About this course:</strong> goal, sources, and vocabulary in <a href="../MISSION.md">Mission</a>, <a href="../RESOURCES.md">Resources</a>, <a href="../GLOSSARY.md">Glossary</a>. · <a href="../index.html">↑ Course home</a> · <a href="../lessons-tw/0000-table-of-contents.html">繁體中文</a></p>
+</div>
+
+</article>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTP 解剖與 curl 速查表 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 01</p>
+<h1>HTTP 解剖與 curl 速查表</h1>
+<p class="lead">請求／回應模型、狀態碼、標頭，以及把它們現形的 curl 指令——濃縮自 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP">MDN HTTP</a> 與第 01 課。適合列印。</p>
+
+<h2>一場交易的全程</h2>
+<p>每次 HTTP 交換都是：用戶端送出<strong>請求（request）</strong>（方法＋路徑、標頭、可省略的內文）→ 伺服器送回<strong>回應（response）</strong>（狀態碼、標頭、可省略的內文）。伺服器就是一個函式：請求進、回應出。</p>
+<pre><code>GET /echo HTTP/1.1            <span class="c">← 請求起始行：METHOD 路徑 版本</span>
+host: localhost:3000          <span class="c">← 標頭：名稱: 值，一行一個</span>
+content-type: application/json
+                              <span class="c">← 空行，接著是（可省略的）內文</span>
+{"msg":"hi"}</code></pre>
+<pre><code>HTTP/1.1 201 Created          <span class="c">← 回應狀態行：版本 狀態碼 原因</span>
+content-type: application/json
+                              <span class="c">← 空行，接著是內文</span>
+{"youSent":"hi"}</code></pre>
+
+<h2>方法（你真的會用到的動詞）</h2>
+<table>
+  <thead><tr><th>方法</th><th>意義</th><th>有內文？</th><th>冪等？</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET</code></td><td>讀取資源</td><td>無</td><td>是</td></tr>
+    <tr><td><code>POST</code></td><td>建立／提交</td><td>有</td><td>否</td></tr>
+    <tr><td><code>PUT</code></td><td>整個取代資源</td><td>有</td><td>是</td></tr>
+    <tr><td><code>PATCH</code></td><td>部分更新</td><td>有</td><td>否*</td></tr>
+    <tr><td><code>DELETE</code></td><td>刪除資源</td><td>少用</td><td>是</td></tr>
+  </tbody>
+</table>
+<p class="small muted">*冪等（idempotent）＝同樣的呼叫重複送，伺服器狀態不變。（PATCH 語意因實作而異——<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN：HTTP request methods</a>。）</p>
+
+<h2>你會用到的狀態碼</h2>
+<table>
+  <thead><tr><th>狀態碼</th><th>讀作</th><th>典型時機</th></tr></thead>
+  <tbody>
+    <tr><td><code>200</code> OK</td><td>資料在這</td><td>成功的 GET / PUT / PATCH</td></tr>
+    <tr><td><code>201</code> Created</td><td>新東西建好了</td><td>成功建立的 POST</td></tr>
+    <tr><td><code>204</code> No Content</td><td>辦完了，無話可說</td><td>成功的 DELETE</td></tr>
+    <tr><td><code>301</code> Moved Permanently</td><td>它搬到別處了</td><td>永久網址變更</td></tr>
+    <tr><td><code>304</code> Not Modified</td><td>你的快取還新</td><td>條件式 GET（ETag）</td></tr>
+    <tr><td><code>400</code> Bad Request</td><td>你的請求有問題</td><td>驗證失敗</td></tr>
+    <tr><td><code>401</code> Unauthorized</td><td>你是誰？</td><td>缺少／錯誤的憑證</td></tr>
+    <tr><td><code>403</code> Forbidden</td><td>知道是你，但不行</td><td>權限不足</td></tr>
+    <tr><td><code>404</code> Not Found</td><td>沒有這個東西</td><td>未知路徑／資源</td></tr>
+    <tr><td><code>409</code> Conflict</td><td>狀態相衝突</td><td>重複建立、版本過舊</td></tr>
+    <tr><td><code>429</code> Too Many Requests</td><td>慢一點</td><td>速率限制</td></tr>
+    <tr><td><code>500</code> Internal Server Error</td><td>我們弄壞了</td><td>未處理的例外</td></tr>
+    <tr><td><code>502</code> / <code>503</code></td><td>上游掛了／不可用</td><td>代理連不到應用</td></tr>
+  </tbody>
+</table>
+<p class="small muted">家族：<code>2xx</code> 成功 · <code>3xx</code> 重導向 · <code>4xx</code> 用戶端的鍋 · <code>5xx</code> 伺服器的鍋（<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN：狀態碼</a>）。</p>
+
+<h2>你會一直遇到的標頭</h2>
+<table>
+  <thead><tr><th>標頭</th><th>方向</th><th>職責</th></tr></thead>
+  <tbody>
+    <tr><td><code>content-type</code></td><td>雙向</td><td>內文是什麼——<code>application/json</code>、<code>text/html</code>……</td></tr>
+    <tr><td><code>content-length</code></td><td>雙向</td><td>內文的位元組數</td></tr>
+    <tr><td><code>authorization</code></td><td>請求</td><td>憑證——通常是 <code>Bearer &lt;token&gt;</code></td></tr>
+    <tr><td><code>cache-control</code></td><td>回應</td><td>誰可以快取、快多久</td></tr>
+    <tr><td><code>cookie</code> / <code>set-cookie</code></td><td>請求／回應</td><td>伺服器先前設在用戶端的狀態</td></tr>
+    <tr><td><code>location</code></td><td>回應</td><td>下一步去哪（伴隨 3xx / 201）</td></tr>
+  </tbody>
+</table>
+
+<h2>curl 速查表</h2>
+<pre><code><span class="p">$</span> curl http://localhost:3000/                    <span class="c"># GET（預設）</span>
+<span class="p">$</span> curl -i http://localhost:3000/                 <span class="c"># 加上狀態行與標頭</span>
+<span class="p">$</span> curl -X POST -d "name=ben" http://localhost:3000/echo
+<span class="c">│            │                                 │</span>
+<span class="c">│            └─ 請求內文                       └─ URL</span>
+<span class="c">└─ HTTP 方法（GET 是預設，所以 GET 不用旗標）</span>
+<span class="p">$</span> curl -i -X POST \
+       -H "content-type: application/json" \
+       -d '{"name":"ben"}' \
+       http://localhost:3000/echo                <span class="c"># 正統的 JSON 送法</span>
+<span class="p">$</span> curl -s http://localhost:3000/ | jq           <span class="c"># 安靜模式 + 美化輸出</span>
+<span class="p">$</span> curl -o /dev/null -w "%{http_code}\n" URL      <span class="c"># 只要狀態碼</span></pre>
+
+<hr class="rule">
+<div class="footer">
+  <p>〈<a href="../lessons-tw/0001-a-server-with-no-framework.html">第 01 課——不用框架寫伺服器</a>〉的隨身參考卡 · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/http-anatomy.html">English</a></p>
+  <p>來源：<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP">MDN HTTP</a> · <a href="https://nodejs.org/api/http.html">Node http 文件</a> · <a href="https://curl.se/docs/">curl 文件</a>。有問題？問 agent。</p>
+</div>
+
+</article>
+</body>
+</html>

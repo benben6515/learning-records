@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTP Anatomy &amp; curl Cheat Sheet — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 01</p>
+<h1>HTTP Anatomy &amp; curl Cheat Sheet</h1>
+<p class="lead">The request/response model, status codes, headers, and the curl commands that show them — compressed from <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP">MDN HTTP</a> and Lesson 01. Print me.</p>
+
+<h2>The transaction</h2>
+<p>Every HTTP exchange is: client sends a <strong>request</strong> (method + path, headers, optional body) → server sends a <strong>response</strong> (status, headers, optional body). The server is one function: request in, response out.</p>
+<pre><code>GET /echo HTTP/1.1            <span class="c">← request start line: METHOD path version</span>
+host: localhost:3000          <span class="c">← headers: name: value, one per line</span>
+content-type: application/json
+                              <span class="c">← blank line, then (optional) body</span>
+{"msg":"hi"}</code></pre>
+<pre><code>HTTP/1.1 201 Created          <span class="c">← response status line: version CODE reason</span>
+content-type: application/json
+                              <span class="c">← blank line, then body</span>
+{"youSent":"hi"}</code></pre>
+
+<h2>Methods (the verbs you'll actually use)</h2>
+<table>
+  <thead><tr><th>Method</th><th>Meaning</th><th>Has body?</th><th>Idempotent?</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET</code></td><td>read a resource</td><td>no</td><td>yes</td></tr>
+    <tr><td><code>POST</code></td><td>create / submit</td><td>yes</td><td>no</td></tr>
+    <tr><td><code>PUT</code></td><td>replace a resource</td><td>yes</td><td>yes</td></tr>
+    <tr><td><code>PATCH</code></td><td>partially update</td><td>yes</td><td>no*</td></tr>
+    <tr><td><code>DELETE</code></td><td>remove a resource</td><td>rarely</td><td>yes</td></tr>
+  </tbody>
+</table>
+<p class="small muted">*Idempotent = repeating the same call leaves the server in the same state. (PATCH semantics vary — <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN: HTTP request methods</a>.)</p>
+
+<h2>Status codes you'll reach for</h2>
+<table>
+  <thead><tr><th>Code</th><th>Read it as</th><th>Typical use</th></tr></thead>
+  <tbody>
+    <tr><td><code>200</code> OK</td><td>here's your data</td><td>successful GET / PUT / PATCH</td></tr>
+    <tr><td><code>201</code> Created</td><td>made a new thing</td><td>successful POST that creates</td></tr>
+    <tr><td><code>204</code> No Content</td><td>done, nothing to say</td><td>successful DELETE</td></tr>
+    <tr><td><code>301</code> Moved Permanently</td><td>it lives elsewhere now</td><td>permanent URL changes</td></tr>
+    <tr><td><code>304</code> Not Modified</td><td>your cache is fresh</td><td>conditional GETs (ETag)</td></tr>
+    <tr><td><code>400</code> Bad Request</td><td>your request is malformed</td><td>failed validation</td></tr>
+    <tr><td><code>401</code> Unauthorized</td><td>who are you?</td><td>missing/bad credentials</td></tr>
+    <tr><td><code>403</code> Forbidden</td><td>I know you; still no</td><td>insufficient permissions</td></tr>
+    <tr><td><code>404</code> Not Found</td><td>no such thing</td><td>unknown path / resource</td></tr>
+    <tr><td><code>409</code> Conflict</td><td>state clash</td><td>duplicate create, stale version</td></tr>
+    <tr><td><code>429</code> Too Many Requests</td><td>slow down</td><td>rate limiting</td></tr>
+    <tr><td><code>500</code> Internal Server Error</td><td>we broke it</td><td>unhandled exception</td></tr>
+    <tr><td><code>502</code> / <code>503</code></td><td>upstream down / unavailable</td><td>proxy can't reach the app</td></tr>
+  </tbody>
+</table>
+<p class="small muted">Families: <code>2xx</code> success · <code>3xx</code> redirect · <code>4xx</code> client's fault · <code>5xx</code> server's fault (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN: status codes</a>).</p>
+
+<h2>Headers you'll meet constantly</h2>
+<table>
+  <thead><tr><th>Header</th><th>Direction</th><th>Job</th></tr></thead>
+  <tbody>
+    <tr><td><code>content-type</code></td><td>both</td><td>what the body is — <code>application/json</code>, <code>text/html</code>…</td></tr>
+    <tr><td><code>content-length</code></td><td>both</td><td>body size in bytes</td></tr>
+    <tr><td><code>authorization</code></td><td>request</td><td>credentials — usually <code>Bearer &lt;token&gt;</code></td></tr>
+    <tr><td><code>cache-control</code></td><td>response</td><td>who may cache, and for how long</td></tr>
+    <tr><td><code>cookie</code> / <code>set-cookie</code></td><td>req / res</td><td>client-side state the server set earlier</td></tr>
+    <tr><td><code>location</code></td><td>response</td><td>where to go next (with 3xx / 201)</td></tr>
+  </tbody>
+</table>
+
+<h2>curl cheat sheet</h2>
+<pre><code><span class="p">$</span> curl http://localhost:3000/                    <span class="c"># GET (the default)</span>
+<span class="p">$</span> curl -i http://localhost:3000/                 <span class="c"># + status line &amp; headers</span>
+<span class="p">$</span> curl -X POST -d "name=ben" http://localhost:3000/echo
+<span class="c">│            │                                 │</span>
+<span class="c">│            └─ request body                  └─ the URL</span>
+<span class="c">└─ HTTP method (GET is the default, so GET needs no flag)</span>
+<span class="p">$</span> curl -i -X POST \
+       -H "content-type: application/json" \
+       -d '{"name":"ben"}' \
+       http://localhost:3000/echo                <span class="c"># JSON the proper way</span>
+<span class="p">$</span> curl -s http://localhost:3000/ | jq           <span class="c"># quiet + pretty-print</span>
+<span class="p">$</span> curl -o /dev/null -w "%{http_code}\n" URL      <span class="c"># just the status code</span></pre>
+
+<hr class="rule">
+<div class="footer">
+  <p>Companion to <a href="../lessons/0001-a-server-with-no-framework.html">Lesson 01 — A Server With No Framework</a> · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/http-anatomy.html">繁體中文</a></p>
+  <p>Sources: <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP">MDN HTTP</a> · <a href="https://nodejs.org/api/http.html">Node http docs</a> · <a href="https://curl.se/docs/">curl docs</a>. Questions? Ask the agent.</p>
+</div>
+
+</article>
+</body>
+</html>
