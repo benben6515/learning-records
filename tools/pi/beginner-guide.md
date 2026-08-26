@@ -387,6 +387,7 @@ pi @code.ts @test.ts "Review these files"
 | 想做的事             | 去哪看                                                        |
 | -------------------- | ------------------------------------------------------------- |
 | 進階操作技巧         | [Pi Pro Tips](./pro-tips.md)                                  |
+| 實戰配置範例         | [Pi Setup After 6 Months of Use](./pi-setup-6-months-eero-alvar.md) |
 | Pi × Obsidian 工作流 | [Pi Agent Obsidian Workflow](./pi-agent-obsidian-workflow.md) |
 | 安裝套件             | [pi.dev/packages](https://pi.dev/packages)                    |
 | 寫 Extension         | [Extensions 文件](https://pi.dev/docs/latest/extensions)      |
