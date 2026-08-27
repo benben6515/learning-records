@@ -1,5 +1,7 @@
 # fundamentals-of-networking
 
+> 相關：[學 Networking 的最佳方式（資安導向）](../../others/notes/networking-learning-path.tw.md)、[網路基礎觀念](../../others/notes/networking-fundamentals.tw.md)
+
 ## Section 2: Fundamentals of Networking
 
 - Client - Server Architecture
