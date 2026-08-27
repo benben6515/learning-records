@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 · One Thread, Many Requests — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 02 · The event loop</p>
+<h1>One Thread, Many Requests</h1>
+<p class="lead">Your Lesson 01 server is one JavaScript function — and it can still serve hundreds of requests at once. Today you'll watch the trick work, then watch it break.</p>
+<p class="badges">
+  <span class="badge">~30 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">Node.js</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>The mission says <strong>no layer is magic</strong>. Last lesson you built the server; today you meet the engine that calls your function. This is the difference between "I use async/await" and "I know why the whole API froze for three seconds when one user uploaded a big file."</p>
+
+<h2>The one idea</h2>
+<p><strong>Your JavaScript runs on one call stack — one thread. The expensive work doesn't.</strong> Timers, disk, sockets, DNS: Node hands those to the operating system and a small worker pool (<a href="https://nodejs.org/en/learn">libuv</a>, bundled with Node). When the work finishes, its callback queues up, and the <strong>event loop</strong> pushes it back onto the stack — but only once the stack is empty.</p>
+
+<div class="callout" style="font-family:var(--sans); font-size:0.88rem; line-height:2;">
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--accent-border); border-radius:8px; background:var(--accent-soft); font-weight:700;">1 · your handler runs on the stack</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">2 · asks Node for slow I/O</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">3 · handler returns, stack empties</span>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; margin-top:0.4rem;">
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">4 · I/O finishes off-thread</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">5 · callback waits in the queue</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--accent-border); border-radius:8px; background:var(--accent-soft); font-weight:700;">6 · loop runs it on the stack</span>
+  </div>
+</div>
+
+<p>You already know this model — <strong>it's the browser's event loop</strong>, moved server-side (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN: Event loop</a>). Same single stack, same queue. Node just points it at sockets and disks instead of the DOM.</p>
+
+<h3>The four rules</h3>
+<ol>
+  <li><strong>One at a time.</strong> All your JS executes on one call stack.</li>
+  <li><strong>I/O runs elsewhere.</strong> The waiting happens off-thread (OS async APIs + libuv's pool, 4 threads by default).</li>
+  <li><strong>The loop waits for quiet.</strong> A queued callback only runs when the stack is empty.</li>
+  <li><strong>So one sync hog blocks everyone.</strong> A 3-second synchronous loop freezes <em>every</em> request — new and pending. That's not a bug in Node; it's rule 3 doing exactly what it says (<a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">Node official: The Node.js Event Loop</a>).</li>
+</ol>
+
+<div class="callout">
+  <span class="label">Why this scales</span>
+  <p style="margin:0">For I/O-bound work, the CPU idles through every wait — so one thread plus async I/O handles <em>thousands</em> of simultaneous waits. The trade: for CPU-heavy work (image processing, big JSON, crypto), one thread is a bottleneck, and the fix is worker threads or a queue — a later lesson.</p>
+</div>
+
+<h2>The code — three endpoints, one truth</h2>
+<p>Save as <code>server2.mjs</code> next to Lesson 01's file:</p>
+
+<pre><code>import { createServer } from "node:http";
+
+const server = createServer((req, res) =&gt; {
+  const url = new URL(req.url, "http://localhost");
+
+  <span class="c">// GET /hello — instant, pure sync, microseconds</span>
+  if (req.method === "GET" &amp;&amp; url.pathname === "/hello") {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ msg: "hello" }));
+    return;
+  }
+
+  <span class="c">// GET /work?ms=3000 — 3s of SYNCHRONOUS CPU work. Blocks the whole server.</span>
+  if (req.method === "GET" &amp;&amp; url.pathname === "/work") {
+    const ms = Number(url.searchParams.get("ms") ?? 3000);
+    const start = Date.now();
+    while (Date.now() - start &lt; ms) {}   <span class="c">// busy-wait: the event loop is frozen</span>
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ blockedForMs: Date.now() - start }));
+    return;
+  }
+
+  <span class="c">// GET /idle?ms=3000 — 3s of ASYNCHRONOUS waiting. Blocks nobody.</span>
+  if (req.method === "GET" &amp;&amp; url.pathname === "/idle") {
+    const ms = Number(url.searchParams.get("ms") ?? 3000);
+    setTimeout(() =&gt; {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(JSON.stringify({ waitedMs: ms }));
+    }, ms);                              <span class="c">// timer runs outside JS; we return now</span>
+    return;
+  }
+
+  res.writeHead(404);
+  res.end();
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<p>The only difference between <code>/work</code> and <code>/idle</code> is <em>where the three seconds happen</em>: on the stack, or off it. Same latency, opposite blast radius.</p>
+
+<h2>The drill — watch it break, watch it hold</h2>
+<div class="task">
+  <span class="label">Hands-on · two terminals, three seconds, one revelation</span>
+  <p>Timing is the feedback: <code>-w "%{time_total}"</code> prints how long each request took. Watch the numbers, not the code.</p>
+  <ul class="checklist" data-store="bd-l02-drill">
+    <li><span class="box"></span><span class="txt">Save and start: <code>node server2.mjs</code> — then baseline: <code>curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello</code> → a few milliseconds</span></li>
+    <li><span class="box"></span><span class="txt">Terminal A: <code>curl "http://localhost:3000/work?ms=3000"</code> (3s of sync work — don't press anything)</span></li>
+    <li><span class="box"></span><span class="txt">Immediately, terminal B: time <code>/hello</code> again → ~3 seconds. The whole server froze behind one request</span></li>
+    <li><span class="box"></span><span class="txt">Now the fix: terminal A: <code>curl "http://localhost:3000/idle?ms=3000"</code> (3s of async wait)</span></li>
+    <li><span class="box"></span><span class="txt">While it waits, terminal B: time <code>/hello</code> → milliseconds. Same 3 seconds, zero collateral</span></li>
+    <li><span class="box"></span><span class="txt">Explain out loud, in one sentence each: why did step 3 stall? Why didn't step 5? (If you can say it, you own rule 3)</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">What you just proved</span>
+  <p style="margin:0">"Node is fast because it's async" is a slogan. You now have the mechanism: <strong>async means the stack empties</strong>, so the loop can keep serving. Any sync code that hogs the stack — <code>while</code> loops, <code>fs.readFileSync</code>, <code>JSON.parse</code> on a 100 MB payload, <code>crypto.pbkdf2Sync</code> — suspends every other request in the building.</p>
+</div>
+
+<p class="small muted">Fine print for later: promise callbacks (<code>.then</code>) are <em>microtasks</em> — they jump ahead of timers. That ordering matters once you mix them; the <a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">official event-loop guide</a> covers it when you're ready.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — single-threaded is about YOUR code, not the machine." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Node.js is "single-threaded". Precisely, that means…</q>
+  <div class="options">
+    <button class="opt">Your JavaScript runs one stack</button>
+    <button class="opt">Each request gets one thread</button>
+    <button class="opt">The server accepts one connection</button>
+    <button class="opt">Callbacks execute on one queue</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — nothing runs until the busy stack empties." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>While a handler busy-waits 3 seconds, other requests…</q>
+  <div class="options">
+    <button class="opt">Wait because the loop blocks</button>
+    <button class="opt">Run on spare OS threads</button>
+    <button class="opt">Finish via the libuv pool</button>
+    <button class="opt">Error after a few seconds</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — waiting happens off-thread; only callbacks return." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Where does slow I/O — disk, sockets, timers — actually run?</q>
+  <div class="options">
+    <button class="opt">Outside JS, on libuv</button>
+    <button class="opt">Inside JS promise callbacks</button>
+    <button class="opt">On the main call stack</button>
+    <button class="opt">Inside V8's garbage collector</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — an async wait never occupies the stack." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>A 3-second async timer is pending. Meanwhile /hello…</q>
+  <div class="options">
+    <button class="opt">Still answers right away</button>
+    <button class="opt">Also waits three full seconds</button>
+    <button class="opt">Responds once the stack drains</button>
+    <button class="opt">Responds after that timer fires</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Watch next (26 min, worth every one)</h2>
+<p><strong>Primary source:</strong> <a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ">Philip Roberts — "What the heck is the event loop anyway?"</a> (JSConf EU). The talk that made this model click for a generation of developers — stack, queue, loop, all live-demoed. It's the same loop you just broke. For the Node-specific deep end (phases, <code>nextTick</code>, <code>setImmediate</code>), the <a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">official guide</a> is canonical.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 03 — <em>Routing Without a Framework</em>: paths, methods, and body parsing by hand — then meet Express as an old friend. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — "why does Node do X" questions are exactly what I'm here for.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/event-loop.html">The Event Loop cheat sheet</a> · Previous: <a href="0001-a-server-with-no-framework.html">Lesson 01</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0002-one-thread-many-requests.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+</body>
+</html>

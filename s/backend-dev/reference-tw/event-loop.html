@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>事件迴圈速查表 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 02</p>
+<h1>事件迴圈速查表</h1>
+<p class="lead">心智模型、四條規則、阻塞 API 黑名單，以及 30 秒就能驗證一切的 curl 指令——濃縮自第 02 課、<a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">Node 官方指南</a>與 <a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ">Philip Roberts 的經典演講</a>。適合列印。</p>
+
+<h2>六步驟模型</h2>
+<pre><code>1 · 你的 handler 在呼叫堆疊上執行              <span class="c">← 一條執行緒，承載你全部的 JS</span>
+2 · 它把耗時工作交給 Node（計時器、磁碟……）
+3 · handler 返回 → 堆疊清空                     <span class="c">← 迴圈又能動了</span>
+4 · 耗時工作在 JavaScript 之外完成              <span class="c">← OS 非同步 + libuv 執行緒池（4 條）</span>
+5 · 它的回呼在佇列裡排隊
+6 · 事件迴圈把它推上堆疊                         <span class="c">← 永遠只在堆疊清空時</span></code></pre>
+
+<h2>四條規則</h2>
+<div class="grid">
+  <div class="card">
+    <h3>1 · 一次一件事</h3>
+    <p>你所有的 JavaScript 都在同一個呼叫堆疊上執行。你的程式碼任何兩行之間都不會並行。</p>
+  </div>
+  <div class="card">
+    <h3>2 · I/O 在別處跑</h3>
+    <p>等待發生在執行緒之外：socket／計時器走 OS 非同步 API，磁碟／DNS／加密走 libuv 執行緒池（預設 4 條）。</p>
+  </div>
+  <div class="card">
+    <h3>3 · 迴圈要等安靜</h3>
+    <p>佇列裡的回呼，只在堆疊清空後執行。同步工作<em>就是</em>堆疊——所以它會暫停整個迴圈。</p>
+  </div>
+  <div class="card">
+    <h3>4 · 一個大戶堵住所有人</h3>
+    <p>第 3 條的後果：一個忙等 <code>while</code> 凍結每一個請求——新的、等待中的，無一倖免。</p>
+  </div>
+</div>
+
+<h2>阻塞黑名單</h2>
+<p>在 request handler 裡，這些會霸佔堆疊、拖垮整台伺服器——換成它們的非同步雙胞胎：</p>
+<table>
+  <thead><tr><th>會堵住迴圈</th><th>改用</th></tr></thead>
+  <tbody>
+    <tr><td><code>fs.readFileSync()</code></td><td><code>fs.promises.readFile()</code></td></tr>
+    <tr><td><code>crypto.pbkdf2Sync()</code> 一族</td><td><code>crypto.pbkdf2()</code>（回呼／promise 版）</td></tr>
+    <tr><td><code>JSON.parse(超大payload)</code></td><td>串流解析，或在 proxy 擋下 payload 上限</td></tr>
+    <tr><td>忙等 <code>while</code>／<code>for</code> 迴圈（CPU 工作）</td><td>worker threads／工作佇列（之後的課）</td></tr>
+    <tr><td>災難性回溯的正規表達式</td><td>用生成的輸入測試；加逾時保護</td></tr>
+  </tbody>
+</table>
+
+<h2>30 秒驗證</h2>
+<pre><code><span class="p">$</span> curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello
+<span class="c"># → 0.005s 基準</span>
+
+<span class="p">$</span> curl "http://localhost:3000/work?ms=3000" &amp;   <span class="c"># 3 秒同步工作，背景執行</span>
+<span class="p">$</span> curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello
+<span class="c"># → ~3.0s  ← 整台伺服器被一個同步 handler 凍住了</span>
+
+<span class="p">$</span> curl "http://localhost:3000/idle?ms=3000" &amp;   <span class="c"># 3 秒非同步等待，背景執行</span>
+<span class="p">$</span> curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello
+<span class="c"># → 0.005s ← 一樣三秒，但堆疊一直是空的</span></code></pre>
+
+<h2>兩則備忘（日後深究）</h2>
+<ul>
+  <li><strong>微任務會插隊。</strong>Promise 回呼（<code>.then</code>）會搶在下一個計時器／I/O 回呼之前消化完——<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN：Event loop</a>。</li>
+  <li><strong>單執行緒撐 I/O，不撐 CPU。</strong>數千個同時等待：沒問題。重度運算：搬離迴圈（worker threads、child process 或佇列）。</li>
+</ul>
+
+<hr class="rule">
+<div class="footer">
+  <p>〈<a href="../lessons-tw/0002-one-thread-many-requests.html">第 02 課——一個執行緒，多個請求</a>〉的隨身參考卡 · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/event-loop.html">English</a></p>
+  <p>來源：<a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">Node 官方 event-loop 指南</a> · <a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ">Philip Roberts，JSConf EU</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN：Event loop</a>。有問題？問 agent。</p>
+</div>
+
+</article>
+</body>
+</html>
