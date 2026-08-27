@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 02 課 · 一個執行緒，多個請求 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 02 課 · 事件迴圈</p>
+<h1>一個執行緒，多個請求</h1>
+<p class="lead">你第 01 課的伺服器只是一個 JavaScript 函式——而它仍能同時服務數百個請求。今天你要親眼看到這個把戲成立，再親眼看到它垮掉。</p>
+<p class="badges">
+  <span class="badge">約 30 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">Node.js</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>任務宣言說<strong>沒有任何一層是魔法</strong>。上一課你建造了伺服器；這一課你見到呼叫你那個函式的引擎。這就是「我會用 async/await」與「我知道為什麼某個使用者上傳大檔案時，整個 API 會凍住三秒」的差別。</p>
+
+<h2>核心觀念</h2>
+<p><strong>你的 JavaScript 只跑在一個呼叫堆疊（call stack）上——一個執行緒。但耗時的工作不是。</strong>計時器、磁碟、socket、DNS：Node 把這些交給作業系統與一小組工作執行緒（<a href="https://nodejs.org/en/learn">libuv</a>，隨 Node 內建）。工作完成後，它的回呼（callback）進入佇列，<strong>事件迴圈（event loop）</strong>再把它推回堆疊——但只在堆疊清空之後。</p>
+
+<div class="callout" style="font-family:var(--sans); font-size:0.88rem; line-height:2;">
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--accent-border); border-radius:8px; background:var(--accent-soft); font-weight:700;">1 · 你的 handler 在堆疊上執行</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">2 · 向 Node 發出耗時 I/O</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">3 · handler 返回、堆疊清空</span>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; margin-top:0.4rem;">
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">4 · I/O 在執行緒外完成</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">5 · 回呼在佇列排隊</span>
+    <span class="muted">→</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--accent-border); border-radius:8px; background:var(--accent-soft); font-weight:700;">6 · 迴圈把它放上堆疊</span>
+  </div>
+</div>
+
+<p>這個模型你早就認識——<strong>它就是瀏覽器的事件迴圈</strong>，搬到了伺服器（<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN：Event loop</a>）。同樣的單一堆疊、同樣的佇列，只是 Node 讓它面對 socket 與磁碟，而非 DOM。</p>
+
+<h3>四條規則</h3>
+<ol>
+  <li><strong>一次一件事。</strong>你所有的 JS 都在同一個呼叫堆疊上執行。</li>
+  <li><strong>I/O 在別處跑。</strong>等待發生在執行緒之外（OS 非同步 API＋libuv 執行緒池，預設 4 條）。</li>
+  <li><strong>迴圈要等安靜。</strong>佇列裡的回呼，只在堆疊清空時才會被執行。</li>
+  <li><strong>所以一個同步大戶堵住所有人。</strong>3 秒的同步迴圈會凍住<em>每一個</em>請求——新的、舊的都一樣。這不是 Node 的 bug，這是第 3 條規則一字不差的後果（<a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">Node 官方：The Node.js Event Loop</a>）。</li>
+</ol>
+
+<div class="callout">
+  <span class="label">為什麼這樣能擴展</span>
+  <p style="margin:0">對 I/O 密集的工作，CPU 在每次等待時都閒著——所以一條執行緒加上非同步 I/O，就能同時撐住<em>數千個</em>等待。代價是：遇到 CPU 密集工作（影像處理、超大 JSON、加密），單執行緒就是瓶頸——解法是 worker threads 或佇列，之後的課再談。</p>
+</div>
+
+<h2>程式碼——三個端點，一個真相</h2>
+<p>存在第 01 課檔案的旁邊，取名 <code>server2.mjs</code>：</p>
+
+<pre><code>import { createServer } from "node:http";
+
+const server = createServer((req, res) =&gt; {
+  const url = new URL(req.url, "http://localhost");
+
+  <span class="c">// GET /hello — 瞬間完成，純同步，幾個微秒</span>
+  if (req.method === "GET" &amp;&amp; url.pathname === "/hello") {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ msg: "hello" }));
+    return;
+  }
+
+  <span class="c">// GET /work?ms=3000 — 3 秒的同步 CPU 工作。整台伺服器被堵住。</span>
+  if (req.method === "GET" &amp;&amp; url.pathname === "/work") {
+    const ms = Number(url.searchParams.get("ms") ?? 3000);
+    const start = Date.now();
+    while (Date.now() - start &lt; ms) {}   <span class="c">// 忙等：事件迴圈整個凍結</span>
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ blockedForMs: Date.now() - start }));
+    return;
+  }
+
+  <span class="c">// GET /idle?ms=3000 — 3 秒的非同步等待。誰也不堵。</span>
+  if (req.method === "GET" &amp;&amp; url.pathname === "/idle") {
+    const ms = Number(url.searchParams.get("ms") ?? 3000);
+    setTimeout(() =&gt; {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(JSON.stringify({ waitedMs: ms }));
+    }, ms);                              <span class="c">// 計時器在 JS 之外跑；我們現在就返回</span>
+    return;
+  }
+
+  res.writeHead(404);
+  res.end();
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<p><code>/work</code> 與 <code>/idle</code> 唯一的差別，是<em>那三秒發生在哪裡</em>：堆疊上，還是堆疊外。一樣的延遲，相反的爆炸半徑。</p>
+
+<h2>實戰練習——看它垮掉，再看它撐住</h2>
+<div class="task">
+  <span class="label">動手做 · 兩個終端機、三秒鐘、一個頓悟</span>
+  <p>時間就是回饋：<code>-w "%{time_total}"</code> 會印出每個請求花了多久。看數字，不要看程式碼。</p>
+  <ul class="checklist" data-store="bd-l02-drill-tw">
+    <li><span class="box"></span><span class="txt">存檔並啟動：<code>node server2.mjs</code>——先量基準：<code>curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello</code> → 幾毫秒</span></li>
+    <li><span class="box"></span><span class="txt">終端機 A：<code>curl "http://localhost:3000/work?ms=3000"</code>（3 秒同步工作——先別按任何東西）</span></li>
+    <li><span class="box"></span><span class="txt">立刻在終端機 B：再量一次 <code>/hello</code> → 約 3 秒。整台伺服器被一個請求凍住了</span></li>
+    <li><span class="box"></span><span class="txt">換解藥：終端機 A：<code>curl "http://localhost:3000/idle?ms=3000"</code>（3 秒非同步等待）</span></li>
+    <li><span class="box"></span><span class="txt">等待期間，終端機 B：量 <code>/hello</code> → 幾毫秒。一樣三秒，零波及</span></li>
+    <li><span class="box"></span><span class="txt">各用一句話大聲說出來：步驟 3 為什麼卡？步驟 5 為什麼不卡？（說得出來，第 3 條規則就是你的了）</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">你剛剛證明了什麼</span>
+  <p style="margin:0">「Node 很快，因為它是非同步的」只是口號。你現在握有機制：<strong>非同步意味著堆疊會清空</strong>，迴圈才能繼續服務。任何霸佔堆疊的同步程式——<code>while</code> 迴圈、<code>fs.readFileSync</code>、對 100 MB payload 的 <code>JSON.parse</code>、<code>crypto.pbkdf2Sync</code>——都會讓店裡所有其他請求一起停擺。</p>
+</div>
+
+<p class="small muted">日後的細節：promise 的回呼（<code>.then</code>）是<em>微任務（microtask）</em>——會插隊到計時器之前。混用時順序才有影響；準備好時，<a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">官方 event-loop 指南</a>講得很清楚。</p>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——「單執行緒」說的是你的程式碼，不是整台機器。" data-wrong="不盡然——正確答案已標出。">
+  <q>Node.js 的「單執行緒」精確來說是什麼意思？</q>
+  <div class="options">
+    <button class="opt">你的 JS 只有一個堆疊</button>
+    <button class="opt">每個請求各配一執行緒</button>
+    <button class="opt">整個伺服器只有一連線</button>
+    <button class="opt">回呼全部排進一個佇列</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——堆疊清空之前，什麼都不會跑。" data-wrong="不盡然——正確答案已標出。">
+  <q>當某個 handler 同步忙等 3 秒，其他請求會——</q>
+  <div class="options">
+    <button class="opt">等它跑完才被處理</button>
+    <button class="opt">由備用執行緒接手</button>
+    <button class="opt">改由作業系統接手</button>
+    <button class="opt">幾秒後就逾時出錯</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——等待發生在執行緒之外；只有回呼會回來。" data-wrong="不盡然——正確答案已標出。">
+  <q>磁碟、socket、計時器這類耗時工作實際跑在哪裡？</q>
+  <div class="options">
+    <button class="opt">你的 JS 之外（libuv）</button>
+    <button class="opt">你的 JS promise 回呼裡</button>
+    <button class="opt">主要的呼叫堆疊之上</button>
+    <button class="opt">V8 引擎的垃圾回收裡</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——非同步的等待從不佔用堆疊。" data-wrong="不盡然——正確答案已標出。">
+  <q>一個 3 秒的非同步計時器還在等，這時 /hello……</q>
+  <div class="options">
+    <button class="opt">照樣立刻回應所有人</button>
+    <button class="opt">同樣必須等滿三秒鐘</button>
+    <button class="opt">等堆疊清空之後才回</button>
+    <button class="opt">等計時器觸發後才回</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>接下來看這部（26 分鐘，分分秒秒都值）</h2>
+<p><strong>主要來源：</strong><a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ">Philip Roberts — "What the heck is the event loop anyway?"</a>（JSConf EU）。讓這個模型在一代工程師腦中「喀噠」一聲接上的那場演講——堆疊、佇列、迴圈，全部現場示範。就是你剛剛弄壞的那個迴圈。想下潛到 Node 特有的深水區（phases、<code>nextTick</code>、<code>setImmediate</code>），<a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">官方指南</a>才是正典。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 03 課——<em>不用框架做路由</em>：路徑、方法與內文解析全手寫，然後把 Express 當老朋友相認。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——「為什麼 Node 要這樣做」這類問題正是我存在的目的。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/event-loop.html">事件迴圈速查表</a> · 上一課：<a href="0001-a-server-with-no-framework.html">第 01 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0002-one-thread-many-requests.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+</body>
+</html>

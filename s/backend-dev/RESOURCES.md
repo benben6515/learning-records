@@ -8,6 +8,10 @@
   Primary source from the runtime itself — event loop, streams, HTTP servers, ES modules. Use for: anything about how Node actually works.
 - [Official: Node.js API docs — `http` module](https://nodejs.org/api/http.html)
   Canonical reference for `createServer`, `IncomingMessage`, `ServerResponse`. Use for: exact behaviour of the objects inside the server callback.
+- [Guide: The Node.js Event Loop, Timers, and process.nextTick (official)](https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick)
+  Canonical word on loop phases, microtasks, `setImmediate` vs `nextTick`. Use for: event-loop ordering questions beyond the basics.
+- [Talk: "What the heck is the event loop anyway?" — Philip Roberts, JSConf EU](https://www.youtube.com/watch?v=8aGhZQkoFbQ)
+  The classic 26-minute visual explainer (call stack / queue / loop, live-demoed). Use for: making the model click — same loop in Node and the browser.
 - [Reference: MDN — HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP)
   The canonical HTTP reference (messages, methods, status codes, headers). Start with [An overview of HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview). Use for: every HTTP question, ever.
 - [Curriculum: The Odin Project — NodeJS course](https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs)

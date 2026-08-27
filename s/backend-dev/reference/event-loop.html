@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Event Loop Cheat Sheet — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 02</p>
+<h1>The Event Loop Cheat Sheet</h1>
+<p class="lead">The mental model, the four rules, the blocking-API blacklist, and the curl commands that prove it all — compressed from Lesson 02, the <a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">Node official guide</a>, and <a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ">Philip Roberts' talk</a>. Print me.</p>
+
+<h2>The model in six steps</h2>
+<pre><code>1 · your handler runs on the call stack        <span class="c">← one thread, ALL of your JS</span>
+2 · it hands slow work to Node (timer, disk…)
+3 · handler returns → stack is EMPTY            <span class="c">← the loop can move again</span>
+4 · slow work finishes OUTSIDE JavaScript       <span class="c">← OS async + libuv pool (4 threads)</span>
+5 · its callback waits in the queue
+6 · event loop pushes it onto the stack         <span class="c">← only ever when the stack is empty</span></code></pre>
+
+<h2>The four rules</h2>
+<div class="grid">
+  <div class="card">
+    <h3>1 · One at a time</h3>
+    <p>All your JavaScript executes on one call stack. No line of your code ever runs in parallel with another.</p>
+  </div>
+  <div class="card">
+    <h3>2 · I/O runs elsewhere</h3>
+    <p>The waiting happens off-thread: OS async APIs for sockets/timers, libuv's thread pool (4 by default) for disk/DNS/crypto.</p>
+  </div>
+  <div class="card">
+    <h3>3 · The loop waits for quiet</h3>
+    <p>A queued callback only runs once the stack is empty. Sync work <em>is</em> the stack — so it suspends the loop.</p>
+  </div>
+  <div class="card">
+    <h3>4 · One sync hog blocks everyone</h3>
+    <p>Rule 3's consequence: a busy <code>while</code> freezes every request — new and pending alike.</p>
+  </div>
+</div>
+
+<h2>The blocking blacklist</h2>
+<p>Inside a request handler, these hog the stack and stall the whole server — swap for the async twin:</p>
+<table>
+  <thead><tr><th>Blocks the loop</th><th>Use instead</th></tr></thead>
+  <tbody>
+    <tr><td><code>fs.readFileSync()</code></td><td><code>fs.promises.readFile()</code></td></tr>
+    <tr><td><code>crypto.pbkdf2Sync()</code> &amp; friends</td><td><code>crypto.pbkdf2()</code> callback / promisified</td></tr>
+    <tr><td><code>JSON.parse(hugePayload)</code></td><td>stream-parse, or cap payload size at the proxy</td></tr>
+    <tr><td>busy <code>while</code>/<code>for</code> loops (CPU work)</td><td>worker threads / job queue (later lesson)</td></tr>
+    <tr><td>catastrophic-backtracking regexes</td><td>test with generated input; add timeouts</td></tr>
+  </tbody>
+</table>
+
+<h2>Prove it in 30 seconds</h2>
+<pre><code><span class="p">$</span> curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello
+<span class="c"># → 0.005s baseline</span>
+
+<span class="p">$</span> curl "http://localhost:3000/work?ms=3000" &amp;   <span class="c"># 3s SYNC work, background</span>
+<span class="p">$</span> curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello
+<span class="c"># → ~3.0s  ← the whole server was frozen behind one sync handler</span>
+
+<span class="p">$</span> curl "http://localhost:3000/idle?ms=3000" &amp;   <span class="c"># 3s ASYNC wait, background</span>
+<span class="p">$</span> curl -o /dev/null -s -w "%{time_total}s\n" http://localhost:3000/hello
+<span class="c"># → 0.005s ← same 3 seconds, stack stayed empty</span></code></pre>
+
+<h2>Two fine-print facts (for later)</h2>
+<ul>
+  <li><strong>Microtasks jump the queue.</strong> Promise callbacks (<code>.then</code>) drain before the next timer/I/O callback — <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN: Event loop</a>.</li>
+  <li><strong>Single thread scales for I/O, not CPU.</strong> Thousands of simultaneous waits: fine. Heavy computation: move it off the loop (worker threads, child processes, or a queue).</li>
+</ul>
+
+<hr class="rule">
+<div class="footer">
+  <p>Companion to <a href="../lessons/0002-one-thread-many-requests.html">Lesson 02 — One Thread, Many Requests</a> · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/event-loop.html">繁體中文</a></p>
+  <p>Sources: <a href="https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick">Node official event-loop guide</a> · <a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ">Philip Roberts, JSConf EU</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN: Event loop</a>. Questions? Ask the agent.</p>
+</div>
+
+</article>
+</body>
+</html>
