@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>State Path Visualizer</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0f1420;
+        color: #e6e9f0;
+      }
+      #toolbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #161c2c;
+        border-bottom: 1px solid #243049;
+      }
+      button {
+        background: #2b6cf6;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      button:hover {
+        background: #1f57d6;
+      }
+      button.warn {
+        background: #2a3450;
+      }
+      button.warn:hover {
+        background: #3a4666;
+      }
+      select {
+        background: #1e2640;
+        color: #e6e9f0;
+        border: 1.5px solid #3a4666;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      select:hover {
+        border-color: #6b9bff;
+      }
+      .tool-label {
+        font-size: 13px;
+        color: #8b95ad;
+      }
+      #status {
+        font-size: 13px;
+        color: #8b95ad;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #canvas {
+        padding-top: 60px;
+        padding-bottom: 200px;
+        overflow: auto;
+        height: 100vh;
+      }
+      svg {
+        display: block;
+      }
+
+      /* ---- forest: per-tree path colors ---- */
+      .node {
+        cursor: pointer;
+      }
+      .node rect {
+        fill: #1e2640;
+        stroke: #3a4666;
+        stroke-width: 1.5;
+        transition:
+          fill 0.15s,
+          stroke 0.15s;
+      }
+      .node text.label {
+        fill: #8b95ad;
+        font-size: 13px;
+        text-anchor: middle;
+        pointer-events: none;
+      }
+      .node:hover rect {
+        stroke: #6b9bff;
+      }
+      .node.p0 rect {
+        stroke: #4a7bff;
+        fill: #18234a;
+      }
+      .node.p0 text.label {
+        fill: #a9c3ff;
+      }
+      .node.p1 rect {
+        stroke: #34c777;
+        fill: #14291f;
+      }
+      .node.p1 text.label {
+        fill: #8fe0b4;
+      }
+      .node.p2 rect {
+        stroke: #ff9f43;
+        fill: #2e2213;
+      }
+      .node.p2 text.label {
+        fill: #ffc48a;
+      }
+      .node.p3 rect {
+        stroke: #b06bff;
+        fill: #241a3f;
+      }
+      .node.p3 text.label {
+        fill: #d0a9ff;
+      }
+      .node.p4 rect {
+        stroke: #ff6b9d;
+        fill: #331722;
+      }
+      .node.p4 text.label {
+        fill: #ffa3c2;
+      }
+      .node.p5 rect {
+        stroke: #2fd6d6;
+        fill: #10302f;
+      }
+      .node.p5 text.label {
+        fill: #8ae8e8;
+      }
+      /* endpoint of a tree path = solid color */
+      .node.ep.p0 rect {
+        fill: #4a7bff;
+      }
+      .node.ep.p0 text.label {
+        fill: #fff;
+      }
+      .node.ep.p1 rect {
+        fill: #34c777;
+      }
+      .node.ep.p1 text.label {
+        fill: #08140c;
+      }
+      .node.ep.p2 rect {
+        fill: #ff9f43;
+      }
+      .node.ep.p2 text.label {
+        fill: #241300;
+      }
+      .node.ep.p3 rect {
+        fill: #b06bff;
+      }
+      .node.ep.p3 text.label {
+        fill: #fff;
+      }
+      .node.ep.p4 rect {
+        fill: #ff6b9d;
+      }
+      .node.ep.p4 text.label {
+        fill: #fff;
+      }
+      .node.ep.p5 rect {
+        fill: #2fd6d6;
+      }
+      .node.ep.p5 text.label {
+        fill: #032828;
+      }
+      /* focused tree endpoint = white ring */
+      .node.focus rect {
+        stroke: #fff;
+        stroke-width: 2.5;
+      }
+      .node.new {
+        animation: pulse 1.6s ease-out 3;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 0 rgba(255, 210, 74, 0));
+        }
+        50% {
+          filter: drop-shadow(0 0 10px rgba(255, 210, 74, 0.9));
+        }
+      }
+
+      .edge {
+        stroke: #2a3450;
+        stroke-width: 1.5;
+        fill: none;
+        transition: stroke 0.15s;
+      }
+      .edge.p0 {
+        stroke: #4a7bff;
+        stroke-width: 2.5;
+      }
+      .edge.p1 {
+        stroke: #34c777;
+        stroke-width: 2.5;
+      }
+      .edge.p2 {
+        stroke: #ff9f43;
+        stroke-width: 2.5;
+      }
+      .edge.p3 {
+        stroke: #b06bff;
+        stroke-width: 2.5;
+      }
+      .edge.p4 {
+        stroke: #ff6b9d;
+        stroke-width: 2.5;
+      }
+      .edge.p5 {
+        stroke: #2fd6d6;
+        stroke-width: 2.5;
+      }
+
+      /* ---- state DAG panel ---- */
+      #dagPanel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        height: 190px;
+        background: #161c2c;
+        border-top: 1px solid #243049;
+        padding: 8px 12px;
+      }
+      #dagPanel h3 {
+        font-size: 12px;
+        color: #8b95ad;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+      #dagWrap {
+        overflow-x: auto;
+        height: 140px;
+      }
+      .sedge {
+        stroke: #2a3450;
+        stroke-width: 2;
+        fill: none;
+      }
+      .sedge.chain {
+        stroke: #4a7bff;
+      }
+      .spill {
+        cursor: pointer;
+      }
+      .spill rect {
+        fill: #1e2640;
+        stroke: #3a4666;
+        stroke-width: 1.5;
+        transition:
+          fill 0.15s,
+          stroke 0.15s;
+      }
+      .spill:hover rect {
+        stroke: #6b9bff;
+      }
+      .spill.chain rect {
+        stroke: #4a7bff;
+      }
+      .spill.cur rect {
+        fill: #2b6cf6;
+        stroke: #9ec0ff;
+      }
+      .spill text {
+        font-size: 12px;
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="toolbar">
+      <span class="tool-label">Trees</span>
+      <select id="rootCount">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+      <button id="growBtn">+ Grow tree a</button>
+      <button
+        id="resetBtn"
+        class="warn">
+        Reset
+      </button>
+      <span id="status"></span>
+    </div>
+    <div id="canvas"><svg id="tree"></svg></div>
+    <div id="dagPanel">
+      <h3>State history (click any state to roll back &middot; next click grows a new branch)</h3>
+      <div id="dagWrap"><svg id="dag"></svg></div>
+    </div>
+    <script>
+      let nextId = 1
+      let nextStateId = 1
+      const nodeMap = new Map() // id -> node, O(1) lookup
+      const COLORS = ['#4a7bff', '#34c777', '#ff9f43', '#b06bff', '#ff6b9d', '#2fd6d6']
+      const LETTERS = 'abcdef'
+
+      const mk = (name, tree, children = []) => {
+        const n = {id: nextId++, name, tree, children, parent: null}
+        nodeMap.set(n.id, n)
+        return n
+      }
+
+      let roots = [] // forest: one root per tree
+      let treeSeq = [] // per-tree name counter (never reused, so branches can't collide)
+      let states = [] // all states in creation order
+      let currentState = null
+      let focusedTree = 0 // tree that Grow acts on
+      let newId = null // last grown node (pulse)
+      let treeCount = 3
+
+      // ---- rebuild forest with 1~6 trees, roots named a0 ~ f0 ----
+      function setRootCount(count) {
+        treeCount = count
+        nextId = 1
+        nodeMap.clear()
+        roots = Array.from({length: count}, (_, i) => mk(`${LETTERS[i]}0`, i))
+        treeSeq = Array.from({length: count}, () => 1)
+        resetHistory()
+      }
+
+      function resetHistory() {
+        states = []
+        nextStateId = 1
+        currentState = mkState(roots.map((r) => r.id), null)
+        focusedTree = 0
+        newId = null
+        render()
+      }
+
+      function mkState(endpoints, parent) {
+        const s = {id: nextStateId++, endpoints, parent, children: [], depth: parent ? parent.depth + 1 : 0, lane: 0}
+        if (parent) parent.children.push(s)
+        states.push(s)
+        return s
+      }
+
+      const nodeW = 120,
+        nodeH = 46,
+        gapX = 36,
+        gapY = 92,
+        padX = 40,
+        padY = 16
+
+      // ---- layout: leaves left-to-right across the whole forest ----
+      function layout() {
+        let leafX = 0
+        const rec = (n, depth) => {
+          n.depth2 = depth
+          n.y = depth * gapY + padY
+          if (!n.children.length) {
+            n.x = leafX * (nodeW + gapX) + padX + nodeW / 2
+            leafX++
+            return
+          }
+          n.children.forEach((c) => rec(c, depth + 1))
+          n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2
+        }
+        roots.forEach((r) => rec(r, 0))
+      }
+
+      function ancestors(id) {
+        const set = new Set()
+        let n = nodeMap.get(id)
+        while (n) {
+          set.add(n.id)
+          n = n.parent
+        }
+        return set
+      }
+
+      // ---- interactions ----
+      function clickNode(id) {
+        const n = nodeMap.get(id)
+        focusedTree = n.tree
+        newId = null
+        // moving a tree's path endpoint = a new state derived from the current one
+        if (currentState.endpoints[n.tree] !== n.id) {
+          const eps = currentState.endpoints.slice()
+          eps[n.tree] = n.id
+          currentState = mkState(eps, currentState)
+        }
+        render()
+      }
+
+      function grow() {
+        const t = focusedTree
+        const parent = nodeMap.get(currentState.endpoints[t])
+        const child = mk(`${LETTERS[t]}${treeSeq[t]++}`, t)
+        child.parent = parent
+        parent.children.push(child)
+        const eps = currentState.endpoints.slice()
+        eps[t] = child.id
+        currentState = mkState(eps, currentState)
+        newId = child.id
+        render()
+      }
+
+      function rollback(s) {
+        currentState = s
+        newId = null
+        render()
+      }
+
+      function updateStatus() {
+        const tokens = currentState.endpoints
+          .map((nid, i) => `<span style="color:${COLORS[i]}">${nodeMap.get(nid).name}</span>`)
+          .join(' ')
+        document.getElementById('status').innerHTML =
+          `State: ${tokens} &nbsp;&middot;&nbsp; focused tree: <b>${LETTERS[focusedTree]}</b> &nbsp;` +
+          `(click a node to move that tree's path, Grow to extend it)`
+        document.getElementById('growBtn').textContent = `+ Grow tree ${LETTERS[focusedTree]}`
+      }
+
+      // ---- forest render: every tree highlights its own path simultaneously ----
+      function render() {
+        layout()
+        const pathSets = currentState.endpoints.map((nid) => ancestors(nid))
+        let maxX = 0,
+          maxY = 0
+        const bounds = (n) => {
+          maxX = Math.max(maxX, n.x)
+          maxY = Math.max(maxY, n.y)
+          n.children.forEach(bounds)
+        }
+        roots.forEach(bounds)
+        const W = maxX + nodeW / 2 + padX,
+          H = maxY + nodeH + 24
+        const svg = document.getElementById('tree')
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+        svg.setAttribute('width', W)
+        svg.setAttribute('height', H)
+
+        let edges = '',
+          nodes = ''
+        const edgesWalk = (n) => {
+          const t = n.tree
+          n.children.forEach((c) => {
+            const onPath = pathSets[t].has(n.id) && pathSets[t].has(c.id)
+            const cls = 'edge' + (onPath ? ` p${t}` : '')
+            const x1 = n.x,
+              y1 = n.y + nodeH,
+              x2 = c.x,
+              y2 = c.y,
+              my = (y1 + y2) / 2
+            edges += `<path class="${cls}" d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}"/>`
+            edgesWalk(c)
+          })
+        }
+        const nodesWalk = (n) => {
+          const t = n.tree
+          const onPath = pathSets[t].has(n.id)
+          const isEp = currentState.endpoints[t] === n.id
+          const isFocus = isEp && t === focusedTree
+          let cls = 'node'
+          if (onPath) cls += ` p${t}`
+          if (isEp) cls += ' ep'
+          if (isFocus) cls += ' focus'
+          if (n.id === newId) cls += ' new'
+          nodes += `<g class="${cls}" data-id="${n.id}" transform="translate(${n.x - nodeW / 2},${n.y})">
+        <rect width="${nodeW}" height="${nodeH}" rx="8"/>
+        <text class="label" x="${nodeW / 2}" y="${nodeH / 2 + 5}">${n.name}</text>
+      </g>`
+          n.children.forEach(nodesWalk)
+        }
+        roots.forEach(edgesWalk)
+        roots.forEach(nodesWalk)
+        svg.innerHTML = edges + nodes
+        renderDag()
+        updateStatus()
+      }
+
+      // ---- state DAG render (git-graph style) ----
+      function isAncestorState(a, b) {
+        let n = b
+        while (n) {
+          if (n === a) return true
+          n = n.parent
+        }
+        return false
+      }
+
+      function layoutStates() {
+        const laneLast = []
+        for (const s of states) {
+          if (!s.parent) s.lane = 0
+          else if (s.parent.children[0] === s) s.lane = s.parent.lane
+          else {
+            let l = 0
+            while (laneLast[l] && !isAncestorState(laneLast[l], s.parent)) l++
+            s.lane = l
+          }
+          laneLast[s.lane] = s
+        }
+      }
+
+      function renderDag() {
+        layoutStates()
+        const svg = document.getElementById('dag')
+        const tokenW = 26,
+          pillH = 30,
+          padXL = 16,
+          padY = 16
+        const pillW = treeCount * tokenW + 14
+        const colW = pillW + 34
+        const rowH = 44
+        let maxD = 0,
+          maxL = 0
+        states.forEach((s) => {
+          maxD = Math.max(maxD, s.depth)
+          maxL = Math.max(maxL, s.lane)
+        })
+        const W = padXL * 2 + maxD * colW + pillW
+        const H = padY * 2 + (maxL + 1) * rowH
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+        svg.setAttribute('width', W)
+        svg.setAttribute('height', H)
+
+        const pos = (s) => ({x: padXL + s.depth * colW, y: padY + s.lane * rowH})
+        const chain = new Set()
+        for (let c = currentState; c; c = c.parent) chain.add(c.id)
+
+        let edges = '',
+          pills = ''
+        for (const s of states) {
+          if (!s.parent) continue
+          const a = pos(s.parent),
+            b = pos(s)
+          const x1 = a.x + pillW,
+            y1 = a.y + pillH / 2,
+            x2 = b.x,
+            y2 = b.y + pillH / 2
+          const onChain = chain.has(s.parent.id) && chain.has(s.id)
+          const mx = (x1 + x2) / 2
+          edges += `<path class="sedge${onChain ? ' chain' : ''}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`
+        }
+        for (const s of states) {
+          const {x, y} = pos(s)
+          let cls = 'spill'
+          if (s.id === currentState.id) cls += ' cur'
+          else if (chain.has(s.id)) cls += ' chain'
+          const tokens = s.endpoints
+            .map((nid, i) => `<tspan dx="${i ? 4 : 0}" fill="${COLORS[i]}">${nodeMap.get(nid).name}</tspan>`)
+            .join('')
+          pills += `<g class="${cls}" data-sid="${s.id}"><rect x="${x}" y="${y}" width="${pillW}" height="${pillH}" rx="9"/><text x="${x + 8}" y="${y + pillH / 2 + 4}">${tokens}</text></g>`
+        }
+        svg.innerHTML = edges + pills
+      }
+
+      // ---- events ----
+      document.getElementById('tree').addEventListener('click', (e) => {
+        const g = e.target.closest('.node')
+        if (g) clickNode(+g.dataset.id)
+      })
+      document.getElementById('dag').addEventListener('click', (e) => {
+        const g = e.target.closest('.spill')
+        if (g) rollback(states.find((s) => s.id === +g.dataset.sid))
+      })
+      document.getElementById('growBtn').addEventListener('click', grow)
+      document.getElementById('resetBtn').addEventListener('click', () => setRootCount(treeCount))
+      document.getElementById('rootCount').addEventListener('change', (e) => setRootCount(+e.target.value))
+
+      setRootCount(3)
+    </script>
+  </body>
+</html>
