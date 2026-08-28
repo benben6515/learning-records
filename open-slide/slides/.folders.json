@@ -1,4 +1,26 @@
 {
-  "folders": [],
-  "assignments": {}
+  "folders": [
+    {
+      "id": "f-45118cde",
+      "name": "micro-light",
+      "icon": {
+        "type": "color",
+        "value": "#6e56cf"
+      }
+    },
+    {
+      "id": "f-82ab84ad",
+      "name": "work",
+      "icon": {
+        "type": "color",
+        "value": "#0091ff"
+      }
+    }
+  ],
+  "assignments": {
+    "proactive-lifeos": "f-45118cde",
+    "save-tokens": "f-45118cde",
+    "networking-fundamentals": "f-82ab84ad",
+    "injection-molding": "f-82ab84ad"
+  }
 }

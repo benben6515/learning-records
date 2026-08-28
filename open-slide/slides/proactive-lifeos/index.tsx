@@ -3,7 +3,7 @@ import type { DesignSystem, Page, SlideMeta, SlideTransition } from '@open-slide
 
 import coverImg from './assets/cover.png';
 import slackImg from './assets/slack-checkin.png';
-import avatarImg from '@assets/benben-avatar.png';
+import avatarGif from '@assets/benben-avatar.gif';
 
 export const design: DesignSystem = {
   palette: {
@@ -302,7 +302,7 @@ const Cover: Page = () => (
       }}
     >
       <img
-        src={avatarImg}
+        src={avatarGif}
         alt="benben avatar"
         style={{
           width: 64,
@@ -555,7 +555,7 @@ const Closing: Page = () => (
     <Styles />
     <GridBg />
     <img
-      src={avatarImg}
+      src={avatarGif}
       alt="benben avatar"
       className="pl-fadeUp"
       style={{
