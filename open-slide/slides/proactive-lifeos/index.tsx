@@ -627,6 +627,7 @@ export const transition: SlideTransition = {
 
 export const meta: SlideMeta = {
   title: '主動回饋的 LifeOS',
+  description: '從「被動問答」到「主動回饋」— 讓 AI Agent 主動回報每次自動化的結果',
   createdAt: '2026-08-28T12:54:53.515Z',
   theme: 'benben',
 };

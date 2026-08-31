@@ -249,7 +249,7 @@ const Tag = ({ text, color = palette.accent }: { text: string; color?: string })
 
 export const meta: SlideMeta = {
   title: '塑膠射出成型機技術研究',
-  description: 'Injection Molding Machine Technical Research Report',
+  description: '從熔融塑膠到成型製品 — 射出成型原理、五大製程週期與機台關鍵部件',
 };
 
 // ─── Slide 1: Cover ──────────────────────────────────────────────────────────
