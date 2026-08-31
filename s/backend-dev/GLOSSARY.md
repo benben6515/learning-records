@@ -4,4 +4,14 @@ The canonical vocabulary for this workspace. Terms are added **only after the le
 
 ## Terms
 
-_(empty — terms arrive with demonstrated understanding, starting from Lesson 01)_
+**Call stack（呼叫堆疊）**:
+The single execution stack where all your JavaScript runs, one frame at a time.
+_Avoid_: event stack, main-thread queue
+
+**Event loop（事件迴圈）**:
+The mechanism that moves queued callbacks onto the (empty) call stack after off-thread work completes.
+_Avoid_: event queue — that's the waiting line, not the mover
+
+**Blocking（阻塞）**:
+Synchronous work that occupies the call stack, suspending the event loop and stalling every pending request.
+_Avoid_: slow, heavy — those are causes; blocking is the effect on the loop
