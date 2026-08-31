@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 03 課 · 不用框架做路由 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 03 課 · 路由</p>
+<h1>不用框架做路由</h1>
+<p class="lead">第 01 課的路由是 <code>if</code> 陳述式。今天它們長成一張真正的路由表——路徑參數、內文解析、驗證、錯誤防護網——你也將拿到第一個真正的 REST 端點。</p>
+<p class="badges">
+  <span class="badge">約 35 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">Node.js</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>你用過 Express 的路由，但你從未<em>擁有</em>過一個。這一課用約 55 行的純 Node 蓋出完整機制——<strong>配對、抽取、驗證、失敗</strong>。之後 Express 對你不再是盲目信任的依賴：它是你有能力自己寫的庫（只是更整潔的版本）。這也是第 05 課接上資料庫時要用的骨架。</p>
+
+<h2>核心觀念</h2>
+<p><strong>路由＝把請求配對到 handler，並抽出它的輸入。</strong>配對是「方法＋路徑」對照一張表；輸入只存在四個地方——學一次，每個框架都一樣（<a href="https://expressjs.com/en/5x/guide/routing/">Express 路由指南</a>）：</p>
+<table>
+  <thead><tr><th>輸入</th><th>長相</th><th>住在哪</th></tr></thead>
+  <tbody>
+    <tr><td>路徑參數</td><td><code>/notes/42</code></td><td>在路徑裡——由樣板 <code>/notes/:id</code> 擷取</td></tr>
+    <tr><td>查詢字串</td><td><code>?page=2&amp;limit=10</code></td><td><code>url.searchParams</code>（第 02 課見過）</td></tr>
+    <tr><td>內文</td><td><code>{"title":"buy milk"}</code></td><td>一個串流——先重組，再 <code>JSON.parse</code>（第 01 課）</td></tr>
+    <tr><td>標頭</td><td><code>authorization: Bearer …</code></td><td><code>req.headers</code> 物件</td></tr>
+  </tbody>
+</table>
+
+<h2>程式碼——完整的 notes API，不用框架</h2>
+<p>存成 <code>server3.mjs</code>。這是課程到目前最長的一份程式碼——但每個零件你都已經見過了：</p>
+
+<pre><code>import { createServer } from "node:http";
+
+<span class="c">// ——— 資料（先放記憶體；持久化是第 05 課）———</span>
+const notes = new Map();
+let nextId = 1;
+
+<span class="c">// ——— 輔助函式 ———</span>
+function readBody(req) {                 <span class="c">// 重組內文串流（第 01 課）</span>
+  return new Promise((resolve) =&gt; {
+    let body = "";
+    req.on("data", (c) =&gt; (body += c));
+    req.on("end", () =&gt; resolve(body));
+  });
+}
+
+function json(res, status, data) {       <span class="c">// 狀態＋標頭＋內文，一次搞定</span>
+  res.writeHead(status, { "content-type": "application/json" });
+  res.end(data === undefined ? "" : JSON.stringify(data));
+}
+
+<span class="c">// ——— 路由表：方法＋樣板 → handler ———</span>
+const routes = [
+  { method: "GET", pattern: "/notes", handler: (req, res) =&gt;
+      json(res, 200, [...notes.values()]) },
+
+  { method: "POST", pattern: "/notes", handler: async (req, res) =&gt; {
+      const note = JSON.parse((await readBody(req)) || "{}");
+      if (!note.title) return json(res, 400, { error: "title is required" });
+      note.id = nextId++;
+      notes.set(note.id, note);
+      json(res, 201, note);
+  } },
+
+  { method: "GET", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      const note = notes.get(Number(p.id));
+      if (!note) return json(res, 404, { error: "note not found" });
+      json(res, 200, note);
+  } },
+
+  { method: "DELETE", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      if (!notes.delete(Number(p.id))) return json(res, 404, { error: "note not found" });
+      json(res, 204);
+  } },
+];
+
+<span class="c">// "/notes/:id" → /^\/notes\/(?&lt;id&gt;\d+)\/?$/</span>
+const toRegex = (pattern) =&gt;
+  new RegExp("^" + pattern.replace(/:(\w+)/g, "(?&lt;$1&gt;\\d+)") + "/?$");
+
+<span class="c">// ——— 分派：第一個配對到的路由獲勝；try/catch 是錯誤防護網 ———</span>
+const server = createServer(async (req, res) =&gt; {
+  const { pathname } = new URL(req.url, "http://localhost");
+  console.log(`${req.method} ${pathname}`);
+  try {
+    for (const route of routes) {
+      if (req.method !== route.method) continue;
+      const match = pathname.match(toRegex(route.pattern));
+      if (match) return await route.handler(req, res, match.groups ?? {});
+    }
+    json(res, 404, { error: "not found" });
+  } catch (err) {                       <span class="c">// Express 會替你裝好這個</span>
+    console.error(err);
+    json(res, 500, { error: "internal error" });
+  }
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<h3>三個值得注意的地方</h3>
+<ul>
+  <li><strong>路由表就是資料。</strong>一個可以 loop、filter、擴充的陣列——路由器的全部就是這樣。（Express 的 <code>app.get()</code> 也是把東西推進一張很像的清單。）</li>
+  <li><strong><code>:id</code> 編譯成具名擷取群組。</strong><code>match.groups</code> 交給 handler <code>{ id: "42" }</code>——我們手做的 <code>req.params</code>。注意 <code>Number(...)</code>：URL 而來的一切都是<em>字串</em>。</li>
+  <li><strong>try/catch 是錯誤防護網——而 <code>await</code> 是絆線。</strong><code>return await route.handler(…)</code> 才能把 reject 的 promise 引進 catch。只寫 <code>return route.handler(…)</code>，rejection 會繞過 try、500 永遠不會發生、程序直接死掉。（沒錯——我驗證這課程式碼時就親自踩到這個 bug。）刪掉 catch、送出畸形 JSON，親眼看看；接住、記 log、回 <code>500</code>，是你剛剛實作的框架功能（<a href="https://nodejs.org/api/http.html">Node http 文件</a> · <a href="https://expressjs.com/en/5x/guide/routing/">Express 路由</a>）。</li>
+</ul>
+
+<h2>實戰練習——curl 打完整 CRUD</h2>
+<div class="task">
+  <span class="label">動手做 · 建立、讀取、驗證、弄壞、刪除</span>
+  <ul class="checklist" data-store="bd-l03-drill-tw">
+    <li><span class="box"></span><span class="txt">存成 <code>server3.mjs</code>，啟動：<code>node server3.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">列清單（空的）：<code>curl -i http://localhost:3000/notes</code> → <code>200</code>，<code>[]</code></span></li>
+    <li><span class="box"></span><span class="txt">建立：<code>curl -i -X POST -H "content-type: application/json" -d '{"title":"buy milk"}' http://localhost:3000/notes</code> → <code>201</code> 帶 <code>id</code></span></li>
+    <li><span class="box"></span><span class="txt">讀單筆：<code>curl -i http://localhost:3000/notes/1</code> → <code>200</code>；再打 <code>/notes/99</code> → 你寫的 <code>404</code></span></li>
+    <li><span class="box"></span><span class="txt">驗證：<code>curl -i -X POST -d '{}' http://localhost:3000/notes</code> → <code>400</code> "title is required"</span></li>
+    <li><span class="box"></span><span class="txt">弄壞它：<code>curl -i -X POST -d '{oops' http://localhost:3000/notes</code> → <code>500</code>，server log 裡有一整份 stack trace——防護網接住了</span></li>
+    <li><span class="box"></span><span class="txt">刪除：<code>curl -i -X DELETE http://localhost:3000/notes/1</code> → <code>204</code>（無內文）；再 GET 一次 → <code>404</code></span></li>
+    <li><span class="box"></span><span class="txt">對照：為每個 Express 零件找到我們的那一行——<code>app.get()</code>、<code>req.params</code>、<code>express.json()</code>、<code>res.json()</code>、預設錯誤處理器</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">Express，解碼完畢</span>
+  <table style="margin:0.4rem 0 0;">
+    <thead><tr><th>你寫的</th><th>Express 稱呼它</th></tr></thead>
+    <tbody>
+      <tr><td><code>routes</code> 陣列＋<code>toRegex</code> 迴圈</td><td><code>app.get("/notes/:id", …)</code>＋router</td></tr>
+      <tr><td><code>match.groups</code> → handler 參數</td><td><code>req.params</code></td></tr>
+      <tr><td><code>readBody</code>＋<code>JSON.parse</code></td><td><code>express.json()</code> 中介軟體</td></tr>
+      <tr><td><code>json()</code> 輔助函式</td><td><code>res.status(201).json()</code></td></tr>
+      <tr><td><code>try/catch</code> → 500</td><td>預設錯誤處理器</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin:0.6rem 0 0">嚴格的 REST 在「路徑存在但方法不對」時應回 <code>405 Method Not Allowed</code>（試試 <code>PUT /notes</code>——我們回 404）。這個修正留給第 04 課。</p>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——路由器就是一次查表，沒有更神秘的東西。" data-wrong="不盡然——正確答案已標出。">
+  <q>路由（routing）本質上是什麼？</q>
+  <div class="options">
+    <button class="opt">把請求配對到處理器</button>
+    <button class="opt">在伺服器間轉發請求</button>
+    <button class="opt">為重複路徑快取回應</button>
+    <button class="opt">驗證網址的安全憑證</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——具名擷取群組就變成 params 物件。" data-wrong="不盡然——正確答案已標出。">
+  <q>在我們的路由器裡，:id 擷取到的值最後到哪裡？</q>
+  <div class="options">
+    <button class="opt">handler 的 params 物件</button>
+    <button class="opt">request 的查詢字串裡</button>
+    <button class="opt">全域的 routes 陣列裡</button>
+    <button class="opt">response 的 JSON 內文</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——沒有 catch 就沒有伺服器。框架裝的就是這張網。" data-wrong="不盡然——正確答案已標出。">
+  <q>handler 因壞輸入拋出例外、又沒有 try/catch 時，伺服器會——</q>
+  <div class="options">
+    <button class="opt">直接崩潰，沒人接住它</button>
+    <button class="opt">自動回覆 500 狀態碼</button>
+    <button class="opt">掛住直到用戶端斷線</button>
+    <button class="opt">在下一個 tick 重試</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——它包裝的正是你寫過的串流重組。" data-wrong="不盡然——正確答案已標出。">
+  <q>express.json() 實際做的工作是什麼？</q>
+  <div class="options">
+    <button class="opt">解析請求內文的串流</button>
+    <button class="opt">驗證 JSON 的 schema</button>
+    <button class="opt">壓縮回應的 JSON 資料</button>
+    <button class="opt">把物件字串化成 JSON</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://expressjs.com/en/5x/guide/routing/">Express 5 路由指南</a>——今天之後再讀它，會像在讀你自己程式碼的說明書。接著開始 <a href="https://fullstackopen.com/en/part3">Full Stack Open Part 3</a>（課程主幹），你會發現它「Node + Express 伺服器」那一章的每個角落，你都從內部認得。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 04 課——<em>把 REST 語意做對</em>：方法、狀態碼、冪等性、405，以及把錯誤訊息做成前端能信賴的合約。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——路由、regex、「我的 500 是怎麼來的」都歡迎。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/minimal-node-api.html">極簡 Node API 骨架</a> · 上一課：<a href="0002-one-thread-many-requests.html">第 02 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0003-routing-without-a-framework.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03 · Routing Without a Framework — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 03 · Routing</p>
+<h1>Routing Without a Framework</h1>
+<p class="lead">Lesson 01's routing was <code>if</code> statements. Today those grow into a real route table — path params, body parsing, validation, and an error net — and you earn your first true REST endpoint.</p>
+<p class="badges">
+  <span class="badge">~35 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">Node.js</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>You've used Express routes; you've never owned one. This lesson builds the full mechanism — <strong>matching, extracting, validating, failing</strong> — in ~55 lines of raw Node. After this, Express is not a dependency you trust blindly: it's a library you could have written (a tidier version of it, anyway). This is also the skeleton Lesson 05 will attach a database to.</p>
+
+<h2>The one idea</h2>
+<p><strong>Routing = matching a request to a handler, and extracting its inputs.</strong> The match is method + path against a table. The inputs live in exactly four places — learn them once, they're the same in every framework (<a href="https://expressjs.com/en/5x/guide/routing/">Express routing guide</a>):</p>
+<table>
+  <thead><tr><th>Input</th><th>Looks like</th><th>Where it lives</th></tr></thead>
+  <tbody>
+    <tr><td>path params</td><td><code>/notes/42</code></td><td>in the path — captured by the pattern <code>/notes/:id</code></td></tr>
+    <tr><td>query</td><td><code>?page=2&amp;limit=10</code></td><td><code>url.searchParams</code> (you met it in Lesson 02)</td></tr>
+    <tr><td>body</td><td><code>{"title":"buy milk"}</code></td><td>a stream — reassemble, then <code>JSON.parse</code> (Lesson 01)</td></tr>
+    <tr><td>headers</td><td><code>authorization: Bearer …</code></td><td><code>req.headers</code> object</td></tr>
+  </tbody>
+</table>
+
+<h2>The code — a complete notes API, no framework</h2>
+<p>Save as <code>server3.mjs</code>. It's the longest listing of the course so far — but every piece is something you already met:</p>
+
+<pre><code>import { createServer } from "node:http";
+
+<span class="c">// ——— the data (in-memory for now; persistence is Lesson 05) ———</span>
+const notes = new Map();
+let nextId = 1;
+
+<span class="c">// ——— helpers ———</span>
+function readBody(req) {                 <span class="c">// reassembles the body stream (Lesson 01)</span>
+  return new Promise((resolve) =&gt; {
+    let body = "";
+    req.on("data", (c) =&gt; (body += c));
+    req.on("end", () =&gt; resolve(body));
+  });
+}
+
+function json(res, status, data) {       <span class="c">// status + headers + body, one call</span>
+  res.writeHead(status, { "content-type": "application/json" });
+  res.end(data === undefined ? "" : JSON.stringify(data));
+}
+
+<span class="c">// ——— the route table: method + pattern → handler ———</span>
+const routes = [
+  { method: "GET", pattern: "/notes", handler: (req, res) =&gt;
+      json(res, 200, [...notes.values()]) },
+
+  { method: "POST", pattern: "/notes", handler: async (req, res) =&gt; {
+      const note = JSON.parse((await readBody(req)) || "{}");
+      if (!note.title) return json(res, 400, { error: "title is required" });
+      note.id = nextId++;
+      notes.set(note.id, note);
+      json(res, 201, note);
+  } },
+
+  { method: "GET", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      const note = notes.get(Number(p.id));
+      if (!note) return json(res, 404, { error: "note not found" });
+      json(res, 200, note);
+  } },
+
+  { method: "DELETE", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      if (!notes.delete(Number(p.id))) return json(res, 404, { error: "note not found" });
+      json(res, 204);
+  } },
+];
+
+<span class="c">// "/notes/:id" → /^\/notes\/(?&lt;id&gt;\d+)\/?$/</span>
+const toRegex = (pattern) =&gt;
+  new RegExp("^" + pattern.replace(/:(\w+)/g, "(?&lt;$1&gt;\\d+)") + "/?$");
+
+<span class="c">// ——— dispatch: first matching route wins; the try/catch is the error net ———</span>
+const server = createServer(async (req, res) =&gt; {
+  const { pathname } = new URL(req.url, "http://localhost");
+  console.log(`${req.method} ${pathname}`);
+  try {
+    for (const route of routes) {
+      if (req.method !== route.method) continue;
+      const match = pathname.match(toRegex(route.pattern));
+      if (match) return await route.handler(req, res, match.groups ?? {});
+    }
+    json(res, 404, { error: "not found" });
+  } catch (err) {                       <span class="c">// Express installs one of these for you</span>
+    console.error(err);
+    json(res, 500, { error: "internal error" });
+  }
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<h3>Three things to notice</h3>
+<ul>
+  <li><strong>The route table is data.</strong> An array you can loop, filter, extend — that's all a router is. (Express's <code>app.get()</code> pushes into a list not unlike this one.)</li>
+  <li><strong><code>:id</code> compiles to a named capture group.</strong> <code>match.groups</code> hands the handler <code>{ id: "42" }</code> — our hand-rolled <code>req.params</code>. Note the <code>Number(...)</code>: everything from the URL arrives as a <em>string</em>.</li>
+  <li><strong>The try/catch is the error net — and the <code>await</code> is the tripwire.</strong> <code>return await route.handler(…)</code> routes a rejected promise into the catch. Write plain <code>return route.handler(…)</code> and the rejection slips past the try, the 500 never happens, and the process dies. (Yes — I hit exactly that bug verifying this lesson's code.) Delete the catch, send malformed JSON, and watch it happen; catching, logging, and answering <code>500</code> is a framework feature you just implemented (<a href="https://nodejs.org/api/http.html">Node http docs</a> · <a href="https://expressjs.com/en/5x/guide/routing/">Express routing</a>).</li>
+</ul>
+
+<h2>The drill — full CRUD on curl</h2>
+<div class="task">
+  <span class="label">Hands-on · create, read, validate, break, delete</span>
+  <ul class="checklist" data-store="bd-l03-drill">
+    <li><span class="box"></span><span class="txt">Save as <code>server3.mjs</code>, start it: <code>node server3.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">List (empty): <code>curl -i http://localhost:3000/notes</code> → <code>200</code>, <code>[]</code></span></li>
+    <li><span class="box"></span><span class="txt">Create: <code>curl -i -X POST -H "content-type: application/json" -d '{"title":"buy milk"}' http://localhost:3000/notes</code> → <code>201</code> with an <code>id</code></span></li>
+    <li><span class="box"></span><span class="txt">Read one: <code>curl -i http://localhost:3000/notes/1</code> → <code>200</code>; then <code>/notes/99</code> → your <code>404</code></span></li>
+    <li><span class="box"></span><span class="txt">Validation: <code>curl -i -X POST -d '{}' http://localhost:3000/notes</code> → <code>400</code> "title is required"</span></li>
+    <li><span class="box"></span><span class="txt">Break it: <code>curl -i -X POST -d '{oops' http://localhost:3000/notes</code> → <code>500</code>, and a stack trace in the server log — the error net caught it</span></li>
+    <li><span class="box"></span><span class="txt">Delete: <code>curl -i -X DELETE http://localhost:3000/notes/1</code> → <code>204</code> (no body); GET it again → <code>404</code></span></li>
+    <li><span class="box"></span><span class="txt">Map it: find our line for each Express piece — <code>app.get()</code>, <code>req.params</code>, <code>express.json()</code>, <code>res.json()</code>, the default error handler</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">Express, decoded</span>
+  <table style="margin:0.4rem 0 0;">
+    <thead><tr><th>You wrote</th><th>Express calls it</th></tr></thead>
+    <tbody>
+      <tr><td><code>routes</code> array + <code>toRegex</code> loop</td><td><code>app.get("/notes/:id", …)</code> + the router</td></tr>
+      <tr><td><code>match.groups</code> → handler arg</td><td><code>req.params</code></td></tr>
+      <tr><td><code>readBody</code> + <code>JSON.parse</code></td><td><code>express.json()</code> middleware</td></tr>
+      <tr><td><code>json()</code> helper</td><td><code>res.status(201).json()</code></td></tr>
+      <tr><td><code>try/catch</code> → 500</td><td>default error handler</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin:0.6rem 0 0">Strict REST would also answer <code>405 Method Not Allowed</code> when the path exists but the method doesn't (try <code>PUT /notes</code> — we say 404). That refinement lands in Lesson 04.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — a router is a lookup, nothing more mystical." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>What is routing, fundamentally?</q>
+  <div class="options">
+    <button class="opt">Matching requests to handler code</button>
+    <button class="opt">Forwarding requests across servers</button>
+    <button class="opt">Caching responses for repeated paths</button>
+    <button class="opt">Verifying URL safety credentials</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — named capture groups become the params object." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>In our router, where do the :id captures end up?</q>
+  <div class="options">
+    <button class="opt">In the handler's params object</button>
+    <button class="opt">In the request's query string</button>
+    <button class="opt">In a global routes registry</button>
+    <button class="opt">In the response's JSON body</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — no catch, no server. Frameworks install that net." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>A handler throws on bad input. With no try/catch, the server…</q>
+  <div class="options">
+    <button class="opt">Crashes because nothing catches it</button>
+    <button class="opt">Automatically replies with a 500</button>
+    <button class="opt">Hangs until the client disconnects</button>
+    <button class="opt">Retries the handler on nextTick</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — it wraps the stream reassembly you wrote." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Which job does express.json() actually perform?</q>
+  <div class="options">
+    <button class="opt">Parses the request body stream</button>
+    <button class="opt">Validates JSON against a schema</button>
+    <button class="opt">Compresses JSON for the response</button>
+    <button class="opt">Stringifies objects into valid JSON</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> <a href="https://expressjs.com/en/5x/guide/routing/">Express 5 routing guide</a> — after today it reads like a description of your own code. Then start <a href="https://fullstackopen.com/en/part3">Full Stack Open Part 3</a> (the course spine) and notice how much of its "Node + Express server" chapter you now recognise from the inside.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 04 — <em>REST Semantics Done Right</em>: methods, status codes, idempotency, 405s, and errors as a contract your frontend can trust. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — routing, regexes, or "why did my 500 happen" are all fair game.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/minimal-node-api.html">The Minimal Node API skeleton</a> · Previous: <a href="0002-one-thread-many-requests.html">Lesson 02</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0003-routing-without-a-framework.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+</body>
+</html>

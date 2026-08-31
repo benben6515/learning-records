@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Minimal Node API — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 03</p>
+<h1>The Minimal Node API</h1>
+<p class="lead">The ~55-line skeleton from Lesson 03: route table, matcher, body reader, error net — plus where inputs live and what Express calls each piece. The base that Lesson 05 hangs a database on. Print me.</p>
+
+<h2>Where a request's inputs live</h2>
+<table>
+  <thead><tr><th>Input</th><th>Looks like</th><th>Extract with</th></tr></thead>
+  <tbody>
+    <tr><td>path params</td><td><code>/notes/42</code></td><td>pattern <code>/notes/:id</code> → <code>match.groups.id</code> (a <em>string</em> — <code>Number()</code> it)</td></tr>
+    <tr><td>query</td><td><code>?page=2</code></td><td><code>new URL(req.url, base).searchParams.get("page")</code></td></tr>
+    <tr><td>body</td><td><code>{"title":"…"}</code></td><td>reassemble <code>data</code> chunks → <code>JSON.parse</code> (POST/PUT/PATCH only)</td></tr>
+    <tr><td>headers</td><td><code>authorization</code></td><td><code>req.headers.authorization</code></td></tr>
+  </tbody>
+</table>
+
+<h2>The skeleton, annotated</h2>
+<pre><code>import { createServer } from "node:http";
+
+<span class="c">// store → becomes a DB in Lesson 05</span>
+const notes = new Map();
+let nextId = 1;
+
+<span class="c">// body: stream → promise → string (parse in the handler)</span>
+function readBody(req) {
+  return new Promise((resolve) =&gt; {
+    let body = "";
+    req.on("data", (c) =&gt; (body += c));
+    req.on("end", () =&gt; resolve(body));
+  });
+}
+
+<span class="c">// response: status + headers + body in one call</span>
+function json(res, status, data) {
+  res.writeHead(status, { "content-type": "application/json" });
+  res.end(data === undefined ? "" : JSON.stringify(data));
+}
+
+<span class="c">// route table: { method, pattern, handler } — plain data</span>
+const routes = [
+  { method: "GET",    pattern: "/notes",     handler: … },
+  { method: "POST",   pattern: "/notes",     handler: … },  <span class="c">// 400 on missing title, 201 on create</span>
+  { method: "GET",    pattern: "/notes/:id", handler: … },  <span class="c">// 200 or 404</span>
+  { method: "DELETE", pattern: "/notes/:id", handler: … },  <span class="c">// 204 or 404</span>
+];
+
+<span class="c">// ":id" → named capture group, digits only, optional trailing slash</span>
+const toRegex = (p) =&gt; new RegExp("^" + p.replace(/:(\w+)/g, "(?&lt;$1&gt;\\d+)") + "/?$");
+
+<span class="c">// dispatch: match → run (await feeds rejections to the catch!) → 500</span>
+const server = createServer(async (req, res) =&gt; {
+  const { pathname } = new URL(req.url, "http://localhost");
+  try {
+    for (const route of routes) {
+      if (req.method !== route.method) continue;
+      const match = pathname.match(toRegex(route.pattern));
+      if (match) return await route.handler(req, res, match.groups ?? {});
+    }
+    json(res, 404, { error: "not found" });
+  } catch (err) {
+    console.error(err);
+    json(res, 500, { error: "internal error" });
+  }
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<h2>What Express calls each piece</h2>
+<table>
+  <thead><tr><th>Skeleton</th><th>Express</th></tr></thead>
+  <tbody>
+    <tr><td><code>routes</code> + <code>toRegex</code> loop</td><td><code>app.get("/notes/:id", …)</code> + router</td></tr>
+    <tr><td><code>match.groups</code></td><td><code>req.params</code></td></tr>
+    <tr><td><code>url.searchParams</code></td><td><code>req.query</code></td></tr>
+    <tr><td><code>readBody</code> + <code>JSON.parse</code></td><td><code>express.json()</code></td></tr>
+    <tr><td><code>json()</code> helper</td><td><code>res.status(n).json()</code></td></tr>
+    <tr><td><code>try/catch</code> → 500</td><td>default error handler</td></tr>
+  </tbody>
+</table>
+
+<h2>Smoke-test the CRUD</h2>
+<pre><code><span class="p">$</span> curl -i http://localhost:3000/notes                       <span class="c"># 200 []</span>
+<span class="p">$</span> curl -i -X POST -H "content-type: application/json" \
+       -d '{"title":"buy milk"}' http://localhost:3000/notes  <span class="c"># 201 {id:1,…}</span>
+<span class="p">$</span> curl -i http://localhost:3000/notes/1                    <span class="c"># 200 / 404</span>
+<span class="p">$</span> curl -i -X POST -d '{}' http://localhost:3000/notes      <span class="c"># 400 validation</span>
+<span class="p">$</span> curl -i -X POST -d '{oops' http://localhost:3000/notes   <span class="c"># 500 error net</span>
+<span class="p">$</span> curl -i -X DELETE http://localhost:3000/notes/1          <span class="c"># 204 no body</span></code></pre>
+
+<hr class="rule">
+<div class="footer">
+  <p>Companion to <a href="../lessons/0003-routing-without-a-framework.html">Lesson 03 — Routing Without a Framework</a> · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/minimal-node-api.html">繁體中文</a></p>
+  <p>Sources: <a href="https://expressjs.com/en/5x/guide/routing/">Express 5 routing guide</a> · <a href="https://nodejs.org/api/http.html">Node http docs</a>. Questions? Ask the agent.</p>
+</div>
+
+</article>
+</body>
+</html>

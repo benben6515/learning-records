@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>極簡 Node API — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 03</p>
+<h1>極簡 Node API</h1>
+<p class="lead">第 03 課的約 55 行骨架：路由表、配對器、內文讀取器、錯誤防護網——加上輸入住在哪、Express 管每一件叫什麼。第 05 課會把資料庫掛在這個底座上。適合列印。</p>
+
+<h2>請求的輸入住在哪</h2>
+<table>
+  <thead><tr><th>輸入</th><th>長相</th><th>抽取方式</th></tr></thead>
+  <tbody>
+    <tr><td>路徑參數</td><td><code>/notes/42</code></td><td>樣板 <code>/notes/:id</code> → <code>match.groups.id</code>（是<em>字串</em>——記得 <code>Number()</code>）</td></tr>
+    <tr><td>查詢字串</td><td><code>?page=2</code></td><td><code>new URL(req.url, base).searchParams.get("page")</code></td></tr>
+    <tr><td>內文</td><td><code>{"title":"…"}</code></td><td>重組 <code>data</code> 資料塊 → <code>JSON.parse</code>（只有 POST/PUT/PATCH）</td></tr>
+    <tr><td>標頭</td><td><code>authorization</code></td><td><code>req.headers.authorization</code></td></tr>
+  </tbody>
+</table>
+
+<h2>骨架，附註解</h2>
+<pre><code>import { createServer } from "node:http";
+
+<span class="c">// 資料存放 → 第 05 課換成資料庫</span>
+const notes = new Map();
+let nextId = 1;
+
+<span class="c">// 內文：串流 → promise → 字串（在 handler 裡 parse）</span>
+function readBody(req) {
+  return new Promise((resolve) =&gt; {
+    let body = "";
+    req.on("data", (c) =&gt; (body += c));
+    req.on("end", () =&gt; resolve(body));
+  });
+}
+
+<span class="c">// 回應：狀態＋標頭＋內文，一次呼叫</span>
+function json(res, status, data) {
+  res.writeHead(status, { "content-type": "application/json" });
+  res.end(data === undefined ? "" : JSON.stringify(data));
+}
+
+<span class="c">// 路由表：{ method, pattern, handler }——普通資料</span>
+const routes = [
+  { method: "GET",    pattern: "/notes",     handler: … },
+  { method: "POST",   pattern: "/notes",     handler: … },  <span class="c">// 缺 title 回 400，建立成功 201</span>
+  { method: "GET",    pattern: "/notes/:id", handler: … },  <span class="c">// 200 或 404</span>
+  { method: "DELETE", pattern: "/notes/:id", handler: … },  <span class="c">// 204 或 404</span>
+];
+
+<span class="c">// ":id" → 具名擷取群組、僅數字、容許結尾斜線</span>
+const toRegex = (p) =&gt; new RegExp("^" + p.replace(/:(\w+)/g, "(?&lt;$1&gt;\\d+)") + "/?$");
+
+<span class="c">// 分派：配對 → 執行（await 才能把 rejection 餵進 catch！）→ 500</span>
+const server = createServer(async (req, res) =&gt; {
+  const { pathname } = new URL(req.url, "http://localhost");
+  try {
+    for (const route of routes) {
+      if (req.method !== route.method) continue;
+      const match = pathname.match(toRegex(route.pattern));
+      if (match) return await route.handler(req, res, match.groups ?? {});
+    }
+    json(res, 404, { error: "not found" });
+  } catch (err) {
+    console.error(err);
+    json(res, 500, { error: "internal error" });
+  }
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<h2>Express 管每一件叫什麼</h2>
+<table>
+  <thead><tr><th>骨架</th><th>Express</th></tr></thead>
+  <tbody>
+    <tr><td><code>routes</code>＋<code>toRegex</code> 迴圈</td><td><code>app.get("/notes/:id", …)</code>＋router</td></tr>
+    <tr><td><code>match.groups</code></td><td><code>req.params</code></td></tr>
+    <tr><td><code>url.searchParams</code></td><td><code>req.query</code></td></tr>
+    <tr><td><code>readBody</code>＋<code>JSON.parse</code></td><td><code>express.json()</code></td></tr>
+    <tr><td><code>json()</code> 輔助函式</td><td><code>res.status(n).json()</code></td></tr>
+    <tr><td><code>try/catch</code> → 500</td><td>預設錯誤處理器</td></tr>
+  </tbody>
+</table>
+
+<h2>CRUD 煙霧測試</h2>
+<pre><code><span class="p">$</span> curl -i http://localhost:3000/notes                       <span class="c"># 200 []</span>
+<span class="p">$</span> curl -i -X POST -H "content-type: application/json" \
+       -d '{"title":"buy milk"}' http://localhost:3000/notes  <span class="c"># 201 {id:1,…}</span>
+<span class="p">$</span> curl -i http://localhost:3000/notes/1                    <span class="c"># 200 / 404</span>
+<span class="p">$</span> curl -i -X POST -d '{}' http://localhost:3000/notes      <span class="c"># 400 驗證</span>
+<span class="p">$</span> curl -i -X POST -d '{oops' http://localhost:3000/notes   <span class="c"># 500 防護網</span>
+<span class="p">$</span> curl -i -X DELETE http://localhost:3000/notes/1          <span class="c"># 204 無內文</span></code></pre>
+
+<hr class="rule">
+<div class="footer">
+  <p>〈<a href="../lessons-tw/0003-routing-without-a-framework.html">第 03 課——不用框架做路由</a>〉的隨身參考卡 · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/minimal-node-api.html">English</a></p>
+  <p>來源：<a href="https://expressjs.com/en/5x/guide/routing/">Express 5 路由指南</a> · <a href="https://nodejs.org/api/http.html">Node http 文件</a>。有問題？問 agent。</p>
+</div>
+
+</article>
+</body>
+</html>

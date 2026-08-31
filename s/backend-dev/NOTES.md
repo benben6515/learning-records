@@ -18,12 +18,12 @@
 ## Curriculum map (draft — revise as records accumulate)
 - **L01 — A server with no framework** (`node:http`): request/response anatomy, status codes, curl. ✅ shipped
 - **L02 — One thread, many requests**: the event loop; blocking vs async proven with concurrent curls + timing. ✅ shipped (2026-08-26, EN+TW)
-- **L03 — Routing without a framework**: paths, methods, JSON body parsing, then "what Express does for you". ⏳ next
-- **L04 — REST semantics done right**: methods, status codes, idempotency, errors as a contract.
+- **L03 — Routing without a framework**: route table + regex params + body parsing + validation + error net; full notes CRUD on raw Node. ✅ shipped (2026-08-27, EN+TW)
+- **L04 — REST semantics done right**: methods, status codes, idempotency, 405, errors as a contract. ⏳ next
 - **L05 — Persistence**: files → SQLite → PostgreSQL; schema, SQL, migrations.
 - **L06 — Auth**: sessions vs tokens, hashing, OWASP basics.
 - Later: config/secrets, testing the API, deployment, caching, queues.
-- Reference docs: `reference/http-anatomy.html` (L01 companion), `reference/event-loop.html` (L02 companion) — both mirrored in `reference-tw/`.
+- Reference docs: `reference/http-anatomy.html` (L01), `reference/event-loop.html` (L02), `reference/minimal-node-api.html` (L03 skeleton — L05 will extend it with a DB) — all mirrored in `reference-tw/`.
 - Reusable components in `assets/`: `style.css` (+ code/terminal/table styles), `theme.js`, `quiz.js`, `checklist.js`.
 
 ## Workspace conventions (match `s/english/`)
