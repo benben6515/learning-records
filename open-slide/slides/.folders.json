@@ -15,6 +15,14 @@
         "type": "color",
         "value": "#0091ff"
       }
+    },
+    {
+      "id": "f-99d1f077",
+      "name": "ironman-2026",
+      "icon": {
+        "type": "color",
+        "value": "#ffb224"
+      }
     }
   ],
   "assignments": {
