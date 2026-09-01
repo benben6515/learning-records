@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 · REST Semantics Done Right — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 04 · REST semantics</p>
+<h1>REST Semantics Done Right</h1>
+<p class="lead">Your Lesson-03 API works — but it answers <code>404</code> for a wrong method and <code>500</code> for the client's own bad JSON. Today the contract gets tight: <code>405</code> + <code>Allow</code>, idempotent <code>PUT</code>, <code>201</code> + <code>Location</code>, and one error shape the frontend can switch on.</p>
+<p class="badges">
+  <span class="badge">~30 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">API design</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>Anyone can emit JSON. What separates an API a frontend team can trust from a function that returns strings is <strong>semantics</strong>: methods with fixed meanings, status codes that tell the truth, and errors a machine can branch on. Today you upgrade <code>server3.mjs</code> → <code>server4.mjs</code> with four upgrades, each ~5 lines. None of them are Express features you "get" — they're decisions you <em>make</em>.</p>
+
+<h2>The one idea</h2>
+<p><strong>HTTP is a contract, and its verbs come with legally fixed meanings.</strong> Two properties define every method (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN's method table</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2">RFC 9110 §9.2.2</a>):</p>
+<table>
+  <thead><tr><th>Method</th><th>Safe (read-only)?</th><th>Idempotent (retry-safe)?</th><th>Success codes</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET</code></td><td>yes</td><td>yes</td><td><code>200</code></td></tr>
+    <tr><td><code>POST</code></td><td>no</td><td><strong>no</strong></td><td><code>201</code> (+<code>Location</code>)</td></tr>
+    <tr><td><code>PUT</code></td><td>no</td><td><strong>yes</strong></td><td><code>200</code> replace / <code>201</code> create</td></tr>
+    <tr><td><code>DELETE</code></td><td>no</td><td>yes</td><td><code>204</code></td></tr>
+  </tbody>
+</table>
+<p><em>Safe</em> = calling it changes nothing. <em>Idempotent</em> = calling it <strong>N times leaves the same state as calling it once</strong>. That word — 冪等 — is the whole lesson: it's what makes retries, refreshes, and flaky networks survivable. Retry an idempotent call: harmless. Retry a <code>POST</code>: duplicate charge, duplicate signup, duplicate note.</p>
+
+<h2>The code — server4.mjs, four upgrades</h2>
+<p>Start from <code>server3.mjs</code> (Lesson 03). The new lines are marked <code>L04</code>; everything else you already own:</p>
+
+<pre><code>import { createServer } from "node:http";
+
+<span class="c">// ——— the data (in-memory for now; persistence is Lesson 05) ———</span>
+const notes = new Map();
+let nextId = 1;
+
+<span class="c">// ——— helpers ———</span>
+function readBody(req) {
+  return new Promise((resolve) =&gt; {
+    let body = "";
+    req.on("data", (c) =&gt; (body += c));
+    req.on("end", () =&gt; resolve(body));
+  });
+}
+
+<span class="c">// L04 (1/4): null instead of a throw — so bad JSON can become a 400, not a 500</span>
+const parseJson = (raw) =&gt; {
+  try { return JSON.parse(raw || "{}"); } catch { return null; }
+};
+
+function json(res, status, data, headers = {}) {
+  res.writeHead(status, { "content-type": "application/json", ...headers });
+  res.end(data === undefined ? "" : JSON.stringify(data));
+}
+
+<span class="c">// L04 (2/4): the error contract — every failure answers this exact shape</span>
+function fail(res, status, code, message, headers = {}) {
+  json(res, status, { error: { code, message } }, headers);
+}
+
+<span class="c">// ——— the route table ———</span>
+const routes = [
+  { method: "GET", pattern: "/notes", handler: (req, res) =&gt;
+      json(res, 200, [...notes.values()]) },
+
+  { method: "POST", pattern: "/notes", handler: async (req, res) =&gt; {
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      note.id = nextId++;               <span class="c">// server picks the id → not idempotent</span>
+      notes.set(note.id, note);
+      return json(res, 201, note, { location: `/notes/${note.id}` });  <span class="c">// L04 (3/4)</span>
+  } },
+
+  { method: "GET", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      const note = notes.get(Number(p.id));
+      if (!note) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 200, note);
+  } },
+
+  { method: "PUT", pattern: "/notes/:id", handler: async (req, res, p) =&gt; {
+      const id = Number(p.id);
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      const existed = notes.has(id);
+      note.id = id;                     <span class="c">// client picks the id → replace-or-create</span>
+      notes.set(id, note);              <span class="c">// same request twice → same state. idempotent.</span>
+      return json(res, existed ? 200 : 201, note, { location: `/notes/${id}` });
+  } },
+
+  { method: "DELETE", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      if (!notes.delete(Number(p.id))) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 204);
+  } },
+];
+
+<span class="c">// "/notes/:id" → /^\/notes\/(?&lt;id&gt;\d+)\/?$/</span>
+const toRegex = (pattern) =&gt;
+  new RegExp("^" + pattern.replace(/:(\w+)/g, "(?&lt;$1&gt;\\d+)") + "/?$");
+
+const compiled = routes.map((r) =&gt; ({ ...r, regex: toRegex(r.pattern) }));
+
+<span class="c">// ——— L04 (4/4): dispatch — match the PATH first, then the method ———</span>
+<span class="c">// that order is what unlocks 405: you must know the path exists to say "wrong verb"</span>
+const server = createServer(async (req, res) =&gt; {
+  const { pathname } = new URL(req.url, "http://localhost");
+  console.log(`${req.method} ${pathname}`);
+  try {
+    const allowed = new Set();          <span class="c">// every method that knows this path</span>
+    for (const route of compiled) {
+      if (!route.regex.test(pathname)) continue;
+      allowed.add(route.method);
+      if (req.method !== route.method) continue;
+      const match = pathname.match(route.regex);
+      return await route.handler(req, res, match.groups ?? {});
+    }
+    if (allowed.size) {                 <span class="c">// path exists, method doesn't</span>
+      const allow = [...allowed].sort().join(", ");
+      return fail(res, 405, "METHOD_NOT_ALLOWED", `allowed: ${allow}`, { allow });
+    }
+    return fail(res, 404, "NOT_FOUND", "no such path");
+  } catch (err) {                       <span class="c">// the error net (Lesson 03)</span>
+    console.error(err);
+    fail(res, 500, "INTERNAL", "internal error");
+  }
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<h3>Three things to notice</h3>
+<ul>
+  <li><strong>Idempotency isn't a keyword — it's <em>where the id comes from</em>.</strong> <code>POST</code> lets the server assign <code>nextId++</code>, so an identical retry creates a second note. <code>PUT</code> writes to the id <em>in the URL</em>, so an identical retry lands on the same entry. Same Map, opposite semantics — the verb promises the behavior, and <em>your code</em> must keep the promise (<a href="https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2">RFC 9110 §9.2.2</a>).</li>
+  <li><strong>405 needs two questions, in order.</strong> "Does any route know this <em>path</em>?" (collect them in the <code>allowed</code> Set) — then "does one accept this <em>method</em>?" Path yes + method no → <code>405</code> + an <code>Allow</code> header telling the client what would have worked. Path no → <code>404</code>. Answering 404 for a wrong verb hides a route that actually exists (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405">MDN: 405</a>).</li>
+  <li><strong>4xx means "caller's fault", 5xx means "your fault".</strong> Malformed JSON is the <em>client's</em> mistake — Lesson 03 answered 500 (and logged a scary stack for a non-bug); the contract-correct answer is <code>400</code>. Reserve <code>500</code> for the truly unexpected, and give every error the same <code>{ error: { code, message } }</code> shape so the frontend can <code>switch (body.error.code)</code> instead of string-matching messages (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN: HTTP status</a>).</li>
+</ul>
+
+<h2>The drill — prove each upgrade on curl</h2>
+<div class="task">
+  <span class="label">Hands-on · 405, Location, idempotency, error contract</span>
+  <ul class="checklist" data-store="bd-l04-drill">
+    <li><span class="box"></span><span class="txt">Save as <code>server4.mjs</code>, start it: <code>node server4.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">Wrong verb: <code>curl -i -X PUT http://localhost:3000/notes</code> → <code>405</code> + <code>allow: GET, POST</code> (Lesson 03 said 404 here — spot the difference)</span></li>
+    <li><span class="box"></span><span class="txt">Create: <code>curl -i -X POST -H "content-type: application/json" -d '{"title":"first"}' http://localhost:3000/notes</code> → <code>201</code> + <code>location: /notes/1</code>; run it <em>again</em> → <code>201</code> with a new id — POST is not idempotent, on purpose</span></li>
+    <li><span class="box"></span><span class="txt">Idempotency: <code>curl -i -X PUT -H "content-type: application/json" -d '{"title":"put one"}' http://localhost:3000/notes/7</code> → <code>201</code>; the <em>exact same</em> PUT again → <code>200</code>; <code>curl http://localhost:3000/notes</code> → still exactly one note 7</span></li>
+    <li><span class="box"></span><span class="txt">Retry story: imagine the network ate the PUT response and your frontend retried. Say out loud why that's safe — and why the same story with POST is a duplicate note</span></li>
+    <li><span class="box"></span><span class="txt">Bad JSON, upgraded: <code>curl -i -X POST -d '{oops' http://localhost:3000/notes</code> → <code>400</code> <code>BAD_JSON</code>, no stack trace in the log (Lesson 03 answered 500 here)</span></li>
+    <li><span class="box"></span><span class="txt">Contract check: make three different mistakes (wrong verb, unknown path, empty body) — confirm every response is the same <code>{ "error": { "code", "message" } }</code> shape, only the code changes</span></li>
+    <li><span class="box"></span><span class="txt">Read the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN method table</a> — find the safe/idempotent columns and check them against your server's actual behavior</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">The status-code dialect (so far)</span>
+  <table style="margin:0.4rem 0 0;">
+    <thead><tr><th>Code</th><th>Means</th><th>Use it when</th></tr></thead>
+    <tbody>
+      <tr><td><code>200</code></td><td>OK</td><td>success with a body</td></tr>
+      <tr><td><code>201</code></td><td>Created</td><td>a new resource exists — send its URL in <code>Location</code></td></tr>
+      <tr><td><code>204</code></td><td>No Content</td><td>success with nothing to say (DELETE)</td></tr>
+      <tr><td><code>400</code></td><td>Bad Request</td><td>the caller sent garbage — their fault</td></tr>
+      <tr><td><code>404</code></td><td>Not Found</td><td>no such resource (path or id)</td></tr>
+      <tr><td><code>405</code></td><td>Method Not Allowed</td><td>path exists, verb doesn't — list them in <code>Allow</code></td></tr>
+      <tr><td><code>500</code></td><td>Internal Server Error</td><td>you broke it — log everything, admit nothing</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin:0.6rem 0 0">The 4xx/5xx split is a debugging compass: 4xx → reproduce with the client's request; 5xx → read your server log. (<code>401</code>/<code>403</code> join in Lesson 06 — auth.)</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — identical PUTs converge on the same state. That's idempotency." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>The same PUT /notes/7 with the same body fires twice. The server state…</q>
+  <div class="options">
+    <button class="opt">The server state stays identical</button>
+    <button class="opt">Two separate notes get created</button>
+    <button class="opt">The second request returns 405</button>
+    <button class="opt">The second request hangs forever</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — wrong verb on an existing path is 405, with Allow pointing the way." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>GET /notes exists. You send PUT /notes. The contract-correct response is…</q>
+  <div class="options">
+    <button class="opt">405 plus an Allow header</button>
+    <button class="opt">404 because no handler matched</button>
+    <button class="opt">500 because the method broke</button>
+    <button class="opt">200 with an empty array</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — the client's garbage is a 400. 500 claims it's YOUR fault." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>A client POSTs malformed JSON. Lesson 03 answered 500. The contract says…</q>
+  <div class="options">
+    <button class="opt">400, the client sent garbage</button>
+    <button class="opt">500, parsing failed on server</button>
+    <button class="opt">403, JSON is forbidden here</button>
+    <button class="opt">204, ignore malformed bodies silently</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — a stable error code is a handle the frontend can branch on." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Why give every error the same { error: { code, message } } shape?</q>
+  <div class="options">
+    <button class="opt">Frontends can branch on code</button>
+    <button class="opt">Logs can print fewer lines</button>
+    <button class="opt">Browsers render JSON errors natively</button>
+    <button class="opt">The database validates data twice</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN HTTP methods table</a> — two columns, safe and idempotent, are today's whole lesson in reference form. Skim the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">status-code overview</a> and note how many 4xx codes exist: HTTP anticipated your frontend making every one of those mistakes. Purists: <a href="https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2">RFC 9110 §9.2.2</a> defines idempotency in two sentences.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 05 — <em>Persistence: Files → SQLite → PostgreSQL</em>: where your notes actually live when the process dies — schema, SQL, migrations, no ORM magic. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — idempotency edge cases, 404-vs-405 debates, or "should DELETE on a missing id be 404 or 204" are all fair game (that one's genuinely contested).</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/http-anatomy.html">HTTP Anatomy &amp; curl</a> · Previous: <a href="0003-routing-without-a-framework.html">Lesson 03</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0004-rest-semantics-done-right.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

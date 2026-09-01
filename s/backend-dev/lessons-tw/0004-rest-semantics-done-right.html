@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 04 課 · 把 REST 語意做對 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 04 課 · REST 語意</p>
+<h1>把 REST 語意做對</h1>
+<p class="lead">你第 03 課的 API 能動——但方法不對時它回 <code>404</code>，客戶端自己送壞 JSON 它卻回 <code>500</code>。今天把合約（contract）收緊：<code>405</code>＋<code>Allow</code>、冪等的 <code>PUT</code>、<code>201</code>＋<code>Location</code>，加上一個前端能直接 switch 的統一錯誤格式。</p>
+<p class="badges">
+  <span class="badge">約 30 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">API 設計</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>誰都回得了 JSON。讓一個 API「前端團隊敢信賴」、而不只是「一個會吐字串的函式」的，是<strong>語意</strong>：意義固定不變的方法、誠實的狀態碼、機器能據以分支的錯誤。今天你把 <code>server3.mjs</code> 升級成 <code>server4.mjs</code>——四個升級，各約 5 行。它們沒有一個是 Express「附贈」的功能；它們是你<em>親自做</em>的決定。</p>
+
+<h2>核心觀念</h2>
+<p><strong>HTTP 是一份合約，動詞的意義是法定固定的。</strong>兩個性質定義每個方法（<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN 方法表</a> · <a href="https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2">RFC 9110 §9.2.2</a>）：</p>
+<table>
+  <thead><tr><th>方法</th><th>安全（safe，唯讀）？</th><th>冪等（idempotent，可重試）？</th><th>成功碼</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET</code></td><td>是</td><td>是</td><td><code>200</code></td></tr>
+    <tr><td><code>POST</code></td><td>否</td><td><strong>否</strong></td><td><code>201</code>（＋<code>Location</code>）</td></tr>
+    <tr><td><code>PUT</code></td><td>否</td><td><strong>是</strong></td><td><code>200</code> 覆寫 / <code>201</code> 建立</td></tr>
+    <tr><td><code>DELETE</code></td><td>否</td><td>是</td><td><code>204</code></td></tr>
+  </tbody>
+</table>
+<p><em>安全</em>＝呼叫它什麼都不改變。<em>冪等</em>＝呼叫 <strong>N 次後的狀態，和呼叫一次完全相同</strong>。這個詞——冪等（idempotent）——就是整課的重點：它讓重試、重新整理、和不穩網路變得可以生存。重試一個冪等呼叫：無害。重試一個 <code>POST</code>：重複扣款、重複註冊、重複的筆記。</p>
+
+<h2>程式碼——server4.mjs，四個升級</h2>
+<p>從 <code>server3.mjs</code>（第 03 課）出發。新行都標了 <code>L04</code>；其他每一段你已經擁有：</p>
+
+<pre><code>import { createServer } from "node:http";
+
+<span class="c">// ——— 資料（先放記憶體；持久化是第 05 課）———</span>
+const notes = new Map();
+let nextId = 1;
+
+<span class="c">// ——— 輔助函式 ———</span>
+function readBody(req) {
+  return new Promise((resolve) =&gt; {
+    let body = "";
+    req.on("data", (c) =&gt; (body += c));
+    req.on("end", () =&gt; resolve(body));
+  });
+}
+
+<span class="c">// L04 (1/4)：回 null 而不是 throw——壞 JSON 才能變 400，不是 500</span>
+const parseJson = (raw) =&gt; {
+  try { return JSON.parse(raw || "{}"); } catch { return null; }
+};
+
+function json(res, status, data, headers = {}) {
+  res.writeHead(status, { "content-type": "application/json", ...headers });
+  res.end(data === undefined ? "" : JSON.stringify(data));
+}
+
+<span class="c">// L04 (2/4)：錯誤合約——每個失敗都回這個一模一樣的形狀</span>
+function fail(res, status, code, message, headers = {}) {
+  json(res, status, { error: { code, message } }, headers);
+}
+
+<span class="c">// ——— 路由表 ———</span>
+const routes = [
+  { method: "GET", pattern: "/notes", handler: (req, res) =&gt;
+      json(res, 200, [...notes.values()]) },
+
+  { method: "POST", pattern: "/notes", handler: async (req, res) =&gt; {
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      note.id = nextId++;               <span class="c">// 伺服器發 id → 不冪等</span>
+      notes.set(note.id, note);
+      return json(res, 201, note, { location: `/notes/${note.id}` });  <span class="c">// L04 (3/4)</span>
+  } },
+
+  { method: "GET", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      const note = notes.get(Number(p.id));
+      if (!note) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 200, note);
+  } },
+
+  { method: "PUT", pattern: "/notes/:id", handler: async (req, res, p) =&gt; {
+      const id = Number(p.id);
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      const existed = notes.has(id);
+      note.id = id;                     <span class="c">// 客戶端指定 id → 覆寫或建立</span>
+      notes.set(id, note);              <span class="c">// 同一請求打兩次 → 同一狀態。冪等。</span>
+      return json(res, existed ? 200 : 201, note, { location: `/notes/${id}` });
+  } },
+
+  { method: "DELETE", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      if (!notes.delete(Number(p.id))) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 204);
+  } },
+];
+
+<span class="c">// "/notes/:id" → /^\/notes\/(?&lt;id&gt;\d+)\/?$/</span>
+const toRegex = (pattern) =&gt;
+  new RegExp("^" + pattern.replace(/:(\w+)/g, "(?&lt;$1&gt;\\d+)") + "/?$");
+
+const compiled = routes.map((r) =&gt; ({ ...r, regex: toRegex(r.pattern) }));
+
+<span class="c">// ——— L04 (4/4)：分派——先配對「路徑」，再配對「方法」———</span>
+<span class="c">// 這個順序正是 405 的鑰匙：你得先知道路徑存在，才能說「動詞不對」</span>
+const server = createServer(async (req, res) =&gt; {
+  const { pathname } = new URL(req.url, "http://localhost");
+  console.log(`${req.method} ${pathname}`);
+  try {
+    const allowed = new Set();          <span class="c">// 認得這個路徑的每一個方法</span>
+    for (const route of compiled) {
+      if (!route.regex.test(pathname)) continue;
+      allowed.add(route.method);
+      if (req.method !== route.method) continue;
+      const match = pathname.match(route.regex);
+      return await route.handler(req, res, match.groups ?? {});
+    }
+    if (allowed.size) {                 <span class="c">// 路徑存在，方法不存在</span>
+      const allow = [...allowed].sort().join(", ");
+      return fail(res, 405, "METHOD_NOT_ALLOWED", `allowed: ${allow}`, { allow });
+    }
+    return fail(res, 404, "NOT_FOUND", "no such path");
+  } catch (err) {                       <span class="c">// 錯誤防護網（第 03 課）</span>
+    console.error(err);
+    fail(res, 500, "INTERNAL", "internal error");
+  }
+});
+
+server.listen(3000, () =&gt; console.log("listening on http://localhost:3000"));</code></pre>
+
+<h3>三個值得注意的地方</h3>
+<ul>
+  <li><strong>冪等不是關鍵字——它住在「id 從哪來」。</strong><code>POST</code> 讓伺服器配 <code>nextId++</code>，所以一模一樣的重試會建立第二筆筆記。<code>PUT</code> 寫入的是<em>URL 裡</em>的 id，所以一模一樣的重試落在同一筆上。同一個 Map，相反的語意——動詞許下了承諾，而<em>你的程式碼</em>必須兌現它（<a href="https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2">RFC 9110 §9.2.2</a>）。</li>
+  <li><strong>405 需要兩個問題，而且有順序。</strong>「有沒有任何路由認得這個<em>路徑</em>？」（把它們收進 <code>allowed</code> 這個 Set）——然後「有沒有一個接受這個<em>方法</em>？」路徑存在＋方法不對 → <code>405</code>，附 <code>Allow</code> 標頭告訴客戶端本來可以用什麼。路徑不存在 → <code>404</code>。動詞不對卻回 404，等於把一個真實存在的路由藏起來（<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405">MDN：405</a>）。</li>
+  <li><strong>4xx 是「呼叫方的錯」，5xx 是「你的錯」。</strong>畸形 JSON 是<em>客戶端</em>的錯——第 03 課回 500（還為一個非 bug 印了嚇人的 stack）；合約上正確的答案是 <code>400</code>。<code>500</code> 留給真正意料之外的事，而且每個錯誤都用同樣的 <code>{ error: { code, message } }</code> 形狀，前端就能 <code>switch (body.error.code)</code>，不必去比對訊息字串（<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN：HTTP 狀態碼</a>）。</li>
+</ul>
+
+<h2>實戰練習——用 curl 逐一證明四個升級</h2>
+<div class="task">
+  <span class="label">動手做 · 405、Location、冪等、錯誤合約</span>
+  <ul class="checklist" data-store="bd-l04-drill-tw">
+    <li><span class="box"></span><span class="txt">存成 <code>server4.mjs</code>，啟動：<code>node server4.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">動詞不對：<code>curl -i -X PUT http://localhost:3000/notes</code> → <code>405</code>＋<code>allow: GET, POST</code>（第 03 課這裡回 404——找出差別）</span></li>
+    <li><span class="box"></span><span class="txt">建立：<code>curl -i -X POST -H "content-type: application/json" -d '{"title":"first"}' http://localhost:3000/notes</code> → <code>201</code>＋<code>location: /notes/1</code>；<em>再打一次</em> → <code>201</code> 帶新 id——POST 刻意不冪等</span></li>
+    <li><span class="box"></span><span class="txt">冪等：<code>curl -i -X PUT -H "content-type: application/json" -d '{"title":"put one"}' http://localhost:3000/notes/7</code> → <code>201</code>；<em>一模一樣</em>的 PUT 再打 → <code>200</code>；<code>curl http://localhost:3000/notes</code> → 仍然恰好一筆 note 7</span></li>
+    <li><span class="box"></span><span class="txt">重試的故事：想像網路吃掉了 PUT 的回應、於是前端重試。說出來——為什麼這樣很安全？同一個故事換成 POST，為什麼就變成重複的筆記？</span></li>
+    <li><span class="box"></span><span class="txt">壞 JSON，升級版：<code>curl -i -X POST -d '{oops' http://localhost:3000/notes</code> → <code>400</code> <code>BAD_JSON</code>，log 裡沒有 stack trace（第 03 課這裡回 500）</span></li>
+    <li><span class="box"></span><span class="txt">合約檢查：犯三種不同的錯（動詞不對、路徑不存在、內文空）——確認每個回應都是同樣的 <code>{ "error": { "code", "message" } }</code> 形狀，只有 code 不同</span></li>
+    <li><span class="box"></span><span class="txt">讀 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN 方法表</a>——找到 safe／idempotent 兩欄，對照你伺服器的實際行為</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">狀態碼方言表（截至目前）</span>
+  <table style="margin:0.4rem 0 0;">
+    <thead><tr><th>碼</th><th>意義</th><th>什麼時候用</th></tr></thead>
+    <tbody>
+      <tr><td><code>200</code></td><td>OK</td><td>成功，帶內文</td></tr>
+      <tr><td><code>201</code></td><td>Created</td><td>新資源已誕生——URL 放進 <code>Location</code></td></tr>
+      <tr><td><code>204</code></td><td>No Content</td><td>成功但沒話可說（DELETE）</td></tr>
+      <tr><td><code>400</code></td><td>Bad Request</td><td>呼叫方送了垃圾——他們的錯</td></tr>
+      <tr><td><code>404</code></td><td>Not Found</td><td>沒有這個資源（路徑或 id）</td></tr>
+      <tr><td><code>405</code></td><td>Method Not Allowed</td><td>路徑存在、動詞不對——用 <code>Allow</code> 列出可用的</td></tr>
+      <tr><td><code>500</code></td><td>Internal Server Error</td><td>你搞壞的——log 記好，對外什麼都不透露</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin:0.6rem 0 0">4xx／5xx 的分界是一枚除錯指南針：4xx → 拿客戶端的請求就能重現；5xx → 去讀伺服器 log。（<code>401</code>/<code>403</code> 第 06 課登場——認證。）</p>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——一模一樣的 PUT 會收斂到同一狀態。這就是冪等。" data-wrong="不盡然——正確答案已標出。">
+  <q>同一個 PUT /notes/7、同一份內文，打兩次。伺服器狀態——</q>
+  <div class="options">
+    <button class="opt">狀態保持完全相同不變</button>
+    <button class="opt">兩次會建立兩筆的筆記</button>
+    <button class="opt">第二次會被伺服器拒絕</button>
+    <button class="opt">第二次會永遠卡住不回</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——存在路徑上的錯動詞是 405，Allow 順便指路。" data-wrong="不盡然——正確答案已標出。">
+  <q>GET /notes 存在，你卻送 PUT /notes。合約上正確的回應是——</q>
+  <div class="options">
+    <button class="opt">路徑存在但方法不被允許</button>
+    <button class="opt">伺服器上根本沒這個路徑</button>
+    <button class="opt">方法讓伺服器內部壞掉了</button>
+    <button class="opt">成功並回傳一個空的物件</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——客戶端的垃圾是 400。回 500 等於承認是你的錯。" data-wrong="不盡然——正確答案已標出。">
+  <q>客戶端 POST 了畸形 JSON。第 03 課回 500。合約說——</q>
+  <div class="options">
+    <button class="opt">400，錯在客戶端的請求</button>
+    <button class="opt">500，錯在伺服器內解析</button>
+    <button class="opt">403，這種內容被禁止了</button>
+    <button class="opt">204，直接忽略壞的內文</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——穩定的 error code 是前端可以分支的把手。" data-wrong="不盡然——正確答案已標出。">
+  <q>為什麼每個錯誤都用同樣的 { error: { code, message } } 形狀？</q>
+  <div class="options">
+    <button class="opt">前端能依code分支處理</button>
+    <button class="opt">log可以少印好幾行輸出</button>
+    <button class="opt">瀏覽器能原生渲染JSON</button>
+    <button class="opt">資料庫能夠幫我們驗證資料</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">MDN HTTP 方法表</a>——safe 與 idempotent 兩欄，就是今天整課的參考卡版。再掃過<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">狀態碼總覽</a>，數數 4xx 有多少種：HTTP 早就預料到你的前端會犯其中每一種錯。考據派請讀 <a href="https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2">RFC 9110 §9.2.2</a>——冪等的定義只有兩句。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 05 課——<em>持久化：檔案 → SQLite → PostgreSQL</em>：程序死掉時，你的筆記到底住在哪——schema、SQL、migration，不碰 ORM 魔法。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——冪等的邊界案例、404 對決 405、或是「DELETE 打不到的 id 該回 404 還是 204」都歡迎（那題真的有爭議）。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/http-anatomy.html">HTTP 解剖與 curl</a> · 上一課：<a href="0003-routing-without-a-framework.html">第 03 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0004-rest-semantics-done-right.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

@@ -19,8 +19,8 @@
 - **L01 — A server with no framework** (`node:http`): request/response anatomy, status codes, curl. ✅ shipped
 - **L02 — One thread, many requests**: the event loop; blocking vs async proven with concurrent curls + timing. ✅ shipped (2026-08-26, EN+TW)
 - **L03 — Routing without a framework**: route table + regex params + body parsing + validation + error net; full notes CRUD on raw Node. ✅ shipped (2026-08-27, EN+TW)
-- **L04 — REST semantics done right**: methods, status codes, idempotency, 405, errors as a contract. ⏳ next
-- **L05 — Persistence**: files → SQLite → PostgreSQL; schema, SQL, migrations.
+- **L04 — REST semantics done right**: 405+Allow (path-then-method dispatch), idempotent PUT vs POST (id comes from URL vs nextId++), 201+Location, 400 BAD_JSON (was 500), error contract `{error:{code,message}}`; server4.mjs verified with 10-case curl suite. ✅ shipped (2026-09-01, EN+TW)
+- **L05 — Persistence**: files → SQLite → PostgreSQL; schema, SQL, migrations. ⏳ next
 - **L06 — Auth**: sessions vs tokens, hashing, OWASP basics.
 - Later: config/secrets, testing the API, deployment, caching, queues.
 - Reference docs: `reference/http-anatomy.html` (L01), `reference/event-loop.html` (L02), `reference/minimal-node-api.html` (L03 skeleton — L05 will extend it with a DB) — all mirrored in `reference-tw/`.
