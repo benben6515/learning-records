@@ -160,6 +160,13 @@ pre .p { color: var(--accent); font-weight: 700; }   /* shell prompt */
 pre .c { color: var(--faint); }                      /* comment / muted line */
 pre .hl { color: var(--warm); font-weight: 700; }    /* emphasised token */
 
+/* syntax tokens (assets/highlight.js) — theme-aware via vars */
+pre .tok-k { color: var(--warm); font-weight: 600; }   /* keywords  */
+pre .tok-s { color: var(--ok); }                       /* strings   */
+pre .tok-n { color: var(--accent); }                   /* numbers   */
+pre .tok-b { color: var(--accent); font-weight: 600; } /* builtins / node: APIs */
+pre .tok-c { color: var(--faint); }                    /* comments (auto) */
+
 /* ---- tables (status codes, reference grids) ---- */
 table {
   border-collapse: collapse;

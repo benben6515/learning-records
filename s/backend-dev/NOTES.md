@@ -24,7 +24,7 @@
 - **L06 — Auth**: sessions vs tokens, hashing, OWASP basics.
 - Later: config/secrets, testing the API, deployment, caching, queues.
 - Reference docs: `reference/http-anatomy.html` (L01), `reference/event-loop.html` (L02), `reference/minimal-node-api.html` (L03 skeleton — L05 will extend it with a DB) — all mirrored in `reference-tw/`.
-- Reusable components in `assets/`: `style.css` (+ code/terminal/table styles), `theme.js`, `quiz.js`, `checklist.js`.
+- Reusable components in `assets/`: `style.css` (+ code/terminal/table styles + `.tok-*` syntax tokens), `theme.js`, `quiz.js`, `checklist.js`, `highlight.js` (zero-dep JS syntax highlighter, 2026-08-28: auto-detects `pre > code` JS blocks, stashes existing `<span class="c">`/entities as placeholders so nothing breaks; linked on all lessons + reference pages).
 
 ## Workspace conventions (match `s/english/`)
 - Lessons are `lessons/000N-slug.html` with a `0000-table-of-contents.html`; reference sheets in `reference/`.
