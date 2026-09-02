@@ -463,51 +463,7 @@ const Map: Page = () => (
   </div>
 )
 
-// ─── Page 6: dogfooding 彩蛋 ─────────────────────────────────────────────────
-const Dogfood: Page = () => (
-  <div
-    style={{
-      ...fill,
-      padding: 120,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      gap: 40,
-    }}>
-    <Styles />
-    <GridBg />
-    <Eyebrow color="#f5a742">EASTER EGG · DOGFOODING</Eyebrow>
-    <h2
-      className="oc-fadeUp"
-      style={{
-        margin: 0,
-        fontFamily: 'var(--osd-font-display)',
-        fontSize: 84,
-        fontWeight: 700,
-        letterSpacing: '-0.03em',
-        lineHeight: 1.15,
-        maxWidth: 1400,
-      }}>
-      本系列就是用 <span style={{color: 'var(--osd-accent)'}}>opencode</span> 寫的
-    </h2>
-    <p
-      className="oc-fadeUp"
-      style={{
-        margin: 0,
-        fontSize: 34,
-        lineHeight: 1.5,
-        color: muted,
-      }}>
-      踩坑與驚喜，直接寫進文章。
-    </p>
-    <div className="oc-fadeUp">
-      <Tag text={'$ opencode "write ironman day 01"'} />
-    </div>
-    <Footer />
-  </div>
-)
-
-// ─── Page 7: Takeaways ───────────────────────────────────────────────────────
+// ─── Page 6: Takeaways ───────────────────────────────────────────────────────
 const Takeaways: Page = () => (
   <div
     style={{
@@ -532,7 +488,7 @@ const Takeaways: Page = () => (
       <Takeaway n={2}>
         opencode：<span style={{color: 'var(--osd-accent)'}}>開源、terminal-first、模型自由</span>
       </Takeaway>
-      <Takeaway n={3}>這 30 天全程 dogfooding — 明天：五分鐘安裝開工</Takeaway>
+      <Takeaway n={3}>明天：五分鐘安裝開工</Takeaway>
     </div>
     <div style={{flex: 1}} />
     <div
@@ -576,4 +532,4 @@ export const meta: SlideMeta = {
   theme: 'opencode',
 }
 
-export default [Cover, Levels, Why, Relationship, Map, Dogfood, Takeaways] satisfies Page[]
+export default [Cover, Levels, Why, Relationship, Map, Takeaways] satisfies Page[]
