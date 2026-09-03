@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQLite 急救包 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 04</p>
+<h1>SQLite 急救包</h1>
+<p class="lead">第 05 課的全部壓縮成一张卡：Node 內建模組、CRUD 資料層的五個語句、殺死 SQL injection 的 <code>?</code> 規則、以及親眼看見資料的 CLI 指令——整理自 <a href="https://nodejs.org/api/sqlite.html">node:sqlite 文件</a>與 <a href="https://sqlite.org/cli.html">sqlite3 CLI 文件</a>。列我。</p>
+
+<h2>三行起步</h2>
+<pre><code>import { DatabaseSync } from "node:sqlite";        <span class="c">// Node 23+（22.5+ 加 --experimental-sqlite）</span>
+
+const db = new DatabaseSync("notes.db");           <span class="c">// 整個資料庫就是這個檔案</span>
+db.exec(`CREATE TABLE IF NOT EXISTS notes (
+  id INTEGER PRIMARY KEY, title TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
+)`);</code></pre>
+
+<h2>CRUD 資料層的五個語句</h2>
+<pre><code>const q = {
+  list:   db.prepare("SELECT id, title FROM notes ORDER BY id"),
+  get:    db.prepare("SELECT id, title FROM notes WHERE id = ?"),
+  insert: db.prepare("INSERT INTO notes (title) VALUES (?) RETURNING id, title"),
+  upsert: db.prepare(`INSERT INTO notes (id, title) VALUES (?, ?)
+            ON CONFLICT(id) DO UPDATE SET title = excluded.title
+            RETURNING id, title`),                <span class="c">// 冪等 PUT（L04）濃縮成一個子句</span>
+  del:    db.prepare("DELETE FROM notes WHERE id = ?"),
+};
+
+q.list.all()          <span class="c">// → 列物件陣列</span>
+q.get.get(7)          <span class="c">// → 第一列物件 | undefined</span>
+q.insert.get("milk")  <span class="c">// → RETURNING 那列（id 由 SQLite 鑄造）</span>
+q.del.run(7).changes  <span class="c">// → 影響的列數（0 ⇒ 你的 404）</span></code></pre>
+
+<h2>保命規則</h2>
+<table>
+  <thead><tr><th>規則</th><th>原因</th></tr></thead>
+  <tbody>
+    <tr><td><code>?</code> 參數，永遠不用模板字串</td><td>資料進不了 SQL 本文 ⇒ injection 淪為一則蠢標題。接字串（<code>\`…'${title}'\`</code>）就會執行它。</td></tr>
+    <tr><td><code>INTEGER PRIMARY KEY</code>＝自動 id</td><td>SQLite 的 rowid 負責發號——取代 <code>nextId++</code>，不會相撞。</td></tr>
+    <tr><td><code>NOT NULL</code>＋<code>DEFAULT</code> 寫進 schema</td><td>你 400 驗證的 DB 等級分身——壞列根本無法存在，不管 bug 在哪。</td></tr>
+    <tr><td>預備一次（模組層級），永遠執行</td><td>解析/規劃一次；每次只帶參數。一個 <code>q</code> 物件＝完整的資料存取層。</td></tr>
+    <tr><td><code>.changes === 0</code> ⇒ 404</td><td>DELETE/UPDATE 會回報影響列數——零表示 id 不存在。</td></tr>
+  </tbody>
+</table>
+
+<h2>用 sqlite3 CLI 親眼看</h2>
+<pre><code><span class="p">$</span> sqlite3 notes.db ".schema"              <span class="c"># 合約本體，直接從檔案讀出</span>
+<span class="p">$</span> sqlite3 notes.db ".tables"
+<span class="p">$</span> sqlite3 notes.db "SELECT id, title FROM notes WHERE title LIKE '%milk%'"
+<span class="p">$</span> sqlite3 notes.db -box "SELECT * FROM notes"   <span class="c"># 美美表格</span>
+<span class="p">$</span> ls -la notes.db notes.db-wal                <span class="c"># DB 是檔案；-wal 是它的日誌</span></code></pre>
+
+<h2>現在就值得知道的坑</h2>
+<ul>
+  <li><strong><code>DatabaseSync</code> 是同步的——故意的。</strong>每個語句都佔住事件迴圈（第 02 課！）。本機/單人使用沒問題；這是真正的網路資料庫（PostgreSQL，下一課）走非同步連線的原因之一。</li>
+  <li><strong>參數看順序。</strong>第二個 <code>?</code> 綁第二個引數——順序錯不會報錯，只會資料怪怪的。</li>
+  <li><strong>SQLite 型別很寬鬆。</strong>TEXT/INTEGER/NULL/REAL/BLOB，欄位是動態型別。PostgreSQL（下一課）像 TypeScript 一樣強制型別——做好心理準備。</li>
+  <li><strong>同時只有一個寫入者。</strong>讀可以很多、寫只有一個——需要多機器並發寫入的那一刻，就是 PostgreSQL 上場的時候。</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0005-persistence-files-to-sqlite.html">← 第 05 課</a> · 下一站：PostgreSQL（第 06 課） · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/sqlite-first-aid.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

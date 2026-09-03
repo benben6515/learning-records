@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQLite First Aid — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 04</p>
+<h1>SQLite First Aid</h1>
+<p class="lead">Everything from Lesson 05 in one card: the built-in Node module, the five statements of a CRUD data layer, the <code>?</code> rule that kills SQL injection, and the CLI commands to see your data with your own eyes — compressed from the <a href="https://nodejs.org/api/sqlite.html">node:sqlite docs</a> and <a href="https://sqlite.org/cli.html">sqlite3 CLI docs</a>. Print me.</p>
+
+<h2>The three-line starter</h2>
+<pre><code>import { DatabaseSync } from "node:sqlite";        <span class="c">// Node 23+ (22.5+ w/ --experimental-sqlite)</span>
+
+const db = new DatabaseSync("notes.db");           <span class="c">// the whole database is THIS file</span>
+db.exec(`CREATE TABLE IF NOT EXISTS notes (
+  id INTEGER PRIMARY KEY, title TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
+)`);</code></pre>
+
+<h2>The five statements of a CRUD layer</h2>
+<pre><code>const q = {
+  list:   db.prepare("SELECT id, title FROM notes ORDER BY id"),
+  get:    db.prepare("SELECT id, title FROM notes WHERE id = ?"),
+  insert: db.prepare("INSERT INTO notes (title) VALUES (?) RETURNING id, title"),
+  upsert: db.prepare(`INSERT INTO notes (id, title) VALUES (?, ?)
+            ON CONFLICT(id) DO UPDATE SET title = excluded.title
+            RETURNING id, title`),                <span class="c">// idempotent PUT (L04) in one clause</span>
+  del:    db.prepare("DELETE FROM notes WHERE id = ?"),
+};
+
+q.list.all()          <span class="c">// → array of row objects</span>
+q.get.get(7)          <span class="c">// → first row object | undefined</span>
+q.insert.get("milk")  <span class="c">// → the RETURNING row (id minted by SQLite)</span>
+q.del.run(7).changes  <span class="c">// → number of rows touched (0 ⇒ your 404)</span></code></pre>
+
+<h2>Rules that keep you alive</h2>
+<table>
+  <thead><tr><th>Rule</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td><code>?</code> params, never template strings</td><td>Data never enters SQL text ⇒ injection becomes a silly stored title. Concatenation (<code>\`…'${title}'\`</code>) executes it.</td></tr>
+    <tr><td><code>INTEGER PRIMARY KEY</code> = auto id</td><td>SQLite's rowid assigns it — replaces <code>nextId++</code>, can't collide.</td></tr>
+    <tr><td><code>NOT NULL</code> + <code>DEFAULT</code> in schema</td><td>The DB-level twin of your 400 validation — invalid rows can't exist, whatever the bug.</td></tr>
+    <tr><td>Prepare once (module scope), run forever</td><td>Parse/plan once; params per call. One <code>q</code> object = your whole data layer.</td></tr>
+    <tr><td><code>.changes === 0</code> ⇒ 404</td><td>DELETE/UPDATE report rows touched — zero means the id wasn't there.</td></tr>
+  </tbody>
+</table>
+
+<h2>See it with the sqlite3 CLI</h2>
+<pre><code><span class="p">$</span> sqlite3 notes.db ".schema"              <span class="c"># the contract, straight from the file</span>
+<span class="p">$</span> sqlite3 notes.db ".tables"
+<span class="p">$</span> sqlite3 notes.db "SELECT id, title FROM notes WHERE title LIKE '%milk%'"
+<span class="p">$</span> sqlite3 notes.db -box "SELECT * FROM notes"   <span class="c"># pretty tables</span>
+<span class="p">$</span> ls -la notes.db notes.db-wal                <span class="c"># the DB is a file; -wal is its journal</span></code></pre>
+
+<h2>Gotchas worth knowing now</h2>
+<ul>
+  <li><strong><code>DatabaseSync</code> is synchronous — on purpose.</strong> Each statement blocks the event loop (Lesson 02!). Fine for local/single-user; one reason real network DBs (PostgreSQL, next lesson) are async over the wire.</li>
+  <li><strong>Params are positional.</strong> The second <code>?</code> binds the second argument — order bugs are silent until the data looks wrong.</li>
+  <li><strong>SQLite types are flexible.</strong> TEXT/INTEGER/NULL/REAL/BLOB, with dynamic typing per column. PostgreSQL (next lesson) enforces types like TypeScript does — expect the shock.</li>
+  <li><strong>One writer at a time.</strong> Many readers, single writer — the moment you need concurrent writers on different machines, that's PostgreSQL's job.</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons/0005-persistence-files-to-sqlite.html">← Lesson 05</a> · Next up: PostgreSQL (Lesson 06) · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/sqlite-first-aid.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

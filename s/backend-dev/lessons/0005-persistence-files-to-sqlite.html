@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05 · Persistence I: Files → SQLite — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 05 · Persistence I</p>
+<h1>Persistence I: Files → SQLite</h1>
+<p class="lead">Your notes die with the process. First fix: write the whole store to a JSON file — it works, until you see its three cracks. Real fix: SQLite — a database in one file, built into Node, that keeps your Lesson-04 contract intact while your data starts <em>surviving restarts</em>.</p>
+<p class="badges">
+  <span class="badge">~40 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">data</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>Everything so far lived in a <code>Map</code> — restart the server and it's empty. "Just write it to a file" is the obvious fix, and it's a great teacher, because it <em>almost</em> works. Today: implement the file version, break it on paper, then swap the engine to SQLite via Node's built-in <a href="https://nodejs.org/api/sqlite.html"><code>node:sqlite</code></a> — zero npm installs, same API contract, durable data. PostgreSQL arrives next lesson, once SQLite has earned its limits honestly.</p>
+
+<h2>The one idea</h2>
+<p><strong>A database is a file plus a protocol for writing it safely and asking it questions.</strong> Nothing more mystical. Today you watch that sentence become true: <code>notes.db</code> is literally one file on disk (<code>ls</code> it in the drill) — but the SQLite protocol gives you atomic writes, crash safety, and a query language. A raw JSON file gives you none of the three.</p>
+
+<h2>Step 1 — the 10-minute fix that almost works</h2>
+<p>Patch <code>server4.mjs</code> with file persistence — load on boot, save after every write:</p>
+
+<pre><code>import { readFileSync, writeFileSync } from "node:fs";   <span class="c">// top of file</span>
+
+<span class="c">// boot: read the file (or start empty on first run)</span>
+const notes = new Map(
+  JSON.parse(readFileSync("notes.json", "utf8") || "[]").map((n) =&gt; [n.id, n])
+);
+const save = () =&gt; writeFileSync("notes.json", JSON.stringify([...notes.values()]));
+
+<span class="c">// then call save() at the end of POST / PUT / DELETE handlers</span></code></pre>
+
+<p>Run it: create a note, <kbd>Ctrl-C</kbd>, start again — <strong>the note survives.</strong> Genuine progress. Now the three cracks, and why every one of them is a protocol problem, not a code bug:</p>
+<ol>
+  <li><strong>Crash mid-write.</strong> <code>writeFileSync</code> rewrites the <em>whole file</em>. Die halfway (disk full, kill -9, deploy) and <code>notes.json</code> is truncated garbage — your next boot crashes on <code>JSON.parse</code>. A database writes to a journal first, then flips — atomic even when killed (<a href="https://nodejs.org/api/fs.html">node:fs docs</a> have no answer for this).</li>
+  <li><strong>Lost updates.</strong> Two requests, two whole-file rewrites — the second overwrites the first's note. Your event loop is single-threaded, but the <em>file</em> is the shared state; anyone else touching it (a second process, a script, you in an editor) races you.</li>
+  <li><strong>No questions.</strong> "Notes containing <code>milk</code>, newest first" = load everything into JS and filter. No <code>WHERE</code>, no indexes, no pagination. The instant data grows, this design dies.</li>
+</ol>
+
+<h2>Step 2 — server5.mjs: same contract, SQLite engine</h2>
+<p>Node 22.5+ ships SQLite built in — <code>DatabaseSync</code>, no npm, no flags on Node 23+. The swap touches <strong>only the data layer</strong>; routing, dispatch, 405s, and the error contract are byte-for-byte Lesson 04's:</p>
+
+<pre><code>import { createServer } from "node:http";
+import { DatabaseSync } from "node:sqlite";
+
+<span class="c">// ——— the database: one file, notes.db — schema is the data's contract (L04 echo) ———</span>
+const db = new DatabaseSync("notes.db");
+db.exec(`
+  CREATE TABLE IF NOT EXISTS notes (
+    id         INTEGER PRIMARY KEY,             <span class="c">// SQLite assigns it, like nextId++ did</span>
+    title      TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+<span class="c">// ——— prepared statements: the ? keeps data OUT of the SQL text ———</span>
+const q = {
+  list:   db.prepare("SELECT id, title, created_at FROM notes ORDER BY id"),
+  get:    db.prepare("SELECT id, title, created_at FROM notes WHERE id = ?"),
+  has:    db.prepare("SELECT 1 FROM notes WHERE id = ?"),
+  insert: db.prepare("INSERT INTO notes (title) VALUES (?) RETURNING id, title, created_at"),
+  upsert: db.prepare(`INSERT INTO notes (id, title) VALUES (?, ?)
+                      ON CONFLICT(id) DO UPDATE SET title = excluded.title
+                      RETURNING id, title, created_at`),
+  del:    db.prepare("DELETE FROM notes WHERE id = ?"),
+};
+
+<span class="c">// ——— helpers, route table, dispatch: unchanged since Lesson 04 ———</span>
+<span class="c">// (readBody, parseJson, json, fail, toRegex, compiled, the 405 loop — copy from server4.mjs)</span>
+
+const routes = [
+  { method: "GET", pattern: "/notes", handler: (req, res) =&gt;
+      json(res, 200, q.list.all()) },
+
+  { method: "POST", pattern: "/notes", handler: async (req, res) =&gt; {
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      const created = q.insert.get(note.title);   <span class="c">// SQLite mints the id</span>
+      return json(res, 201, created, { location: `/notes/${created.id}` });
+  } },
+
+  { method: "GET", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      const note = q.get.get(Number(p.id));
+      if (!note) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 200, note);
+  } },
+
+  { method: "PUT", pattern: "/notes/:id", handler: async (req, res, p) =&gt; {
+      const id = Number(p.id);
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      const existed = !!q.has.get(id);
+      q.upsert.get(id, note.title);               <span class="c">// write to THE id in the URL — still idempotent</span>
+      return json(res, existed ? 200 : 201, { id, title: note.title }, { location: `/notes/${id}` });
+  } },
+
+  { method: "DELETE", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      if (q.del.run(Number(p.id)).changes === 0) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 204);
+  } },
+];
+
+<span class="c">// … dispatch (path-then-method, 405 + Allow, error net) — identical to server4.mjs</span></code></pre>
+
+<h3>Four things to notice</h3>
+<ul>
+  <li><strong><code>INTEGER PRIMARY KEY</code> replaces <code>nextId++</code>.</strong> SQLite's rowid machinery assigns ids at insert — one less thing to own, and it can't collide. And the L04 semantics survive the engine swap untouched: POST's id is still server-minted (not idempotent); PUT still writes to the id in the URL via <code>ON CONFLICT … DO UPDATE</code> (idempotent — an <em>upsert</em>).</li>
+  <li><strong>The <code>?</code> is the whole SQL-injection defense.</strong> Data travels as a <em>parameter</em>, never inside the SQL text — so a title of <code>a"); DROP TABLE notes;--</code> is stored as literal text (I tested it: <code>201</code>, table intact). The moment you interpolate — <code>db.prepare(\`… VALUES ('${title}')\`)</code> — that title executes. Never concatenate, anywhere, in any language (<a href="https://owasp.org/www-community/attacks/SQL_Injection">OWASP: SQL Injection</a>).</li>
+  <li><strong>Prepared once, run forever.</strong> <code>db.prepare()</code> parses and plans the SQL once; <code>.get()/.all()/.run()</code> reuse the plan with new params. One line per statement in the <code>q</code> object = your data access layer, whole (<a href="https://nodejs.org/api/sqlite.html">node:sqlite docs</a>).</li>
+  <li><strong>The schema is a contract — L04's idea, applied to data.</strong> <code>title TEXT NOT NULL</code> is the DB-level twin of our 400 validation; <code>DEFAULT (datetime('now'))</code> is behavior we no longer write. Invalid data can't get in, no matter which bug tries to put it there (<a href="https://www.sqlite.org/lang.html">SQLite language docs</a>).</li>
+</ul>
+
+<h2>The drill — watch data survive you killing it</h2>
+<div class="task">
+  <span class="label">Hands-on · durability, upsert, injection, the file itself</span>
+  <ul class="checklist" data-store="bd-l05-drill">
+    <li><span class="box"></span><span class="txt">Check your Node: <code>node --version</code> — need 23+ for flag-free <code>node:sqlite</code> (22.5+ works with <code>--experimental-sqlite</code>; I verified on v26)</span></li>
+    <li><span class="box"></span><span class="txt">Build <code>server5.mjs</code> (server4 + the data layer above), start it: <code>node server5.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">Create: <code>curl -i -X POST -H "content-type: application/json" -d '{"title":"buy milk"}' http://localhost:3000/notes</code> → <code>201</code> — notice <code>created_at</code> you never wrote code for</span></li>
+    <li><span class="box"></span><span class="txt">The win: <kbd>Ctrl-C</kbd> the server, restart <code>node server5.mjs</code>, <code>curl http://localhost:3000/notes</code> → <strong>still there</strong></span></li>
+    <li><span class="box"></span><span class="txt">See the file: <code>ls -la notes.db</code> — one 8 KB file is the entire database; <code>sqlite3 notes.db ".schema"</code> shows your contract</span></li>
+    <li><span class="box"></span><span class="txt">Query it directly: <code>sqlite3 notes.db "SELECT id, title FROM notes WHERE title LIKE '%milk%'"</code> — questions answered <em>by the engine</em>, not by loading everything into JS (<a href="https://sqlite.org/cli.html">sqlite3 CLI docs</a>)</span></li>
+    <li><span class="box"></span><span class="txt">Injection, live: <code>curl -X POST -H "content-type: application/json" -d '{"title":"a\"); DROP TABLE notes;--"}' http://localhost:3000/notes</code> → <code>201</code>; list the notes — the attack is now just a silly title, stored harmlessly</span></li>
+    <li><span class="box"></span><span class="txt">Contract regression: rerun L04's checks — <code>PUT /notes/7</code> twice (<code>201</code> then <code>200</code>), wrong verb <code>405</code>, bad JSON <code>400</code> — engine swapped, contract unchanged</span></li>
+    <li><span class="box"></span><span class="txt">Reset: <code>rm notes.db</code> and restart — empty but functional. You now know exactly what "the database" is: a file your protocol owns</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">Map → SQLite translation table</span>
+  <table style="margin:0.4rem 0 0;">
+    <thead><tr><th>server4 (Map)</th><th>server5 (SQLite)</th></tr></thead>
+    <tbody>
+      <tr><td><code>const notes = new Map()</code></td><td><code>new DatabaseSync("notes.db")</code> + schema</td></tr>
+      <tr><td><code>nextId++</code></td><td><code>INTEGER PRIMARY KEY</code> (auto rowid)</td></tr>
+      <tr><td><code>notes.get(id)</code></td><td><code>q.get.get(id)</code></td></tr>
+      <tr><td><code>notes.set(id, note)</code></td><td><code>q.upsert.get(id, title)</code></td></tr>
+      <tr><td><code>notes.delete(id)</code></td><td><code>q.del.run(id).changes</code></td></tr>
+      <tr><td><code>[...notes.values()]</code></td><td><code>q.list.all()</code></td></tr>
+      <tr><td>dies on restart</td><td>one file, survives everything you'll test</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin:0.6rem 0 0">Keep the naive file patch around for one thing: <em>config</em>. Whole-file read-once data (ports, feature flags) is exactly what files are for — small, read-mostly, human-editable.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — the rowid machinery replaces your counter, collision-free." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>In server5, what does INTEGER PRIMARY KEY replace from server4?</q>
+  <div class="options">
+    <button class="opt">The nextId counter the server maintained</button>
+    <button class="opt">The error net catching handler throws</button>
+    <button class="opt">The Allow header on 405 responses</button>
+    <button class="opt">The route table method matching logic</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — data never enters the SQL text, so it can never execute." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>What actually stops the DROP TABLE title from executing?</q>
+  <div class="options">
+    <button class="opt">Question mark params keep data separate</button>
+    <button class="opt">Escaping quotes in the title strings</button>
+    <button class="opt">Validating titles against a strict schema</button>
+    <button class="opt">Running SQLite inside strict safe mode</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — durability is the whole lesson, and you proved it." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>You POST a note, Ctrl-C the server, restart, GET /notes. The note is…</q>
+  <div class="options">
+    <button class="opt">Still there, rows live in notes.db</button>
+    <button class="opt">Gone, the Map died with process</button>
+    <button class="opt">Gone, SQLite forgets after every restart</button>
+    <button class="opt">Still there, the browser cached it</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — queries, transactions, and atomic writes are the protocol you were missing." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>The honest reason to move from notes.json to SQLite:</q>
+  <div class="options">
+    <button class="opt">Real queries, transactions, and crash safety</button>
+    <button class="opt">JSON files cannot serve two processes</button>
+    <button class="opt">SQLite is required by REST contracts</button>
+    <button class="opt">Node cannot read and write JSON</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> the <a href="https://nodejs.org/api/sqlite.html">node:sqlite docs</a> — skim the <code>DatabaseSync</code> and <code>StatementSync</code> method lists; you now recognize most of them from the inside. Then the <a href="https://sqlite.org/cli.html">sqlite3 CLI page</a> (you have 3.51 installed) — <code>.schema</code>, <code>.tables</code>, <code>.mode box</code> are now your data inspection tools. Optional deep cut: <a href="https://www.sqlite.org/lang.html">the SQLite language reference</a> on <code>ON CONFLICT</code>, the clause that kept PUT idempotent.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 06 — <em>Persistence II: PostgreSQL &amp; Migrations</em>: many processes, many machines — a real server, real types, and how schemas evolve without losing data. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — transactions, WAL files, "why is DatabaseSync sync?", or why upsert beats check-then-insert under concurrency are all fair game.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/sqlite-first-aid.html">SQLite First Aid</a> · Previous: <a href="0004-rest-semantics-done-right.html">Lesson 04</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0005-persistence-files-to-sqlite.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

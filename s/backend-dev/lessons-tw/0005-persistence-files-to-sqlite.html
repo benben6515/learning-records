@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 05 課 · 持久化 I：檔案 → SQLite — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 05 課 · 持久化 I</p>
+<h1>持久化 I：檔案 → SQLite</h1>
+<p class="lead">你的筆記跟著程序一起死。第一個修法：把整份資料寫進 JSON 檔——能動，直到你看見它的三道裂縫。真正的修法：SQLite——一個檔案就是一個資料庫，Node 內建，第 04 課的合約原封不動，資料從此<em>活得過重啟</em>。</p>
+<p class="badges">
+  <span class="badge">約 40 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">資料</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>到目前為止所有資料都住在 <code>Map</code> 裡——伺服器重啟就清空。「寫到檔案不就好了」是最直覺的修法，也是最好的老師，因為它<em>差一點</em>就對了。今天：先實作檔案版、在紙上弄壞它，再把引擎換成 Node 內建的 <a href="https://nodejs.org/api/sqlite.html"><code>node:sqlite</code></a>——零 npm 安裝、同一份 API 合約、耐久的資料。PostgreSQL 下一課登場，等 SQLite 誠實地掙到它的極限之後。</p>
+
+<h2>核心觀念</h2>
+<p><strong>資料庫＝一個檔案＋一套「安全寫入、接受提問」的協定。</strong>沒有更神秘的東西。今天你會親眼看這句話成真：<code>notes.db</code> 就是真的、磁碟上的一個檔案（練習裡自己 <code>ls</code> 它）——但 SQLite 協定給你原子寫入、當機安全、和一套查詢語言。裸 JSON 檔三個都沒有。</p>
+
+<h2>步驟一——差十分鐘就正確的修法</h2>
+<p>替 <code>server4.mjs</code> 加上檔案持久化——開機載入、每次寫入後保存：</p>
+
+<pre><code>import { readFileSync, writeFileSync } from "node:fs";   <span class="c">// 檔案最上方</span>
+
+<span class="c">// 開機：讀檔（第一次跑就是空陣列）</span>
+const notes = new Map(
+  JSON.parse(readFileSync("notes.json", "utf8") || "[]").map((n) =&gt; [n.id, n])
+);
+const save = () =&gt; writeFileSync("notes.json", JSON.stringify([...notes.values()]));
+
+<span class="c">// 然後在 POST / PUT / DELETE handler 結尾呼叫 save()</span></code></pre>
+
+<p>跑起來：建一筆筆記、<kbd>Ctrl-C</kbd>、再啟動——<strong>筆記還在。</strong>真正的進步。接下來是三道裂縫，以及為什麼每一道都是「協定」問題、不是程式碼 bug：</p>
+<ol>
+  <li><strong>寫到一半當機。</strong><code>writeFileSync</code> 重寫<em>整個檔案</em>。中途死掉（磁碟滿、kill -9、部署中）<code>notes.json</code> 就是截斷的垃圾——下次開機死在 <code>JSON.parse</code>。資料庫先寫日誌、再翻轉——被殺也保持原子性（<a href="https://nodejs.org/api/fs.html">node:fs 文件</a>對此無解）。</li>
+  <li><strong>更新遺失（lost update）。</strong>兩個請求、兩次整檔重寫——第二個蓋掉第一個的筆記。事件迴圈是單緒沒錯，但<em>檔案</em>才是共享狀態；任何也碰它的人（第二個程序、一支腳本、編輯器裡的你）都在跟你賽跑。</li>
+  <li><strong>不能提問。</strong>「標題含 <code>milk</code> 的筆記、最新的在前面」＝全部載進 JS 再過濾。沒有 <code>WHERE</code>、沒有索引、沒有分頁。資料一長大，這個設計就死。</li>
+</ol>
+
+<h2>步驟二——server5.mjs：同一份合約，SQLite 引擎</h2>
+<p>Node 22.5+ 內建 SQLite——<code>DatabaseSync</code>，免 npm，Node 23+ 免旗標。這次換引擎<strong>只動資料層</strong>；路由、分派、405、錯誤合約跟第 04 課一字不差：</p>
+
+<pre><code>import { createServer } from "node:http";
+import { DatabaseSync } from "node:sqlite";
+
+<span class="c">// ——— 資料庫：一個檔案 notes.db — schema 是資料的合約（呼應第 04 課）———</span>
+const db = new DatabaseSync("notes.db");
+db.exec(`
+  CREATE TABLE IF NOT EXISTS notes (
+    id         INTEGER PRIMARY KEY,             <span class="c">// SQLite 發號，就像 nextId++</span>
+    title      TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+<span class="c">// ——— 預備語句（prepared statement）：? 讓資料進不了 SQL 本文 ———</span>
+const q = {
+  list:   db.prepare("SELECT id, title, created_at FROM notes ORDER BY id"),
+  get:    db.prepare("SELECT id, title, created_at FROM notes WHERE id = ?"),
+  has:    db.prepare("SELECT 1 FROM notes WHERE id = ?"),
+  insert: db.prepare("INSERT INTO notes (title) VALUES (?) RETURNING id, title, created_at"),
+  upsert: db.prepare(`INSERT INTO notes (id, title) VALUES (?, ?)
+                      ON CONFLICT(id) DO UPDATE SET title = excluded.title
+                      RETURNING id, title, created_at`),
+  del:    db.prepare("DELETE FROM notes WHERE id = ?"),
+};
+
+<span class="c">// ——— 輔助函式、路由表、分派：自第 04 課以來不變 ———</span>
+<span class="c">//（readBody、parseJson、json、fail、toRegex、compiled、405 迴圈——從 server4.mjs 貼來）</span>
+
+const routes = [
+  { method: "GET", pattern: "/notes", handler: (req, res) =&gt;
+      json(res, 200, q.list.all()) },
+
+  { method: "POST", pattern: "/notes", handler: async (req, res) =&gt; {
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      const created = q.insert.get(note.title);   <span class="c">// id 由 SQLite 鑄造</span>
+      return json(res, 201, created, { location: `/notes/${created.id}` });
+  } },
+
+  { method: "GET", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      const note = q.get.get(Number(p.id));
+      if (!note) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 200, note);
+  } },
+
+  { method: "PUT", pattern: "/notes/:id", handler: async (req, res, p) =&gt; {
+      const id = Number(p.id);
+      const note = parseJson(await readBody(req));
+      if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON");
+      if (!note.title) return fail(res, 400, "VALIDATION", "title is required");
+      const existed = !!q.has.get(id);
+      q.upsert.get(id, note.title);               <span class="c">// 寫進 URL 裡的那個 id — 仍然冪等</span>
+      return json(res, existed ? 200 : 201, { id, title: note.title }, { location: `/notes/${id}` });
+  } },
+
+  { method: "DELETE", pattern: "/notes/:id", handler: (req, res, p) =&gt; {
+      if (q.del.run(Number(p.id)).changes === 0) return fail(res, 404, "NOT_FOUND", "note not found");
+      json(res, 204);
+  } },
+];
+
+<span class="c">// … 分派（先路徑後方法、405＋Allow、防護網）——與 server4.mjs 完全相同</span></code></pre>
+
+<h3>四個值得注意的地方</h3>
+<ul>
+  <li><strong><code>INTEGER PRIMARY KEY</code> 接手 <code>nextId++</code>。</strong>SQLite 的 rowid 機制在插入時發 id——少一件事要擁有，而且不會相撞。L04 的語意原封度過引擎移植：POST 的 id 仍由伺服器鑄造（不冪等）；PUT 仍寫進 URL 裡的 id，靠 <code>ON CONFLICT … DO UPDATE</code>（冪等——一個 <em>upsert</em>）。</li>
+  <li><strong><code>?</code> 就是整套 SQL injection 防禦。</strong>資料以<em>參數</em>身分旅行，永遠不進 SQL 本文——所以 <code>a"); DROP TABLE notes;--</code> 這種標題只是被當成字串存起來（我測過：<code>201</code>，表格完好）。你一旦插值——<code>db.prepare(\`… VALUES ('${title}')\`)</code>——這個標題就會執行。永遠不接字串，任何語言都一樣（<a href="https://owasp.org/www-community/attacks/SQL_Injection">OWASP：SQL Injection</a>）。</li>
+  <li><strong>預備一次，永遠執行。</strong><code>db.prepare()</code> 把 SQL 解析＋規劃一次；<code>.get()/.all()/.run()</code> 帶新參數重用計畫。<code>q</code> 物件裡一行一個語句＝你的資料存取層，全部就這樣（<a href="https://nodejs.org/api/sqlite.html">node:sqlite 文件</a>）。</li>
+  <li><strong>schema 是合約——第 04 課的觀念，套到資料上。</strong><code>title TEXT NOT NULL</code> 是 DB 版的我們 400 驗證；<code>DEFAULT (datetime('now'))</code> 是我們不再需要寫的行為。壞資料進不來，不管哪個 bug 想送它進來（<a href="https://www.sqlite.org/lang.html">SQLite 語言文件</a>）。</li>
+</ul>
+
+<h2>實戰練習——親眼看資料活過你的重啟</h2>
+<div class="task">
+  <span class="label">動手做 · 耐久性、upsert、注入、那個檔案本體</span>
+  <ul class="checklist" data-store="bd-l05-drill-tw">
+    <li><span class="box"></span><span class="txt">確認 Node：<code>node --version</code>——免旗標的 <code>node:sqlite</code> 要 23+（22.5+ 加 <code>--experimental-sqlite</code> 也行；我在 v26 驗證過）</span></li>
+    <li><span class="box"></span><span class="txt">組出 <code>server5.mjs</code>（server4＋上面的資料層），啟動：<code>node server5.mjs</code></span></li>
+    <li><span class="box"></span><span class="txt">建立：<code>curl -i -X POST -H "content-type: application/json" -d '{"title":"buy milk"}' http://localhost:3000/notes</code> → <code>201</code>——注意你一行都沒寫的 <code>created_at</code></span></li>
+    <li><span class="box"></span><span class="txt">見證時刻：<kbd>Ctrl-C</kbd> 關掉伺服器、重啟 <code>node server5.mjs</code>、<code>curl http://localhost:3000/notes</code> → <strong>還在</strong></span></li>
+    <li><span class="box"></span><span class="txt">看檔案：<code>ls -la notes.db</code>——一個 8 KB 檔案就是整個資料庫；<code>sqlite3 notes.db ".schema"</code> 列出你的合約</span></li>
+    <li><span class="box"></span><span class="txt">直接問它：<code>sqlite3 notes.db "SELECT id, title FROM notes WHERE title LIKE '%milk%'"</code>——問題由<em>引擎</em>回答，不是把全部載進 JS（<a href="https://sqlite.org/cli.html">sqlite3 CLI 文件</a>）</span></li>
+    <li><span class="box"></span><span class="txt">注入現場：<code>curl -X POST -H "content-type: application/json" -d '{"title":"a\"); DROP TABLE notes;--"}' http://localhost:3000/notes</code> → <code>201</code>；列清單——攻擊現在只是一則蠢標題，無害地躺著</span></li>
+    <li><span class="box"></span><span class="txt">合約回歸測試：重跑 L04 的檢查——<code>PUT /notes/7</code> 兩次（<code>201</code> 再 <code>200</code>）、錯動詞 <code>405</code>、壞 JSON <code>400</code>——引擎換了，合約沒變</span></li>
+    <li><span class="box"></span><span class="txt">重置：<code>rm notes.db</code> 再重啟——空的但活著。你現在確切知道「資料庫」是什麼：一個由你的協定掌管的檔案</span></li>
+  </ul>
+</div>
+
+<div class="callout">
+  <span class="label">Map → SQLite 對照表</span>
+  <table style="margin:0.4rem 0 0;">
+    <thead><tr><th>server4（Map）</th><th>server5（SQLite）</th></tr></thead>
+    <tbody>
+      <tr><td><code>const notes = new Map()</code></td><td><code>new DatabaseSync("notes.db")</code>＋schema</td></tr>
+      <tr><td><code>nextId++</code></td><td><code>INTEGER PRIMARY KEY</code>（rowid 自動）</td></tr>
+      <tr><td><code>notes.get(id)</code></td><td><code>q.get.get(id)</code></td></tr>
+      <tr><td><code>notes.set(id, note)</code></td><td><code>q.upsert.get(id, title)</code></td></tr>
+      <tr><td><code>notes.delete(id)</code></td><td><code>q.del.run(id).changes</code></td></tr>
+      <tr><td><code>[...notes.values()]</code></td><td><code>q.list.all()</code></td></tr>
+      <tr><td>重啟即死</td><td>一個檔案，活得過你測得出來的一切</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin:0.6rem 0 0">那個天真的檔案修法留一個用途：<em>設定檔</em>。整檔讀一次、幾乎不改的資料（port、feature flag）正是檔案的舒適區——小、多讀、人類可編輯。</p>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——rowid 機制接手你的計數器，永不相撞。" data-wrong="不盡然——正確答案已標出。">
+  <q>在 server5 裡，INTEGER PRIMARY KEY 取代了 server4 的哪個零件？</q>
+  <div class="options">
+    <button class="opt">我們手動維護的計數器</button>
+    <button class="opt">接住例外的整個防護網</button>
+    <button class="opt">回應裡面的狀態碼清單</button>
+    <button class="opt">每一個路由的方法樣板</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——資料進不了 SQL 本文，就永遠無法執行。" data-wrong="不盡然——正確答案已標出。">
+  <q>是什麼讓 DROP TABLE 標題真的沒有執行？</q>
+  <div class="options">
+    <button class="opt">參數化查詢隔離了資料</button>
+    <button class="opt">跳脫標題裡的所有引號</button>
+    <button class="opt">先用嚴格格式驗證標題</button>
+    <button class="opt">把資料庫關進安全模式</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——耐久就是整課重點，而你親眼證明了。" data-wrong="不盡然——正確答案已標出。">
+  <q>POST 一筆、Ctrl-C、重啟、GET /notes。那筆筆記——</q>
+  <div class="options">
+    <button class="opt">還在，列住在資料庫裡</button>
+    <button class="opt">不見了，跟著程序死了</button>
+    <button class="opt">不見了，資料庫忘記了</button>
+    <button class="opt">還在，是瀏覽器的快取</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——查詢、交易、原子寫入，就是你缺的那套協定。" data-wrong="不盡然——正確答案已標出。">
+  <q>從 notes.json 換到 SQLite 的誠實理由：</q>
+  <div class="options">
+    <button class="opt">查詢交易與損毀安全</button>
+    <button class="opt">檔案根本存不住資料</button>
+    <button class="opt">合約要求要用資料庫</button>
+    <button class="opt">讀寫檔案的速度太慢</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://nodejs.org/api/sqlite.html">node:sqlite 文件</a>——掃過 <code>DatabaseSync</code> 與 <code>StatementSync</code> 的方法清單；你現在從內部認得大半。然後是 <a href="https://sqlite.org/cli.html">sqlite3 CLI 頁</a>（你裝的是 3.51）——<code>.schema</code>、<code>.tables</code>、<code>.mode box</code> 從此是你的資料檢查工具。深潛版：<a href="https://www.sqlite.org/lang.html">SQLite 語言參考</a>裡的 <code>ON CONFLICT</code>——讓 PUT 保住冪等的那個子句。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 06 課——<em>持久化 II：PostgreSQL 與 Migration</em>：多程序、多機器——真正的伺服器、真正的型別，以及 schema 如何演化而不弄丟資料。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——交易、WAL 檔、「為什麼 DatabaseSync 是同步的？」、或 upsert 為什麼在並發下贏過先查再插，都歡迎。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/sqlite-first-aid.html">SQLite 急救包</a> · 上一課：<a href="0004-rest-semantics-done-right.html">第 04 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0005-persistence-files-to-sqlite.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

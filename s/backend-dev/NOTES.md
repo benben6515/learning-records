@@ -20,8 +20,9 @@
 - **L02 — One thread, many requests**: the event loop; blocking vs async proven with concurrent curls + timing. ✅ shipped (2026-08-26, EN+TW)
 - **L03 — Routing without a framework**: route table + regex params + body parsing + validation + error net; full notes CRUD on raw Node. ✅ shipped (2026-08-27, EN+TW)
 - **L04 — REST semantics done right**: 405+Allow (path-then-method dispatch), idempotent PUT vs POST (id comes from URL vs nextId++), 201+Location, 400 BAD_JSON (was 500), error contract `{error:{code,message}}`; server4.mjs verified with 10-case curl suite. ✅ shipped (2026-09-01, EN+TW)
-- **L05 — Persistence**: files → SQLite → PostgreSQL; schema, SQL, migrations. ⏳ next
-- **L06 — Auth**: sessions vs tokens, hashing, OWASP basics.
+- **L05 — Persistence I: files → SQLite**: naive JSON-file patch + 3 cracks (crash mid-write, lost update, no queries), then node:sqlite (DatabaseSync, Node 23+/v26 verified): schema as contract, INTEGER PRIMARY KEY replaces nextId++, upsert keeps PUT idempotent, `?` params kill injection; restart-survival verified with curl suite. ✅ shipped (2026-09-03, EN+TW; reference `sqlite-first-aid` EN+TW added)
+- **L06 — Persistence II: PostgreSQL & migrations**: many processes, real types, schema evolution. ⏳ next
+- **L07 — Auth**: sessions vs tokens, hashing, OWASP basics.
 - Later: config/secrets, testing the API, deployment, caching, queues.
 - Reference docs: `reference/http-anatomy.html` (L01), `reference/event-loop.html` (L02), `reference/minimal-node-api.html` (L03 skeleton — L05 will extend it with a DB) — all mirrored in `reference-tw/`.
 - Reusable components in `assets/`: `style.css` (+ code/terminal/table styles + `.tok-*` syntax tokens), `theme.js`, `quiz.js`, `checklist.js`, `highlight.js` (zero-dep JS syntax highlighter, 2026-08-28: auto-detects `pre > code` JS blocks, stashes existing `<span class="c">`/entities as placeholders so nothing breaks; linked on all lessons + reference pages).
