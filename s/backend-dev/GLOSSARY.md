@@ -15,3 +15,7 @@ _Avoid_: event queue — that's the waiting line, not the mover
 **Blocking（阻塞）**:
 Synchronous work that occupies the call stack, suspending the event loop and stalling every pending request.
 _Avoid_: slow, heavy — those are causes; blocking is the effect on the loop
+
+**Idempotency（冪等）**:
+The property that N identical requests leave the same state as one — what makes retries safe. In our API it lives in where the id comes from: PUT takes it from the URL (converges), POST mints it with `nextId++` (duplicates).
+_Avoid_: 冪升 (typo), "safe" — safe means read-only; idempotent means retry-safe

@@ -11,3 +11,7 @@ curl -i -X POST http://localhost:3322/notes \
 #   -d '{"title":"buy coke"}'
 
 # curl -i -X DELETE http://localhost:3322/notes/2
+
+# curl -i -X PUT http://localhost:3322/notes/7 \
+#   -H "Content-Type:application/json" \
+#   -d '{"title":"buy book"}'
