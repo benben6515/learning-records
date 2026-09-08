@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PostgreSQL 急救包 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 05</p>
+<h1>PostgreSQL 急救包</h1>
+<p class="lead">第 06 課濃縮一張卡：容器指令、連線字串、30 行 migration runner、<code>$n</code> 參數、值得背的錯誤碼、以及看見一切的 psql 指令——整理自 <a href="https://node-postgres.com/">node-postgres 文件</a>與 <a href="https://www.postgresql.org/docs/current/">postgresql.org</a>。列我。</p>
+
+<h2>啟動／停止／炸掉「另一台機器」</h2>
+<pre><code><span class="p">$</span> docker run -d --name bd-pg -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=notes -p 5432:5432 postgres:17-alpine
+<span class="p">$</span> docker start bd-pg                  <span class="c">// 重開機／暫停之後</span>
+<span class="p">$</span> docker exec bd-pg pg_isready -U postgres
+<span class="p">$</span> docker rm -f bd-pg                  <span class="c">// 炸掉——migration 會重建一切</span>
+<span class="p">$</span> export DATABASE_URL="postgres://postgres:dev@localhost:5432/notes"
+<span class="c">//        帳號 ─┘└密碼┘ └主機┘└埠┘└資料庫</span></code></pre>
+
+<h2>Migration 模式（任何工具，同樣骨架）</h2>
+<pre><code>migrations/
+  0001_init.sql          <span class="c">// 有編號、有順序、只跑一次——已套用的檔案永遠不改</span>
+  0002_add_done.sql
+  0003_add_priority.sql
+
+<span class="c">// runner 蒸餾版：</span>
+帳本    = CREATE TABLE IF NOT EXISTS schema_migrations (name TEXT PRIMARY KEY, …)
+已套用  = SELECT name FROM schema_migrations
+for 檔案 of 排序(migrations/*.sql) 不在 已套用:
+    BEGIN; 執行(檔案); INSERT INTO schema_migrations; COMMIT   <span class="c">// 不然就 ROLLBACK</span></code></pre>
+
+<h2>從 Node 查詢（pg）</h2>
+<pre><code>import pg from "pg";
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+
+const rows = (await pool.query("SELECT * FROM notes WHERE id = $1", [7])).rows;
+const n    = (await pool.query("DELETE FROM notes WHERE id = $1", [7])).rowCount;
+<span class="c">// $1、$2 … 有編號的參數——跟 SQLite 的 ? 同一條反 injection 規則</span>
+<span class="c">// rows[]＝SQLite 的 .all()；rowCount＝.changes()；rows[0]＝.get()</span></code></pre>
+
+<h2>值得背的錯誤碼</h2>
+<table>
+  <thead><tr><th>碼</th><th>名稱</th><th>映射到</th></tr></thead>
+  <tbody>
+    <tr><td><code>23505</code></td><td>unique_violation</td><td><code>409</code>——那個使用者名稱／email 已存在</td></tr>
+    <tr><td><code>23514</code></td><td>check_violation</td><td><code>400</code>——值被 CHECK 約束拒絕</td></tr>
+    <tr><td><code>23503</code></td><td>foreign_key_violation</td><td><code>400/409</code>——參考到不存在的列</td></tr>
+    <tr><td><code>23502</code></td><td>not_null_violation</td><td><code>400</code>——你的 handler 早該先擋下</td></tr>
+    <tr><td><code>42P01</code></td><td>undefined_table</td><td><code>500</code>＋去跑你的 migration！</td></tr>
+  </tbody>
+</table>
+<p class="small">完整清單：<a href="https://www.postgresql.org/docs/current/errcodes-appendix.html">錯誤碼附錄</a>。模式：在 handler 接 <code>err.code</code>、翻譯進錯誤合約，其他一律 re-throw 給防護網。</p>
+
+<h2>用 psql 親眼看</h2>
+<pre><code><span class="p">$</span> docker exec -it bd-pg psql -U postgres -d notes
+notes=# \d notes                       <span class="c">// 表的形狀：欄位、型別、約束</span>
+notes=# \dt                            <span class="c">// 所有表（含 schema_migrations）</span>
+notes=# SELECT id, title FROM notes;
+notes=# \q
+<span class="c">// 一次性：</span>
+<span class="p">$</span> docker exec bd-pg psql -U postgres -d notes -c "SELECT * FROM schema_migrations;"</code></pre>
+
+<h2>現在就值得知道的坑</h2>
+<ul>
+  <li><strong>Pool ≠ Client。</strong>Pool 為長壽的伺服器保溫連線；Client 是腳本用的單一連線（我們的 <code>migrate.mjs</code> 用 <code>pool.connect()</code> 借一條，讓 BEGIN/COMMIT 留在同一條連線上）。</li>
+  <li><strong>Identity id 唯一、但不連續。</strong>失敗的插入照樣燒序號——我實測跑出 <code>1, 4, 7</code>。永遠別把邏輯蓋在「連續」上。</li>
+  <li><strong><code>ECONNREFUSED ::1</code> 排在 <code>127.0.0.1</code> 前面</strong>是 Node 先試 IPv6。解法是「把資料庫開起來」，不是換 host 字串。</li>
+  <li><strong>日期用 <code>TIMESTAMPTZ</code></strong>——帶時區的時刻，序列化成 ISO（<code>2026-09-08T03:30:22.111Z</code>）。存時刻，時區留到邊界再呈現。</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0006-persistence-postgres-and-migrations.html">← 第 06 課</a> · 下一站：驗證（第 07 課） · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/postgres-first-aid.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

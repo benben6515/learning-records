@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PostgreSQL First Aid — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 05</p>
+<h1>PostgreSQL First Aid</h1>
+<p class="lead">Lesson 06 in one card: the container command, the connection string, the 30-line migration runner, <code>$n</code> params, the error codes worth memorizing, and the psql commands to see everything — compressed from the <a href="https://node-postgres.com/">node-postgres docs</a> and <a href="https://www.postgresql.org/docs/current/">postgresql.org</a>. Print me.</p>
+
+<h2>Start / stop / nuke the "other machine"</h2>
+<pre><code><span class="p">$</span> docker run -d --name bd-pg -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=notes -p 5432:5432 postgres:17-alpine
+<span class="p">$</span> docker start bd-pg                  <span class="c"># after a reboot / teardown pause</span>
+<span class="p">$</span> docker exec bd-pg pg_isready -U postgres
+<span class="p">$</span> docker rm -f bd-pg                  <span class="c"># nuke it — migrations rebuild everything</span>
+<span class="p">$</span> export DATABASE_URL="postgres://postgres:dev@localhost:5432/notes"
+<span class="c">//        user ─┘└pass┘ └host┘└port┘└db</span></code></pre>
+
+<h2>The migration pattern (any tool, same bones)</h2>
+<pre><code>migrations/
+  0001_init.sql          <span class="c">// numbered, ordered, run once — never edit an applied file</span>
+  0002_add_done.sql
+  0003_add_priority.sql
+
+<span class="c">// the runner, distilled:</span>
+ledger  = CREATE TABLE IF NOT EXISTS schema_migrations (name TEXT PRIMARY KEY, …)
+applied = SELECT name FROM schema_migrations
+for file of sorted(migrations/*.sql) not in applied:
+    BEGIN; run(file); INSERT INTO schema_migrations; COMMIT   <span class="c">// or ROLLBACK</span></code></pre>
+
+<h2>Querying from Node (pg)</h2>
+<pre><code>import pg from "pg";
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+
+const rows = (await pool.query("SELECT * FROM notes WHERE id = $1", [7])).rows;
+const n    = (await pool.query("DELETE FROM notes WHERE id = $1", [7])).rowCount;
+<span class="c">// $1, $2 … numbered params — same anti-injection rule as SQLite's ?</span>
+<span class="c">// rows[] = SQLite's .all();  rowCount = .changes();  rows[0] = .get()</span></code></pre>
+
+<h2>Error codes worth memorizing</h2>
+<table>
+  <thead><tr><th>Code</th><th>Name</th><th>Map it to</th></tr></thead>
+  <tbody>
+    <tr><td><code>23505</code></td><td>unique_violation</td><td><code>409</code> — that username/email already exists</td></tr>
+    <tr><td><code>23514</code></td><td>check_violation</td><td><code>400</code> — a CHECK constraint rejected the value</td></tr>
+    <tr><td><code>23503</code></td><td>foreign_key_violation</td><td><code>400/409</code> — referencing a row that doesn't exist</td></tr>
+    <tr><td><code>23502</code></td><td>not_null_violation</td><td><code>400</code> — your handler should have caught this first</td></tr>
+    <tr><td><code>42P01</code></td><td>undefined_table</td><td><code>500</code> + run your migrations!</td></tr>
+  </tbody>
+</table>
+<p class="small">Full list: the <a href="https://www.postgresql.org/docs/current/errcodes-appendix.html">error codes appendix</a>. Pattern: catch <code>err.code</code> in the handler, translate into your error contract, re-throw everything else to the error net.</p>
+
+<h2>See it with psql</h2>
+<pre><code><span class="p">$</span> docker exec -it bd-pg psql -U postgres -d notes
+notes=# \d notes                       <span class="c"># table shape: columns, types, constraints</span>
+notes=# \dt                            <span class="c"># all tables (incl. schema_migrations)</span>
+notes=# SELECT id, title FROM notes;
+notes=# \q
+<span class="c">// one-shot:</span>
+<span class="p">$</span> docker exec bd-pg psql -U postgres -d notes -c "SELECT * FROM schema_migrations;"</code></pre>
+
+<h2>Gotchas worth knowing now</h2>
+<ul>
+  <li><strong>Pool ≠ Client.</strong> Pool keeps warm connections for a long-lived server; Client is one connection for scripts (our <code>migrate.mjs</code> borrows one via <code>pool.connect()</code> so BEGIN/COMMIT stay on a single connection).</li>
+  <li><strong>Identity ids are unique, not gap-free.</strong> Failed inserts still burn sequence values — my test run produced ids <code>1, 4, 7</code>. Never build logic on contiguity.</li>
+  <li><strong><code>ECONNREFUSED ::1</code> before <code>127.0.0.1</code></strong> is Node trying IPv6 first. The fix is a running database, not a different host string.</li>
+  <li><strong>Dates are <code>TIMESTAMPTZ</code></strong> — an instant with a timezone, serialized as ISO (<code>2026-09-08T03:30:22.111Z</code>). Store instants, render timezones at the edge.</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons/0006-persistence-postgres-and-migrations.html">← Lesson 06</a> · Next up: Auth (Lesson 07) · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/postgres-first-aid.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>
