@@ -1,45 +1,47 @@
-import { readFileSync } from 'node:fs'
 import { createServer } from 'node:http'
+import { q } from './utils/db.mjs'
 import { readBody, json, parseJson, fail } from './utils/index.mjs'
 
-const notes = new Map(
-  JSON.parse(readFileSync("notes.js", "utf8") || "[]").map(n => [n.id, n])
-)
+const getNotes = async (_req, res) => json(res, 200, await q.list())
 
-let nextId = 1
-
-const getNotes = (_req, res) => json(res, 200, [...notes.values()])
-
-async function postNote(req, res) {
-  const note = parseJson((await readBody(req) || {}))
-  if (note === null) return fail(res, 400, "bad json", "body is not valid JSON")
-  if (!note.title) return fail(res, 400, "validation", "title is required")
-  note.id = nextId++
-  notes.set(note.id, note)
-  return json(res, 201, note, { location: `/ntoes/${note.id}` })
-}
-
-function getNoteById(_req, res, p) {
-  const note = notes.get(Number(p.id))
+async function getNoteById(_req, res, p) {
+  const note = await q.get(Number(p.id))
   if (!note) return fail(res, 404, "not found", "note note found")
   return json(res, 200, note)
 }
+
+async function postNote(req, res) {
+  const note = parseJson(await readBody(req))
+  if (note === null) return fail(res, 400, "BAD_JSON", "body is not json")
+  if (!note?.title) return fail(res, 400, "VALIDATION", "title is required")
+  try {
+    const created = await q.insert(note.title)
+    return json(res, 201, created, { location: `/notes/${created.id}` })
+  } catch (error) {
+    console.error(error)
+    if (error.code === '23514') return fail(res, 400, "VALIDATION", "title must be 1-200 chars")
+    throw error
+  }
+}
+
 
 async function putNoteById(req, res, p) {
   const id = Number(p.id)
   const note = parseJson(await readBody(req))
   if (note === null) return fail(res, 400, "bad json", "body is not valid JSON")
   if (!note.title) return fail(res, 400, "validation", "title is required")
-  const existed = notes.has(id)
-  note.id = id
-  notes.set(id, note)
+  const existed = await q.has(id)
+  await q.upsert(id, note.title)
   return json(res, existed ? 200 : 201, note, { location: `/notes/${id}` })
 }
 
-function deleteNoteById(_req, res, p) {
-  if (!notes.delete(Number(p.id))) return json(res, 404, { error: "Not found" })
-  return json(res, 204)
+async function deleteNoteById(_req, res, p) {
+  if ((await q.del(Number(p.id))).rowCount === 0)
+    return fail(res, 404, "NOT_FOUND", "note not found")
+  json(res, 204)
 }
+
+
 
 const routes = [
   { method: "GET", pattern: "/notes", handler: getNotes },

@@ -1,31 +1,21 @@
-import { DatabaseSync } from 'node:sqlite'
+import pg from "pg"
 
-const db = new DatabaseSync('notes.db')
+export const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
 
-db.exec(`
-CREATE TABLE IF NOT EXISTS notes (
-  id INTEGER PRIMARY KEY,
-  title TEXT NOT NULL,
-  created_at TEXT DEFAULT (datetime('now'))
-)
-`)
-
-const sql = [
-  "SELECT * FROM notes ORDER BY id",
-  "SELECT * FROM notes WHERE id = ?",
-  "SELECT 1 FROM notes WHERE id = ?",
-  "INSERT INTO notes (title) VALUES (?) RETURNING *",
-  "INSERT INTO notes (id, title) VALUES (?, ?) ON CONFLICT (id) DO UPDATE SET title = excluded.title RETURNING *",
-  "DELETE FROM notes WHERE id =?",
-]
-
-const prepare = (sql) => db.prepare(sql)
+export const sql = {
+  list: "SELECT * FROM notes ORDER BY id",
+  get: "SELECT * FROM notes WHERE id = $1",
+  has: "SELECT 1 FROM notes WHERE id = $1",
+  insert: "INSERT INTO notes (title) VALUES ($1) RETURNING *",
+  upsert: "INSERT INTO notes (id, title) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET title = excluded.title RETURNING *",
+  del: "DELETE FROM notes WHERE id = $1",
+}
 
 export const q = {
-  list: prepare(sql[0]),
-  get: prepare(sql[1]),
-  has: prepare(sql[2]),
-  insert: prepare(sql[3]),
-  upsert: prepare(sql[4]),
-  del: prepare(sql[5]),
+  list: () => pool.query(sql.list).then(r => r.rows),
+  get: async id => (await pool.query(sql.get, [id])).rows[0] ?? null,
+  has: async id => (await pool.query(sql.has, [id])).rowCount > 0,
+  insert: async title => (await pool.query(sql.insert, [title])).rows[0],
+  upsert: async (id, title) => (await pool.query(sql.upsert, [id, title])).rows[0],
+  del: id => pool.query(sql.del, [id]),
 }
