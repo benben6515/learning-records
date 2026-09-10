@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auth First Aid — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 06</p>
+<h1>Auth First Aid</h1>
+<p class="lead">Lesson 07 in one card: the scrypt helpers, the session table, the cookie flags and what each defends against, the 401/403 contract, and the sessions-vs-tokens call — compressed from the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html">OWASP cheat sheets</a>, <a href="https://nodejs.org/api/crypto.html">node:crypto</a>, and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">MDN</a>. Print me.</p>
+
+<h2>Password storage (node:crypto, zero deps)</h2>
+<pre><code>import { randomBytes, scrypt as _scrypt, timingSafeEqual } from "node:crypto";
+import { promisify } from "node:util";
+const scrypt = promisify(_scrypt);
+
+async function hashPassword(password) {           <span class="c">// register</span>
+  const salt = randomBytes(16).toString("hex");
+  const hash = (await scrypt(password, salt, 64)).toString("hex");
+  return `${salt}:${hash}`;
+}
+async function verifyPassword(password, stored) { <span class="c">// login</span>
+  const [salt, hash] = stored.split(":");
+  const test = await scrypt(password, salt, 64);
+  return timingSafeEqual(Buffer.from(hash, "hex"), test);
+}</code></pre>
+<p class="small">Hash ≠ encrypt (no un-anything). Slow on purpose (brute-force economics). Salt per user (rainbow tables die). <code>timingSafeEqual</code> (timing attacks). Async form — sync blocks the loop.</p>
+
+<h2>The session machinery</h2>
+<pre><code>login:   sid = randomBytes(32).toString("hex")     <span class="c">// 256 bits — unguessable is the job</span>
+         INSERT INTO sessions (sid, user_id) …
+         Set-Cookie: sid=…; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800
+request: SELECT u.id, u.email FROM sessions s JOIN users u …
+         WHERE s.sid = $1 AND s.expires_at > now()
+logout:  DELETE FROM sessions WHERE sid = $1  (+ Max-Age=0 cookie)</code></pre>
+
+<h2>Cookie flags — which shield is which</h2>
+<table>
+  <thead><tr><th>Flag</th><th>Defends against</th><th>How</th></tr></thead>
+  <tbody>
+    <tr><td><code>HttpOnly</code></td><td>XSS stealing the sid</td><td>JS is forbidden to read the cookie</td></tr>
+    <tr><td><code>SameSite=Lax</code></td><td>CSRF (cross-site sends)</td><td>browser won't attach it cross-site</td></tr>
+    <tr><td><code>Secure</code></td><td>network sniffing</td><td>HTTPS only — add in production</td></tr>
+    <tr><td><code>Max-Age</code></td><td>immortal sessions</td><td>cookie lifetime; DB <code>expires_at</code> is the real referee</td></tr>
+  </tbody>
+</table>
+
+<h2>The 401 / 403 contract</h2>
+<table>
+  <thead><tr><th></th><th>401 UNAUTHENTICATED</th><th>403 FORBIDDEN</th></tr></thead>
+  <tbody>
+    <tr><td>means</td><td>"I don't know you"</td><td>"I know you — but no"</td></tr>
+    <tr><td>client should</td><td>log in / refresh credentials</td><td>give up; retrying won't help</td></tr>
+    <tr><td>our trigger</td><td>no sid, unknown sid, expired</td><td><code>note.user_id !== me.id</code></td></tr>
+  </tbody>
+</table>
+<p class="small">Login failures: one identical 401 for wrong-password and unknown-email — no user enumeration.</p>
+
+<h2>Sessions vs tokens — the 10-second version</h2>
+<table>
+  <thead><tr><th></th><th>Session + cookie</th><th>JWT</th></tr></thead>
+  <tbody>
+    <tr><td>memory lives</td><td>server (a row)</td><td>the token itself (signed claims)</td></tr>
+    <tr><td>revoke</td><td>DELETE the row — done</td><td>wait for expiry / denylist</td></tr>
+    <tr><td>readable?</td><td>sid is meaningless</td><td>payload is base64 — anyone reads</td></tr>
+    <tr><td>pick when</td><td>classic web app, one origin</td><td>many services / native apps</td></tr>
+  </tbody>
+</table>
+<p class="small">A JWT is <strong>signed, not encrypted</strong> — <code>echo MIDDLE | base64 -d</code> proves it. Signature = tamper-evidence, not secrecy.</p>
+
+<h2>Gotchas worth knowing now</h2>
+<ul>
+  <li><strong>Never store, log, or email passwords.</strong> The column is <code>password_hash</code>; verify with <code>verifyPassword</code>, full stop.</li>
+  <li><strong>Authorization is a WHERE clause.</strong> List: <code>WHERE user_id = $1</code>. Read-one: fetch then compare owner. Most IDOR CVEs are a missing one of those two.</li>
+  <li><strong>DB constraints back you up.</strong> <code>UNIQUE</code> email → 23505 → 409. OWASP rule, engine-enforced.</li>
+  <li><strong>Port 3000 might be taken</strong> (a Vite dev server took mine mid-verification). <code>EADDRINUSE</code> is not a bug — it's the OS being honest; pick another port.</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons/0007-auth-sessions-vs-tokens.html">← Lesson 07</a> · Next up: Testing the API (Lesson 08) · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/auth-first-aid.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>驗證急救包 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 06</p>
+<h1>驗證急救包</h1>
+<p class="lead">第 07 課濃縮一張卡：scrypt 輔助函式、session 表、cookie 旗標與各自抵擋的攻擊、401/403 合約、sessions vs tokens 抉擇——整理自 <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html">OWASP cheat sheets</a>、<a href="https://nodejs.org/api/crypto.html">node:crypto</a>與 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">MDN</a>。列我。</p>
+
+<h2>密碼儲存（node:crypto，零依賴）</h2>
+<pre><code>import { randomBytes, scrypt as _scrypt, timingSafeEqual } from "node:crypto";
+import { promisify } from "node:util";
+const scrypt = promisify(_scrypt);
+
+async function hashPassword(password) {           <span class="c">// 註冊</span>
+  const salt = randomBytes(16).toString("hex");
+  const hash = (await scrypt(password, salt, 64)).toString("hex");
+  return `${salt}:${hash}`;
+}
+async function verifyPassword(password, stored) { <span class="c">// 登入</span>
+  const [salt, hash] = stored.split(":");
+  const test = await scrypt(password, salt, 64);
+  return timingSafeEqual(Buffer.from(hash, "hex"), test);
+}</code></pre>
+<p class="small">雜湊 ≠ 加密（沒有「解」）。刻意慢（暴力窮舉的經濟學）。每人獨特的鹽（彩虹表死）。<code>timingSafeEqual</code>（時間攻擊）。用非同步版——同步會阻塞迴圈。</p>
+
+<h2>Session 機械</h2>
+<pre><code>登入:   sid = randomBytes(32).toString("hex")     <span class="c">// 256 位元——「猜不到」就是職責</span>
+         INSERT INTO sessions (sid, user_id) …
+         Set-Cookie: sid=…; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800
+請求:   SELECT u.id, u.email FROM sessions s JOIN users u …
+         WHERE s.sid = $1 AND s.expires_at > now()
+登出:   DELETE FROM sessions WHERE sid = $1  （＋Max-Age=0 的 cookie）</code></pre>
+
+<h2>Cookie 旗標——哪面盾擋哪種攻擊</h2>
+<table>
+  <thead><tr><th>旗標</th><th>抵擋</th><th>原理</th></tr></thead>
+  <tbody>
+    <tr><td><code>HttpOnly</code></td><td>XSS 偷 sid</td><td>JS 被禁止讀取 cookie</td></tr>
+    <tr><td><code>SameSite=Lax</code></td><td>CSRF（跨站發送）</td><td>瀏覽器不跨站附帶</td></tr>
+    <tr><td><code>Secure</code></td><td>網路竊聽</td><td>限 HTTPS——正式環境加上</td></tr>
+    <tr><td><code>Max-Age</code></td><td>永生 session</td><td>cookie 壽命；真正的裁判是 DB 的 <code>expires_at</code></td></tr>
+  </tbody>
+</table>
+
+<h2>401 / 403 合約</h2>
+<table>
+  <thead><tr><th></th><th>401 UNAUTHENTICATED</th><th>403 FORBIDDEN</th></tr></thead>
+  <tbody>
+    <tr><td>意思</td><td>「我不認識你」</td><td>「認識你——但不行」</td></tr>
+    <tr><td>客戶端該</td><td>去登入／換憑證</td><td>放棄；重試沒有用</td></tr>
+    <tr><td>我們的觸發</td><td>無 sid、未知 sid、過期</td><td><code>note.user_id !== me.id</code></td></tr>
+  </tbody>
+</table>
+<p class="small">登入失敗：錯密碼和不存在 email 回同一個 401——不給列舉使用者。</p>
+
+<h2>Sessions vs tokens——十秒版</h2>
+<table>
+  <thead><tr><th></th><th>Session＋cookie</th><th>JWT</th></tr></thead>
+  <tbody>
+    <tr><td>記憶住在</td><td>伺服器（一列）</td><td>token 本身（簽名的聲明）</td></tr>
+    <tr><td>撤銷</td><td>DELETE 那列——結束</td><td>等過期／養黑名單</td></tr>
+    <tr><td>可讀？</td><td>sid 無意義</td><td>payload 是 base64——誰都讀</td></tr>
+    <tr><td>何時選</td><td>傳統網頁、單一來源</td><td>多服務／原生 App</td></tr>
+  </tbody>
+</table>
+<p class="small">JWT 是<strong>簽名的，不是加密的</strong>——<code>echo 中段 | base64 -d</code> 就是證明。簽章＝防篡改，不是保密。</p>
+
+<h2>現在就值得知道的坑</h2>
+<ul>
+  <li><strong>永不儲存、記 log、或寄送密碼。</strong>欄名叫 <code>password_hash</code>；用 <code>verifyPassword</code> 驗證，句點。</li>
+  <li><strong>授權是一條 WHERE。</strong>列清單：<code>WHERE user_id = $1</code>。讀單筆：先查再比主人。大多數 IDOR CVE 就是少了其中一個。</li>
+  <li><strong>DB 約束當你的後盾。</strong><code>UNIQUE</code> email → 23505 → 409。OWASP 規則、引擎強制。</li>
+  <li><strong>3000 埠可能被佔</strong>（我驗證到一半就被一台 Vite dev server 佔過）。<code>EADDRINUSE</code> 不是 bug——是作業系統誠實；換個埠。</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0007-auth-sessions-vs-tokens.html">← 第 07 課</a> · 下一站：測試 API（第 08 課） · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/auth-first-aid.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>
