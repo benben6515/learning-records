@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>咖啡吧 — 12 種經典咖啡</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #17100a; }
+  #app { width: 100%; height: 100%; }
+  canvas { display: block; }
+  #panel {
+    position: fixed; top: 24px; right: 24px; width: 330px;
+    background: rgba(26, 17, 10, 0.92); border: 1px solid rgba(222, 184, 135, 0.35);
+    border-radius: 14px; padding: 22px 24px; color: #f3e5cf;
+    font-family: Georgia, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', serif;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+    display: none; z-index: 10;
+  }
+  #panel.open { display: block; animation: fadein .25s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  #panel h2 { margin: 0 0 4px; font-size: 24px; color: #ffd9a0; letter-spacing: .5px; }
+  #panel h2 .en { font-size: 14px; color: #b39b78; font-weight: normal; margin-left: 6px; font-style: italic; }
+  #panel .ratio { font-style: italic; color: #d9b98c; margin-bottom: 14px; font-size: 14px; }
+  #panel .row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed rgba(222,184,135,.25); font-size: 14px; }
+  #panel .row span:first-child { color: #b39b78; }
+  #panel .sec { margin-top: 14px; font-size: 12px; letter-spacing: 2px; color: #b39b78; }
+  #p-compose { display: flex; gap: 14px; margin-top: 8px; align-items: center; }
+  #p-parts { flex: 1; }
+  #p-parts .part { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 3px 0; color: #e8d7bc; }
+  #p-parts .part i { width: 13px; height: 13px; border-radius: 3px; flex: none; border: 1px solid rgba(0,0,0,.3); }
+  #p-parts .part b { margin-left: auto; font-weight: normal; color: #d9b98c; font-variant-numeric: tabular-nums; }
+  #panel .desc { margin-top: 14px; font-size: 14px; line-height: 1.65; color: #e8d7bc; text-align: justify; }
+  #close {
+    position: absolute; top: 10px; right: 14px; background: none; border: none;
+    color: #d9b98c; font-size: 20px; cursor: pointer; line-height: 1;
+  }
+  #close:hover { color: #ffd9a0; }
+  #hint {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    color: rgba(243,229,207,.55); font-family: Georgia, serif; font-size: 13px;
+    letter-spacing: .5px; pointer-events: none; z-index: 5;
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="panel">
+  <button id="close" aria-label="Close">✕</button>
+  <h2 id="p-name"></h2>
+  <div class="ratio" id="p-ratio"></div>
+  <div class="row"><span>份量</span><span id="p-size"></span></div>
+  <div class="row"><span>咖啡因</span><span id="p-caffeine"></span></div>
+  <div class="sec">成分組成</div>
+  <div id="p-compose">
+    <div id="p-svg"></div>
+    <div id="p-parts"></div>
+  </div>
+  <div class="desc" id="p-desc"></div>
+</div>
+<div id="hint">拖曳旋轉 · 滾輪縮放 · 點擊杯子看介紹</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const DRINKS = [
+  { name: 'Espresso', zh: '濃縮咖啡', vessel: 'small', liquid: 0x38200f, liquidH: 0.62, foam: 0x8a6a48, foamH: 0.02, crema: true,
+    ratio: '咖啡粉 : 水 = 1 : 2，以約 9 bar 壓力萃取', size: '60 ml / 2 oz', caffeine: '~63 mg（每 ml 濃度最高）',
+    parts: [['濃縮咖啡', 100, '#5c3a1e']],
+    desc: '最能直接呈現咖啡本質的飲品：少量、濃烈，以高壓萃取而成。表層的金褐色克麗瑪（crema）是完美萃取的印記。櫃台上幾乎所有加奶飲品都從這一杯開始。' },
+  { name: 'Americano', zh: '美式咖啡', vessel: 'mid', liquid: 0x452612, liquidH: 0.68, foam: 0x6e4c2c, foamH: 0.015,
+    ratio: '1 份濃縮咖啡 : 2 份熱水', size: '240 ml / 8 oz', caffeine: '~75 mg',
+    parts: [['濃縮咖啡', 33, '#5c3a1e'], ['熱水', 67, '#caa06a']],
+    desc: '將濃縮咖啡以熱水拉長，濃度接近手沖咖啡，但風味更乾淨。相傳源自二戰時美國大兵覺得義式濃縮太濃而加水稀釋。口感溫順、輕盈，適合細細品味。' },
+  { name: 'Latte', zh: '拿鐵', vessel: 'mug', liquid: 0xc59d72, liquidH: 0.55, foam: 0xf5ead9, foamH: 0.12,
+    ratio: '1 份濃縮咖啡 : 3 份蒸奶 : 1 公分奶泡', size: '350 ml / 12 oz', caffeine: '~75 mg',
+    parts: [['濃縮咖啡', 25, '#5c3a1e'], ['蒸奶', 65, '#dfc49c'], ['奶泡', 10, '#f5ead9']],
+    desc: '菜單上最溫柔的一杯——以絲滑蒸奶為主，僅覆上一層薄薄奶泡。溫和的口感讓它成為多數咖啡館的必點款。咖啡師也常藉這層微奶泡拉出美麗的拉花。' },
+  { name: 'Cappuccino', zh: '卡布奇諾', vessel: 'mid', liquid: 0xb08055, liquidH: 0.5, foam: 0xf3e6d0, foamH: 0.18,
+    ratio: '濃縮咖啡 : 蒸奶 : 奶泡 = 1 : 1 : 1', size: '180 ml / 6 oz', caffeine: '~75 mg',
+    parts: [['濃縮咖啡', 33, '#5c3a1e'], ['蒸奶', 33, '#dfc49c'], ['奶泡', 34, '#f5ead9']],
+    desc: '義大利人的早餐經典，三分之一黃金比例：咖啡、牛奶與厚實的空氣感奶泡。撒上可可粉或肉桂粉就是最傳統的喝法。比拿鐵更乾爽、奶泡更厚，咖啡感也更明顯。' },
+  { name: 'Flat White', zh: '馥芮白', vessel: 'mid', liquid: 0xa9794c, liquidH: 0.58, foam: 0xf0e2cc, foamH: 0.05,
+    ratio: '雙份濃縮 : 微奶泡 = 2 : 1', size: '160 ml / 5.5 oz', caffeine: '~128 mg',
+    parts: [['濃縮咖啡', 40, '#5c3a1e'], ['微奶泡', 60, '#f0e2cc']],
+    desc: '源自澳洲與紐西蘭，專為覺得拿鐵太「奶」的人而生。雙份濃縮打底，覆上幾乎不含空氣的光滑絲絨微奶泡。杯小、味濃，咖啡存在感十足。' },
+  { name: 'Mocha', zh: '摩卡', vessel: 'mug', liquid: 0x54331d, liquidH: 0.55, foam: 0xf7efe0, foamH: 0.1, cream: true,
+    ratio: '1 份濃縮 : 2 份巧克力 : 2 份蒸奶', size: '350 ml / 12 oz', caffeine: '~90 mg',
+    parts: [['濃縮咖啡', 20, '#5c3a1e'], ['巧克力', 27, '#4a2c17'], ['蒸奶', 38, '#dfc49c'], ['鮮奶油', 15, '#faf3e6']],
+    desc: '熱可可與濃縮咖啡的相遇，頂端常擠上鮮奶油。名字來自曾經主宰咖啡貿易的港口「摩卡」。甜膩濃郁，甜品感十足，毫無節制的美味。' },
+  { name: 'Macchiato', zh: '瑪奇朵', vessel: 'small', liquid: 0x3a2210, liquidH: 0.6, foam: 0xf5ead9, foamH: 0.06, dollop: true,
+    ratio: '1 份濃縮 : 一點點（「污點」）奶泡', size: '60 ml / 2 oz', caffeine: '~63 mg',
+    parts: [['濃縮咖啡', 85, '#5c3a1e'], ['奶泡', 15, '#f5ead9']],
+    desc: '義大利文「沾染」之意——只在濃縮表面點上一匙奶泡。保留直送濃縮的全部力道，只添一絲奶香。是重口味愛好者面對滿滿奶咖菜單的最佳答案。' },
+  { name: 'Cortado', zh: '可塔多', vessel: 'small', liquid: 0x7a4e2c, liquidH: 0.62, foam: 0xe8d5b8, foamH: 0.05,
+    ratio: '濃縮 : 溫牛奶 = 1 : 1', size: '120 ml / 4 oz', caffeine: '~63 mg',
+    parts: [['濃縮咖啡', 50, '#5c3a1e'], ['溫牛奶', 50, '#e8d2a8']],
+    desc: '來自西班牙，cortado 意為「切開」——以等量溫牛奶切開濃縮。牛奶柔化酸質，卻不會稀釋咖啡或增加奶泡體積。小小一杯，通常兩口喝完。' },
+  { name: 'Ristretto', zh: '芮斯崔朵', vessel: 'small', liquid: 0x2a1608, liquidH: 0.45, foam: 0x7a5230, foamH: 0.02, crema: true,
+    ratio: '同樣粉量、一半水量 = 1 : 1', size: '20 ml / 0.7 oz', caffeine: '~63 mg',
+    parts: [['濃縮咖啡', 100, '#4a2c14']],
+    desc: '「限制」版濃縮：相同咖啡粉量，只萃取一半水量。比一般濃縮更短、更濃稠、更甜，因為尾段的苦味從未被帶出。純粹而集中的咖啡強度。' },
+  { name: 'Cold Brew', zh: '冷萃咖啡', vessel: 'glass', liquid: 0x3f2a15, liquidH: 0.52, ice: true,
+    ratio: '粗研磨咖啡 : 冷水 = 1 : 8，低溫浸泡 12–18 小時', size: '350 ml / 12 oz', caffeine: '~200 mg',
+    parts: [['冷萃咖啡', 85, '#3a2412'], ['冰塊', 15, '#cfe8ee']],
+    desc: '粗研磨咖啡粉浸泡冷水一夜——全程不加熱。緩慢萃取帶來絲滑、巧克力調性的風味，酸質遠低於冰咖啡。咖啡因出了名地高，請慢慢喝。' },
+  { name: 'Affogato', zh: '阿芙佳朵', vessel: 'glass', liquid: 0x331d0c, liquidH: 0.22, scoop: true,
+    ratio: '1 球香草冰淇淋 : 1 份熱濃縮', size: '120 ml / 4 oz', caffeine: '~63 mg',
+    parts: [['濃縮咖啡', 40, '#5c3a1e'], ['香草冰淇淋', 60, '#fff6ea']],
+    desc: '義大利文「淹沒」——一球香草冰淇淋被現沖濃縮咖啡淋蓋。一半甜點一半咖啡，冷熱交融，美味無比。趁它完全融化前用湯匙享用。' },
+  { name: 'Irish Coffee', zh: '愛爾蘭咖啡', vessel: 'glass', liquid: 0x3d2312, liquidH: 0.55, foam: 0xf2e4cd, foamH: 0.09, cream: true, glassHandle: true,
+    ratio: '濃縮 : 威士忌 : 糖 : 鮮奶油 = 4 : 2 : 1 : 2', size: '240 ml / 8 oz', caffeine: '~70 mg + 酒精',
+    parts: [['濃縮咖啡', 45, '#5c3a1e'], ['愛爾蘭威士忌', 20, '#b97a2e'], ['糖', 5, '#ffffff'], ['鮮奶油', 30, '#faf3e6']],
+    desc: '1940 年代誕生於愛爾蘭一個濃霧瀰漫的機場，為了撫慰疲憊的跨洋旅人。熱咖啡混合威士忌與糖，頂上輕打鮮奶油——用喝的穿越，不攪拌。最早的微醺晚安酒。' }
+];
+
+const app = document.getElementById('app');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+app.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x17100a);
+scene.fog = new THREE.Fog(0x17100a, 14, 30);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(0, 6.5, 12);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.0, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 4;
+controls.maxDistance = 20;
+controls.maxPolarAngle = Math.PI * 0.48;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.6;
+
+scene.add(new THREE.HemisphereLight(0xffe4c4, 0x241505, 0.55));
+
+const key = new THREE.DirectionalLight(0xffd9a0, 1.5);
+key.position.set(5, 9, 5);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = -9; key.shadow.camera.right = 9;
+key.shadow.camera.top = 9; key.shadow.camera.bottom = -9;
+key.shadow.radius = 6;
+key.shadow.bias = -0.0004;
+scene.add(key);
+
+const warm = new THREE.PointLight(0xffb46b, 25, 18, 2);
+warm.position.set(0, 4.2, 0);
+scene.add(warm);
+
+function woodTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const g = c.getContext('2d');
+  g.fillStyle = '#6b4526';
+  g.fillRect(0, 0, 512, 512);
+  for (let p = 0; p < 8; p++) {
+    const x = p * 64;
+    g.fillStyle = ['#654023', '#6f4a29', '#5f3c20', '#73502e'][p % 4];
+    g.fillRect(x, 0, 64, 512);
+    g.strokeStyle = 'rgba(30,16,6,0.55)';
+    g.lineWidth = 2;
+    g.beginPath(); g.moveTo(x, 0); g.lineTo(x, 512); g.stroke();
+    for (let i = 0; i < 22; i++) {
+      g.strokeStyle = `rgba(${Math.random() > 0.5 ? '40,22,8' : '140,95,50'},${0.08 + Math.random() * 0.14})`;
+      g.lineWidth = 1 + Math.random() * 1.6;
+      g.beginPath();
+      const gx = x + 4 + Math.random() * 56;
+      g.moveTo(gx, 0);
+      g.bezierCurveTo(gx + (Math.random() * 14 - 7), 170, gx + (Math.random() * 14 - 7), 340, gx + (Math.random() * 10 - 5), 512);
+      g.stroke();
+    }
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(3, 1);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+const counter = new THREE.Mesh(
+  new THREE.BoxGeometry(14.5, 0.55, 4.4),
+  new THREE.MeshStandardMaterial({ map: woodTexture(), roughness: 0.65, metalness: 0.05 })
+);
+counter.position.y = -0.28;
+counter.castShadow = counter.receiveShadow = true;
+scene.add(counter);
+
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(60, 60),
+  new THREE.MeshStandardMaterial({ color: 0x241812, roughness: 0.95 })
+);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = -1.4;
+floor.receiveShadow = true;
+scene.add(floor);
+
+const woodMat = new THREE.MeshStandardMaterial({ color: 0xf3e6d0, roughness: 0.35 });
+const milkMat = new THREE.MeshStandardMaterial({ color: 0xf5ead9, roughness: 0.5 });
+const creamMat = new THREE.MeshStandardMaterial({ color: 0xfaf3e6, roughness: 0.45 });
+const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xd9ecef, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.28, side: THREE.DoubleSide });
+const porcelainMats = new Map();
+
+function porcelain(color) {
+  if (!porcelainMats.has(color))
+    porcelainMats.set(color, new THREE.MeshStandardMaterial({ color, roughness: 0.28, side: THREE.DoubleSide }));
+  return porcelainMats.get(color);
+}
+
+function lathe(points, mat) {
+  return new THREE.Mesh(new THREE.LatheGeometry(points.map(p => new THREE.Vector2(...p)), 36), mat);
+}
+
+function cupProfile(h, rBase, rTop) {
+  return [
+    [0.001, h * 0.09], [rBase * 0.85, h * 0.07], [rBase, h * 0.14], [rTop - 0.02, h - 0.04],
+    [rTop, h], [rTop + 0.025, h - 0.05], [rBase + 0.03, h * 0.12], [rBase * 0.6, 0.0], [0.001, 0.0]
+  ];
+}
+
+function addHandle(group, x, y, z, flip) {
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.038, 12, 24, Math.PI * 1.15), woodMat);
+  handle.position.set(x, y, z);
+  handle.rotation.z = flip ? Math.PI * 0.92 : Math.PI * -0.07;
+  handle.castShadow = true;
+  group.add(handle);
+}
+
+function addSaucer(group, r) {
+  const saucer = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.55, 0.06, 36), woodMat);
+  saucer.position.y = 0.03;
+  saucer.castShadow = saucer.receiveShadow = true;
+  group.add(saucer);
+}
+
+function addLiquid(group, drink, innerR, baseY, topY) {
+  const h = (topY - baseY) * drink.liquidH;
+  const y = baseY + h / 2;
+  const liquid = new THREE.Mesh(
+    new THREE.CylinderGeometry(innerR * 0.94, innerR * 0.8, h, 32),
+    new THREE.MeshStandardMaterial({ color: drink.liquid, roughness: 0.15 })
+  );
+  liquid.position.y = y;
+  liquid.castShadow = true;
+  group.add(liquid);
+  if (drink.crema) {
+    const crema = new THREE.Mesh(
+      new THREE.CylinderGeometry(innerR * 0.94, innerR * 0.94, 0.025, 32),
+      new THREE.MeshStandardMaterial({ color: 0xa5713a, roughness: 0.4 })
+    );
+    crema.position.y = baseY + h;
+    group.add(crema);
+  }
+  return baseY + h;
+}
+
+function addFoam(group, drink, innerR, y) {
+  if (!drink.foamH) return y;
+  const foam = new THREE.Mesh(
+    new THREE.CylinderGeometry(innerR * 0.97, innerR * 0.9, drink.foamH, 32),
+    new THREE.MeshStandardMaterial({ color: drink.foam, roughness: 0.55 })
+  );
+  foam.position.y = y + drink.foamH / 2 - 0.01;
+  group.add(foam);
+  if (drink.dollop) {
+    const dollop = new THREE.Mesh(new THREE.SphereGeometry(innerR * 0.42, 20, 14), milkMat);
+    dollop.position.y = y + drink.foamH + 0.06;
+    dollop.scale.y = 0.75;
+    group.add(dollop);
+  }
+  return y + drink.foamH;
+}
+
+function addCream(group, y, s = 1) {
+  const swirl = new THREE.Mesh(new THREE.SphereGeometry(0.26 * s, 24, 18), creamMat);
+  swirl.position.y = y + 0.18 * s;
+  swirl.scale.set(s, s * 1.25, s);
+  group.add(swirl);
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.07 * s, 0.16 * s, 12), creamMat);
+  tip.position.y = y + 0.46 * s;
+  group.add(tip);
+}
+
+function addIce(group, innerR, y) {
+  for (let i = 0; i < 4; i++) {
+    const cube = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.16, 0.16),
+      new THREE.MeshPhysicalMaterial({ color: 0xdfeef2, roughness: 0.08, transparent: true, opacity: 0.6 })
+    );
+    cube.position.set((Math.random() - 0.5) * innerR * 1.2, y + 0.02 + (i % 2) * 0.13, (Math.random() - 0.5) * innerR * 1.2);
+    cube.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
+    group.add(cube);
+  }
+}
+
+function makeLabel(text) {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 64;
+  const g = c.getContext('2d');
+  g.fillStyle = 'rgba(20,12,6,0.65)';
+  g.beginPath(); g.roundRect(2, 10, 252, 44, 10); g.fill();
+  g.strokeStyle = 'rgba(222,184,135,0.6)';
+  g.lineWidth = 2;
+  g.beginPath(); g.roundRect(2, 10, 252, 44, 10); g.stroke();
+  g.fillStyle = '#ffe4bd';
+  g.font = '24px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillText(text, 128, 33);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false }));
+  sprite.renderOrder = 10;
+  sprite.scale.set(1.0, 0.25, 1);
+  return sprite;
+}
+
+const clickables = [];
+const drinkGroups = [];
+
+function buildDrink(drink, index) {
+  const group = new THREE.Group();
+  const glass = drink.vessel === 'glass';
+  const small = drink.vessel === 'small';
+
+  if (!glass) {
+    addSaucer(group, small ? 0.62 : 0.82);
+    const h = small ? 0.52 : drink.vessel === 'mid' ? 0.62 : 0.95;
+    const rBase = small ? 0.3 : drink.vessel === 'mid' ? 0.34 : 0.34;
+    const rTop = small ? 0.4 : drink.vessel === 'mid' ? 0.48 : 0.42;
+    const cup = lathe(cupProfile(h, rBase, rTop), porcelain(0xf3ead9));
+    cup.castShadow = true;
+    cup.position.y = 0.06;
+    group.add(cup);
+    addHandle(group, rTop + 0.1, h * 0.55 + 0.06, 0, false);
+    const topY = addLiquid(group, drink, rTop - 0.06, h * 0.16 + 0.06, h - 0.04 + 0.06);
+    addFoam(group, drink, rTop - 0.08, topY);
+    if (drink.cream) addCream(group, topY + drink.foamH, small ? 0.7 : 0.85);
+  } else {
+    const h = 1.15, r = 0.34;
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.82, h, 32, 1, true), glassMat);
+    body.position.y = 0.03;
+    body.castShadow = true;
+    group.add(body);
+    const bottom = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.82, r * 0.75, 0.05, 32), glassMat);
+    bottom.position.y = 0.055;
+    group.add(bottom);
+    if (drink.glassHandle) addHandle(group, r + 0.12, h * 0.5, 0, false);
+    const topY = addLiquid(group, drink, r * 0.88, h * 0.08, h - 0.12);
+    if (drink.scoop) {
+      const scoop = new THREE.Mesh(new THREE.SphereGeometry(0.31, 24, 18), creamMat);
+      scoop.position.y = topY + 0.12;
+      scoop.castShadow = true;
+      group.add(scoop);
+    }
+    addFoam(group, drink, r * 0.85, topY);
+    if (drink.cream) addCream(group, topY + drink.foamH, 0.8);
+    if (drink.ice) addIce(group, r * 0.7, topY - 0.04);
+  }
+
+  const box = new THREE.Box3().setFromObject(group);
+  const label = makeLabel(drink.zh);
+  label.position.y = box.max.y + 0.42;
+  group.add(label);
+
+  group.traverse(o => {
+    if (o.isMesh || o.isSprite) { o.userData.drinkIndex = index; clickables.push(o); }
+  });
+  drinkGroups[index] = group;
+  return group;
+}
+
+DRINKS.forEach((drink, i) => {
+  const row = i < 6 ? 0 : 1;
+  const col = i % 6;
+  const g = buildDrink(drink, i);
+  g.position.set((col - 2.5) * 1.85, 0, row === 0 ? -1.25 : 1.25);
+  if (row === 1) g.rotation.y = Math.PI;
+  scene.add(g);
+});
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let hovered = null, downPos = null;
+
+function highlight(group, on) {
+  group.traverse(o => {
+    if (o.isMesh && o.material && 'emissive' in o.material) {
+      o.material.emissive.setHex(on ? 0x553311 : 0x000000);
+      o.material.emissiveIntensity = on ? 0.5 : 0;
+    }
+  });
+}
+
+function pick(e) {
+  pointer.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObjects(clickables, false);
+  return hits.length ? hits[0].object.userData.drinkIndex : null;
+}
+
+const panel = document.getElementById('panel');
+
+function cupSVG(d) {
+  const [bW, tW] = { small: [30, 44], mid: [34, 48], mug: [36, 44], glass: [34, 38] }[d.vessel];
+  const cx = 73, yB = 126, yT = 56, H = yB - yT;
+  const total = d.parts.reduce((s, p) => s + p[1], 0);
+  const wAt = y => bW + (tW - bW) * ((yB - y) / H);
+  let y = yB, layers = '';
+  for (const [, pct, color] of d.parts) {
+    const h = H * pct / total;
+    const y2 = y - h, wB = wAt(y), wT = wAt(y2);
+    layers += `<path d="M${(cx - wB / 2).toFixed(1)},${y.toFixed(1)} L${(cx + wB / 2).toFixed(1)},${y.toFixed(1)} L${(cx + wT / 2).toFixed(1)},${y2.toFixed(1)} L${(cx - wT / 2).toFixed(1)},${y2.toFixed(1)} Z" fill="${color}" stroke="#3a2412" stroke-opacity="0.3" stroke-width="1"/>`;
+    y = y2;
+  }
+  const dome = (d.cream || d.scoop || d.dollop)
+    ? `<path d="M${(cx - tW * 0.42).toFixed(1)},${yT} Q${cx},${yT - 24} ${(cx + tW * 0.42).toFixed(1)},${yT} Z" fill="#faf3e6" stroke="#e0cdb0" stroke-width="1"/>` : '';
+  const handle = d.vessel !== 'glass'
+    ? `<path d="M${cx + tW + 1},72 A14 14 0 0 1 ${cx + tW + 1},100" fill="none" stroke="#d9b98c" stroke-width="5"/>` : '';
+  const saucer = d.vessel !== 'glass'
+    ? `<ellipse cx="${cx}" cy="${yB + 9}" rx="53" ry="5" fill="none" stroke="#d9b98c" stroke-width="2"/>`
+    : `<line x1="${cx - 44}" y1="${yB + 9}" x2="${cx + 44}" y2="${yB + 9}" stroke="#d9b98c" stroke-width="2"/>`;
+  const outline = `<path d="M${cx - bW / 2},${yB} L${cx - tW / 2},${yT} L${cx + tW / 2},${yT} L${cx + bW / 2},${yB}" stroke="#e8d7bc" stroke-width="2.5" fill="none" stroke-linejoin="round"/>`;
+  return `<svg width="132" height="146" viewBox="0 0 150 160" aria-hidden="true">${saucer}${layers}${outline}${handle}${dome}</svg>`;
+}
+
+function openPanel(i) {
+  const d = DRINKS[i];
+  document.getElementById('p-name').innerHTML = `${d.zh}<span class="en">${d.name}</span>`;
+  document.getElementById('p-ratio').textContent = d.ratio;
+  document.getElementById('p-size').textContent = d.size;
+  document.getElementById('p-caffeine').textContent = d.caffeine;
+  document.getElementById('p-desc').textContent = d.desc;
+  document.getElementById('p-svg').innerHTML = cupSVG(d);
+  document.getElementById('p-parts').innerHTML = d.parts
+    .map(([label, pct, color]) => `<div class="part"><i style="background:${color}"></i>${label}<b>${pct}%</b></div>`).join('');
+  panel.classList.add('open');
+}
+
+document.getElementById('close').addEventListener('click', () => panel.classList.remove('open'));
+
+renderer.domElement.addEventListener('pointermove', e => {
+  const i = pick(e);
+  if (hovered !== null && hovered !== i) { highlight(drinkGroups[hovered], false); hovered = null; }
+  if (i !== null && i !== hovered) { hovered = i; highlight(drinkGroups[i], true); }
+  renderer.domElement.style.cursor = i !== null ? 'pointer' : 'grab';
+});
+
+renderer.domElement.addEventListener('pointerdown', e => { downPos = [e.clientX, e.clientY]; });
+
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!downPos) return;
+  const moved = Math.hypot(e.clientX - downPos[0], e.clientY - downPos[1]);
+  downPos = null;
+  if (moved > 6) return;
+  const i = pick(e);
+  if (i !== null) openPanel(i);
+  else panel.classList.remove('open');
+});
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+renderer.setAnimationLoop(() => {
+  controls.update();
+  renderer.render(scene, camera);
+});
+</script>
+</body>
+</html>
