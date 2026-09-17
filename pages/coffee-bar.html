@@ -143,7 +143,7 @@ controls.minDistance = 4;
 controls.maxDistance = 20;
 controls.maxPolarAngle = Math.PI * 0.48;
 controls.autoRotate = true;
-controls.autoRotateSpeed = 0.6;
+controls.autoRotateSpeed = 0.15;
 
 scene.add(new THREE.HemisphereLight(0xffe4c4, 0x241505, 0.55));
 
@@ -231,10 +231,10 @@ function cupProfile(h, rBase, rTop) {
   ];
 }
 
-function addHandle(group, x, y, z, flip) {
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.038, 12, 24, Math.PI * 1.15), woodMat);
-  handle.position.set(x, y, z);
-  handle.rotation.z = flip ? Math.PI * 0.92 : Math.PI * -0.07;
+function addHandle(group, rWall, y, slope = 0) {
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.038, 12, 24, Math.PI), woodMat);
+  handle.position.set(rWall - 0.025, y, 0);
+  handle.rotation.z = -Math.PI / 2 - Math.atan(slope);
   handle.castShadow = true;
   group.add(handle);
 }
@@ -345,7 +345,8 @@ function buildDrink(drink, index) {
     cup.castShadow = true;
     cup.position.y = 0.06;
     group.add(cup);
-    addHandle(group, rTop + 0.1, h * 0.55 + 0.06, 0, false);
+    const slope = (rTop - 0.02 - rBase) / (h * 0.82 - 0.04);
+    addHandle(group, rBase + slope * h * 0.41, h * 0.55 + 0.06, 0, slope);
     const topY = addLiquid(group, drink, rTop - 0.06, h * 0.16 + 0.06, h - 0.04 + 0.06);
     addFoam(group, drink, rTop - 0.08, topY);
     if (drink.cream) addCream(group, topY + drink.foamH, small ? 0.7 : 0.85);
@@ -358,7 +359,7 @@ function buildDrink(drink, index) {
     const bottom = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.82, r * 0.75, 0.05, 32), glassMat);
     bottom.position.y = 0.055;
     group.add(bottom);
-    if (drink.glassHandle) addHandle(group, r + 0.12, h * 0.5, 0, false);
+    if (drink.glassHandle) addHandle(group, r, h * 0.45, 0, 0.05);
     const topY = addLiquid(group, drink, r * 0.88, h * 0.08, h - 0.12);
     if (drink.scoop) {
       const scoop = new THREE.Mesh(new THREE.SphereGeometry(0.31, 24, 18), creamMat);
@@ -428,8 +429,9 @@ function cupSVG(d) {
   }
   const dome = (d.cream || d.scoop || d.dollop)
     ? `<path d="M${(cx - tW * 0.42).toFixed(1)},${yT} Q${cx},${yT - 24} ${(cx + tW * 0.42).toFixed(1)},${yT} Z" fill="#faf3e6" stroke="#e0cdb0" stroke-width="1"/>` : '';
+  const hx1 = (cx + wAt(72) / 2).toFixed(1), hx2 = (cx + wAt(100) / 2).toFixed(1);
   const handle = d.vessel !== 'glass'
-    ? `<path d="M${cx + tW + 1},72 A14 14 0 0 1 ${cx + tW + 1},100" fill="none" stroke="#d9b98c" stroke-width="5"/>` : '';
+    ? `<path d="M${hx1},72 A16 16 0 0 1 ${hx2},100" fill="none" stroke="#d9b98c" stroke-width="5"/>` : '';
   const saucer = d.vessel !== 'glass'
     ? `<ellipse cx="${cx}" cy="${yB + 9}" rx="53" ry="5" fill="none" stroke="#d9b98c" stroke-width="2"/>`
     : `<line x1="${cx - 44}" y1="${yB + 9}" x2="${cx + 44}" y2="${yB + 9}" stroke="#d9b98c" stroke-width="2"/>`;
@@ -448,9 +450,15 @@ function openPanel(i) {
   document.getElementById('p-parts').innerHTML = d.parts
     .map(([label, pct, color]) => `<div class="part"><i style="background:${color}"></i>${label}<b>${pct}%</b></div>`).join('');
   panel.classList.add('open');
+  controls.autoRotate = false;
 }
 
-document.getElementById('close').addEventListener('click', () => panel.classList.remove('open'));
+function closePanel() {
+  panel.classList.remove('open');
+  controls.autoRotate = true;
+}
+
+document.getElementById('close').addEventListener('click', closePanel);
 
 renderer.domElement.addEventListener('pointermove', e => {
   const i = pick(e);
@@ -468,7 +476,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (moved > 6) return;
   const i = pick(e);
   if (i !== null) openPanel(i);
-  else panel.classList.remove('open');
+  else closePanel();
 });
 
 addEventListener('resize', () => {
