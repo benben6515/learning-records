@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>3D 像素貓</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1c2c; }
+  #app { width: 100%; height: 100%; }
+  canvas {
+    display: block; width: 100% !important; height: 100% !important;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+  }
+  #title {
+    position: fixed; top: 20px; left: 24px; color: #f3e5cf; z-index: 10;
+    font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    font-size: 22px; letter-spacing: 2px; text-shadow: 0 2px 0 rgba(0,0,0,.5);
+    user-select: none; pointer-events: none;
+  }
+  #hint {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    color: rgba(243,229,207,.55); z-index: 10; font-size: 13px; letter-spacing: 1px;
+    font-family: 'Noto Sans TC', 'PingFang TC', sans-serif;
+    user-select: none; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.6);
+  }
+  #ui { position: fixed; top: 20px; right: 20px; display: flex; gap: 8px; z-index: 10; }
+  #ui button {
+    background: rgba(26,28,44,.85); color: #f3e5cf; border: 1px solid rgba(243,229,207,.3);
+    border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer;
+    font-family: 'Noto Sans TC', 'PingFang TC', sans-serif; letter-spacing: 1px;
+  }
+  #ui button:hover { border-color: #ffd9a0; color: #ffd9a0; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="title">3D 像素貓</div>
+<div id="ui">
+  <button id="btn-px">像素：低</button>
+  <button id="btn-sound">聲音：開</button>
+</div>
+<div id="hint">拖曳旋轉 · 滾輪縮放 · 點貓貓摸摸牠</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ---------- 場景 ---------- */
+const app = document.getElementById('app');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1c2c);
+scene.fog = new THREE.Fog(0x1a1c2c, 12, 30);
+
+const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(4.2, 2.6, 5.4);
+
+const renderer = new THREE.WebGLRenderer({ antialias: false });
+renderer.setPixelRatio(1);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.BasicShadowMap; // 硬陰影，配合像素風
+app.appendChild(renderer.domElement);
+
+/* 像素化：實際渲染解析度除以 scale，再由 CSS 放大 */
+const PX_LEVELS = [1, 2, 3, 4];
+let pxIndex = 1;
+function applySize() {
+  const s = PX_LEVELS[pxIndex];
+  renderer.setSize(Math.floor(innerWidth / s), Math.floor(innerHeight / s), false);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+}
+applySize();
+addEventListener('resize', applySize);
+
+/* ---------- 燈光 ---------- */
+scene.add(new THREE.AmbientLight(0xfff2e0, 0.55));
+const sun = new THREE.DirectionalLight(0xffe0b3, 1.4);
+sun.position.set(5, 8, 4);
+sun.castShadow = true;
+sun.shadow.mapSize.set(512, 512);
+sun.shadow.camera.left = -6; sun.shadow.camera.right = 6;
+sun.shadow.camera.top = 6; sun.shadow.camera.bottom = -6;
+scene.add(sun);
+const rim = new THREE.DirectionalLight(0x88aaff, 0.5);
+rim.position.set(-4, 3, -5);
+scene.add(rim);
+
+/* ---------- 地板 ---------- */
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(40, 40),
+  new THREE.ShadowMaterial({ opacity: 0.35 })
+);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+/* 淡色棋盤格，讓像素感更明顯 */
+const checker = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 2;
+  const g = c.getContext('2d');
+  g.fillStyle = '#23263a'; g.fillRect(0, 0, 2, 2);
+  g.fillStyle = '#262a40'; g.fillRect(0, 0, 1, 1); g.fillRect(1, 1, 1, 1);
+  const tex = new THREE.CanvasTexture(c);
+  tex.magFilter = THREE.NearestFilter;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(20, 20);
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(40, 40),
+    new THREE.MeshBasicMaterial({ map: tex })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = -0.01;
+  return m;
+})();
+scene.add(checker);
+
+/* ---------- 貓：方塊組成 ---------- */
+const M = (c) => new THREE.MeshLambertMaterial({ color: c });
+const FUR = 0xf4a259, FUR_DARK = 0xc96f3b, CREAM = 0xffe8d1,
+      PINK = 0xe07a5f, EYE = 0x2b2b2b, NOSE = 0xd96473;
+
+function box(w, h, d, color, x, y, z, parent) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), M(color));
+  m.position.set(x, y, z);
+  m.castShadow = true;
+  parent.add(m);
+  return m;
+}
+
+const cat = new THREE.Group();
+scene.add(cat);
+
+/* 身體（朝 +z） */
+box(0.9, 1.0, 1.6, FUR, 0, 0.75, 0, cat);
+/* 胸前白毛 */
+box(0.6, 0.7, 0.1, CREAM, 0, 0.7, 0.78, cat);
+/* 背部虎斑 */
+[-0.35, 0, 0.35].forEach(z => box(0.94, 0.06, 0.22, FUR_DARK, 0, 1.26, z, cat));
+
+/* 四腿 */
+[[-0.3, 0.55], [0.3, 0.55], [-0.3, -0.55], [0.3, -0.55]].forEach(([x, z]) =>
+  box(0.26, 0.5, 0.26, FUR, x, 0.25, z, cat));
+
+/* 頭（獨立 group，方便轉頭看滑鼠） */
+const head = new THREE.Group();
+head.position.set(0, 1.15, 0.55);
+cat.add(head);
+box(0.9, 0.85, 0.8, FUR, 0, 0.35, 0.1, head);
+/* 口鼻白毛 */
+box(0.5, 0.32, 0.1, CREAM, 0, 0.16, 0.52, head);
+/* 耳朵 */
+const earL = box(0.22, 0.3, 0.2, FUR, -0.26, 0.95, 0.1, head);
+const earR = box(0.22, 0.3, 0.2, FUR, 0.26, 0.95, 0.1, head);
+box(0.1, 0.18, 0.1, PINK, -0.26, 0.93, 0.16, head);
+box(0.1, 0.18, 0.1, PINK, 0.26, 0.93, 0.16, head);
+/* 眼睛 */
+const eyeL = box(0.14, 0.18, 0.06, EYE, -0.2, 0.42, 0.51, head);
+const eyeR = box(0.14, 0.18, 0.06, EYE, 0.2, 0.42, 0.51, head);
+/* 眼睛反光 */
+box(0.05, 0.06, 0.02, 0xffffff, -0.17, 0.47, 0.55, head);
+box(0.05, 0.06, 0.02, 0xffffff, 0.23, 0.47, 0.55, head);
+/* 鼻子 */
+box(0.12, 0.09, 0.06, NOSE, 0, 0.26, 0.56, head);
+/* 腮紅 */
+box(0.14, 0.07, 0.03, 0xf0a58a, -0.34, 0.24, 0.5, head);
+box(0.14, 0.07, 0.03, 0xf0a58a, 0.34, 0.24, 0.5, head);
+
+/* 尾巴：5 節方塊相連 */
+const tailSegs = [];
+let tailParent = cat, tailPos = [0, 1.05, -0.8];
+for (let i = 0; i < 5; i++) {
+  const seg = new THREE.Group();
+  seg.position.set(...(i === 0 ? tailPos : [0, 0.18, 0]));
+  tailParent.add(seg);
+  box(0.18, 0.2, 0.18, i >= 3 ? FUR_DARK : FUR, 0, 0.09, 0, seg);
+  seg.rotation.x = -0.28; // 向後上翹
+  tailSegs.push(seg);
+  tailParent = seg;
+}
+
+/* ---------- 互動 ---------- */
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1, 0);
+controls.enableDamping = true;
+controls.enablePan = false;
+controls.minDistance = 3; controls.maxDistance = 14;
+controls.maxPolarAngle = Math.PI * 0.52;
+
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2(0, 0);
+let overCat = false, soundOn = true;
+
+addEventListener('pointermove', (e) => {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  overCat = ray.intersectObject(cat, true).length > 0;
+  renderer.domElement.style.cursor = overCat ? 'pointer' : 'grab';
+});
+
+/* 摸貓：壓扁彈回 + 愛心 + 喵 */
+let squish = 0;
+const hearts = [];
+const heartMat = () => new THREE.MeshBasicMaterial({ color: 0xff6b8d, transparent: true });
+
+function spawnHeart(x, y, z) {
+  const g = new THREE.Group();
+  const m = heartMat();
+  /* 像素愛心：上方兩塊 + 中間一塊 + 底尖 */
+  const s = 0.09;
+  [[-s/2, s], [s/2, s], [0, s/2], [0, 0]].forEach(([hx, hy], i) => {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(s, s, s / 3), m);
+    b.position.set(hx, hy, 0);
+    g.add(b);
+  });
+  g.position.set(x, y, z);
+  g.userData = { vy: 1.2 + Math.random() * 0.6, vx: (Math.random() - 0.5) * 0.8, life: 1 };
+  scene.add(g);
+  hearts.push(g);
+}
+
+function meow() {
+  if (!soundOn) return;
+  const ctx = meow.ctx || (meow.ctx = new (window.AudioContext || window.webkitAudioContext)());
+  if (ctx.state === 'suspended') ctx.resume();
+  const t = ctx.currentTime;
+  const o = ctx.createOscillator();
+  o.type = 'sawtooth';
+  o.frequency.setValueAtTime(560, t);
+  o.frequency.exponentialRampToValueAtTime(860, t + 0.09);
+  o.frequency.exponentialRampToValueAtTime(300, t + 0.38);
+  const f = ctx.createBiquadFilter();
+  f.type = 'lowpass'; f.frequency.value = 1500;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.16, t + 0.05);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
+  o.connect(f); f.connect(g); g.connect(ctx.destination);
+  o.start(t); o.stop(t + 0.45);
+}
+
+addEventListener('pointerdown', (e) => {
+  if (e.target !== renderer.domElement) return;
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  if (ray.intersectObject(cat, true).length) {
+    squish = 1;
+    meow();
+    const p = new THREE.Vector3(0, 2.2, 0.6).applyMatrix4(cat.matrixWorld);
+    for (let i = 0; i < 3; i++) spawnHeart(p.x + (Math.random() - .5) * .8, p.y, p.z + Math.random() * .3);
+  }
+});
+
+/* UI 按鈕 */
+const btnPx = document.getElementById('btn-px');
+btnPx.addEventListener('click', () => {
+  pxIndex = (pxIndex + 1) % PX_LEVELS.length;
+  btnPx.textContent = '像素：' + ['關', '低', '中', '高'][pxIndex];
+  applySize();
+});
+const btnSound = document.getElementById('btn-sound');
+btnSound.addEventListener('click', () => {
+  soundOn = !soundOn;
+  btnSound.textContent = '聲音：' + (soundOn ? '開' : '關');
+});
+
+/* ---------- 動畫 ---------- */
+const clock = new THREE.Clock();
+let blinkT = 2.5, blinkHold = 0, earTwitch = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  /* 呼吸 */
+  const breath = 1 + Math.sin(t * 2.2) * 0.02;
+  cat.scale.set(1 + squish * 0.18, breath - squish * 0.25, 1 + squish * 0.18);
+  squish *= Math.pow(0.001, dt); // 快速回彈
+
+  /* 轉頭看滑鼠 */
+  const tx = THREE.MathUtils.clamp(ndc.x * 0.7, -0.55, 0.55);
+  const ty = THREE.MathUtils.clamp(-ndc.y * 0.35, -0.2, 0.4);
+  head.rotation.y += (tx - head.rotation.y) * Math.min(1, dt * 6);
+  head.rotation.x += (ty - head.rotation.x) * Math.min(1, dt * 6);
+
+  /* 尾巴搖擺 */
+  tailSegs.forEach((seg, i) => {
+    seg.rotation.z = Math.sin(t * 2.4 - i * 0.55) * 0.22;
+  });
+
+  /* 眨眼 */
+  blinkT -= dt;
+  if (blinkT <= 0) { blinkHold = 0.12; blinkT = 2 + Math.random() * 3; }
+  if (blinkHold > 0) {
+    blinkHold -= dt;
+    eyeL.scale.y = eyeR.scale.y = 0.12;
+  } else {
+    eyeL.scale.y = eyeR.scale.y = 1;
+  }
+
+  /* 耳朵偶爾抖一下 */
+  earTwitch -= dt;
+  if (earTwitch < -3 && Math.random() < 0.01) earTwitch = 0.3;
+  const ew = earTwitch > 0 ? Math.sin(earTwitch * 40) * 0.15 * earTwitch : 0;
+  earL.rotation.z = ew; earR.rotation.z = -ew;
+
+  /* 摸的時候瞇眼享受 */
+  if (squish > 0.4) {
+    eyeL.scale.y = eyeR.scale.y = 0.25;
+  }
+
+  /* 愛心上升 */
+  for (let i = hearts.length - 1; i >= 0; i--) {
+    const h = hearts[i];
+    h.position.y += h.userData.vy * dt;
+    h.position.x += h.userData.vx * dt;
+    h.userData.life -= dt * 0.8;
+    h.children.forEach(b => b.material.opacity = h.userData.life);
+    h.rotation.y += dt * 2;
+    if (h.userData.life <= 0) {
+      scene.remove(h);
+      h.children.forEach(b => { b.geometry.dispose(); b.material.dispose(); });
+      hearts.splice(i, 1);
+    }
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
