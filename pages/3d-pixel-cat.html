@@ -270,40 +270,6 @@ function meow(pitch = 1) {
   o.start(t); o.stop(t + 0.45);
 }
 
-/* 呼嚕聲：85Hz 鋸齒波 + 26Hz 顫音 LFO，循環播放 */
-let purr = null;
-function startPurr() {
-  if (!soundOn || purr) return;
-  const ctx = audioCtx();
-  if (ctx.state === 'suspended') ctx.resume();
-  const t = ctx.currentTime;
-  const o = ctx.createOscillator();
-  o.type = 'sawtooth'; o.frequency.value = 85;
-  const f = ctx.createBiquadFilter();
-  f.type = 'lowpass'; f.frequency.value = 320; f.Q.value = 5;
-  const g = ctx.createGain();
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.linearRampToValueAtTime(0.07, t + 0.5);
-  const lfo = ctx.createOscillator();
-  lfo.frequency.value = 26;
-  const lfoGain = ctx.createGain();
-  lfoGain.gain.value = 0.05;
-  lfo.connect(lfoGain); lfoGain.connect(g.gain);
-  o.connect(f); f.connect(g); g.connect(ctx.destination);
-  o.start(t); lfo.start(t);
-  purr = { o, lfo, g };
-}
-function stopPurr() {
-  if (!purr) return;
-  const { o, lfo, g } = purr;
-  purr = null;
-  const t = audioCtx().currentTime;
-  g.gain.cancelScheduledValues(t);
-  g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), t);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-  o.stop(t + 0.3); lfo.stop(t + 0.3);
-}
-
 function spawnBurstHearts(n = 3) {
   const p = new THREE.Vector3(0, 2.2, 0.6).applyMatrix4(cat.matrixWorld);
   for (let i = 0; i < n; i++) spawnHeart(p.x + (Math.random() - .5) * .8, p.y, p.z + Math.random() * .3);
@@ -319,7 +285,6 @@ function startRoll() {
 function startGetUp() {
   if (catState !== 'belly') return;
   catState = 'gettingUp';
-  stopPurr();
 }
 
 addEventListener('pointerdown', (e) => {
@@ -356,8 +321,6 @@ const btnSound = document.getElementById('btn-sound');
 btnSound.addEventListener('click', () => {
   soundOn = !soundOn;
   btnSound.textContent = '聲音：' + (soundOn ? '開' : '關');
-  if (!soundOn) stopPurr();
-  else if (catState === 'belly') startPurr();
 });
 
 /* ---------- 動畫 ---------- */
@@ -374,7 +337,7 @@ function animate() {
   const poseMix = smooth(rollT); // 0 站立 ↔ 1 翻肚，混合頭/腿/尾巴姿態
   if (catState === 'rolling') {
     rollT = Math.min(1, rollT + dt / 0.55);
-    if (rollT >= 1) { catState = 'belly'; bellyTime = 0; heartTimer = 0; startPurr(); }
+    if (rollT >= 1) { catState = 'belly'; bellyTime = 0; heartTimer = 0; }
   } else if (catState === 'gettingUp') {
     rollT = Math.max(0, rollT - dt / 0.5);
     if (rollT <= 0) { catState = 'idle'; squish = 0.6; meow(0.72); } // 落地壓扁一下 + 開心喵
