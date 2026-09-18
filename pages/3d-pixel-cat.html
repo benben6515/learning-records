@@ -40,7 +40,7 @@
   <button id="btn-px">像素：低</button>
   <button id="btn-sound">聲音：開</button>
 </div>
-<div id="hint">拖曳旋轉 · 滾輪縮放 · 點貓貓摸摸牠</div>
+<div id="hint">拖曳旋轉 · 滾輪縮放 · 點貓貓摸摸牠 · 連點兩下翻肚撒嬌</div>
 
 <script type="importmap">
 {
@@ -147,10 +147,18 @@ box(0.9, 1.0, 1.6, FUR, 0, 0.75, 0, cat);
 box(0.6, 0.7, 0.1, CREAM, 0, 0.7, 0.78, cat);
 /* 背部虎斑 */
 [-0.35, 0, 0.35].forEach(z => box(0.94, 0.06, 0.22, FUR_DARK, 0, 1.26, z, cat));
+/* 肚皮白毛（平常貼地看不到，翻肚朝上才出現） */
+box(0.6, 0.1, 1.1, CREAM, 0, 0.26, 0, cat);
 
-/* 四腿 */
-[[-0.3, 0.55], [0.3, 0.55], [-0.3, -0.55], [0.3, -0.55]].forEach(([x, z]) =>
-  box(0.26, 0.5, 0.26, FUR, x, 0.25, z, cat));
+/* 四腿（髖關節 pivot，翻肚時可以踢腿） */
+const legs = [];
+[[-0.3, 0.55], [0.3, 0.55], [-0.3, -0.55], [0.3, -0.55]].forEach(([x, z], i) => {
+  const hip = new THREE.Group();
+  hip.position.set(x, 0.5, z);
+  cat.add(hip);
+  box(0.26, 0.5, 0.26, FUR, 0, -0.25, 0, hip);
+  legs.push({ hip, front: z > 0, phase: i * 1.7 });
+});
 
 /* 頭（獨立 group，方便轉頭看滑鼠） */
 const head = new THREE.Group();
@@ -208,10 +216,20 @@ addEventListener('pointermove', (e) => {
   renderer.domElement.style.cursor = overCat ? 'pointer' : 'grab';
 });
 
-/* 摸貓：壓扁彈回 + 愛心 + 喵 */
+/* 摸貓：點一下壓扁彈回；2.5 秒內再點一下 → 翻肚撒嬌 */
 let squish = 0;
 const hearts = [];
 const heartMat = () => new THREE.MeshBasicMaterial({ color: 0xff6b8d, transparent: true });
+
+/* 翻肚狀態機：idle → rolling → belly → gettingUp */
+let catState = 'idle';
+let rollT = 0, bellyTime = 0, heartTimer = 0;
+let petStreak = 0, lastPetTime = 0;
+const LIFT = 1.3; // 翻肚時整體抬高，讓背貼地不穿模
+const HEAD_STAND = new THREE.Vector3(0, 1.15, 0.55);
+const HEAD_BELLY = new THREE.Vector3(0, 0.9, 1.15); // 翻肚時頭躺在地上、臉朝上
+const smooth = (x) => x * x * (3 - 2 * x);
+const easeOutBack = (t) => { const c = 1.70158, u = t - 1; return 1 + (c + 1) * u * u * u + c * u * u; };
 
 function spawnHeart(x, y, z) {
   const g = new THREE.Group();
@@ -229,16 +247,19 @@ function spawnHeart(x, y, z) {
   hearts.push(g);
 }
 
-function meow() {
+let _actx = null;
+const audioCtx = () => _actx || (_actx = new (window.AudioContext || window.webkitAudioContext)());
+
+function meow(pitch = 1) {
   if (!soundOn) return;
-  const ctx = meow.ctx || (meow.ctx = new (window.AudioContext || window.webkitAudioContext)());
+  const ctx = audioCtx();
   if (ctx.state === 'suspended') ctx.resume();
   const t = ctx.currentTime;
   const o = ctx.createOscillator();
   o.type = 'sawtooth';
-  o.frequency.setValueAtTime(560, t);
-  o.frequency.exponentialRampToValueAtTime(860, t + 0.09);
-  o.frequency.exponentialRampToValueAtTime(300, t + 0.38);
+  o.frequency.setValueAtTime(560 * pitch, t);
+  o.frequency.exponentialRampToValueAtTime(860 * pitch, t + 0.09);
+  o.frequency.exponentialRampToValueAtTime(300 * pitch, t + 0.38);
   const f = ctx.createBiquadFilter();
   f.type = 'lowpass'; f.frequency.value = 1500;
   const g = ctx.createGain();
@@ -249,15 +270,78 @@ function meow() {
   o.start(t); o.stop(t + 0.45);
 }
 
+/* 呼嚕聲：85Hz 鋸齒波 + 26Hz 顫音 LFO，循環播放 */
+let purr = null;
+function startPurr() {
+  if (!soundOn || purr) return;
+  const ctx = audioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  const t = ctx.currentTime;
+  const o = ctx.createOscillator();
+  o.type = 'sawtooth'; o.frequency.value = 85;
+  const f = ctx.createBiquadFilter();
+  f.type = 'lowpass'; f.frequency.value = 320; f.Q.value = 5;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(0.07, t + 0.5);
+  const lfo = ctx.createOscillator();
+  lfo.frequency.value = 26;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 0.05;
+  lfo.connect(lfoGain); lfoGain.connect(g.gain);
+  o.connect(f); f.connect(g); g.connect(ctx.destination);
+  o.start(t); lfo.start(t);
+  purr = { o, lfo, g };
+}
+function stopPurr() {
+  if (!purr) return;
+  const { o, lfo, g } = purr;
+  purr = null;
+  const t = audioCtx().currentTime;
+  g.gain.cancelScheduledValues(t);
+  g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+  o.stop(t + 0.3); lfo.stop(t + 0.3);
+}
+
+function spawnBurstHearts(n = 3) {
+  const p = new THREE.Vector3(0, 2.2, 0.6).applyMatrix4(cat.matrixWorld);
+  for (let i = 0; i < n; i++) spawnHeart(p.x + (Math.random() - .5) * .8, p.y, p.z + Math.random() * .3);
+}
+
+function startRoll() {
+  catState = 'rolling';
+  rollT = 0;
+  meow(1.15); // 開心的「喵嗚～」
+  spawnBurstHearts(4);
+}
+
+function startGetUp() {
+  if (catState !== 'belly') return;
+  catState = 'gettingUp';
+  stopPurr();
+}
+
 addEventListener('pointerdown', (e) => {
   if (e.target !== renderer.domElement) return;
   ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
-  if (ray.intersectObject(cat, true).length) {
+  if (!ray.intersectObject(cat, true).length) return;
+
+  /* 躺平時再點一下 → 起身 */
+  if (catState === 'belly') { startGetUp(); return; }
+  if (catState !== 'idle') return; // 翻滾中先不理
+
+  const now = performance.now();
+  if (petStreak > 0 && now - lastPetTime < 2500) {
+    petStreak = 0;
+    startRoll(); // 連點兩下 → 翻肚撒嬌
+  } else {
+    petStreak = 1;
+    lastPetTime = now;
     squish = 1;
     meow();
-    const p = new THREE.Vector3(0, 2.2, 0.6).applyMatrix4(cat.matrixWorld);
-    for (let i = 0; i < 3; i++) spawnHeart(p.x + (Math.random() - .5) * .8, p.y, p.z + Math.random() * .3);
+    spawnBurstHearts(3);
   }
 });
 
@@ -272,31 +356,66 @@ const btnSound = document.getElementById('btn-sound');
 btnSound.addEventListener('click', () => {
   soundOn = !soundOn;
   btnSound.textContent = '聲音：' + (soundOn ? '開' : '關');
+  if (!soundOn) stopPurr();
+  else if (catState === 'belly') startPurr();
 });
 
 /* ---------- 動畫 ---------- */
 const clock = new THREE.Clock();
 let blinkT = 2.5, blinkHold = 0, earTwitch = 0;
+let headLookX = 0, headLookY = 0;
 
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
 
+  /* 翻肚狀態機 */
+  const poseMix = smooth(rollT); // 0 站立 ↔ 1 翻肚，混合頭/腿/尾巴姿態
+  if (catState === 'rolling') {
+    rollT = Math.min(1, rollT + dt / 0.55);
+    if (rollT >= 1) { catState = 'belly'; bellyTime = 0; heartTimer = 0; startPurr(); }
+  } else if (catState === 'gettingUp') {
+    rollT = Math.max(0, rollT - dt / 0.5);
+    if (rollT <= 0) { catState = 'idle'; squish = 0.6; meow(0.72); } // 落地壓扁一下 + 開心喵
+  } else if (catState === 'belly') {
+    bellyTime += dt;
+    heartTimer -= dt;
+    if (heartTimer <= 0) {
+      heartTimer = 0.8;
+      spawnHeart((Math.random() - 0.5) * 1.4, 1.9 + Math.random() * 0.3, (Math.random() - 0.5) * 0.8);
+    }
+    if (bellyTime > 12) startGetUp(); // 12 秒沒人理，自己爬起來
+  }
+  const rollEase = catState === 'gettingUp' ? smooth(rollT) : easeOutBack(rollT);
+  cat.rotation.x = -Math.PI * rollEase; // 向後翻滾躺平
+  cat.position.y = LIFT * rollEase;
+
   /* 呼吸 */
   const breath = 1 + Math.sin(t * 2.2) * 0.02;
   cat.scale.set(1 + squish * 0.18, breath - squish * 0.25, 1 + squish * 0.18);
   squish *= Math.pow(0.001, dt); // 快速回彈
 
-  /* 轉頭看滑鼠 */
+  /* 轉頭看滑鼠；翻肚時改成臉朝上、躺著搖頭晃腦 */
   const tx = THREE.MathUtils.clamp(ndc.x * 0.7, -0.55, 0.55);
   const ty = THREE.MathUtils.clamp(-ndc.y * 0.35, -0.2, 0.4);
-  head.rotation.y += (tx - head.rotation.y) * Math.min(1, dt * 6);
-  head.rotation.x += (ty - head.rotation.x) * Math.min(1, dt * 6);
+  headLookY += (tx - headLookY) * Math.min(1, dt * 6);
+  headLookX += (ty - headLookX) * Math.min(1, dt * 6);
+  head.position.lerpVectors(HEAD_STAND, HEAD_BELLY, poseMix);
+  head.rotation.x = headLookX * (1 - poseMix) + (Math.PI / 2 + Math.sin(t * 2.6) * 0.08) * poseMix;
+  head.rotation.y = headLookY * (1 - poseMix) + Math.sin(t * 1.6) * 0.35 * poseMix;
 
-  /* 尾巴搖擺 */
+  /* 四腿：站立不動；翻肚時前爪收胸前、後腿輪流踢空氣 */
+  legs.forEach(({ hip, front, phase }) => {
+    hip.rotation.x = front
+      ? -1.25 * poseMix
+      : (-0.35 + Math.sin(t * 9 + phase) * 0.55) * poseMix;
+  });
+
+  /* 尾巴搖擺（翻肚時開心快擺） */
+  const wagSpeed = 2.4 + poseMix * 4.1, wagAmp = 0.22 + poseMix * 0.13;
   tailSegs.forEach((seg, i) => {
-    seg.rotation.z = Math.sin(t * 2.4 - i * 0.55) * 0.22;
+    seg.rotation.z = Math.sin(t * wagSpeed - i * 0.55) * wagAmp;
   });
 
   /* 眨眼 */
@@ -315,8 +434,8 @@ function animate() {
   const ew = earTwitch > 0 ? Math.sin(earTwitch * 40) * 0.15 * earTwitch : 0;
   earL.rotation.z = ew; earR.rotation.z = -ew;
 
-  /* 摸的時候瞇眼享受 */
-  if (squish > 0.4) {
+  /* 摸的時候或翻肚時瞇眼享受 */
+  if (squish > 0.4 || poseMix > 0.5) {
     eyeL.scale.y = eyeR.scale.y = 0.25;
   }
 
