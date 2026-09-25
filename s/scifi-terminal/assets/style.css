@@ -298,6 +298,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
   code { white-space: normal; overflow-wrap: anywhere; }
   pre.term code { white-space: pre; overflow-wrap: normal; }
   .ref table { display: block; overflow-x: auto; font-size: 0.84rem; }
+  .ref th, .ref td { min-width: 6rem; }
   .quiz .opt { padding: 0.55rem 0.7rem; }
 }
 

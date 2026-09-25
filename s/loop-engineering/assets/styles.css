@@ -374,9 +374,10 @@ td code { white-space: nowrap; }
   .subtitle { font-size: 1rem; margin-bottom: 2rem; }
   .principle { font-size: 1.05rem; }
   table { display: block; overflow-x: auto; }
+  th, td { min-width: 6rem; }
   .quiz { padding: 1rem 1.05rem; }
   .quiz-opt { padding: 0.55rem 0.6rem; }
-  .flow .stage { padding: 0.45rem 0.7rem; font-size: 0.78rem; }
+  .flow .stage { padding: 0.45rem 0.7rem; font-size: 0.78rem; margin: 0.25rem 0; }
 }
 
 /* =========================================================================

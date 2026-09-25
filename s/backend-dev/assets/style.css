@@ -320,6 +320,7 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
   h2 { font-size: 1.3rem; }
   .lead { font-size: 1.08rem; }
   table { display: block; overflow-x: auto; }
+  th, td { min-width: 6rem; }
   .quiz .opt { padding: 0.55rem 0.7rem; }
 }
 
