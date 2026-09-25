@@ -252,6 +252,16 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
 .small { font-size: 0.9rem; }
 .kicker { font-family: var(--mono); font-size: 0.78rem; color: var(--faint); }
 
+/* ---- card panels (index / TOC sections) ---- */
+.card {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.1rem 1.3rem;
+  background: var(--surface);
+  margin: 1.4rem 0;
+}
+.card h3 { margin-top: 0; color: var(--accent); }
+
 /* ---- reference docs: slightly denser ---- */
 .ref h1 { font-size: 2rem; }
 .ref .grid { display: grid; gap: 1.4rem; }
@@ -276,6 +286,20 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
 }
 .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 .theme-toggle:active { transform: scale(0.92); }
+
+/* ---- small screens ---- */
+@media (max-width: 48rem) {
+  body { font-size: 17px; line-height: 1.6; }
+  .sheet { padding: 2.5rem 1.1rem 4rem; }
+  h1 { font-size: 1.7rem; }
+  h2 { font-size: 1.3rem; }
+  .lead { font-size: 1.08rem; }
+  pre.term { font-size: 0.78rem; }
+  code { white-space: normal; overflow-wrap: anywhere; }
+  pre.term code { white-space: pre; overflow-wrap: normal; }
+  .ref table { display: block; overflow-x: auto; font-size: 0.84rem; }
+  .quiz .opt { padding: 0.55rem 0.7rem; }
+}
 
 /* ---- print: always light on paper ---- */
 @media print {
