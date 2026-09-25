@@ -302,7 +302,49 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
   .quiz .opt { padding: 0.55rem 0.7rem; }
 }
 
+/* ---- reading progress (injected by assets/theme.js) ---- */
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 100;
+  pointer-events: none;
+}
+.progress-bar.hidden { display: none; }
+
 /* ---- print: always light on paper ---- */
+/* ---- page runtime extras (injected by assets/theme.js) ---- */
+.pre-wrap { position: relative; }
+.copy-btn {
+  position: absolute; top: 0.5rem; right: 0.5rem; z-index: 5;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em;
+  color: var(--muted); background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 5px;
+  padding: 0.15rem 0.55rem; cursor: pointer; opacity: 0;
+  transition: opacity 0.15s;
+}
+.pre-wrap:hover .copy-btn, .copy-btn:focus-visible { opacity: 1; }
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+.anchor {
+  opacity: 0; margin-left: 0.35rem; font-size: 0.75em;
+  color: var(--accent); text-decoration: none; border-bottom: none;
+}
+h2:hover .anchor, h3:hover .anchor, .anchor:focus-visible { opacity: 1; }
+.toc {
+  position: fixed; top: 5rem; right: 1.5rem; z-index: 40;
+  width: 13rem; max-height: 70vh; overflow-y: auto;
+  font-family: var(--sans); font-size: 0.8rem; line-height: 1.5;
+  display: none;
+}
+.toc-title { margin: 0 0 0.5rem; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0 0 0.35rem; }
+.toc a { color: var(--muted); text-decoration: none; border-bottom: none; display: block; }
+.toc a:hover { color: var(--accent); }
+.toc a.active { color: var(--accent); font-weight: 600; }
+@media (min-width: 75rem) { .toc { display: block; } }
+
 @media print {
   :root, :root[data-theme="dark"] {
     --ink: #1b1e24; --muted: #555; --paper: #fff; --surface: #fff;
@@ -312,8 +354,17 @@ hr.rule { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
   }
   body { background: #fff; color: #1b1e24; font-size: 11.5pt; }
   .sheet { max-width: none; padding: 0; }
-  .theme-toggle { display: none; }
+  .theme-toggle, .progress-bar, .toc, .copy-btn { display: none; }
   .quiz .opt, .checklist .box { border: 1px solid #999; }
   a { color: #1b1e24; border-bottom: none; }
   .footer .next, .callout, .task, pre.term { break-inside: avoid; }
+}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
