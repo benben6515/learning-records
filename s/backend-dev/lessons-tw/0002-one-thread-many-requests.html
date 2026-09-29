@@ -32,7 +32,7 @@
     <span class="muted">→</span>
     <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">2 · 向 Node 發出耗時 I/O</span>
     <span class="muted">→</span>
-    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">3 · handler 返回、堆疊清空</span>
+    <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">3 · handler 回傳、堆疊清空</span>
   </div>
   <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; margin-top:0.4rem;">
     <span style="padding:0.35rem 0.7rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface);">4 · I/O 在執行緒外完成</span>
@@ -89,7 +89,7 @@ const server = createServer((req, res) =&gt; {
     setTimeout(() =&gt; {
       res.writeHead(200, { "content-type": "application/json" });
       res.end(JSON.stringify({ waitedMs: ms }));
-    }, ms);                              <span class="c">// 計時器在 JS 之外跑；我們現在就返回</span>
+    }, ms);                              <span class="c">// 計時器在 JS 之外跑；控制權現在就還回去</span>
     return;
   }
 

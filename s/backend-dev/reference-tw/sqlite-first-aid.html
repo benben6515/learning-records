@@ -62,7 +62,7 @@ q.del.run(7).changes  <span class="c">// → 影響的列數（0 ⇒ 你的 404�
 <h2>現在就值得知道的坑</h2>
 <ul>
   <li><strong><code>DatabaseSync</code> 是同步的——故意的。</strong>每個語句都佔住事件迴圈（第 02 課！）。本機/單人使用沒問題；這是真正的網路資料庫（PostgreSQL，下一課）走非同步連線的原因之一。</li>
-  <li><strong>參數看順序。</strong>第二個 <code>?</code> 綁第二個引數——順序錯不會報錯，只會資料怪怪的。</li>
+  <li><strong>參數看順序。</strong>第二個 <code>?</code> 綁第二個參數——順序錯不會報錯，只會資料怪怪的。</li>
   <li><strong>SQLite 型別很寬鬆。</strong>TEXT/INTEGER/NULL/REAL/BLOB，欄位是動態型別。PostgreSQL（下一課）像 TypeScript 一樣強制型別——做好心理準備。</li>
   <li><strong>同時只有一個寫入者。</strong>讀可以很多、寫只有一個——需要多機器並發寫入的那一刻，就是 PostgreSQL 上場的時候。</li>
 </ul>

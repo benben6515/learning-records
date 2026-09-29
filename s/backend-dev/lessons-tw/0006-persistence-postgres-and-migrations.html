@@ -133,7 +133,7 @@ const q = {
   <li><strong>並發寫入就這麼……動了。</strong>server6 跑著的同時，<code>docker exec … psql</code>——第二個客戶端——插入一列；兩邊看到一致的世界。那是 MVCC，PostgreSQL 的並發機械，做著 SQLite 單一寫入者鎖做不到的事（<a href="https://www.postgresql.org/docs/current/mvcc.html">MVCC 章節</a>）。我實測的另一個真實細節：id 回來是 <code>1, 4, 7</code>——兩次被 CHECK 拒絕的插入仍然燒掉了序號。Identity id 保證唯一，<em>不</em>保證連續；別把邏輯蓋在「連續」上。</li>
 </ul>
 
-<h2>實戰練習——整條stack都自己來</h2>
+<h2>實戰練習——整條 stack 都自己來</h2>
 <div class="task">
   <span class="label">動手做 · 容器、migration、合約、第二寫入者</span>
   <ul class="checklist" data-store="bd-l06-drill-tw">
@@ -164,7 +164,7 @@ const q = {
       <tr><td>程序內、同步、單一寫入者</td><td>走網路、非同步、MVCC 並發</td></tr>
     </tbody>
   </table>
-  <p class="small" style="margin:0.6rem 0 0">我們的 migration runner 故意只有 30 行。業界工具（dbmate、Flyway、knex、Prisma migrate）多的是設定、模板和 down-migration——但機制永遠是這套：檔案＋帳本＋順序。</p>
+  <p class="small" style="margin:0.6rem 0 0">我們的 migration runner 故意只有 30 行。業界工具（dbmate、Flyway、knex、Prisma migrate）多的是設定、範本和 down-migration——但機制永遠是這套：檔案＋帳本＋順序。</p>
 </div>
 
 <h2>測測你的理解</h2>

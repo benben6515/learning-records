@@ -34,6 +34,7 @@
 - Lessons are `lessons/000N-slug.html` with a `0000-table-of-contents.html`; reference sheets in `reference/`.
 - Quiz answers: equal word counts, no formatting tells.
 - Every lesson: cites RESOURCES.md sources, links reference docs, recommends one primary source, reminds the user to ask the agent followup questions.
+- TW style guide (2026-09-29 review): 伺服器/資料庫/支援/樣板/範本/回傳/單執行緒/參數 (not 服務器/數據/模板/返回/單緒); gloss TW term + EN on first use (工作階段（session）, 處理器（handler）); keep EN raw afterward. Deliberate keeps: 模板字串 (JS template literal, community standard), 用戶端 (client), 連接埠 (port), 程序 (process). Spaces around EN terms in TW prose.
 
 ## Publishing
 - Lives in `benben6515/learning-records` at `s/backend-dev/`, renders on GitHub Pages.

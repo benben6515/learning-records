@@ -18,7 +18,7 @@
 <h2>六步驟模型</h2>
 <pre><code>1 · 你的 handler 在呼叫堆疊上執行              <span class="c">← 一條執行緒，承載你全部的 JS</span>
 2 · 它把耗時工作交給 Node（計時器、磁碟……）
-3 · handler 返回 → 堆疊清空                     <span class="c">← 迴圈又能動了</span>
+3 · handler 回傳 → 堆疊清空                     <span class="c">← 迴圈又能動了</span>
 4 · 耗時工作在 JavaScript 之外完成              <span class="c">← OS 非同步 + libuv 執行緒池（4 條）</span>
 5 · 它的回呼在佇列裡排隊
 6 · 事件迴圈把它推上堆疊                         <span class="c">← 永遠只在堆疊清空時</span></code></pre>

@@ -42,7 +42,7 @@ const save = () =&gt; writeFileSync("notes.json", JSON.stringify([...notes.value
 <p>跑起來：建一筆筆記、<kbd>Ctrl-C</kbd>、再啟動——<strong>筆記還在。</strong>真正的進步。接下來是三道裂縫，以及為什麼每一道都是「協定」問題、不是程式碼 bug：</p>
 <ol>
   <li><strong>寫到一半當機。</strong><code>writeFileSync</code> 重寫<em>整個檔案</em>。中途死掉（磁碟滿、kill -9、部署中）<code>notes.json</code> 就是截斷的垃圾——下次開機死在 <code>JSON.parse</code>。資料庫先寫日誌、再翻轉——被殺也保持原子性（<a href="https://nodejs.org/api/fs.html">node:fs 文件</a>對此無解）。</li>
-  <li><strong>更新遺失（lost update）。</strong>兩個請求、兩次整檔重寫——第二個蓋掉第一個的筆記。事件迴圈是單緒沒錯，但<em>檔案</em>才是共享狀態；任何也碰它的人（第二個程序、一支腳本、編輯器裡的你）都在跟你賽跑。</li>
+  <li><strong>更新遺失（lost update）。</strong>兩個請求、兩次整檔重寫——第二個蓋掉第一個的筆記。事件迴圈是單執行緒沒錯，但<em>檔案</em>才是共享狀態；任何也碰它的人（第二個程序、一支腳本、編輯器裡的你）都在跟你賽跑。</li>
   <li><strong>不能提問。</strong>「標題含 <code>milk</code> 的筆記、最新的在前面」＝全部載進 JS 再過濾。沒有 <code>WHERE</code>、沒有索引、沒有分頁。資料一長大，這個設計就死。</li>
 </ol>
 
