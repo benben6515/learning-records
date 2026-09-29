@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 08 課 · 測試 API：紅、綠、重構 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 08 課 · 測試</p>
+<h1>測試 API：紅、綠、重構</h1>
+<p class="lead">你的 server7 帶著<em>兩個真 bug</em> 通過了你我兩人的眼睛——<code>getSid</code> 裡一個字元的漂移，以及重構時弄丟了讀取端點所有權檢查。curl 練習從沒發現，因為練習只檢查你記得試的東西。今天：<code>node --test</code>、零新依賴，以及正好宰掉這兩個 bug 的測試。</p>
+<p class="badges">
+  <span class="badge">約 40 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">品質</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>第 01–07 課沒有任何東西會自我驗證。你跑 curl、看到 200、感覺良好——然後兩個 bug 揚長而過：<code>startsWith("sid")</code> 而不是 <code>startsWith("sid=")</code>（你上一課找到了），還有 <code>getNoteById</code> 對一個<em>陌生人</em>讀<em>你的</em>筆記回 <code>200</code>——因為重構進 <code>utils/</code> 時防線掉了。我發現它們只是因為我讀了你的程式碼。測試，就是讓程式碼<em>在每次變更時</em>都被重新讀一遍——由一台永遠不會累的機器。</p>
+
+<h2>核心觀念</h2>
+<p><strong>測試＝一個用選定輸入執行你的程式碼、然後斷言輸出的函式——寫來在行為漂移的那一刻大聲失敗。</strong> 圍繞它的習慣有三個拍子（<a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html">Fowler：TDD</a>）：先寫測試、親眼看它<em>失敗</em>（紅——必須先失敗，否則它什麼都沒測），用最誠實的簡單方式讓它通過（綠），然後在測試的看守下收拾乾淨（重構）。</p>
+
+<h2>步驟一——誘餌測試宰掉單字元 bug</h2>
+<p>首先，可測性：<code>getSid</code> 搬進 <code>utils/index.mjs</code> 並加上 <code>export</code>。然後是測試——注意它的形狀：<strong>安排（arrange）、行動（act）、斷言（assert）</strong>，一個行為，一個讀起來像句子的名稱：</p>
+<pre><code>// utils/get-sid.test.mjs
+import test from "node:test";
+import assert from "node:assert/strict";
+import { getSid } from "./index.mjs";
+
+test("returns the sid when a decoy cookie merely starts with sid", () =&gt; {
+  const req = { headers: { cookie: "sidebar=hide; sid=the-real-one" } };   <span class="c">// 安排</span>
+  assert.equal(getSid(req), "the-real-one");                               <span class="c">// 行動＋斷言</span>
+});
+
+test("returns undefined when no cookie header exists", () =&gt; {
+  assert.equal(getSid({ headers: {} }), undefined);
+});</code></pre>
+<p>對著帶 bug 的版本跑——失敗<em>就是</em>這一課，仔細看：</p>
+<pre><code><span class="p">$</span> node --test utils/get-sid.test.mjs
+✖ returns the sid when a decoy cookie merely starts with sid
+    AssertionError: Expected values to be strictly equal:
+    + actual: 'bar=hide'          <span class="c">// ← 誘餌 cookie 被切了一半</span>
+    expected: 'the-real-one'</code></pre>
+<p><code>sidebar=hide</code> 以 <code>sid</code> 開頭，所以 <code>.find()</code> 抓走它、<code>slice(4)</code> 回傳 <code>bar=hide</code> 當你的 session id。修掉那一個字元——<code>startsWith("sid=")</code>——suite 轉綠。你早就知道這個 bug；現在它<em>回不來了</em>：未來任何讓這四個字元漂移的編輯，都會在 40 毫秒內把整個 build 染紅。</p>
+
+<h2>步驟二——可測性是設計屬性</h2>
+<p>你手打的那些 curl？它們就是測試——慢、手動、健忘。伺服器只需要一個配合：不要在 import 時就 listen，改成 export 一個 start：</p>
+<pre><code>// server7.mjs 最底部 —— 原本是：app.listen(3322, …)
+export function start(port = 3322) {
+  return new Promise((resolve) =&gt; app.listen(port, () =&gt; resolve(app)));
+}</code></pre>
+<p><code>start(0)</code> 跟 OS 要一個臨時埠——測試可並行，永遠不用跟你的 dev server 搶 3000/3322。</p>
+
+<h2>步驟三——整合測試：整份合約，走真 HTTP</h2>
+<p>Node 有全域 <code>fetch</code> 和 <code>node --test</code>——不用 supertest、不用 jest、什麼都不用裝（<a href="https://nodejs.org/api/test.html">node:test 文件</a>）。這一個檔案同時釘住 L04 與 L07 的承諾：</p>
+<pre><code>// api.test.mjs — 整合測試：真 HTTP、真 Postgres、真合約
+import test from "node:test";
+import assert from "node:assert/strict";
+import { start } from "./server7.mjs";
+
+let app, base;
+const api = (path, opts = {}) =&gt; fetch(base + path, opts);
+const post = (path, body, cookie) =&gt; api(path, {
+  method: "POST",
+  headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}) },
+  body: JSON.stringify(body),
+});
+
+test("the notes contract, through real HTTP", async () =&gt; {
+  app = await start(0);                                 <span class="c">// 臨時埠</span>
+  base = `http://localhost:${app.address().port}`;
+  const mail = `t${Date.now()}@x.dev`;                  <span class="c">// 每次跑都唯一——不需要清理 fixture</span>
+
+  assert.equal((await post("/auth/register", { email: mail, password: "correct horse" })).status, 201);
+  assert.equal((await post("/auth/register", { email: mail, password: "x" })).status, 409);
+
+  const wrong = await post("/auth/login", { email: mail, password: "WRONG" });
+  const ghost = await post("/auth/login", { email: "ghost@x.dev", password: "WRONG" });
+  assert.equal(wrong.status, 401);
+  assert.equal(await wrong.text(), await ghost.text());          <span class="c">// 相同回應本體——不可列舉</span>
+
+  const ok = await post("/auth/login", { email: mail, password: "correct horse" });
+  assert.equal(ok.status, 200);
+  const cookie = ok.headers.getSetCookie()[0].split(";")[0];     <span class="c">// "sid=…"</span>
+
+  const created = await post("/notes", { title: "from a test" }, cookie);
+  assert.equal(created.status, 201);
+  assert.ok(created.headers.get("location"));
+
+  <span class="c">// 一個完全登入的陌生人，要求那筆筆記 →</span>
+  const stranger = await post("/auth/register", { email: `s${Date.now()}@x.dev`, password: "p" });
+  const sLogin = await post("/auth/login", { email: (await stranger.json()).email, password: "p" });
+  const sCookie = sLogin.headers.getSetCookie()[0].split(";")[0];
+  assert.equal((await api(`/notes/${(await created.json()).id}`, { headers: { cookie: sCookie } })).status, 403);
+
+  assert.equal((await post("/auth/logout", {}, cookie)).status, 204);
+  assert.equal((await api("/auth/me", { headers: { cookie } })).status, 401);
+});
+
+test.after(() =&gt; app?.close());</code></pre>
+
+<h3>我對著你的 server7 跑的時候，發生了什麼</h3>
+<p><code>200 !== 403</code>。陌生人<em>讀到了筆記</em>。你重構進 <code>utils/</code> 時，不知不覺把 <code>getUser</code> 和所有權檢查從 <code>getNoteById</code> 弄丟了——任何人、甚至沒登入，都能用 id 讀任何筆記。這是一個 <strong>IDOR 漏洞</strong>（Insecure Direct Object Reference，不安全的直接物件參照），正是第 07 課警告過的「少一條 WHERE」家族，住在一個 curl 全回 200 的程式碼裡。修法就是你已經認得的防線：</p>
+<pre><code>async function getNoteById(req, res, p) {
+  const me = await getUser(req);
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first");
+  const note = await q.get(Number(p.id));
+  if (!note) return fail(res, 404, "NOT_FOUND", "note not found");
+  if (note.user_id !== me.id) return fail(res, 403, "FORBIDDEN", "not your note");
+  return json(res, 200, note);
+}</code></pre>
+<p>……然後 suite 變成 <code>pass 4, fail 0</code>。順便檢查你自己的 <code>getNotes</code> 列清單 handler——同一場重構、同一種風險。</p>
+
+<h3>四個值得注意的地方</h3>
+<ul>
+  <li><strong>先紅，否則它什麼都沒測。</strong>我修好 <code>getSid</code> 後又故意弄壞它（<em>變異測試</em> mutation check），看著誘餌測試再次變紅——證明測試有牙。一個從沒失敗過的測試，是一個從沒工作過的測試。</li>
+  <li><strong>單元 vs 整合是縮放層級。</strong>誘餌測試在毫秒內釘住一個函式；API 測試在約 600 毫秒內釘住整份合約（驗證、cookie、狀態碼、所有權）。兩個都要：API 測試抓到單元測試看不到的 403 洞；單元測試在壞掉時指名道姓到那一行（<a href="https://martinfowler.com/articles/practical-test-pyramid.html">Fowler：測試金字塔</a>）。</li>
+  <li><strong>測試是會執行的文件。</strong>新同事讀 <code>get-sid.test.mjs</code> 就確切知道 <code>getSid</code> 承諾什麼——誘餌 cookie 也算——不必打開你的腦袋。</li>
+  <li><strong>每個 bug 都變成一個測試。</strong>今天的兩個 bug 從此被永久圍欄。這是長期賽局：你的 suite 是一份「這份程式碼曾經錯過的所有方式」清單，每一條上面都裝了絆線。</li>
+</ul>
+
+<h2>實戰練習——為你自己的程式碼圍欄</h2>
+<div class="task">
+  <span class="label">動手做 · 紅、綠，與變異遊戲</span>
+  <ul class="checklist" data-store="bd-l08-drill-tw">
+    <li><span class="box"></span><span class="txt">把 <code>getSid</code> 搬進 <code>utils/index.mjs</code> 加 <code>export</code>；寫 <code>get-sid.test.mjs</code> 含誘餌測試；跑 <code>node --test utils/get-sid.test.mjs</code>——如果你的 bug 還在，品嚐那個紅，然後修好轉綠</span></li>
+    <li><span class="box"></span><span class="txt">給 server7 加 <code>export function start(port)</code>（取代裸的 <code>app.listen</code>）；在底部用一次 <code>start(3322)</code> 確認平常的啟動方式照舊</span></li>
+    <li><span class="box"></span><span class="txt">照 listing 寫 <code>api.test.mjs</code>；跑整個 suite：<code>node --test</code>——如果你的 handler 還沒補防線，預期陌生人測試以 <code>200 !== 403</code> 失敗</span></li>
+    <li><span class="box"></span><span class="txt">修好讀取路徑（防線＋所有權，如上）；用同樣的「防線掉落病」標準審查 <code>getNotes</code>／<code>postNote</code>／<code>deleteNoteById</code>；suite 到 <code>fail 0</code></span></li>
+    <li><span class="box"></span><span class="txt">變異遊戲：故意弄壞一個東西（刪掉 403 那行、或把 <code>sid=</code> 改回去）→ 看著確切那個測試變紅 → 還原。感受安全網接住什麼</span></li>
+    <li><span class="box"></span><span class="txt">把欄杆加長：為 PUT 冪等性（第二個一模一樣的 PUT → 200）、錯動詞 405＋Allow、壞 JSON → 400、清單劃界（陌生人的清單是 <code>[]</code>）補上測試</span></li>
+    <li><span class="box"></span><span class="txt">變成習慣：在 <code>package.json</code> scripts 加 <code>"test": "node --test"</code>；從今以後，任何變更的迴圈都是<em>紅 → 綠 → 重構</em></span></li>
+  </ul>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——不會失敗的測試不能告訴你任何事。" data-wrong="不盡然——正確答案已標出。">
+  <q>為什麼必須先「看到」新測試失敗（紅）？</q>
+  <div class="options">
+    <button class="opt">證明這個測試真的會失敗</button>
+    <button class="opt">讓整套測試跑得更加快速</button>
+    <button class="opt">可以幫你多算一點覆蓋率</button>
+    <button class="opt">防止所有bug再次出現</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——函式層級的釘樁，無 HTTP，毫秒級。" data-wrong="不盡然——正確答案已標出。">
+  <q>誘餌 cookie 那個測試，釘住的是——</q>
+  <div class="options">
+    <button class="opt">getSid在函式層級的行為</button>
+    <button class="opt">整條auth流程走真HTTP</button>
+    <button class="opt">資料庫在多個並發寫入下的行為</button>
+    <button class="opt">路由regex面對各種怪路徑</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——已驗證但未授權：403，不是 401。" data-wrong="不盡然——正確答案已標出。">
+  <q>跨使用者測試裡，bob（已登入）GET alice 的筆記。斷言 403，因為——</q>
+  <div class="options">
+    <button class="opt">他已驗證但未授權</button>
+    <button class="opt">工作階段中途失效</button>
+    <button class="opt">筆記早已被刪掉了</button>
+    <button class="opt">伺服器處理時崩潰</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——每次變更後幾秒鐘的真相，無例外。" data-wrong="不盡然——正確答案已標出。">
+  <q>任何程式碼變更之後，反射動作是跑——</q>
+  <div class="options">
+    <button class="opt">node --test全套測試</button>
+    <button class="opt">手動用curl去打每個端點一次</button>
+    <button class="opt">重新啟動伺服器然後緊盯著log</button>
+    <button class="opt">重新部署上去然後再看線上儀表板</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://nodejs.org/api/test.html">node:test 文件</a>——你現在從內部認得 <code>test</code>、<code>assert</code> 和 runner 旗標了；掃過 <a href="https://nodejs.org/api/assert.html">node:assert</a> 的斷言菜單（<code>deepEqual</code> 和 <code>throws</code> 是下一階段的工具）。深潛，兩篇都短：<a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html">Fowler 論 TDD</a>（紅綠重構迴圈，由命名它的人親自講）與<a href="https://martinfowler.com/articles/practical-test-pyramid.html">測試金字塔</a>（每種該寫多少）。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 09 課——<em>部署與設定</em>：放上真正的機器——環境變數與機密、把 Postgres 開在不是你筆電的地方、HTTPS，以及「活著」的定義。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——測試裡 mock vs 真 DB、測試閃爍（flaky）、覆蓋率當指標（劇透：很弱）、或 CI 怎麼在每次 push 跑這些——都歡迎。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/testing-first-aid.html">測試急救包</a> · 上一課：<a href="0007-auth-sessions-vs-tokens.html">第 07 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0008-testing-the-api.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>測試急救包 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 07</p>
+<h1>測試急救包</h1>
+<p class="lead">第 08 課濃縮一張卡：node:test 要點、AAA 形狀、可以永遠複用的整合測試骨架、紅綠規則、先測什麼——整理自 <a href="https://nodejs.org/api/test.html">node:test</a>與 <a href="https://nodejs.org/api/assert.html">node:assert</a>文件，加上 Fowler 的 <a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html">TDD</a>。列我。</p>
+
+<h2>執行器（零安裝）</h2>
+<pre><code><span class="p">$</span> node --test                        <span class="c">// 遞迴跑所有 *.test.mjs</span>
+<span class="p">$</span> node --test utils/get-sid.test.mjs  <span class="c">// 單一檔案</span>
+<span class="p">$</span> node --test --test-name-pattern="decoy"   <span class="c">// 按名稱跑一個</span>
+<span class="c">// package.json: "scripts": { "test": "node --test" } → npm test</span></code></pre>
+
+<h2>測試的形狀</h2>
+<pre><code>test("returns the sid when a decoy cookie merely starts with sid", () =&gt; {
+  const req = { headers: { cookie: "sidebar=hide; sid=the-real-one" } };  <span class="c">// 1 安排</span>
+  const got = getSid(req);                                                <span class="c">// 2 行動</span>
+  assert.equal(got, "the-real-one");                                      <span class="c">// 3 斷言</span>
+});</code></pre>
+<p class="small">一個測試一個行為。名稱＝失敗時可讀的句子：<code>✖ returns the sid when a decoy…</code>。斷言：<code>assert.equal / notEqual / ok / deepEqual / throws</code>（從 <code>node:assert/strict</code> import）。</p>
+
+<h2>整合測試骨架（永久複用）</h2>
+<pre><code>import test from "node:test";
+import assert from "node:assert/strict";
+import { start } from "./server7.mjs";          <span class="c">// 伺服器 export start(port)，不要裸 listen</span>
+
+let app, base;
+const api = (path, opts = {}) =&gt; fetch(base + path, opts);
+
+test("…", async () =&gt; {
+  app = await start(0);                         <span class="c">// 臨時埠——可並行</span>
+  base = `http://localhost:${app.address().port}`;
+  const mail = `t${Date.now()}@x.dev`;          <span class="c">// 每次跑資料唯一——免 fixture</span>
+  const res = await api("/auth/login", { … });
+  assert.equal(res.status, 200);
+  const cookie = res.headers.getSetCookie()[0].split(";")[0];   <span class="c">// "sid=…"</span>
+});
+test.after(() =&gt; app?.close());</code></pre>
+
+<h2>紅綠重構規則</h2>
+<table>
+  <thead><tr><th>規則</th><th>原因</th></tr></thead>
+  <tbody>
+    <tr><td>每個新測試先看到失敗</td><td>不會失敗的測試不能告訴你任何事（變異檢查：弄壞、見紅、還原）</td></tr>
+    <tr><td>紅 → 最簡單誠實的綠</td><td>紅的時候不鍍金；測試定義「完成」</td></tr>
+    <tr><td>只在綠燈時重構</td><td>suite 是你搬移程式碼時的安全網</td></tr>
+    <tr><td>每個 bug 變成一個測試</td><td>你的 suite＝這份程式碼錯過的每種方式，每條都裝絆線</td></tr>
+    <tr><td>每次變更跑整套</td><td>幾秒鐘；每次 commit 前 <code>npm test</code>，之後交給 CI</td></tr>
+  </tbody>
+</table>
+
+<h2>先測什麼（優先順序）</h2>
+<ol>
+  <li><strong>合約</strong>：每個端點的成功狀態＋形狀（201+Location、204、清單劃界）。</li>
+  <li><strong>錯誤路徑</strong>：400 壞 JSON、401 無/壞 session、403 跨使用者、404、405＋Allow、409 重複 email。bug 住在錯誤路徑裡。</li>
+  <li><strong>不變量</strong>：PUT 冪等（第二個 PUT → 200）、相同的 401 本體（不可列舉）、登出立即失效。</li>
+  <li><strong>純函式</strong>（getSid 型）：便宜、快、壞掉時指名到行。</li>
+</ol>
+
+<h2>現在就值得知道的坑</h2>
+<ul>
+  <li><strong>不要在 import 時裸 <code>listen()</code></strong>——export <code>start(port)</code>；測試需要 <code>start(0)</code> 與並行。</li>
+  <li><strong>每次跑用唯一資料</strong>（<code>Date.now()</code> email）在這個規模勝過精心設計的 before/after 清理 fixture。</li>
+  <li><strong>單元抓字元、整合抓洞</strong>——兩個縮放層級都要；別選邊。</li>
+  <li><strong>覆蓋率是弱目標</strong>——100% 覆蓋的程式碼照樣能錯（不斷言任何事的測試也算覆蓋）。測行為，不測行數。</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0008-testing-the-api.html">← 第 08 課</a> · 下一站：部署與設定（第 09 課） · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/testing-first-aid.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

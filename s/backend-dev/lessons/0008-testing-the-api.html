@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 · Testing the API: Red, Green, Refactor — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 08 · Testing</p>
+<h1>Testing the API: Red, Green, Refactor</h1>
+<p class="lead">Your server7 shipped <em>two real bugs</em> past both of us — a one-character drift in <code>getSid</code>, and read endpoints that lost their ownership guard in your refactor. The curl drills never noticed, because drills only check what you remembered to try. Today: <code>node --test</code>, zero new dependencies, and the tests that catch exactly those two bugs.</p>
+<p class="badges">
+  <span class="badge">~40 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">quality</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>Nothing in Lessons 01–07 verifies itself. You ran curls, saw 200s, felt good — and two bugs sailed through: <code>startsWith("sid")</code> instead of <code>startsWith("sid=")</code> (you found that one last lesson), and <code>getNoteById</code> answering <code>200</code> to a <em>stranger</em> reading <em>your</em> note, because the refactor into <code>utils/</code> dropped the guard. I only found them because I read your code. Tests are how code gets read <em>every time it changes</em>, by a machine that never gets tired of checking.</p>
+
+<h2>The one idea</h2>
+<p><strong>A test is a function that runs your code with a chosen input and asserts the output — written to fail loudly the moment behavior drifts.</strong> The habit around it is three beats (<a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html">Fowler: TDD</a>): write the test and watch it <em>fail</em> (red — it must fail first, or it tests nothing), make it pass the simplest honest way (green), then clean up (refactor) with the test standing guard.</p>
+
+<h2>Step 1 — the decoy test kills the one-character bug</h2>
+<p>First, testability: <code>getSid</code> moves into <code>utils/index.mjs</code> with an <code>export</code>. Then the test — note its shape: <strong>arrange, act, assert</strong>, one behavior, a name that reads like a sentence:</p>
+<pre><code>// utils/get-sid.test.mjs
+import test from "node:test";
+import assert from "node:assert/strict";
+import { getSid } from "./index.mjs";
+
+test("returns the sid when a decoy cookie merely starts with sid", () =&gt; {
+  const req = { headers: { cookie: "sidebar=hide; sid=the-real-one" } };   <span class="c">// arrange</span>
+  assert.equal(getSid(req), "the-real-one");                               <span class="c">// act + assert</span>
+});
+
+test("returns undefined when no cookie header exists", () =&gt; {
+  assert.equal(getSid({ headers: {} }), undefined);
+});</code></pre>
+<p>Run it against the buggy version — the failure <em>is</em> the lesson, so look at it:</p>
+<pre><code><span class="p">$</span> node --test utils/get-sid.test.mjs
+✖ returns the sid when a decoy cookie merely starts with sid
+    AssertionError: Expected values to be strictly equal:
+    + actual: 'bar=hide'          <span class="c">// ← the decoy cookie, half-sliced</span>
+    expected: 'the-real-one'</code></pre>
+<p><code>sidebar=hide</code> starts with <code>sid</code>, so <code>.find()</code> grabs it and <code>slice(4)</code> returns <code>bar=hide</code> as your session id. Fix the one character — <code>startsWith("sid=")</code> — and the suite goes green. You knew the bug; now it <em>cannot come back</em>: any future edit that drifts those four characters turns the build red in 40 ms.</p>
+
+<h2>Step 2 — testability is a design property</h2>
+<p>Those curls you typed by hand? They were tests — slow, manual, forgettable. The server just needs one accommodation: don't listen at import time, export a start instead:</p>
+<pre><code>// bottom of server7.mjs — was: app.listen(3322, …)
+export function start(port = 3322) {
+  return new Promise((resolve) =&gt; app.listen(port, () =&gt; resolve(app)));
+}</code></pre>
+<p><code>start(0)</code> asks the OS for an ephemeral port — tests can run in parallel, and never fight your dev server for 3000/3322.</p>
+
+<h2>Step 3 — the integration test: your whole contract, through real HTTP</h2>
+<p>Node has global <code>fetch</code> and <code>node --test</code> — no supertest, no jest, nothing to install (<a href="https://nodejs.org/api/test.html">node:test docs</a>). This one file pins L04's and L07's promises at once:</p>
+<pre><code>// api.test.mjs — integration: real HTTP, real Postgres, real contract
+import test from "node:test";
+import assert from "node:assert/strict";
+import { start } from "./server7.mjs";
+
+let app, base;
+const api = (path, opts = {}) =&gt; fetch(base + path, opts);
+const post = (path, body, cookie) =&gt; api(path, {
+  method: "POST",
+  headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}) },
+  body: JSON.stringify(body),
+});
+
+test("the notes contract, through real HTTP", async () =&gt; {
+  app = await start(0);                                 <span class="c">// ephemeral port</span>
+  base = `http://localhost:${app.address().port}`;
+  const mail = `t${Date.now()}@x.dev`;                  <span class="c">// unique per run — no cleanup fixtures needed</span>
+
+  assert.equal((await post("/auth/register", { email: mail, password: "correct horse" })).status, 201);
+  assert.equal((await post("/auth/register", { email: mail, password: "x" })).status, 409);
+
+  const wrong = await post("/auth/login", { email: mail, password: "WRONG" });
+  const ghost = await post("/auth/login", { email: "ghost@x.dev", password: "WRONG" });
+  assert.equal(wrong.status, 401);
+  assert.equal(await wrong.text(), await ghost.text());          <span class="c">// identical bodies — no enumeration</span>
+
+  const ok = await post("/auth/login", { email: mail, password: "correct horse" });
+  assert.equal(ok.status, 200);
+  const cookie = ok.headers.getSetCookie()[0].split(";")[0];     <span class="c">// "sid=…"</span>
+
+  const created = await post("/notes", { title: "from a test" }, cookie);
+  assert.equal(created.status, 201);
+  assert.ok(created.headers.get("location"));
+
+  <span class="c">// a stranger, fully logged in, asks for that note →</span>
+  const stranger = await post("/auth/register", { email: `s${Date.now()}@x.dev`, password: "p" });
+  const sLogin = await post("/auth/login", { email: (await stranger.json()).email, password: "p" });
+  const sCookie = sLogin.headers.getSetCookie()[0].split(";")[0];
+  assert.equal((await api(`/notes/${(await created.json()).id}`, { headers: { cookie: sCookie } })).status, 403);
+
+  assert.equal((await post("/auth/logout", {}, cookie)).status, 204);
+  assert.equal((await api("/auth/me", { headers: { cookie } })).status, 401);
+});
+
+test.after(() =&gt; app?.close());</code></pre>
+
+<h3>What happened when I ran it against your server7</h3>
+<p><code>200 !== 403</code>. The stranger <em>read the note</em>. Your refactor into <code>utils/</code> had quietly dropped <code>getUser</code> and the ownership check from <code>getNoteById</code> — anyone, not even logged in, could read any note by id. That's an <strong>IDOR vulnerability</strong> (Insecure Direct Object Reference), the exact missing-<code>WHERE</code> family Lesson 07 warned about, sitting in code whose curls all returned 200. The fix is the guard you already know:</p>
+<pre><code>async function getNoteById(req, res, p) {
+  const me = await getUser(req);
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first");
+  const note = await q.get(Number(p.id));
+  if (!note) return fail(res, 404, "NOT_FOUND", "note not found");
+  if (note.user_id !== me.id) return fail(res, 403, "FORBIDDEN", "not your note");
+  return json(res, 200, note);
+}</code></pre>
+<p>…and the suite goes <code>pass 4, fail 0</code>. Check your own <code>getNotes</code> list handler too — same refactor, same risk.</p>
+
+<h3>Four things to notice</h3>
+<ul>
+  <li><strong>Red first, or it tests nothing.</strong> I re-broke <code>getSid</code> after fixing it (a <em>mutation check</em>) and watched the decoy test fail again — proof the test has teeth. A test that has never failed is a test that has never worked.</li>
+  <li><strong>Unit vs integration is a zoom level.</strong> The decoy test pins one function in milliseconds; the API test pins the whole contract (auth, cookies, status codes, ownership) in ~600 ms. You need both: the API test caught the 403 hole the unit test can't see; the unit test names the exact line when it breaks (<a href="https://martinfowler.com/articles/practical-test-pyramid.html">Fowler: test pyramid</a>).</li>
+  <li><strong>Tests are documentation that executes.</strong> A new teammate reads <code>get-sid.test.mjs</code> and knows exactly what <code>getSid</code> promises — decoys included — without opening your head.</li>
+  <li><strong>Every bug becomes a test.</strong> Both of today's bugs are now permanently fenced. That's the long game: your suite is a list of every way this code has ever been wrong, each with a tripwire on it.</li>
+</ul>
+
+<h2>The drill — fence your own codebase</h2>
+<div class="task">
+  <span class="label">Hands-on · red, green, and the mutation game</span>
+  <ul class="checklist" data-store="bd-l08-drill">
+    <li><span class="box"></span><span class="txt">Move <code>getSid</code> into <code>utils/index.mjs</code> with <code>export</code>; write <code>get-sid.test.mjs</code> with the decoy test; run <code>node --test utils/get-sid.test.mjs</code> — if your bug is still there, savor the red, then fix and go green</span></li>
+    <li><span class="box"></span><span class="txt">Add <code>export function start(port)</code> to server7 (replacing bare <code>app.listen</code>); confirm <code>node server7.mjs</code>-style runs still work via a tiny <code>start(3322)</code> call at the bottom</span></li>
+    <li><span class="box"></span><span class="txt">Write <code>api.test.mjs</code> from the listing; run the full suite: <code>node --test</code> — expect the stranger test to fail <code>200 !== 403</code> if your handlers still lack the guard</span></li>
+    <li><span class="box"></span><span class="txt">Fix the read path (guard + ownership, as above); audit <code>getNotes</code>/<code>postNote</code>/<code>deleteNoteById</code> for the same dropped-guard disease; suite to <code>fail 0</code></span></li>
+    <li><span class="box"></span><span class="txt">Mutation game: deliberately re-break something (delete the 403 line, or flip <code>sid=</code> back) → watch the exact test go red → revert. Feel what the safety net catches</span></li>
+    <li><span class="box"></span><span class="txt">Grow the fence: add tests for PUT idempotency (second identical PUT → 200), 405 + Allow on a wrong verb, bad JSON → 400, and note-list scoping (stranger's list is <code>[]</code>)</span></li>
+    <li><span class="box"></span><span class="txt">Make it a habit: add <code>"test": "node --test"</code> to <code>package.json</code> scripts; from now on, the loop for any change is <em>red → green → refactor</em></span></li>
+  </ul>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — a test that can't fail can't tell you anything." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Why must you SEE a new test fail (red) first?</q>
+  <div class="options">
+    <button class="opt">It proves the test can actually fail</button>
+    <button class="opt">It makes the whole suite run faster</button>
+    <button class="opt">It counts extra toward your coverage metrics</button>
+    <button class="opt">It prevents all bugs from ever recurring</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — function-level pinning, no HTTP, milliseconds." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>The decoy-cookie test pins down…</q>
+  <div class="options">
+    <button class="opt">getSid behavior at the function level</button>
+    <button class="opt">The entire auth flow via HTTP</button>
+    <button class="opt">Postgres behavior under concurrent write load</button>
+    <button class="opt">The router's regex against weird paths</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — authenticated but not authorized: 403, not 401." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>In the cross-user test, bob (logged in) GETs alice's note. We assert 403 because…</q>
+  <div class="options">
+    <button class="opt">He is authenticated but not authorized</button>
+    <button class="opt">His session expired before the request</button>
+    <button class="opt">The note was already deleted before</button>
+    <button class="opt">The server crashed handling his request</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — seconds of truth on every change, no exceptions." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>After ANY code change, the reflex is to run…</q>
+  <div class="options">
+    <button class="opt">node --test, the entire suite, always</button>
+    <button class="opt">curl each endpoint manually once more</button>
+    <button class="opt">restart the server and watch logs</button>
+    <button class="opt">redeploy and check the production dashboard</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> the <a href="https://nodejs.org/api/test.html">node:test docs</a> — you now recognize <code>test</code>, <code>assert</code>, and the runner flags from the inside; skim <a href="https://nodejs.org/api/assert.html">node:assert</a> for the assertion menu (<code>deepEqual</code> and <code>throws</code> are next-level tools). Deep cuts, both short: <a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html">Fowler on TDD</a> (the red-green-refactor loop, from the person who named it) and the <a href="https://martinfowler.com/articles/practical-test-pyramid.html">test pyramid</a> (how many of each kind to write).</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 09 — <em>Deployment &amp; Config</em>: putting it on a real machine — env vars and secrets, running Postgres somewhere that isn't your laptop, HTTPS, and what "up" means. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — mocking vs real DB in tests, test flakiness, code coverage as a metric (spoiler: weak), or how CI runs these on every push — all fair game.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/testing-first-aid.html">Testing First Aid</a> · Previous: <a href="0007-auth-sessions-vs-tokens.html">Lesson 07</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0008-testing-the-api.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

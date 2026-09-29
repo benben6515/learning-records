@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testing First Aid — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 07</p>
+<h1>Testing First Aid</h1>
+<p class="lead">Lesson 08 in one card: the node:test essentials, the AAA shape, the integration-test skeleton you'll reuse forever, red-green rules, and what to test first — compressed from the <a href="https://nodejs.org/api/test.html">node:test</a> and <a href="https://nodejs.org/api/assert.html">node:assert</a> docs plus Fowler's <a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html">TDD</a>. Print me.</p>
+
+<h2>The runner (zero installs)</h2>
+<pre><code><span class="p">$</span> node --test                        <span class="c">// runs every *.test.mjs recursively</span>
+<span class="p">$</span> node --test utils/get-sid.test.mjs  <span class="c">// one file</span>
+<span class="p">$</span> node --test --test-name-pattern="decoy"   <span class="c">// one test by name</span>
+<span class="c">// package.json: "scripts": { "test": "node --test" } → npm test</span></code></pre>
+
+<h2>The shape of a test</h2>
+<pre><code>test("returns the sid when a decoy cookie merely starts with sid", () =&gt; {
+  const req = { headers: { cookie: "sidebar=hide; sid=the-real-one" } };  <span class="c">// 1 arrange</span>
+  const got = getSid(req);                                                <span class="c">// 2 act</span>
+  assert.equal(got, "the-real-one");                                      <span class="c">// 3 assert</span>
+});</code></pre>
+<p class="small">One behavior per test. Name = a sentence that fails readably: <code>✖ returns the sid when a decoy…</code>. Assertions: <code>assert.equal / notEqual / ok / deepEqual / throws</code> (import from <code>node:assert/strict</code>).</p>
+
+<h2>The integration skeleton (copy forever)</h2>
+<pre><code>import test from "node:test";
+import assert from "node:assert/strict";
+import { start } from "./server7.mjs";          <span class="c">// server exports start(port), no bare listen</span>
+
+let app, base;
+const api = (path, opts = {}) =&gt; fetch(base + path, opts);
+
+test("…", async () =&gt; {
+  app = await start(0);                         <span class="c">// ephemeral port — parallel-safe</span>
+  base = `http://localhost:${app.address().port}`;
+  const mail = `t${Date.now()}@x.dev`;          <span class="c">// unique data per run — no fixtures</span>
+  const res = await api("/auth/login", { … });
+  assert.equal(res.status, 200);
+  const cookie = res.headers.getSetCookie()[0].split(";")[0];   <span class="c">// "sid=…"</span>
+});
+test.after(() =&gt; app?.close());</code></pre>
+
+<h2>Red-green-refactor rules</h2>
+<table>
+  <thead><tr><th>Rule</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Watch every new test fail first</td><td>a test that can't fail can't tell you anything (mutation check: re-break, see red, revert)</td></tr>
+    <tr><td>Red → simplest honest green</td><td>no gold-plating while red; the test defines "done"</td></tr>
+    <tr><td>Refactor only on green</td><td>the suite is your safety net while you move code</td></tr>
+    <tr><td>Every bug becomes a test</td><td>your suite = every way the code has ever been wrong, each with a tripwire</td></tr>
+    <tr><td>Run the whole suite on every change</td><td>seconds; <code>npm test</code> before every commit, CI later</td></tr>
+  </tbody>
+</table>
+
+<h2>What to test first (priority order)</h2>
+<ol>
+  <li><strong>The contract</strong>: every endpoint's success status + shape (201+Location, 204, list scoping).</li>
+  <li><strong>The error paths</strong>: 400 bad JSON, 401 no/bad session, 403 cross-user, 404, 405+Allow, 409 dup email. Bugs live in error paths.</li>
+  <li><strong>The invariants</strong>: PUT idempotency (second PUT → 200), identical 401 bodies (no enumeration), logout revokes instantly.</li>
+  <li><strong>Pure functions</strong> (getSid-style): cheap, fast, name the exact line when broken.</li>
+</ol>
+
+<h2>Gotchas worth knowing now</h2>
+<ul>
+  <li><strong>Don't bare-<code>listen()</code> at import time</strong> — export <code>start(port)</code>; tests need <code>start(0)</code> and parallelism.</li>
+  <li><strong>Unique data per run</strong> (<code>Date.now()</code> emails) beats elaborate before/after cleanup fixtures at this scale.</li>
+  <li><strong>Unit caught the character, integration caught the hole</strong> — you need both zoom levels; don't pick a favorite.</li>
+  <li><strong>Coverage is a weak target</strong> — 100% covered code can still be wrong (tests that assert nothing count as covered). Test behaviors, not lines.</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons/0008-testing-the-api.html">← Lesson 08</a> · Next up: Deployment &amp; Config (Lesson 09) · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/testing-first-aid.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>
