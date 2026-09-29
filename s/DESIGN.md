@@ -53,7 +53,7 @@ features (copy this file from an existing course; only the KEY differs):
 4. **Section anchors** — `h2`/`h3` direct children of `.sheet` /
    `.container` get slug ids + hover `#` anchor links (CJK-safe slugs).
 5. **TOC scroll-spy + keyboard navigation** — pages with ≥3 `h2`s get
-   a fixed `.toc` "On this page" nav (viewport ≥75rem only); ←/→ keys
+   a fixed `.mini-toc` "On this page" nav (viewport ≥75rem only); ←/→ keys
    jump to prev/next lesson, with the order derived from the course
    TOC (`0000-table-of-contents.html` in the same directory), so
    footers don't need prev/next links.
@@ -146,11 +146,18 @@ Shared class contract — same class = same behaviour in every course:
 - `.ref` — reference-doc density: `.ref .card`, `.ref table`
 - `.card` — bordered surface panel (index/TOC sections)
 - `.footer`, `.nav-next` / `.footer .next` — footer + next-lesson link
-- `.theme-toggle`, `.progress-bar` — injected by theme.js, restyled
-  per family but same class names
+- `.theme-toggle`, `.progress-bar`, `.mini-toc` — injected by theme.js,
+  restyled per family but same class names
 - `.pre-wrap` / `.copy-btn` — code block wrapper + copy button
 - `.anchor` — hover `#` link inside section headings
-- `.toc` — scroll-spy "On this page" nav (≥75rem viewports only)
+- `.toc` — the course-index page's own lesson list (`ol.toc`)
+
+⚠️ **Reserved names**: `.mini-toc` (+ `.mini-toc-title`) belongs to the
+theme.js floating widget; `.toc` belongs to the index page's lesson
+list. They are NOT interchangeable — styling `.toc` as `position:
+fixed` pins the index page's whole lesson list to the top-right (and
+`display: none` hides it on mobile). This collision shipped once
+(2026-09-29); keep the two names apart in every course.
 
 ## Print
 

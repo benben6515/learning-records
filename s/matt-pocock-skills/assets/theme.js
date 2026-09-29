@@ -136,10 +136,10 @@
     var h2s = Array.prototype.filter.call(headings, function (h) { return h.tagName === "H2"; });
     if (h2s.length < 3) return;
     var nav = document.createElement("nav");
-    nav.className = "toc";
+    nav.className = "mini-toc";
     nav.setAttribute("aria-label", "On this page");
     var title = document.createElement("p");
-    title.className = "toc-title";
+    title.className = "mini-toc-title";
     title.textContent = "On this page";
     var ul = document.createElement("ul");
     h2s.forEach(function (h) {
