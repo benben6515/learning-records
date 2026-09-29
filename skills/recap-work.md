@@ -29,6 +29,8 @@ Summarize GitHub commits for the authenticated user into a grouped recap, then s
    gh api "users/$GH_USER/events?per_page=100"
    ```
 
+   The Events API only covers the last ~90 days (and caps at 300 events). An older TARGET_DATE returns empty and mimics the clean-skip path — confirm the date is in range before trusting "No commits found".
+
 4. Filter for `PushEvent` where `created_at` starts with TARGET_DATE **and** — if GH_ORG is set — `.repo.name` starts with `GH_ORG/`. For each match extract:
    - `.repo.name` (full name, e.g. `org/repo`)
    - `.payload.before` and `.payload.head` (the SHA range)
@@ -85,6 +87,5 @@ Summarize GitHub commits for the authenticated user into a grouped recap, then s
 
 - Repo name without the owner prefix (`repo`, not `org/repo`).
 - First line of each commit message only; strip conventional-commit prefixes (`feat:`, `fix:`, `chore:`, …).
-- Repos alphabetical; commits by lines changed descending (recency tiebreak); 3 per repo + overflow line.
 - Deduplicate by SHA (same SHA can appear in multiple push events).
 - No commits → no file.

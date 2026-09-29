@@ -1,5 +1,5 @@
 ---
-description: Calculate the current lines of code changes (staged + unstaged) in the repo
+description: Count uncommitted code changes in the repo (staged + unstaged lines). Use when asked how many lines changed, for diff stats, or WIP size.
 ---
 
 Calculate and display the current lines of code changes in the working tree (uncommitted changes only).
