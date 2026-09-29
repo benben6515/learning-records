@@ -25,7 +25,8 @@
 - **L07 — Auth: sessions vs tokens**: scrypt hash+salt+timingSafeEqual (async), sessions table + sid cookie (HttpOnly/SameSite/Max-Age), register 23505→409, identical 401s (no enumeration), 401 vs 403 contract, authorization as WHERE user_id scoping, JWT decode-by-hand + trade-off table. server7 verified with 11-case curl suite (two users, cross-user 403, logout revocation). ✅ shipped (2026-09-10, EN+TW; reference `auth-first-aid` EN+TW). Note: user's Vite dev server occupies port 3000 — verified on 3999 instead; drill carries an EADDRINUSE note.
 - **L08 — Testing the API**: integration tests against real Postgres, red-green-refactor. ⏳ next
 - Later: config/secrets, testing the API, deployment, caching, queues.
-- Reference docs: `reference/http-anatomy.html` (L01), `reference/event-loop.html` (L02), `reference/minimal-node-api.html` (L03 skeleton — L05 will extend it with a DB) — all mirrored in `reference-tw/`.
+- Reference docs: `reference/http-anatomy.html` (L01), `reference/event-loop.html` (L02), `reference/minimal-node-api.html` (L03 skeleton) — all mirrored in `reference-tw/`.
+- Practice artifacts live in `practice/` (user-owned; `.env` untracked, local dev creds only). All L01–L07 drills evidenced there (2026-09-29); user refactored helpers into `utils/` on own initiative. L08 opener: their `getSid` has a `startsWith("sid")` bug — build the test that catches it (don't fix it for them).
 - Reusable components in `assets/`: `style.css` (+ code/terminal/table styles + `.tok-*` syntax tokens), `theme.js`, `quiz.js`, `checklist.js`, `highlight.js` (zero-dep JS syntax highlighter, 2026-08-28: auto-detects `pre > code` JS blocks, stashes existing `<span class="c">`/entities as placeholders so nothing breaks; linked on all lessons + reference pages).
 
 ## Workspace conventions (match `s/english/`)
