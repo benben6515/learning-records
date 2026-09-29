@@ -19,3 +19,7 @@ _Avoid_: slow, heavy — those are causes; blocking is the effect on the loop
 **Idempotency（冪等）**:
 The property that N identical requests leave the same state as one — what makes retries safe. In our API it lives in where the id comes from: PUT takes it from the URL (converges), POST mints it with `nextId++` (duplicates).
 _Avoid_: 冪升 (typo), "safe" — safe means read-only; idempotent means retry-safe
+
+**Authentication（驗證）vs Authorization（授權）**:
+Authentication = do you have a keycard (401 when you don't — go log in). Authorization = where that keycard opens (403 when it's not your door — stop retrying). In server7: session lookup vs `user_id` scoping.
+_Avoid_: swapping the two; "auth" alone when the distinction matters; authenication (spelling)

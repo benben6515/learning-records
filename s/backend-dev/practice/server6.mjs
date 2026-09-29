@@ -6,7 +6,7 @@ const getNotes = async (_req, res) => json(res, 200, await q.list())
 
 async function getNoteById(_req, res, p) {
   const note = await q.get(Number(p.id))
-  if (!note) return fail(res, 404, "not found", "note note found")
+  if (!note) return fail(res, 404, "NOT_FOUND", "note not found")
   return json(res, 200, note)
 }
 
@@ -28,8 +28,8 @@ async function postNote(req, res) {
 async function putNoteById(req, res, p) {
   const id = Number(p.id)
   const note = parseJson(await readBody(req))
-  if (note === null) return fail(res, 400, "bad json", "body is not valid JSON")
-  if (!note.title) return fail(res, 400, "validation", "title is required")
+  if (note === null) return fail(res, 400, "BAD_JSON", "body is not valid JSON")
+  if (!note?.title) return fail(res, 400, "VALIDATION", "title is required")
   const existed = await q.has(id)
   await q.upsert(id, note.title)
   return json(res, existed ? 200 : 201, note, { location: `/notes/${id}` })
@@ -62,20 +62,20 @@ const app = createServer(async (req, res) => {
   try {
     const allowed = new Set()
     for (const route of compiled) {
-      if (!route.regex.test(pathname)) continue
+      const match = route.regex.exec(pathname)
+      if (!match) continue
       allowed.add(route.method)
       if (req.method !== route.method) continue
-      const match = pathname.match(toRegex(route.pattern))
-      if (match) return route.handler(req, res, match.groups ?? {})
+      return route.handler(req, res, match.groups ?? {})
     }
     if (allowed.size) {
       const allow = [...allowed].sort().join(", ")
-      return fail(res, 405, "method no allowed", `allowed: ${allow}`)
+      return fail(res, 405, "METHOD_NOT_ALLOWED", `allowed: ${allow}`)
     }
     return fail(res, 404, "NOT_FOUND", "no such path")
   } catch (err) {
     console.error(err)
-    return fail(res, 500, "INTERNAL", 'interal error')
+    return fail(res, 500, "INTERNAL", "internal error")
   }
 })
 

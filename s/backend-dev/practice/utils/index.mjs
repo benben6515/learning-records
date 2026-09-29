@@ -6,8 +6,8 @@ export function readBody(req) {
   })
 }
 
-export function json(res, status, data) {
-  res.writeHead(status, { "Content-Type": "application/json" })
+export function json(res, status, data, headers = {}) {
+  res.writeHead(status, { "Content-Type": "application/json", ...headers })
   res.end(data === undefined ? "" : JSON.stringify(data))
 }
 
