@@ -18,3 +18,8 @@ export function parseJson(raw) {
 export function fail(res, status, code, message, headers = {}) {
   json(res, status, { error: { code, message } }, headers)
 }
+
+export function getSid(req) {
+  return (req.headers.cookie || "").split("; ").find(c => c.startsWith("sid="))?.slice(4);
+}
+

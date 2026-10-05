@@ -83,20 +83,30 @@ async function logout(req, res) {
 
 // ----- auth end -----
 
-const getNotes = async (_req, res) => json(res, 200, await q.list())
+const getNotes = async (req, res) => {
+  const me = await getUser(req)
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first")
+  const userId = me.id
+  return json(res, 200, await q.listByUserId(userId))
+}
 
-async function getNoteById(_req, res, p) {
+async function getNoteById(req, res, p) {
+  const me = await getUser(req)
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first")
   const note = await q.get(Number(p.id))
   if (!note) return fail(res, 404, "NOT_FOUND", "note not found")
+  if (note.user_id !== me.id) return fail(res, 403, "FORBIDDEN", "not your note")
   return json(res, 200, note)
 }
 
 async function postNote(req, res) {
+  const me = await getUser(req)
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first")
   const note = parseJson(await readBody(req))
   if (note === null) return fail(res, 400, "BAD_JSON", "body is not json")
   if (!note?.title) return fail(res, 400, "VALIDATION", "title is required")
   try {
-    const created = await q.insert(note.title)
+    const created = await q.insert(note.title, me.id)
     return json(res, 201, created, { location: `/notes/${created.id}` })
   } catch (error) {
     console.error(error)
@@ -166,6 +176,15 @@ const app = createServer(async (req, res) => {
   }
 })
 
-app.listen(3322, () => {
-  console.log('server is running')
-})
+import { pathToFileURL } from 'node:url'
+
+const PORT = 3322
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  app.listen(PORT, () => {
+    console.log('server is running')
+  })
+}
+
+export function start(port = PORT) {
+  return new Promise(resolve => app.listen(port, () => resolve(app)))
+}
