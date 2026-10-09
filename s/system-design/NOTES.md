@@ -17,7 +17,7 @@
 - Interview skills are spoken skills — every phase includes out-loud narration drills.
 
 ## Source discipline
-- Grounding text: **ByteByteGo Big Archive 2025 PDF** (local: `~/Downloads/10-todo/Bytebytego_Big_Archive_System_Design_2025.pdf`, 442 pp). Lessons cite page numbers, e.g. （PDF p.162）. **Never copy archive images/content into the repo** (public on GitHub Pages) — cite pages, recreate diagrams as pure-CSS `.flow`.
+- Grounding text: **ByteByteGo Big Archive — System Design, 2025 edition** (442 pp; public access via [blog.bytebytego.com](https://blog.bytebytego.com) / [bytebytego.com](https://bytebytego.com) — see `RESOURCES.md`). Lessons cite page numbers, e.g. （PDF p.162）. **Never copy archive images/content into the repo** (public on GitHub Pages) — cite pages, recreate diagrams as pure-CSS `.flow`.
 - External spine: System Design Primer (primary source for the method), Alex Xu Vol. 1, DDIA (chapter-level), latency-numbers table. See `RESOURCES.md`.
 - PDF is ~40% off-topic (AI stacks, career lists) — Phase 1–4 ignore those; Phase 5 pulls the infra/DevOps pages (Docker/K8s/CI-CD) per learner's choice.
 

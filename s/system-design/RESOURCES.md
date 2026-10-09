@@ -2,8 +2,8 @@
 
 ## Knowledge
 
-- **Local: ByteByteGo Big Archive — System Design 2025** (`~/Downloads/10-todo/Bytebytego_Big_Archive_System_Design_2025.pdf`, 442 pp)
-  The course's visual companion — 200+ one-pager explainers from ByteByteGo (Alex Xu's team). Lessons cite exact pages, e.g. the System Design Topic Map (p.162), Top 20 System Design Concepts (p.134). It is a **magazine archive, not a curriculum** — read the cited pages, never cover-to-cover; ~40% is off-topic (AI stacks, career lists). `reference/interview-blueprint.html` keeps the page index for Phase 1.
+- **ByteByteGo Big Archive — System Design (2025 edition, 442 pp)**
+  The course's visual companion — 200+ one-pager explainers from ByteByteGo (Alex Xu's team). Lessons cite exact pages, e.g. the System Design Topic Map (p.162), Top 20 System Design Concepts (p.134) — page numbers refer to the 2025 edition. It is a **magazine archive, not a curriculum** — read the cited pages, never cover-to-cover; ~40% is off-topic (AI stacks, career lists). `reference/interview-blueprint.html` keeps the page index for Phase 1. Public access: every post is free on [blog.bytebytego.com](https://blog.bytebytego.com), searchable by article title (the index in the reference sheet lists titles + pages for exactly this). ByteByteGo's free official archive PDF direct link is the [2023 edition](https://assets.bytebytego.com/ByteByteGo-Big-Archive-System-Design-2023.pdf) — an older compilation, so page numbers differ from our citations; later editions (incl. 2025) circulate via the [ByteByteGo newsletter](https://bytebytego.com).
 - [System Design Primer (donnemartin, GitHub)](https://github.com/donnemartin/system-design-primer)
   The canonical open-source interview-prep repo. Its step-by-step guide is the origin of our 4-step blueprint. Use as: the spine reference — every lesson maps to a section here.
 - [ByteByteGo blog](https://blog.bytebytego.com/)
