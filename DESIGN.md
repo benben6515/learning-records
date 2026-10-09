@@ -87,15 +87,32 @@ No shadow, no transform (per system).
 
 ## How to add a new card
 
-1. Pick an **inline SVG icon** (~18px, `fill="currentColor"` or stroke-based).
-   Wrap it in `<div class="card-icon">…</div>`.
-2. Copy the `.card` block above, set `href`, fill `.card-title` + `.card-desc`.
-   Add `.card-host` only if the destination URL is worth showing.
-3. Drop it inside `<div class="cards">`. The 2-col grid lays it out
-   automatically; rows fill top-to-bottom, left-to-right.
-4. Keep one idea per card. If a section grows past ~6 cards, introduce a
-   `<p class="section-label">// SECTION NAME</p>` label above a new `.cards`
-   block and split content by category (Courses / Languages / Tools / Research).
+Cards render from the **`COURSES` const** — the inline script at the bottom of
+`<body>` in `index.html`. Never hand-write `<a.card>` markup.
+
+1. Open `index.html`, find `const COURSES = [...]`, and append one entry:
+
+   ```js
+   {
+     slug: 'my-course',            // = the s/<slug>/ directory name
+     title: 'My Course',           // 16px / 600 / ink
+     desc: 'One sentence.',        // 13.5px; escape & as &amp;
+     icon: '<rect …/><path …/>',   // inner markup of a 24×24 stroke SVG
+   }
+   ```
+
+2. `href` (`/s/<slug>/`) and the host line (`learning.benben.me/s/<slug>`)
+   derive from `slug` automatically. The SVG wrapper
+   (`viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"`)
+   is provided by the template — `icon` holds only inner elements
+   (~18px rendered, stroke-based).
+3. Grid placement is automatic (2-col, rows fill left-to-right). Keep one
+   idea per card. If a section grows past ~6 cards, split it: a new
+   `<p class="section-label">// SECTION NAME</p>` above a new `.cards`
+   block, and a second array + render call (Courses / Languages / Tools /
+   Research).
+4. **Sync the registry:** add a row for the course in `s/NOTES.md` — the
+   landing const and that registry must agree on what exists.
 
 ## Responsive
 
@@ -109,7 +126,8 @@ No shadow, no transform (per system).
 ## Decisions
 
 - **Single file, no build.** CSS + SVG inlined; Inter from Google Fonts. Works
-  directly on GitHub Pages (`.nojekyll` present).
+  directly on GitHub Pages (`.nojekyll` present). Card content is data (the
+  `COURSES` const), not markup — adding a course is one array entry.
 - **Horizontal cards** (icon left, content right) chosen over vertical for
   density — minimizes vertical footprint so many cards fit as the site grows.
 - **Wordmark links to `benben.me`** (personal brand hub), not the repo.
