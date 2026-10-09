@@ -3,7 +3,7 @@
 > The inventory of every course under `s/`: what it is, where it stands, and
 > the knobs that must stay consistent across the family. **Adding a course
 > means touching exactly two files: one entry in the `COURSES` const (root
-> `index.html`) + one row here.** Per-course teaching details live in each
+> `courses.js`) + one row here.** Per-course teaching details live in each
 > course's own `NOTES.md`.
 
 ## Family-wide conventions

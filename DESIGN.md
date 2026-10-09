@@ -87,10 +87,11 @@ No shadow, no transform (per system).
 
 ## How to add a new card
 
-Cards render from the **`COURSES` const** — the inline script at the bottom of
-`<body>` in `index.html`. Never hand-write `<a.card>` markup.
+Cards render from the **`COURSES` const** in `courses.js` (root, next to
+`index.html`; loaded at the end of `<body>`). The file owns both the data
+and the render — never hand-write `<a.card>` markup in `index.html`.
 
-1. Open `index.html`, find `const COURSES = [...]`, and append one entry:
+1. Open `courses.js`, find `const COURSES = [...]`, and append one entry:
 
    ```js
    {
@@ -125,9 +126,10 @@ Cards render from the **`COURSES` const** — the inline script at the bottom of
 
 ## Decisions
 
-- **Single file, no build.** CSS + SVG inlined; Inter from Google Fonts. Works
-  directly on GitHub Pages (`.nojekyll` present). Card content is data (the
-  `COURSES` const), not markup — adding a course is one array entry.
+- **No build, one data file.** CSS inlined; Inter from Google Fonts; card
+  content lives as data in `courses.js` (`const COURSES` + render) so adding
+  a course is one array entry and `index.html` carries no script. Works
+  directly on GitHub Pages (`.nojekyll` present).
 - **Horizontal cards** (icon left, content right) chosen over vertical for
   density — minimizes vertical footprint so many cards fit as the site grows.
 - **Wordmark links to `benben.me`** (personal brand hub), not the repo.
