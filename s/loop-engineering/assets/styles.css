@@ -264,6 +264,7 @@ li::marker { color: var(--muted); }
   border: 1px solid var(--ink-soft);
   border-radius: 5px;
   padding: 0.5rem 0.9rem;
+  margin: 0.25rem 0;
   font-size: 0.82rem;
   background: var(--paper);
   color: var(--ink);
@@ -388,7 +389,7 @@ td code { white-space: nowrap; }
   th, td { min-width: 6rem; }
   .quiz { padding: 1rem 1.05rem; }
   .quiz-opt { padding: 0.55rem 0.6rem; }
-  .flow .stage { padding: 0.45rem 0.7rem; font-size: 0.78rem; margin: 0.25rem 0; }
+  .flow .stage { padding: 0.45rem 0.7rem; font-size: 0.78rem; }
 }
 
 /* =========================================================================
