@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>面試藍圖 — System Design, Interview Ready</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 01</p>
+<h1>面試藍圖</h1>
+<p class="lead">整套方法壓縮在一張卡裡：45 分鐘的時間預算、四個步驟各自必須回答的問題、面試官的評分表，以及 ByteByteGo 檔案庫的頁碼索引。取材自 <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a> 的做法與檔案庫 p.162／p.134。印出來，然後照著我排練。</p>
+
+<h2>時鐘</h2>
+<div class="flow">
+  <div class="row">
+    <span class="stage accent">需求 — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">估算 — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">高層設計 — 15′</span><span class="arrow">→</span>
+    <span class="stage accent">深潛 — 20′</span>
+  </div>
+  <div class="under">大約如此。可以刻意在步驟之間挪動分鐘，但絕不能悄悄地挪。</div>
+</div>
+
+<h2>四個步驟——以及每一步必須回答的問題</h2>
+<table>
+  <thead><tr><th>步驟</th><th>你在回答……</th><th>照這樣說</th></tr></thead>
+  <tbody>
+    <tr><td>1 · 需求</td><td>「我們在做什麼、給誰用、多大規模？」</td><td>「兩個功能：__ 和 __。假設 __ DAU、讀多寫少——請糾正我。」</td></tr>
+    <tr><td>2 · 估算</td><td>「它有多大？到數量級即可。」</td><td>「1000 萬 DAU ≈ 寫 100 QPS、讀 1 萬 QPS——所以 __。」</td></tr>
+    <tr><td>3 · 高層設計</td><td>「方塊有哪些？一個請求怎麼流過去？」</td><td>「跟我走一遍：使用者做 __，打到 __，再到 __。」</td></tr>
+    <tr><td>4 · 深潛</td><td>「這個方塊的成本是什麼？什麼會先壞？」</td><td>「這裡我選 __ 而非 __——買到 __，代價是 __。」</td></tr>
+  </tbody>
+</table>
+
+<h2>需求清單（第 1 步的提問）</h2>
+<ul>
+  <li><strong>功能需求（挑 2–3 個，其餘當場說出「先不做」）：</strong>使用者<em>做什麼</em>？面試真正在考的是哪個功能？</li>
+  <li><strong>非功能需求：</strong>規模（DAU）、讀寫比、延遲目標、一致性需求（複本可以服務這個讀嗎？）、可用性門檻。</li>
+  <li><strong>該說出口的假設：</strong>流量地理分布、成長率、明確不做什麼（「不做帳務——同意嗎？」）。</li>
+</ul>
+
+<h2>面試官的評分表</h2>
+<table>
+  <thead><tr><th>訊號</th><th>過關長相</th><th>破功長相</th></tr></thead>
+  <tbody>
+    <tr><td>界定範圍</td><td>先問，然後把假設說出口</td><td>第一分鐘就開始畫圖</td></tr>
+    <tr><td>估算</td><td>數量級，用算的</td><td>引用數字卻推不出來</td></tr>
+    <tr><td>資料流</td><td>一個請求走完全程</td><td>靜態方塊，沒有故事流過</td></tr>
+    <tr><td>取捨流暢度</td><td>每個選擇都有具名代價</td><td>「我們會用 Kafka」但沒有為什麼</td></tr>
+    <tr><td>按需深入</td><td>乾淨地鑽進單一方塊</td><td>把總覽講得更大聲</td></tr>
+  </tbody>
+</table>
+
+<h2>唯一值得背起來的一句話</h2>
+<p class="callout"><span class="label">取捨句型</span>「這裡我會選 <strong>X</strong> 而不是 <strong>Y</strong>，因為我在買<em>這個性質</em>，代價是<em>那個性質</em>——而在這題裡，這個代價值得付。」你畫的每個方塊，都應該能用這個句型講出來。</p>
+
+<h2>第一階段頁碼索引——ByteByteGo 檔案庫（2025 PDF）</h2>
+<table>
+  <thead><tr><th>主題</th><th>頁碼</th><th>課程</th></tr></thead>
+  <tbody>
+    <tr><td>System Design Topic Map · 20 個核心概念 · 一張圖看 8 個概念</td><td>p.162 · p.134 · p.248</td><td>01、08</td></tr>
+    <tr><td>架構可擴展性速成 · 生產級 web app 的 10 個必要元件</td><td>p.22 · p.34</td><td>03、08</td></tr>
+    <tr><td>Load balancers vs API gateways vs reverse proxy</td><td>p.312</td><td>03（L4/L7）、12（gateway）</td></tr>
+    <tr><td>PostgreSQL 101 · 資料庫效能速查 · SQL 查詢執行</td><td>p.63 · p.46 · p.202</td><td>04、13</td></tr>
+    <tr><td>系統設計面試 12 演算法（含一致性雜湊）· 省空間的 6 種資料結構</td><td>p.59 · p.212</td><td>05</td></tr>
+    <tr><td>資料快取在哪裡？· 快取系統怎麼出錯 · Redis vs Memcached</td><td>p.301 · p.246 · p.97</td><td>06</td></tr>
+    <tr><td>Kafka 怎麼運作 · RabbitMQ · SQS vs SNS vs EventBridge vs Kinesis</td><td>p.310 · p.206 · p.69</td><td>09</td></tr>
+    <tr><td>gRPC · HTTP/1 → HTTP/2 → HTTP/3</td><td>p.12 · p.79</td><td>12</td></tr>
+    <tr><td>Netflix 分散式計數器 · Airbnb 演進 · Netflix 擴展史 ·「像 Instagram 一樣設計」</td><td>p.114/190 · p.57 · p.258 · p.89</td><td>16、22、19</td></tr>
+  </tbody>
+</table>
+<p class="small muted">只讀頁碼，不讀整本——約四成內容離題。每課推出時會標上自己的頁碼引註；這張索引隨課程長大。</p>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0001-interview-blueprint.html">← 第 01 課</a> · 下一張：粗略估算（第 02 課）· <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/interview-blueprint.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

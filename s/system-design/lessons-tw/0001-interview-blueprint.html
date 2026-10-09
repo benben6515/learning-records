@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 01 課 · 45 分鐘藍圖 — System Design, Interview Ready</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 01 課 · 方法</p>
+<h1>45 分鐘藍圖</h1>
+<p class="lead">你已經能寫出一個可以一路解釋到 <code>node:http</code> 的伺服器——整整八課的份。面試不會考你這個。它會丟給你一個產品名稱，加上 45 分鐘的濃霧，然後評分<em>你在霧裡如何自處</em>。今天：把濃霧變成時刻表的藍圖。</p>
+<p class="badges">
+  <span class="badge">約 30 分鐘</span>
+  <span class="badge">方法</span>
+  <span class="badge">口說</span>
+</p>
+
+<h2>面試官到底在評分什麼</h2>
+<p>沒有人期待你重現 Instagram 真正的線上架構圖——出題問「設計 Instagram」的面試官自己也畫不出來。他們探的是<strong>模糊之下的結構化思考</strong>：你是先問還是先畫？你方塊背後的數字經得起算嗎？被逼進單一元件時，你能否深入——還是只是把總覽講得更大聲？<a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a> 說得很直白：面試官評的是你<em>怎麼</em>解決問題，不是你背得出什麼<em>最終解法</em>。這是好消息：方法可以練。背下來的圖不行——追問永遠找得到背誦的邊界。</p>
+
+<h2>核心觀念</h2>
+<p><strong>面試評的是方法，不是最後那張圖——而方法有四個拍子，各帶時間預算。</strong>把時鐘從面試官手上偷過來：大約 5 分鐘需求、5 分鐘估算、15 分鐘高層設計、20 分鐘深潛。這些階段不是官僚流程；每一拍的存在都是為了讓下一拍安全（PDF：<a href="../RESOURCES.md">ByteByteGo 檔案庫</a> p.162——System Design Topic Map；p.134——本課程將逐階段走過的 20 個核心概念）。</p>
+
+<div class="flow">
+  <div class="row">
+    <span class="stage accent">1 · 需求 — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">2 · 估算 — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">3 · 高層設計 — 15′</span><span class="arrow">→</span>
+    <span class="stage accent">4 · 深潛 — 20′</span>
+  </div>
+  <div class="branch">從第 4 步起，面試官掌舵——他指向哪個方塊，就深入哪個</div>
+  <div class="under">訊號勝過完整：一張守得住的半成品圖，勝過一張無法解釋的完整圖。</div>
+</div>
+
+<ol>
+  <li><strong>需求與範圍（requirements &amp; scope，5′）。</strong>用自己的話複述題目，然後釘死<em>功能</em>範圍——你要設計的 2–3 個核心功能——和<em>非功能</em>範圍：多少用戶（DAU）、讀寫比、延遲目標、一致性需求。把假設<em>說出口</em>，讓面試官便宜地糾正你：「我假設 1000 萬 DAU、讀多寫少——請糾正我。」</li>
+  <li><strong>粗略估算（back-of-envelope estimation，5′）。</strong>從 DAU 推出各個數量級：QPS（讀、寫分開算）、每天新增儲存量、快取需要多少記憶體。用 2 的冪、整數、零位數表演——重點是<em>量級正確</em>，不是小數點。完整練習下一課。</li>
+  <li><strong>高層設計（high-level design，15′）。</strong>畫出方塊：client → DNS/CDN → 負載平衡器（load balancer）→ 應用伺服器 → 資料庫、快取、佇列（queue）按需登場。然後做出區分候選人的那一步：<strong>把一個具體請求沿著你自己的圖從頭走到尾</strong>——就是你 curl → 路由 → SQL 的走法，只是這次講給陌生人聽。</li>
+  <li><strong>深潛與取捨（deep dives &amp; trade-offs，20′）。</strong>面試官挑一個方塊說「再深入」——分片？快取失效？熱 key？贏的句型永遠一樣：<em>「這裡我選 X 而不是 Y，因為我在買 ___，代價是 ___。」</em>每個設計選擇都在拿什麼換什麼；把交換說出來，就是這份工作。</li>
+</ol>
+
+<h2>面試官評什麼——以及你已經擁有哪些</h2>
+<p>下面的評分表是 System Design Primer、Alex Xu 的框架、與各家 rubrics 的公約數。右欄最重要：這不是你的第一門技能課——評分表有一半已經在你手上，來自 <a href="https://learning.benben.me/s/backend-dev/">Backend Fluency</a>。</p>
+<table>
+  <thead><tr><th>訊號</th><th>長什麼樣</th><th>你從哪裡已經擁有</th></tr></thead>
+  <tbody>
+    <tr><td>界定範圍</td><td>先問再畫；假設說出口</td><td>L04——寫程式前先釘死行為</td></tr>
+    <tr><td>估算</td><td>數量級正確，用算的不是用背的</td><td>L02——計時實驗、讀懂數字</td></tr>
+    <tr><td>資料流</td><td>一個請求沿著圖走完全程</td><td>L01–L03——curl → handler → response，零魔法</td></tr>
+    <tr><td>取捨流暢度</td><td>每個方塊都有具名代價</td><td>L04–L07——冪等、401 vs 403、session vs token</td></tr>
+    <tr><td>按需深入</td><td>鑽進單一元件而不迷路</td><td>L05–L06——SQLite → Postgres：你換過一次資料層</td></tr>
+  </tbody>
+</table>
+<p>真正新的只有兩樣：<em>規模詞彙</em>（複製 replication、分片 sharding、快取 caching——本課程第一到三階段）與<em>口說、限時的形式</em>——所以這裡每課都以開口練習收尾，不只是閱讀。</p>
+
+<h2>示範一次骨架——短網址服務的四行版</h2>
+<p>完整走一輪會是第四階段的總整課；這裡壓縮出現一次，證明藍圖裝得下任何題目。看同樣四拍如何撐起一個真答案：</p>
+<table>
+  <thead><tr><th>拍子</th><th>你產出什麼（草圖層級）</th></tr></thead>
+  <tbody>
+    <tr><td>需求</td><td>兩個功能：縮短長網址、快速轉址；帳號／分析當場說出「先不做」。假設每月 1000 萬條新連結、讀多寫少約 100:1。</td></tr>
+    <tr><td>估算</td><td>約 4 寫/s、約 400 讀/s——一台還過得去的伺服器今天就撐得住；但要為成長設計，不為這個數字。</td></tr>
+    <tr><td>高層設計</td><td>client → LB → 極小的應用層 → <em>唯一 ID 服務</em>（計數器＋base62）→ key-value store；熱門連結前面放快取。</td></tr>
+    <tr><td>深潛</td><td>為什麼不直接 hash 網址（碰撞）· 301 vs 302 的取捨 · 一條連結爆紅時什麼先壞（熱 key → 快取它）。</td></tr>
+  </tbody>
+</table>
+<p>注意估算<em>故意</em>證明了系統很小——然後設計照樣往下做，因為面試官評的是你對成長的判斷力，不是今天的流量。這一步——<strong>「先算出來，再設計著穿越它」</strong>——比任何背來的圖都值錢。</p>
+
+<h2>實戰練習——紙上排練方法，然後開口</h2>
+<div class="task">
+  <span class="label">動手做 · 15 分鐘，只用紙筆</span>
+  <ul class="checklist" data-store="sd-l01-drill-tw">
+    <li><span class="box"></span><span class="txt">翻開檔案庫讀兩頁，畫地形圖式地讀、不做筆記：System Design Topic Map（p.162）與 20 個核心概念（p.134）——你是在跟未來的課程見面，不是在讀書</span></li>
+    <li><span class="box"></span><span class="txt">挑一個你今天用過的 app（X、Spotify、Uber）。寫下：2 個功能需求、2 個非功能需求、1 個說出口的假設。三分鐘。</span></li>
+    <li><span class="box"></span><span class="txt">為「設計一個 pastebin」寫四步驟骨架：四個標題、各一條 bullet。最多十行——紀律就在簡短裡。</span></li>
+    <li><span class="box"></span><span class="txt">手機計時，3 分鐘內把骨架<em>講出來</em>。面試是口說的；這塊肌肉跟寫字那塊是分開的。</span></li>
+    <li><span class="box"></span><span class="txt">把摩擦帶來問 agent（我）：骨架哪裡讓你覺得武斷？哪一步像在拖時間？那份不舒服才是真正的課綱。</span></li>
+  </ul>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——先定範圍，否則後面每個方塊都在回答錯的問題。" data-wrong="不盡然——正確答案已標出。">
+  <q>藍圖一開始的幾分鐘要花在——</q>
+  <div class="options">
+    <button class="opt">需求：要做什麼、為誰而做</button>
+    <button class="opt">估算：流量究竟會有多大</button>
+    <button class="opt">架構：要先畫哪幾個方塊</button>
+    <button class="opt">深潛：資料庫該如何分片</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——方法才是產品，方塊圖只是它的廢氣。" data-wrong="不盡然——正確答案已標出。">
+  <q>面試官最主要評分的對象是——</q>
+  <div class="options">
+    <button class="opt">你面對模糊時的方法論</button>
+    <button class="opt">你背過大公司的架構圖</button>
+    <button class="opt">你畫出的方塊完整程度</button>
+    <button class="opt">你順口提到的框架名稱</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——數量級讓設計誠實，僅此而已。" data-wrong="不盡然——正確答案已標出。">
+  <q>粗略估算（back-of-envelope）的存在主要是為了——</q>
+  <div class="options">
+    <button class="opt">畫方塊前先對規模有感覺</button>
+    <button class="opt">證明你背過業界精確數字</button>
+    <button class="opt">預測每次資料庫呼叫延遲</button>
+    <button class="opt">拖到時間用完才開始畫圖</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——具名的取捨才是產品，沉默就是破綻。" data-wrong="不盡然——正確答案已標出。">
+  <q>沒有說出取捨的設計選擇是——</q>
+  <div class="options">
+    <button class="opt">一個還沒有答完的答案</button>
+    <button class="opt">一個細節滿滿的完成品</button>
+    <button class="opt">一個資深面試官的保證</button>
+    <button class="opt">一個該多畫方塊的訊號</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a>——只讀「How to approach a system design interview question」（README 的 step 1）；你現在已經從內部認得那四拍了。然後帶著藍圖重掃檔案庫的 Topic Map（p.162）：那張圖上每個節點，都是未來某一課的某個方塊。想先用影片定向，<a href="https://www.youtube.com/@ByteByteGo">ByteByteGo 的頻道</a>把同樣素材做成動畫——看一支，然後回來。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 02 課——<em>粗略估算</em>：2 的冪、延遲階梯，以及從一個 DAU 數字推出 QPS、儲存與快取記憶體。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——5/5/15/20 的時間分配為什麼這樣切、什麼時候該反抗、不同層級公司的真實面試差在哪、「我會用 Kafka」這句話什麼時候才有用、或骨架裡任何還霧著的地方——都歡迎。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/interview-blueprint.html">面試藍圖</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0001-interview-blueprint.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

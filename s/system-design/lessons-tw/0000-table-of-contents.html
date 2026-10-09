@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>課程目錄 — 系統設計，面試就緒</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+<style>
+  .toc { list-style:none; padding:0; margin:1.5rem 0; }
+  .toc li { border-bottom:1px solid var(--rule); }
+  .toc li:first-child { border-top:1px solid var(--rule); }
+  .toc a, .toc .row { display:flex; gap:1rem; padding:0.9rem 0.55rem; align-items:baseline; }
+  .toc a { text-decoration:none; border-bottom:none; border-left:3px solid transparent; }
+  .toc a:hover { border-left-color:var(--accent); background:var(--surface-hover); }
+  .toc .num { font-family:var(--sans); font-size:1.4rem; font-weight:300; color:var(--accent); flex:0 0 2.6rem; line-height:1; }
+  .toc .meta { display:flex; flex-direction:column; gap:0.15rem; }
+  .toc .t { font-size:1.1rem; color:var(--ink); font-weight:600; }
+  .toc .s { font-size:0.92rem; color:var(--muted); font-style:italic; line-height:1.45; }
+  .toc .d { font-family:var(--sans); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); margin-top:0.15rem; }
+  .toc li.upcoming .num { color:var(--faint); }
+  .toc li.upcoming .t { color:var(--muted); }
+  .toc .tag { font-family:var(--sans); font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--warm); border:1px solid var(--warm-border); border-radius:9999px; padding:0.1rem 0.5rem; margin-left:0.4rem; vertical-align:middle; }
+</style>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">課程目錄</p>
+<h1>系統設計 — 課程目錄</h1>
+<p class="lead">面試就緒的系統設計，一次一課、每天約 30 分鐘：先學 45 分鐘的方法，再學它調用的核心積木，最後用案例驗收。以 ByteByteGo 檔案庫逐頁引註，System Design Primer 為主幹。</p>
+
+<h2>第一階段 — 擴展的故事</h2>
+<ol class="toc">
+  <li>
+    <a href="0001-interview-blueprint.html">
+      <span class="num">01</span>
+      <span class="meta">
+        <span class="t">45 分鐘藍圖</span>
+        <span class="s">面試官到底在評分什麼——以及把模糊題變成一場你主導的對話的四步驟方法。</span>
+        <span class="d">約 30 分鐘 · 方法 · 思考</span>
+      </span>
+    </a>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">02</span>
+      <span class="meta">
+        <span class="t">粗略估算（back-of-envelope）<span class="tag">排程中</span></span>
+        <span class="s">從一個 DAU 數字推出 QPS、儲存與快取記憶體——讓你畫的每個方塊都站得住的 2 的冪習慣。</span>
+        <span class="d">約 30 分鐘 · 估算 · 練習</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">03</span>
+      <span class="meta">
+        <span class="t">從一台伺服器到多台：負載平衡<span class="tag">排程中</span></span>
+        <span class="s">垂直擴展撞牆、水平擴展需要交通指揮——round-robin、least-connections、L4 vs L7，與無狀態化。</span>
+        <span class="d">約 35 分鐘 · 擴展 · 思考</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">04</span>
+      <span class="meta">
+        <span class="t">資料庫複製（replication）<span class="tag">排程中</span></span>
+        <span class="s">leader/follower、讀取複本，以及你從此簽下的複製延遲——先擴展讀取，寫入先不動。</span>
+        <span class="d">約 35 分鐘 · 資料 · 思考</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">05</span>
+      <span class="meta">
+        <span class="t">分片（sharding）與一致性雜湊<span class="tag">排程中</span></span>
+        <span class="s">當一顆磁碟裝不下資料：分片鍵、熱分片，以及讓重新分片不至于絕望的雜湊環。</span>
+        <span class="d">約 40 分鐘 · 資料 · 動手</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">06</span>
+      <span class="meta">
+        <span class="t">快取：層級、策略、失效模式<span class="tag">排程中</span></span>
+        <span class="s">cache-aside 和它的表親們；快取雪崩、快取穿透、快取驚群——快取怎麼出錯，以及為什麼（PDF p.246、p.301）。</span>
+        <span class="d">約 40 分鐘 · 快取 · 動手</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">07</span>
+      <span class="meta">
+        <span class="t">CAP 與一致性取捨<span class="tag">排程中</span></span>
+        <span class="s">強一致性 vs 最終一致性，網路分割不是假設題——不靠背定理、把取捨說出口的方法。</span>
+        <span class="d">約 35 分鐘 · 理論 · 話術</span>
+      </span>
+    </div>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">08</span>
+      <span class="meta">
+        <span class="t">CDN 與無狀態層：完整的故事<span class="tag">排程中</span></span>
+        <span class="s">把 02–07 課重組成「擴展到千萬用戶」的敘事——十分鐘畫得出來、四十五分鐘守得住。</span>
+        <span class="d">約 40 分鐘 · 綜合 · 話術</span>
+      </span>
+    </div>
+  </li>
+</ol>
+
+<p class="small muted">後續階段：<strong>II</strong>——非同步（訊息佇列、Kafka vs RabbitMQ、速率限制、API gateway vs reverse proxy、gRPC）· <strong>III</strong>——深潛（索引、SQL vs NoSQL、分散式 ID、即時通訊）· <strong>IV</strong>——案例總整（短網址、動態牆、聊天、Netflix/Airbnb）含模擬面試 · <strong>V</strong>——基礎設施素養（Docker/K8s、CI/CD）。排程中的課程會在推出時標上 ByteByteGo 檔案庫的頁碼引註。</p>
+
+<h2>參考卡</h2>
+<ul>
+  <li><a href="../reference-tw/interview-blueprint.html">面試藍圖</a>——45 分鐘的時間預算、四步驟各自該問的問題、面試官的評分表，以及第一階段的 ByteByteGo 頁碼索引。</li>
+</ul>
+
+<div class="footer">
+  <p><strong>關於本課程：</strong>目標、來源與詞彙見 <a href="../MISSION.md">Mission</a>、<a href="../RESOURCES.md">Resources</a>、<a href="../GLOSSARY.md">Glossary</a>。 · <a href="../index.html">↑ 課程首頁</a> · <a href="../lessons/0000-table-of-contents.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

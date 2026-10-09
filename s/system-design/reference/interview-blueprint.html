@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Interview Blueprint — System Design, Interview Ready</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 01</p>
+<h1>The Interview Blueprint</h1>
+<p class="lead">The whole method in one card: the 45-minute time budget, the four steps with the questions each one must answer, the interviewer's scorecard, and the page index into the ByteByteGo archive. Compressed from the <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a> approach and archive pp.162/134. Print me, then rehearse from me.</p>
+
+<h2>The clock</h2>
+<div class="flow">
+  <div class="row">
+    <span class="stage accent">Requirements — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">Estimation — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">High-level — 15′</span><span class="arrow">→</span>
+    <span class="stage accent">Deep dives — 20′</span>
+  </div>
+  <div class="under">Roughly. Move minutes between steps deliberately, never silently.</div>
+</div>
+
+<h2>The four steps — and the question each must answer</h2>
+<table>
+  <thead><tr><th>Step</th><th>You are answering…</th><th>Say it like this</th></tr></thead>
+  <tbody>
+    <tr><td>1 · Requirements</td><td>"What are we building, for whom, at what scale?"</td><td>"Two features: __ and __. Assume __ DAU, read-heavy — correct me."</td></tr>
+    <tr><td>2 · Estimation</td><td>"How big is it, to an order of magnitude?"</td><td>"10M DAU ≈ 100 QPS write, 10K read — so __."</td></tr>
+    <tr><td>3 · High-level</td><td>"What are the boxes, and how does one request flow?"</td><td>"Walk with me: a user does __, which hits __, then __."</td></tr>
+    <tr><td>4 · Deep dives</td><td>"What does this box cost, and what breaks first?"</td><td>"Here I'd pick __ over __ — buying __ at the price of __."</td></tr>
+  </tbody>
+</table>
+
+<h2>Requirements checklist (step 1 prompts)</h2>
+<ul>
+  <li><strong>Functional (pick 2–3, defer the rest aloud):</strong> what does the user <em>do</em>? Which feature is the interview really about?</li>
+  <li><strong>Non-functional:</strong> scale (DAU), read:write ratio, latency target, consistency needs (can a follower serve this?), availability bar.</li>
+  <li><strong>Assumptions to voice:</strong> traffic geography, growth rate, what's explicitly out of scope ("no billing — agreed?").</li>
+</ul>
+
+<h2>The interviewer's scorecard</h2>
+<table>
+  <thead><tr><th>Signal</th><th>Looks like</th><th>Fails like</th></tr></thead>
+  <tbody>
+    <tr><td>Scoping</td><td>asks, then states assumptions</td><td>starts drawing at minute one</td></tr>
+    <tr><td>Estimation</td><td>orders of magnitude, computed</td><td>quotes numbers with no derivation</td></tr>
+    <tr><td>Data flow</td><td>one request walked end-to-end</td><td>static boxes, no story through them</td></tr>
+    <tr><td>Trade-off fluency</td><td>every choice names its cost</td><td>"we'd use Kafka" with no why</td></tr>
+    <tr><td>Depth on demand</td><td>zooms into one box cleanly</td><td>repeats the overview, louder</td></tr>
+  </tbody>
+</table>
+
+<h2>The one sentence worth memorizing</h2>
+<p class="callout"><span class="label">The trade-off shape</span>"I'd choose <strong>X</strong> over <strong>Y</strong> here, because I'm buying <em>this property</em> at the price of <em>that property</em> — and in this problem, that price is worth paying." Every box you draw should be sayable in this shape.</p>
+
+<h2>Phase 1 page index — ByteByteGo archive (2025 PDF)</h2>
+<table>
+  <thead><tr><th>Topic</th><th>Pages</th><th>Lesson</th></tr></thead>
+  <tbody>
+    <tr><td>System Design Topic Map · Top 20 concepts · 8 concepts in 1 diagram</td><td>p.162 · p.134 · p.248</td><td>01, 08</td></tr>
+    <tr><td>Crash course on architectural scalability · 10 essential components of a production web app</td><td>p.22 · p.34</td><td>03, 08</td></tr>
+    <tr><td>Load balancers vs API gateways vs reverse proxy</td><td>p.312</td><td>03 (L4/L7), 12 (gateway)</td></tr>
+    <tr><td>PostgreSQL 101 · database performance cheat sheet · SQL query execution</td><td>p.63 · p.46 · p.202</td><td>04, 13</td></tr>
+    <tr><td>12 algorithms for system design interviews (incl. consistent hashing) · 6 data structures to save storage</td><td>p.59 · p.212</td><td>05</td></tr>
+    <tr><td>Where do we cache data? · how cache systems go wrong · Redis vs Memcached</td><td>p.301 · p.246 · p.97</td><td>06</td></tr>
+    <tr><td>How Kafka works · RabbitMQ · SQS vs SNS vs EventBridge vs Kinesis</td><td>p.310 · p.206 · p.69</td><td>09</td></tr>
+    <tr><td>gRPC · HTTP/1 → HTTP/2 → HTTP/3</td><td>p.12 · p.79</td><td>12</td></tr>
+    <tr><td>Netflix distributed counter · Airbnb evolution · Netflix scaling evolution · "design like Instagram"</td><td>p.114/190 · p.57 · p.258 · p.89</td><td>16, 22, 19</td></tr>
+  </tbody>
+</table>
+<p class="small muted">Read pages, never the whole archive — ~40% is off-topic. Pages cited per lesson as each ships; this index grows with the course.</p>
+
+<div class="footer">
+  <p><a href="../lessons/0001-interview-blueprint.html">← Lesson 01</a> · Next up: Back-of-Envelope Estimation (Lesson 02) · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/interview-blueprint.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

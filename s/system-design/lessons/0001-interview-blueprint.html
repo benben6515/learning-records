@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 · The 45-Minute Blueprint — System Design, Interview Ready</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 01 · Method</p>
+<h1>The 45-Minute Blueprint</h1>
+<p class="lead">You can build a server that explains itself down to <code>node:http</code> — eight lessons' worth. The interview won't ask you to. It hands you a product name and 45 minutes of fog, then scores <em>how you conduct yourself in the fog</em>. Today: the blueprint that turns the fog into a schedule.</p>
+<p class="badges">
+  <span class="badge">~30 min</span>
+  <span class="badge">method</span>
+  <span class="badge">spoken</span>
+</p>
+
+<h2>What is actually being scored</h2>
+<p>Nobody expects you to reproduce Instagram's real production diagram — the interviewers who ask "design Instagram" couldn't either. What they probe is <strong>structured thinking under ambiguity</strong>: Do you ask before you draw? Do the numbers behind your boxes survive arithmetic? When pushed into one component, do you go deep — or repeat the overview louder? The <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a> says it plainly: interviewers evaluate <em>how</em> you solve problems, not <em>what</em> final solution you recite. That is good news: method can be drilled. Memorized diagrams can't be — the follow-up question always finds the edge of the memorization.</p>
+
+<h2>The one idea</h2>
+<p><strong>The interview is scored on method, not on the final drawing — and the method has four beats, each with a time budget.</strong> Steal the clock from the interview: roughly 5 minutes of requirements, 5 of estimation, 15 of high-level design, 20 of deep dives. The phases aren't bureaucracy; each one exists to make the next one safe (PDF: <a href="../RESOURCES.md">ByteByteGo archive</a> p.162 — the System Design Topic Map; p.134 — the Top 20 concepts this course will walk through, one phase at a time).</p>
+
+<div class="flow">
+  <div class="row">
+    <span class="stage accent">1 · Requirements — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">2 · Estimation — 5′</span><span class="arrow">→</span>
+    <span class="stage accent">3 · High-level — 15′</span><span class="arrow">→</span>
+    <span class="stage accent">4 · Deep dives — 20′</span>
+  </div>
+  <div class="branch">from step 4 on, the interviewer steers — pick the box they point at</div>
+  <div class="under">Signal beats completeness: a defensible half-diagram outscores an unexplained full one.</div>
+</div>
+
+<ol>
+  <li><strong>Requirements &amp; scope (5′).</strong> Restate the prompt in your own words, then pin down <em>functional</em> scope — the 2–3 core features you'll design — and <em>non-functional</em> scope: how many users (DAU), read/write balance, latency targets, consistency needs. State assumptions out loud and let the interviewer cheaply correct them: "I'll assume 10M DAU, read-heavy — correct me."</li>
+  <li><strong>Back-of-envelope estimation (5′).</strong> From that DAU number derive the orders of magnitude: QPS (read and write separately), storage per day, memory a cache would need. Powers of two, whole numbers, zero precision theater — the point is <em>sanity</em>, not decimal places. Full drill next lesson.</li>
+  <li><strong>High-level design (15′).</strong> Draw the boxes: client → DNS/CDN → load balancer → app servers → database, cache, queue as needed. Then do the move that separates candidates: <strong>walk one concrete request through your own diagram, end to end</strong> — the same move as your curl → route → SQL walkthroughs, now narrated to a stranger.</li>
+  <li><strong>Deep dives &amp; trade-offs (20′).</strong> The interviewer picks a box and says "go deeper" — sharding? cache invalidation? hot keys? The winning shape is always the same sentence: <em>"I choose X over Y, because here I'm buying ___ at the price of ___."</em> Every design choice trades something for something; naming the trade is the job.</li>
+</ol>
+
+<h2>What interviewers score — and what you already own</h2>
+<p>The scorecard below is the composite that System Design Primer, Alex Xu's framework, and most company rubrics converge on. The right column matters most: this is not your first skills course — half the scorecard is already in your hands from <a href="https://learning.benben.me/s/backend-dev/">Backend Fluency</a>.</p>
+<table>
+  <thead><tr><th>Signal</th><th>What it looks like</th><th>You already own it via…</th></tr></thead>
+  <tbody>
+    <tr><td>Scoping</td><td>asks before drawing; states assumptions aloud</td><td>L04 — pinning down behavior before code</td></tr>
+    <tr><td>Estimation</td><td>orders of magnitude right, computed not quoted</td><td>L02 — timing experiments, reading the numbers</td></tr>
+    <tr><td>Data flow</td><td>one request walked end-to-end through the diagram</td><td>L01–L03 — curl → handler → response, no magic</td></tr>
+    <tr><td>Trade-off fluency</td><td>every box has a named cost</td><td>L04–L07 — idempotency, 401 vs 403, sessions vs tokens</td></tr>
+    <tr><td>Depth on demand</td><td>zooms into one component without getting lost</td><td>L05–L06 — SQLite → Postgres: you've swapped a data layer</td></tr>
+  </tbody>
+</table>
+<p>What's genuinely new is only: <em>scale vocabulary</em> (replication, sharding, caching — Phases 1–3 of this course) and <em>the spoken, timed format</em> — which is why every lesson here ends with out-loud practice, not just reading.</p>
+
+<h2>The skeleton, once — URL shortener in four rows</h2>
+<p>The full walkthrough arrives as a Phase 4 capstone; here it appears once, compressed, to prove the blueprint fits any prompt. Watch the same four beats carry a real answer:</p>
+<table>
+  <thead><tr><th>Beat</th><th>What you produce (sketch level)</th></tr></thead>
+  <tbody>
+    <tr><td>Requirements</td><td>two features: shorten a long URL, redirect fast; skip accounts/analytics aloud. Assume 10M new links/mo, read-heavy ~100:1.</td></tr>
+    <tr><td>Estimation</td><td>~4 writes/s, ~400 reads/s — one modest server would survive today; design for growth, not for the number.</td></tr>
+    <tr><td>High-level</td><td>client → LB → tiny app tier → <em>unique-ID service</em> (counter + base62) → key-value store; cache for hot links in front.</td></tr>
+    <tr><td>Deep dives</td><td>why not hash-the-URL (collisions) · 301 vs 302 trade-off · what breaks when one link goes viral (hot key → cache it).</td></tr>
+  </tbody>
+</table>
+<p>Notice the estimation deliberately proves the system is <em>small</em> — and the design proceeds anyway, because the interviewer is scoring judgment about growth, not today's traffic. That move — <strong>"compute it, then design past it"</strong> — is worth more than any memorized diagram.</p>
+
+<h2>The drill — rehearse the method, on paper, out loud</h2>
+<div class="task">
+  <span class="label">Hands-on · 15 minutes, paper only</span>
+  <ul class="checklist" data-store="sd-l01-drill">
+    <li><span class="box"></span><span class="txt">Open the archive and read two pages, map-the-terrain style, no note-taking: the System Design Topic Map (p.162) and Top 20 System Design Concepts (p.134) — you're meeting future lessons, not studying them</span></li>
+    <li><span class="box"></span><span class="txt">Pick an app you used today (X, Spotify, Uber). Write: 2 functional requirements, 2 non-functional, 1 stated assumption. Three minutes.</span></li>
+    <li><span class="box"></span><span class="txt">Four-step skeleton for "design a pastebin": write the four headings, one bullet each. Ten lines maximum — the discipline is the brevity.</span></li>
+    <li><span class="box"></span><span class="txt">Say the skeleton out loud in under 3 minutes, phone timer running. The interview is spoken; this muscle is separate from the writing one.</span></li>
+    <li><span class="box"></span><span class="txt">Bring friction to the agent (me): where did the skeleton feel arbitrary? Which step felt like stalling? That discomfort is the real syllabus.</span></li>
+  </ul>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — scope first, or every later box answers the wrong question." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>The first minutes of the blueprint are spent on…</q>
+  <div class="options">
+    <button class="opt">Requirements: what to build, and for whom</button>
+    <button class="opt">Estimation: how heavy the traffic will be</button>
+    <button class="opt">Architecture: which boxes should be drawn first</button>
+    <button class="opt">Deep dives: how to shard the database</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — the method is the product; diagrams are its exhaust." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Interviewers primarily score the session on…</q>
+  <div class="options">
+    <button class="opt">The method you bring to the ambiguity</button>
+    <button class="opt">The numbers you recall about big companies</button>
+    <button class="opt">The completeness of your final box drawing</button>
+    <button class="opt">The frameworks you manage to name-drop fluently</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — orders of magnitude keep the design honest, nothing more." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Back-of-envelope estimation exists mainly to…</q>
+  <div class="options">
+    <button class="opt">Sanity-check scale before you commit boxes</button>
+    <button class="opt">Prove you memorized industry traffic figures</button>
+    <button class="opt">Predict the latency of every call</button>
+    <button class="opt">Delay drawing until the clock expires</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — the named trade-off is the product; silence is the tell." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>A design choice without a named trade-off is…</q>
+  <div class="options">
+    <button class="opt">An unfinished answer, however pretty the boxes</button>
+    <button class="opt">A finished answer with confident supporting details</button>
+    <button class="opt">A guaranteed pass with senior interview panels</button>
+    <button class="opt">A signal that more boxes should follow</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> the <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a> — read only "How to approach a system design interview question" (step 1 of the README); you'll recognize all four beats from the inside now. Then skim the archive's Topic Map again (p.162) with the blueprint in mind: every node on that map is a future lesson's box. For orientation by video instead, <a href="https://www.youtube.com/@ByteByteGo">ByteByteGo's channel</a> animates the same material — watch one, then return here.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 02 — <em>Back-of-Envelope Estimation</em>: powers of two, the latency ladder, and deriving QPS, storage, and cache memory from a single DAU number. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — why the time budget splits 5/5/15/20 and when to fight it, how real interviews differ by company tier, whether "I'd use Kafka" ever helps you, or anything the skeleton left foggy — all fair game.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/interview-blueprint.html">The Interview Blueprint</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0001-interview-blueprint.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>
