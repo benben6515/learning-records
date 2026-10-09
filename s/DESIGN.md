@@ -121,8 +121,14 @@ Plus, in both families:
   character per line. ⚠️ Do NOT put `min-width` on the table itself —
   a `display: block` table with `min-width` escapes its parent and
   overflows the body.
-- **`.flow` stage diagrams**: shrink padding and add vertical margin
-  (`.flow .stage { margin: 0.25rem 0 }`) so wrapped rows don't touch.
+- **`.flow` stage diagrams**: the vertical margin lives in the BASE rule —
+  `.flow .stage { margin: 0.25rem 0 }` outside any media query — because both
+  shells are narrow (`.sheet` 38rem, `.container` 680px) and chips wrap at
+  desktop widths too, not just mobile. The breakpoint block only shrinks:
+  `.flow .stage { padding: 0.45rem 0.7rem; font-size: 0.78rem }`.
+  ⚠️ Putting the margin only at mobile shipped once (2026-10-09,
+  system-design L01): wrapped rows stuck together on desktop until the
+  margin moved to the base.
 - **Inline code** (scifi-style `white-space: nowrap`): switch to
   `white-space: normal; overflow-wrap: anywhere` on mobile, but keep
   `pre code` at `white-space: pre`.
