@@ -29,6 +29,22 @@
   #panel button:hover { background: rgba(232,201,143,0.16); border-color: rgba(232,201,143,0.45); color: #f6e7c6; }
   #panel button.on { background: rgba(232,201,143,0.9); border-color: #e8c98f; color: #241d10; font-weight: 600; }
   #panel button i { font-style: normal; font-size: 10.5px; opacity: .65; margin-left: 4px; font-variant-numeric: tabular-nums; }
+  #panel.hidden { display: none; }
+  #panel-toggle {
+    position: fixed; top: 14px; left: 14px; width: 44px; height: 44px;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(24, 26, 30, 0.92); border: 1px solid rgba(232, 201, 143, 0.28);
+    border-radius: 10px; color: #f2d9a6; font-size: 19px; line-height: 1; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: blur(8px); z-index: 11;
+  }
+  #panel-close {
+    position: absolute; top: 10px; right: 10px; width: 30px; height: 30px;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 8px; color: #d8d1c0; font-size: 14px; line-height: 1; cursor: pointer;
+    font-family: inherit;
+  }
+  #panel-close:hover { background: rgba(232,201,143,0.16); border-color: rgba(232,201,143,0.45); color: #f6e7c6; }
   #tip {
     position: fixed; display: none; pointer-events: none; z-index: 20;
     background: rgba(24,26,30,.9); color: #f2e7cd; font-size: 12.5px;
@@ -41,7 +57,9 @@
     letter-spacing: 1px; pointer-events: none; z-index: 5;
   }
   @media (max-width: 640px) {
-    #panel { width: auto; right: 20px; }
+    #panel { width: auto; left: 12px; right: 12px; top: 12px; max-height: calc(100dvh - 24px); overflow-y: auto; }
+    #panel-toggle.show { display: flex; }
+    #panel-close { display: flex; }
     #hint { display: none; }
   }
 </style>
@@ -49,7 +67,9 @@
 <body>
 <div id="app"></div>
 
+<button id="panel-toggle" aria-label="開啟面板">☰</button>
 <div id="panel">
+  <button id="panel-close" aria-label="收起面板">✕</button>
   <h1>住宅平面 · 3D 預覽</h1>
   <p class="sub">B5 棟 2F · 兩房兩廳 · 室內約 52.9 m²（735 × 810 cm）</p>
   <div class="row">
@@ -614,6 +634,20 @@ document.getElementById('t-rotate').addEventListener('click', e => {
   controls.autoRotateSpeed = 1.1;
   e.currentTarget.classList.toggle('on', controls.autoRotate);
 });
+
+/* 面板開合（mobile 預設收起） */
+const panel = document.getElementById('panel');
+const panelToggle = document.getElementById('panel-toggle');
+const panelClose = document.getElementById('panel-close');
+const mqMobile = matchMedia('(max-width: 640px)');
+function setPanel(open) {
+  panel.classList.toggle('hidden', !open);
+  panelToggle.classList.toggle('show', !open);
+}
+if (mqMobile.matches) setPanel(false);
+panelToggle.addEventListener('click', () => setPanel(true));
+panelClose.addEventListener('click', () => setPanel(false));
+mqMobile.addEventListener?.('change', e => setPanel(!e.matches));
 
 /* ================= 迴圈 ================= */
 const clock = new THREE.Clock();
