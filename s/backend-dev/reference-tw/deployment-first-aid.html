@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>部署急救包 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 08</p>
+<h1>部署急救包</h1>
+<p class="lead">第 09 課濃縮成一張卡：設定規則、快速失敗防線、讓 API 上線的 Render 設定、健康檢查，以及全新資料庫會端給你的各種坑——依據 <a href="https://12factor.net/config">twelve-factor 的 Config 原則</a>與 <a href="https://render.com/docs/deploy-node-express-app">Render 的 Node 部署指南</a>。把我印出來。</p>
+
+<h2>規則</h2>
+<p class="small"><strong>同一個 commit 跑遍所有環境；差異由環境承載。</strong>連接埠、資料庫 URL、機密只透過 <code>process.env</code> 進來，在啟動時讀取。任何環境相關的東西，不進程式碼、不進 repo、不進會被 commit 的 <code>.env</code>。</p>
+
+<h2>設定起步模板（永久收藏）</h2>
+<pre><code><span class="c">// server7.mjs</span>
+const PORT = process.env.PORT ?? 3322        <span class="c">// 平台指派；3322 只是本地後備值</span>
+
+<span class="c">// utils/db.mjs —— 快速失敗，在任何請求有機會 500 之前</span>
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL is not set — refusing to start without a database")
+  process.exit(1)
+}
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })</code></pre>
+<pre><code><span class="p">$</span> node --env-file=.env server7.mjs     <span class="c">// 本地：Node ≥ 20.6，零依賴</span></code></pre>
+
+<h2>部署設定（Render 免費方案）</h2>
+<table>
+  <thead><tr><th>設定</th><th>值</th></tr></thead>
+  <tbody>
+    <tr><td>Root Directory</td><td><code>s/backend-dev/practice</code></td></tr>
+    <tr><td>Build Command</td><td><code>npm install &amp;&amp; node utils/migrate.mjs</code></td></tr>
+    <tr><td>Start Command</td><td><code>node server7.mjs</code></td></tr>
+    <tr><td>Environment</td><td><code>DATABASE_URL</code> ＝ 資料庫的 <strong>Internal</strong> URL</td></tr>
+    <tr><td>Health Check Path</td><td><code>/health</code></td></tr>
+  </tbody>
+</table>
+<p class="small">Git push 到 <code>main</code> ＝ 部署。平台同時會設好 <code>PORT</code> 與 <code>NODE_ENV=production</code>。先建資料庫（同一個 region），再建 web service。Internal DB URL ＝ 私有網路，不用設 TLS；External 也能用，但要加 <code>?ssl=true</code>。</p>
+
+<h2>健康檢查（深，不是淺）</h2>
+<pre><code>async function health(_req, res) {
+  try {
+    await pool.query("SELECT 1")                 <span class="c">// 探那個少了就不能工作的依賴</span>
+    return json(res, 200, { ok: true })
+  } catch {
+    return fail(res, 503, "UNHEALTHY", "database unreachable")
+  }
+}
+<span class="c">// routes：{ method: "GET", pattern: "/health", handler: health }</span></code></pre>
+<p class="small">「程序活著」≠「服務能用」。這個檢查證明整條鏈：程序起來<em>且</em>資料庫碰得到。回 503，絕不回 500——健康檢查失敗不是 bug，是一種狀態。</p>
+
+<h2>驗證部署（你自己的 curl）</h2>
+<pre><code><span class="p">$</span> curl -i https://your-app.onrender.com/health          <span class="c">// 200 {"ok":true}——走真 HTTPS</span>
+<span class="p">$</span> curl -i -X POST https://your-app.onrender.com/auth/register \
+    -H 'content-type: application/json' \
+    -d '{"email":"me@x.dev","password":"correct horse"}'  <span class="c">// 201</span>
+<span class="p">$</span> BASE_URL=https://your-app.onrender.com node --test tests/app.test.mjs
+<span class="c">// app.test.mjs：base = process.env.BASE_URL ?? `http://localhost:${app.address().port}`</span></code></pre>
+
+<h2>值得現在就知道的坑</h2>
+<ul>
+  <li><strong>全新資料庫會照帳本原樣重播。</strong>曾經直接改在本地 DB、卻沒寫回 migration 檔的每個修正，都會在 production 重現。修<em>檔案</em>，重新部署——repo 是唯一事實來源，否則就沒有任何東西是。</li>
+  <li><strong>免費 Postgres 是租的：</strong>建立後 30 天到期，14 天寬限，之後刪除。重建它就是免費練習：新 URL、同一套 migrate、同一個部署。</li>
+  <li><strong>免費 web service 會休眠：</strong>沒流量約 15 分鐘後入睡；第一位訪客等約 1 分鐘（冷啟動）。健康檢查擋不掉休眠——它擋掉的是說謊。付費執行個體可移除。</li>
+  <li><strong>務必聽 <code>process.env.PORT</code></strong>，否則平台的路由永遠找不到你。用 <code>??</code> 綁後備值，本地習慣才活得了。</li>
+  <li><strong>機密住在儀表板，永遠不進 repo。</strong><code>DATABASE_URL</code> 外洩？輪換它（一下點擊）、更新環境變數、重新部署——程式碼零變更。</li>
+  <li><strong>崩潰會被平台的監督者重啟。</strong>在 VPS 上那是你的 systemd unit 或 pm2；PaaS 把它藏起來了。<code>/health</code> 失敗，正是壞部署被擋下的方式。</li>
+  <li><strong>TLS 在邊緣終結：</strong>瀏覽器 ↔ 平台是 HTTPS（Let's Encrypt，自動），平台 ↔ 你的程序在私有網路內走純 HTTP。你的程式碼保持零 TLS。</li>
+  <li><strong><code>Secure</code> cookie 旗標只在 production</strong>（<code>NODE_ENV === "production"</code>）——localhost 沒有 TLS，Secure cookie 會悄悄永遠不被送回。</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0009-deployment-and-config.html">← 第 09 課</a> · 下一課：快取（第 10 課） · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/deployment-first-aid.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

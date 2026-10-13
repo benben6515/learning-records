@@ -20,6 +20,12 @@
   Community-maintained topic map. Use for: orientation ("where am I?"), never as a lesson source.
 - [Docs: Express](https://expressjs.com/)
   The framework we'll dissect and eventually adopt. Use for: checking what Express adds on top of raw Node (routing, middleware, res.json…).
+- [Docs: The Twelve-Factor App — Config (III)](https://12factor.net/config)
+  The classic statement of why config lives in the environment, not the code. Use for: the principle behind L09's env-var rule; the other eleven factors map onto lessons already lived.
+- [Docs: Render — Deploy a Node/Express service](https://render.com/docs/deploy-node-express-app)
+  The capstone's deployment target (free tier: web service + Postgres). Use for: dashboard mechanics, health check path, env vars, free-tier limits (30-day free PG expiry, 15-min sleep).
+- [Docs: Fly.io](https://fly.io/docs/)
+  The pay-as-you-go alternative (credit card required, no free tier since 2024-10). Use for: when the learner outgrows free tiers or wants CLI-first deploys.
 
 ## Wisdom (Communities)
 
@@ -32,7 +38,7 @@
 
 ## Gaps
 
-- PostgreSQL deep resources (schema design, indexes, transactions) — add when the persistence unit starts.
+- PostgreSQL deep resources (schema design, indexes, transactions) — partially filled by L06 (pg docs, postgres-first-aid); deeper index/EXPLAIN material when queries get slow.
 - Auth deep-dive (OWASP Authentication Cheat Sheet, session vs JWT essays) — add at the auth unit.
-- Deployment target for the capstone (Fly.io / Railway / a VPS) — decide when we get there.
+- ~~Deployment target for the capstone~~ — decided 2026-10: Render free tier (no card, free PG + web service); Fly.io PAYG documented as alternative; VPS (systemd + Caddy) stays open as an optional lesson.
 - TypeScript-backend-specific resources (tsconfig for servers, tsx/node --strip-types workflows) — verify current best practice when Lesson on TS setup ships.

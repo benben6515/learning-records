@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 09 課 · 部署與設定：離開筆記電腦 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 09 課 · 維運</p>
+<h1>部署與設定：離開筆記電腦</h1>
+<p class="lead">現在，你的 API 只在你的 Mac 醒著的時候存在：<code>localhost:3322</code>、跑在同一台機器 Docker 裡的 Postgres、放在程式碼旁邊的 <code>.env</code>。螢幕蓋上，產品就下線。今天它要搬到一台不屬於你的機器——設定來自環境、資料庫在公開的 socket 後面、前面掛上 HTTPS，再用一個健全狀態檢查（health check）定義什麼叫「活著」。</p>
+<p class="badges">
+  <span class="badge">約 45 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">維運</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>第 01–08 課蓋的一切，都建立在一個前提上：<em>你的筆電、醒著、Docker 開著</em>。當 dev server 可以，當產品不行。Mission 說了「ship it：公開的 URL、真的資料庫、有安全感。」從你 Mac 上的 <code>node server7.mjs</code> 到同一份程式碼跑在伺服器上，中間那條縫有名字——<strong>部署（deploy）</strong>——而它基本上是一個觀念用四種方式呈現：你的機器和雲端之間所有不同的東西，都走<em>環境</em>傳遞，永遠不寫進程式碼。</p>
+
+<h2>核心觀念</h2>
+<p><strong>設定（config）＝每個環境之間會變的東西——連接埠、資料庫 URL、機密（secrets）——而且只在啟動時透過 <code>process.env</code> 進入程式。</strong> 同一個 commit 於是可以在你的筆電和 production 上原封不動地跑；環境負責供應差異（經典出處是 <a href="https://12factor.net/config">twelve-factor 的 Config 原則</a>）。至於部署，就是：把程式碼複製到一台受監督的機器、把設定交給它、在前面掛上 TLS，再用健康檢查證明它活著。</p>
+
+<h2>步驟一——連接埠與 URL 不再是常數</h2>
+<p>你的 server7 已經做到一半了：<code>utils/db.mjs</code> 讀 <code>process.env.DATABASE_URL</code>——那是你在第 06 課蓋的。但連接埠還是常數：</p>
+<pre><code>// server7.mjs —— 原本是：const PORT = 3322
+const PORT = process.env.PORT ?? 3322</code></pre>
+<p><code>?? 3322</code> 保留所有本地習慣——沒有環境變數，就跟往常同一個埠。在 production，平台<em>指派</em>連接埠，然後用 <code>PORT</code> 交給你；拒絕聽這個埠的伺服器，永遠不會上線。</p>
+<p>本地，環境住在 <code>.env</code>（依然沒被追蹤——正確），Node 零依賴就能載入：</p>
+<pre><code><span class="p">$</span> node --env-file=.env server7.mjs</code></pre>
+<p>還缺一道防線。<code>pg.Pool</code> 是<em>懶連線</em>——少了 <code>DATABASE_URL</code>，伺服器照樣開心地啟動，然後在第一個請求上回 500，最糟糕的時機才發現。改成快速失敗（fail fast）：</p>
+<pre><code>// utils/db.mjs 最上面
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL is not set — refusing to start without a database")
+  process.exit(1)
+}</code></pre>
+<p>啟動時的設定錯誤，是部署 log 裡一行紅字。同一個錯誤若發生在請求時，是一個使用者盯著 <code>500 INTERNAL</code>。兩者出自同一個失誤；只差在時機。</p>
+
+<h2>步驟二——資料庫離開筆電</h2>
+<p>你的 Postgres 是跟伺服器同一台機器上的 Docker 容器。同一顆碟、同一顆電源鈕、同一個單點故障。它搬到託管服務：我們用 <a href="https://render.com">Render</a> 的免費方案——不用信用卡，兩下點擊開好一個免費 Postgres。先建<em>資料庫</em>，記下 region，然後拿 <strong>Internal Database URL</strong>（不是 External）：internal 走平台私有網路——更快，而且不用設 TLS。External URL 也能用，但要加 <code>?ssl=true</code>。</p>
+<p>接著是你第 06 課的 migration runner 等到的那一刻。<em>全新的</em>資料庫會照 commit 的原樣重播你的帳本——<code>utils/migrations/*.sql</code>，不多不少。你曾經直接改在本地資料庫上、卻從來沒寫回 migration 檔的每個 hotfix，都會在這裡回來。這不是找麻煩；這是你的帳本第一次接受<em>誠實的</em>測試。（跑下去就知道了。我讀過你 commit 的 <code>0004_auth.sql</code>——裡面有個東西正等著跟你見面。）</p>
+
+<h2>步驟三——部署本身</h2>
+<p>在 Render：<strong>New → Web Service</strong>，連上這個 GitHub repo，然後四個設定：</p>
+<table>
+  <thead><tr><th>設定</th><th>值</th><th>意義</th></tr></thead>
+  <tbody>
+    <tr><td>Root Directory</td><td><code>s/backend-dev/practice</code></td><td>你的 app 所在的子資料夾</td></tr>
+    <tr><td>Build Command</td><td><code>npm install &amp;&amp; node utils/migrate.mjs</code></td><td>依賴＋schema，在任何流量之前</td></tr>
+    <tr><td>Start Command</td><td><code>node server7.mjs</code></td><td>程序怎麼跑起來</td></tr>
+    <tr><td>Environment</td><td><code>DATABASE_URL</code>（internal URL）</td><td>唯一的機密，設在儀表板——永遠不進 repo</td></tr>
+  </tbody>
+</table>
+<p>Push 到 <code>main</code>，Render 自動重建、重新部署——git push <em>就是</em>部署按鈕。盯著第一次部署的 log：npm install、你自己的 migration runner 印出 <code>applying 0001_init.sql…</code>，然後是你自己寫的那行：<code>server is running</code>。同一份程式碼，另一台機器。就這麼簡單。</p>
+<p>Render 幫你設好兩件事：<code>PORT</code>（步驟一讓你的伺服器聽它了）和 <code>NODE_ENV=production</code>——步驟五會用到。</p>
+
+<h2>步驟四——「活著」的定義：健康檢查</h2>
+<p>程序活著，不等於服務能用。連線池可能死了、DNS 可能騙人、資料庫可能正在重啟。「活著」是一個主張，主張需要證據：</p>
+<pre><code>async function health(_req, res) {
+  try {
+    await pool.query("SELECT 1")                     <span class="c">// 最深的依賴，最便宜的探針</span>
+    return json(res, 200, { ok: true })
+  } catch {
+    return fail(res, 503, "UNHEALTHY", "database unreachable")
+  }
+}
+
+// routes：
+{ method: "GET", pattern: "/health", handler: health },</code></pre>
+<p>注意它檢查的是什麼：不是「檔案載入成功」，而是「我碰得到那個少了就不能工作的東西嗎」。把服務設定裡的 <strong>Health Check Path</strong> 設成 <code>/health</code>——平台從此輪詢它，把失敗的部署當失敗處理，崩潰的程序會被平台的監督者（supervisor）重啟。那個監督者正是 PaaS <em>替你</em>做的部分：在 VPS 上，你得自己寫成 systemd unit 或 <code>pm2</code>。練習裡會叫你故意讓伺服器崩潰，親眼看它爬起來。</p>
+<p>免費方案的誠實聲明：沒流量約 15 分鐘後，執行個體會休眠（spin down），之後的第一位訪客要等約 1 分鐘的冷啟動（cold start）。健康檢查擋不掉休眠——它擋掉的是<em>說謊</em>。課程 API 夠用；哪天重要了，付費執行個體就是解法。</p>
+
+<h2>步驟五——HTTPS 與 Secure 旗標</h2>
+<p>你的 URL 從第一秒起就是 <code>https://</code>。你一行 TLS 都沒寫——Render 在它的邊緣終結 TLS：瀏覽器 ↔ Render 是帶真憑證的 HTTPS（Let's Encrypt，自動續約），私有網路內部 Render 跟你的程序講純 HTTP。<strong>TLS 終結（TLS termination）</strong>＝解密發生在代理（proxy），不在你的程式碼裡。跟 VPS 前面掛 nginx 或 Caddy 同一個形狀——某天你會手動設定的東西，今天當功能享用。</p>
+<p>HTTPS 替你賺到最後一個 cookie 旗標。第 07 課的 session cookie 是 <code>HttpOnly; SameSite=Lax</code>——加上 <code>Secure</code>，瀏覽器從此拒絕在純 HTTP 上送出它：</p>
+<pre><code>const SECURE = process.env.NODE_ENV === "production" ? "; Secure" : ""
+
+return json(res, 200, { id: user.id, email: user.email }, {
+  "set-cookie": `sid=${sid}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${SECURE}`,
+})</code></pre>
+<p>為什麼要條件判斷？localhost 沒有 TLS——<code>Secure</code> cookie 永遠不會被送回，本地登入會悄悄壞掉。又一個活在環境裡的決策，而不是程式碼的第二個版本。</p>
+
+<h3>四個值得注意的地方</h3>
+<ul>
+  <li><strong>你的 handler 一個都沒改。</strong>路由、驗證、權限——原樣部署。這是第 01–08 課在回收本金：從不依賴 localhost 的程式碼，部署起來不必害怕。</li>
+  <li><strong>部署會重播你的歷史。</strong>全新機器：npm install 照 <code>package-lock.json</code>、schema 照 migration 帳本。只存在你筆電上的東西（手工修掉的欄位、在 psql 裡 drop 掉的表），production 一概沒有。repo 是唯一事實來源，否則就沒有任何東西是。</li>
+  <li><strong>機密是儀表板資料，不是 repo 資料。</strong><code>DATABASE_URL</code> 是憑證——誰讀到它，誰就能讀你使用者的筆記。它住在 Render 的環境設定裡；repo 只保存「它必須存在」的知識（萬一外洩：輪換它，一下點擊，重新部署）。</li>
+  <li><strong>你的測試跟著你上線。</strong>第 08 課的 suite 講純 HTTP——把它的 base 指到 production URL，它審計的就是線上合約，不是本地副本。</li>
+</ul>
+
+<h2>練習——真的離開筆電</h2>
+<div class="task">
+  <span class="label">動手做 · 設定、部署、健康檢查、HTTPS</span>
+  <ul class="checklist" data-store="bd-l09-drill">
+    <li><span class="box"></span><span class="txt">server7：<code>const PORT = process.env.PORT ?? 3322</code>；<code>utils/db.mjs</code> 加上快速失敗的 <code>DATABASE_URL</code> 防線；package.json scripts 加上 <code>"test": "node --test"</code> 與 <code>"start": "node server7.mjs"</code>；驗證 <code>node --env-file=.env server7.mjs</code> 依然服務 3322，而且<em>不帶</em> env 檔啟動時會帶著你的錯誤訊息死掉</span></li>
+    <li><span class="box"></span><span class="txt">加上 <code>/health</code> handler 與路由；本地 <code>curl -i localhost:3322/health</code> → 200 <code>{"ok":true}</code></span></li>
+    <li><span class="box"></span><span class="txt">Render：開免費 Postgres（region 選一個；記下來），複製 <strong>Internal Database URL</strong></span></li>
+    <li><span class="box"></span><span class="txt">Render：從這個 repo 建 Web Service——root dir <code>s/backend-dev/practice</code>、build <code>npm install &amp;&amp; node utils/migrate.mjs</code>、start <code>node server7.mjs</code>、env 設 <code>DATABASE_URL</code>；從頭到尾盯完第一次部署的 log</span></li>
+    <li><span class="box"></span><span class="txt">全新帳本測試：對公開 URL 註冊＋登入＋建一筆筆記。如果這裡冒出 500 <code>INTERNAL</code>，去讀 log——某個 commit 的 migration 說的話，你本地資料庫悄悄不同意；修<em>檔案</em>，重新部署，看它轉綠。（這是本課埋的教材。）</span></li>
+    <li><span class="box"></span><span class="txt">Health Check Path 設 <code>/health</code>；確認 <code>curl -i https://your-app.onrender.com/health</code> 走真 HTTPS 拿到 200</span></li>
+    <li><span class="box"></span><span class="txt">把第 08 課 suite 指向 production：<code>app.test.mjs</code> 裡 <code>base = process.env.BASE_URL ?? `http://localhost:${app.address().port}`</code>；跑 <code>BASE_URL=https://your-app.onrender.com node --test tests/app.test.mjs</code>（設了 BASE_URL 就跳過 <code>start(0)</code>）——合約挺過了這趟旅行</span></li>
+    <li><span class="box"></span><span class="txt">在 <code>NODE_ENV=production</code> 後面加上 <code>Secure</code> 旗標；用 <code>curl -i</code> 打 prod 登入驗證（Set-Cookie 裡看到 <code>Secure</code>），並確認本地登入沒壞</span></li>
+    <li><span class="box"></span><span class="txt">崩潰演練：暫時加一個呼叫 <code>process.exit(1)</code> 的路由，打它，盯著 log——平台重啟程序，<code>/health</code> 重新轉綠。還原。這就是你不必自己寫的監督者</span></li>
+    <li><span class="box"></span><span class="txt">讓它睡：放著 15 分鐘以上，再 curl 一次——感受約 1 分鐘的冷啟動，並知道移除它的升級路徑</span></li>
+  </ul>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——啟動時失敗不花一毛錢；請求時失敗賠上一個使用者。" data-wrong="不盡然——正確答案已標出。">
+  <q>為什麼少了 DATABASE_URL 時，伺服器必須在啟動時就退出？</q>
+  <div class="options">
+    <button class="opt">設定錯誤該在啟動時現形，不是第一個請求時</button>
+    <button class="opt">Postgres 可能晚點上線然後自己接上連線</button>
+    <button class="opt">早點退出能省下按小時計費平台的運算分鐘</button>
+    <button class="opt">不然伺服器會改聽一個臨時的連接埠號碼</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——連接埠歸平台管，它用環境告訴你。" data-wrong="不盡然——正確答案已標出。">
+  <q>在 production，你的伺服器聽的連接埠從哪裡來？</q>
+  <div class="options">
+    <button class="opt">平台指派的 PORT 環境變數</button>
+    <button class="opt">server7.mjs 裡寫死的 3322 後備值</button>
+    <button class="opt">每次啟動現挖的一個隨機空埠</button>
+    <button class="opt">平台替服務建的那筆 DNS 紀錄</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——TLS 在邊緣代理結束；內部走純 HTTP。" data-wrong="不盡然——正確答案已標出。">
+  <q>瀏覽器用 HTTPS 講到你的 Render URL。你的程序收到的是——</q>
+  <div class="options">
+    <button class="opt">私有內部網路上的純 HTTP</button>
+    <button class="opt">再度是 HTTPS，因為端對端 TLS 是強制的</button>
+    <button class="opt">包在加密隧道裡的 SSH 流量</button>
+    <button class="opt">什麼都沒有——瀏覽器直連你的程序</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——深度健康：程序碰得到那個少了就不能工作的東西。" data-wrong="不盡然——正確答案已標出。">
+  <q>GET /health 配上 SELECT 1，實際驗證的是什麼？</q>
+  <div class="options">
+    <button class="opt">程序活著「且」資料庫碰得到，一次搞定</button>
+    <button class="opt">程序活著，但對資料庫隻字未提</button>
+    <button class="opt">資料庫內容正確且 migration 都已套用</button>
+    <button class="opt">TLS 憑證有效而且還沒過期</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://12factor.net/config">twelve-factor 的 Config 原則</a>——十個短段落，精準替你今天做的事命名；整套 <a href="https://12factor.net/">twelve factors</a> 值得走一遍——你已經活過其中大半了。接著看 <a href="https://render.com/docs/deploy-node-express-app">Render 的 Node 部署指南</a>，補齊你剛剛點過的平台機制。哪天想要那條沒走的路——自己的機器、systemd、Caddy——說一聲，我們來一課 VPS；<a href="https://fly.io/docs/">Fly.io 文件</a>坐在兩個世界之間（隨用隨付，需要信用卡）。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 10 課——<em>快取</em>：今天每個列表請求都重讀一次 Postgres；把答案留在記憶體裡，順便學快取都在哪裡說謊。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——為什麼託管 Postgres 一「轉正」就要 $15–70/月、反向代理是什麼、為什麼 NODE_ENV 是我們至今還背著的化石、或滾動部署 vs 免費方案的單機現實——都歡迎。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/deployment-first-aid.html">部署急救包</a> · 上一課：<a href="0008-testing-the-api.html">第 08 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0009-deployment-and-config.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

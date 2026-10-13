@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deployment First Aid — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 08</p>
+<h1>Deployment First Aid</h1>
+<p class="lead">Lesson 09 in one card: the config rule, the fail-fast guard, the Render settings that shipped your API, the health check, and the gotchas a fresh database will hand you — grounded in the <a href="https://12factor.net/config">twelve-factor Config principle</a> and the <a href="https://render.com/docs/deploy-node-express-app">Render Node guide</a>. Print me.</p>
+
+<h2>The rule</h2>
+<p class="small"><strong>Same commit everywhere; the environment carries the differences.</strong> Port, database URL, secrets enter only through <code>process.env</code>, read at boot. Nothing environment-specific lives in code, in the repo, or in <code>.env</code> files that get committed.</p>
+
+<h2>Config starter (copy forever)</h2>
+<pre><code><span class="c">// server7.mjs</span>
+const PORT = process.env.PORT ?? 3322        <span class="c">// platform assigns; 3322 is local fallback</span>
+
+<span class="c">// utils/db.mjs — fail fast, before any request can 500</span>
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL is not set — refusing to start without a database")
+  process.exit(1)
+}
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })</code></pre>
+<pre><code><span class="p">$</span> node --env-file=.env server7.mjs     <span class="c">// local: Node ≥ 20.6, zero deps</span></code></pre>
+
+<h2>The deploy (Render, free tier)</h2>
+<table>
+  <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Root Directory</td><td><code>s/backend-dev/practice</code></td></tr>
+    <tr><td>Build Command</td><td><code>npm install &amp;&amp; node utils/migrate.mjs</code></td></tr>
+    <tr><td>Start Command</td><td><code>node server7.mjs</code></td></tr>
+    <tr><td>Environment</td><td><code>DATABASE_URL</code> = the database's <strong>Internal</strong> URL</td></tr>
+    <tr><td>Health Check Path</td><td><code>/health</code></td></tr>
+  </tbody>
+</table>
+<p class="small">Git push to <code>main</code> = deploy. Platform also sets <code>PORT</code> and <code>NODE_ENV=production</code>. Database first (same region), then web service. Internal DB URL = private network, no TLS config; External works but needs <code>?ssl=true</code>.</p>
+
+<h2>The health check (deep, not shallow)</h2>
+<pre><code>async function health(_req, res) {
+  try {
+    await pool.query("SELECT 1")                 <span class="c">// probe the dependency you can't work without</span>
+    return json(res, 200, { ok: true })
+  } catch {
+    return fail(res, 503, "UNHEALTHY", "database unreachable")
+  }
+}
+<span class="c">// routes: { method: "GET", pattern: "/health", handler: health }</span></code></pre>
+<p class="small">"Process alive" ≠ "service works". The check proves the whole chain: process up <em>and</em> database reachable. 503, never 500 — a health check failing is not a bug, it's a status.</p>
+
+<h2>Verify the deploy (your own curls)</h2>
+<pre><code><span class="p">$</span> curl -i https://your-app.onrender.com/health          <span class="c">// 200 {"ok":true} — over real HTTPS</span>
+<span class="p">$</span> curl -i -X POST https://your-app.onrender.com/auth/register \
+    -H 'content-type: application/json' \
+    -d '{"email":"me@x.dev","password":"correct horse"}'  <span class="c">// 201</span>
+<span class="p">$</span> BASE_URL=https://your-app.onrender.com node --test tests/app.test.mjs
+<span class="c">// app.test.mjs: base = process.env.BASE_URL ?? `http://localhost:${app.address().port}`</span></code></pre>
+
+<h2>Gotchas worth knowing now</h2>
+<ul>
+  <li><strong>A fresh database replays the ledger exactly.</strong> Any fix applied live to your local DB but never written into a migration file resurfaces in production. Fix the <em>file</em>, redeploy — the repo is the source of truth or nothing is.</li>
+  <li><strong>Free Postgres is a rental:</strong> expires 30 days after creation, 14-day grace, then deletion. Re-creating it is free practice: new URL, same migrate, same deploy.</li>
+  <li><strong>Free web services sleep</strong> after ~15 min without traffic; first visitor waits ~1 min (cold start). Health checks don't prevent sleep — they prevent lying. Paid instance removes it.</li>
+  <li><strong>Listen on <code>process.env.PORT</code></strong> or the platform's router never finds you. Bind the fallback with <code>??</code> so local habits survive.</li>
+  <li><strong>Secrets live in the dashboard, never the repo.</strong> <code>DATABASE_URL</code> leaked? Rotate it (one click), update the env var, redeploy — no code change.</li>
+  <li><strong>Crashes get restarted by the platform's supervisor.</strong> On a VPS that's your systemd unit or pm2; a PaaS hides it. <code>/health</code> failing is how bad deploys get rejected.</li>
+  <li><strong>TLS terminates at the edge:</strong> browser ↔ platform is HTTPS (Let's Encrypt, auto), platform ↔ your process is plain HTTP inside the private net. Your code stays TLS-free.</li>
+  <li><strong><code>Secure</code> cookie flag only in production</strong> (<code>NODE_ENV === "production"</code>) — localhost has no TLS, and a Secure cookie would silently never be sent back.</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons/0009-deployment-and-config.html">← Lesson 09</a> · Next up: Caching (Lesson 10) · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/deployment-first-aid.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

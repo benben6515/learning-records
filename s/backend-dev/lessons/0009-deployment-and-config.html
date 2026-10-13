@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 · Deployment &amp; Config: Off the Laptop — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 09 · Ops</p>
+<h1>Deployment &amp; Config: Off the Laptop</h1>
+<p class="lead">Right now your API exists only while your Mac stays awake: <code>localhost:3322</code>, a Postgres in Docker on the same machine, a <code>.env</code> next to the code. Close the lid and the product is down. Today it moves to a machine that isn't yours — config from the environment, the database behind a public socket, HTTPS in front, and a health check that defines what "up" means.</p>
+<p class="badges">
+  <span class="badge">~45 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">ops</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>Everything you built in Lessons 01–08 runs on one precondition: <em>your laptop, awake, with Docker up</em>. That's fine for a dev server; it's not a product. The mission said "ship it: a public URL, a real database, secured." The gap between <code>node server7.mjs</code> on your Mac and the same code on a server has a name — <strong>deployment</strong> — and it is mostly one idea done four ways: everything that differs between your machine and the cloud travels through the <em>environment</em>, never through the code.</p>
+
+<h2>The one idea</h2>
+<p><strong>Config is everything that varies between environments — port, database URL, secrets — and it enters the program only through <code>process.env</code>, read once at boot.</strong> The same commit then runs unchanged on your laptop and in production; the environment supplies the differences (the classic statement is the <a href="https://12factor.net/config">twelve-factor Config principle</a>). Deployment, in turn, is: copy the code to a supervised machine, hand it its config, put TLS in front of it, and prove it's alive with a health check.</p>
+
+<h2>Step 1 — the port and the URL stop being constants</h2>
+<p>Your server7 already does half of this: <code>utils/db.mjs</code> reads <code>process.env.DATABASE_URL</code> — you built that in Lesson 06. But the port is still a constant:</p>
+<pre><code>// server7.mjs — was: const PORT = 3322
+const PORT = process.env.PORT ?? 3322</code></pre>
+<p><code>?? 3322</code> keeps every local habit working — no env var, same port as always. In production the platform <em>assigns</em> the port and hands it to you as <code>PORT</code>; a server that refuses to listen on it is a server that never goes live.</p>
+<p>Locally, the environment lives in <code>.env</code> (still untracked — correct), and Node loads it with zero dependencies:</p>
+<pre><code><span class="p">$</span> node --env-file=.env server7.mjs</code></pre>
+<p>One guard is still missing. <code>pg.Pool</code> connects <em>lazily</em> — with no <code>DATABASE_URL</code> the server boots happily and then 500s on the first request, the worst possible time to learn about it. Fail fast instead:</p>
+<pre><code>// top of utils/db.mjs
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL is not set — refusing to start without a database")
+  process.exit(1)
+}</code></pre>
+<p>A missing-config error at boot is one red line in a deploy log. The same error at request time is a user staring at <code>500 INTERNAL</code>. Both come from the same mistake; only the timing differs.</p>
+
+<h2>Step 2 — the database leaves the laptop</h2>
+<p>Your Postgres is a Docker container on the same machine as the server. One disk, one power button, one point of failure. It moves to a managed service: we're using <a href="https://render.com">Render</a>'s free tier — no credit card, and a free Postgres you create in two clicks. Create the database <em>first</em>, note the region, and take the <strong>Internal Database URL</strong> (not External): internal stays on the platform's private network — faster, and no TLS setup. External URLs work too but need <code>?ssl=true</code>.</p>
+<p>Then comes the moment your migration runner has been waiting for since Lesson 06. A <em>fresh</em> database replays your ledger exactly as committed — <code>utils/migrations/*.sql</code>, nothing else. Every hotfix you ever applied directly to the local database but never wrote back into a migration file comes back here. That is not a nuisance; it is the first <em>honest</em> test your ledger has ever had. (Run it and see. I read your committed <code>0004_auth.sql</code> — something in there is about to meet you.)</p>
+
+<h2>Step 3 — the deploy itself</h2>
+<p>On Render: <strong>New → Web Service</strong>, connect this GitHub repo, then four settings:</p>
+<table>
+  <thead><tr><th>Setting</th><th>Value</th><th>What it means</th></tr></thead>
+  <tbody>
+    <tr><td>Root Directory</td><td><code>s/backend-dev/practice</code></td><td>the subfolder that is your app</td></tr>
+    <tr><td>Build Command</td><td><code>npm install &amp;&amp; node utils/migrate.mjs</code></td><td>deps + schema, before any traffic</td></tr>
+    <tr><td>Start Command</td><td><code>node server7.mjs</code></td><td>how the process runs</td></tr>
+    <tr><td>Environment</td><td><code>DATABASE_URL</code> (internal URL)</td><td>the one secret, set in the dashboard — never in the repo</td></tr>
+  </tbody>
+</table>
+<p>Push to <code>main</code> and Render rebuilds and redeploys automatically — git push <em>is</em> the deploy button. Watch the first deploy's logs: npm install, your own migration runner printing <code>applying 0001_init.sql…</code>, then your own line: <code>server is running</code>. Same code, different machine. That's the whole trick.</p>
+<p>Two things Render sets for you: <code>PORT</code> (Step 1 made your server listen on it) and <code>NODE_ENV=production</code> — you'll use that one in Step 5.</p>
+
+<h2>Step 4 — what "up" means: the health check</h2>
+<p>The process running is not the service working. The pool could be dead, DNS could lie, the database could be restarting. "Up" is a claim, and claims need evidence:</p>
+<pre><code>async function health(_req, res) {
+  try {
+    await pool.query("SELECT 1")                     <span class="c">// deepest dependency, cheapest probe</span>
+    return json(res, 200, { ok: true })
+  } catch {
+    return fail(res, 503, "UNHEALTHY", "database unreachable")
+  }
+}
+
+// routes:
+{ method: "GET", pattern: "/health", handler: health },</code></pre>
+<p>Note what it checks: not "did the file load" but "can I reach the thing I cannot work without." Set <strong>Health Check Path</strong> to <code>/health</code> in the service settings — now the platform polls it, treats a failing deploy as a failed deploy, and a crashing process gets restarted by the platform's supervisor. That supervisor is the part a PaaS does <em>for</em> you: on a VPS you'd write it yourself as a systemd unit or <code>pm2</code>. The drill includes crashing your own server on purpose to watch it come back.</p>
+<p>Free-tier honesty: the instance sleeps after ~15 minutes without traffic, and the first visitor after that waits ~1 minute for the cold start. The health check doesn't prevent sleep — it prevents <em>lying</em>. Fine for a course API; a paid instance is the fix when it matters.</p>
+
+<h2>Step 5 — HTTPS and the Secure flag</h2>
+<p>Your URL is <code>https://</code> from the first second. You wrote no TLS code — Render terminates TLS at its edge: browser ↔ Render is HTTPS with a real certificate (Let's Encrypt, auto-renewed), and inside the private network Render speaks plain HTTP to your process. <strong>TLS termination</strong> = decryption happens at the proxy, not in your code. Same shape as nginx or Caddy in front of a VPS — a thing you'll configure by hand someday, consumed as a feature today.</p>
+<p>HTTPS earns you the last cookie flag. L07's session cookie is <code>HttpOnly; SameSite=Lax</code> — add <code>Secure</code> so the browser refuses to ever send it over plain HTTP:</p>
+<pre><code>const SECURE = process.env.NODE_ENV === "production" ? "; Secure" : ""
+
+return json(res, 200, { id: user.id, email: user.email }, {
+  "set-cookie": `sid=${sid}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${SECURE}`,
+})</code></pre>
+<p>Why conditional? On localhost there is no TLS — a <code>Secure</code> cookie would never be sent back, and local login would silently break. One more decision that lives in the environment, not in a second version of the code.</p>
+
+<h3>Four things to notice</h3>
+<ul>
+  <li><strong>Nothing about your handlers changed.</strong> Routing, auth, validation — all of it deployed as-is. That's Lessons 01–08 paying off: code that never depended on localhost deploys without fear.</li>
+  <li><strong>The deploy replays your history.</strong> Fresh machine: npm install from <code>package-lock.json</code>, schema from the migration ledger. Anything that exists only on your laptop (a hand-fixed column, a table you dropped in psql) does not exist in production. The repo is the source of truth, or nothing is.</li>
+  <li><strong>Secrets are dashboard data, not repo data.</strong> <code>DATABASE_URL</code> is a credential — anyone who reads it can read your users' notes. It lives in Render's env settings; the repo holds only the knowledge <em>that</em> it must exist (and if it ever leaks: rotate it, one click, redeploy).</li>
+  <li><strong>Your tests deploy with you.</strong> The L08 suite speaks plain HTTP — point it at the production URL and it audits the live contract, not a local copy.</li>
+</ul>
+
+<h2>The drill — off the laptop, for real</h2>
+<div class="task">
+  <span class="label">Hands-on · config, deploy, health, HTTPS</span>
+  <ul class="checklist" data-store="bd-l09-drill">
+    <li><span class="box"></span><span class="txt">server7: <code>const PORT = process.env.PORT ?? 3322</code>; add the fail-fast <code>DATABASE_URL</code> guard to <code>utils/db.mjs</code>; add <code>"test": "node --test"</code> and <code>"start": "node server7.mjs"</code> to package.json scripts; verify <code>node --env-file=.env server7.mjs</code> still serves 3322, and that booting <em>without</em> the env file dies with your error message</span></li>
+    <li><span class="box"></span><span class="txt">Add the <code>/health</code> handler + route; a quick local <code>curl -i localhost:3322/health</code> → 200 <code>{"ok":true}</code></span></li>
+    <li><span class="box"></span><span class="txt">Render: create the free Postgres (pick one region; note it), copy the <strong>Internal Database URL</strong></span></li>
+    <li><span class="box"></span><span class="txt">Render: create the Web Service from this repo — root dir <code>s/backend-dev/practice</code>, build <code>npm install &amp;&amp; node utils/migrate.mjs</code>, start <code>node server7.mjs</code>, env <code>DATABASE_URL</code>; watch the first deploy log end to end</span></li>
+    <li><span class="box"></span><span class="txt">The fresh-ledger test: register + login + create a note against the public URL. If a 500 <code>INTERNAL</code> appears here, read the logs — a committed migration says something your local database silently disagrees with; fix the <em>file</em>, redeploy, watch it go green. (This is the lesson's planted lesson.)</span></li>
+    <li><span class="box"></span><span class="txt">Set Health Check Path to <code>/health</code>; confirm <code>curl -i https://your-app.onrender.com/health</code> → 200 over real HTTPS</span></li>
+    <li><span class="box"></span><span class="txt">Point the L08 suite at production: in <code>app.test.mjs</code>, <code>base = process.env.BASE_URL ?? `http://localhost:${app.address().port}`</code>; run <code>BASE_URL=https://your-app.onrender.com node --test tests/app.test.mjs</code> (skip <code>start(0)</code> when BASE_URL is set) — the contract survived the trip</span></li>
+    <li><span class="box"></span><span class="txt">Add the <code>Secure</code> flag behind <code>NODE_ENV=production</code>; verify with <code>curl -i</code> on prod login (see <code>Secure</code> in Set-Cookie) and confirm local login still works</span></li>
+    <li><span class="box"></span><span class="txt">Crash drill: temporarily add a route that calls <code>process.exit(1)</code>, hit it, watch the logs — platform restarts the process, <code>/health</code> goes green again. Revert. That's the supervisor you didn't have to write</span></li>
+    <li><span class="box"></span><span class="txt">Let it sleep: leave it 15+ minutes, then curl again — feel the ~1 min cold start, and know the upgrade path that removes it</span></li>
+  </ul>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — boot-time failure costs nothing; request-time failure costs a user." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Why must the server exit at boot when DATABASE_URL is missing?</q>
+  <div class="options">
+    <button class="opt">Config errors should surface at boot, not at first request</button>
+    <button class="opt">Postgres might come online later and connect on its own</button>
+    <button class="opt">Exiting early saves compute minutes on platforms that bill hourly</button>
+    <button class="opt">The server would otherwise listen on an ephemeral port instead</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — the platform owns the port and tells you through the environment." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>In production, where does the port your server listens on come from?</q>
+  <div class="options">
+    <button class="opt">The PORT environment variable the platform assigns</button>
+    <button class="opt">The hardcoded 3322 fallback constant in server7.mjs</button>
+    <button class="opt">A random free port discovered fresh at each boot</button>
+    <button class="opt">The DNS record your platform creates for the service</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — TLS ends at the edge proxy; inside stays plain HTTP." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>The browser speaks HTTPS to your Render URL. Your process receives…</q>
+  <div class="options">
+    <button class="opt">Plain HTTP over the private internal network</button>
+    <button class="opt">HTTPS again, because end-to-end TLS is mandatory</button>
+    <button class="opt">SSH traffic inside an encrypted tunnel instead</button>
+    <button class="opt">Nothing — browsers connect directly to your process</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — deep health: the process can reach what it cannot work without." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>What does GET /health with SELECT 1 actually verify?</q>
+  <div class="options">
+    <button class="opt">Process alive AND database reachable, in one check</button>
+    <button class="opt">Process alive but says nothing about the database</button>
+    <button class="opt">Database contents are correct and migrations are applied</button>
+    <button class="opt">TLS certificate is valid and has not yet expired</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> the <a href="https://12factor.net/config">twelve-factor Config principle</a> — ten short paragraphs that name exactly what you did today; the whole <a href="https://12factor.net/">twelve factors</a> are worth one pass now that you've lived most of them. Then the <a href="https://render.com/docs/deploy-node-express-app">Render Node deployment guide</a> for the platform mechanics you clicked through. When you want the road not taken — your own machine, systemd, Caddy — say so and we'll do a VPS lesson; the <a href="https://fly.io/docs/">Fly.io docs</a> sit between the two worlds (pay-as-you-go, card required).</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 10 — <em>Caching</em>: every list request re-reads Postgres today; keep the answer in memory and learn where caches go to lie. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — why managed Postgres costs $15–70/mo the moment it's "real", what a reverse proxy is, why NODE_ENV is a fossil we still carry, or rolling deploys vs the free tier's one-machine reality — all fair game.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/deployment-first-aid.html">Deployment First Aid</a> · Previous: <a href="0008-testing-the-api.html">Lesson 08</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0009-deployment-and-config.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>
