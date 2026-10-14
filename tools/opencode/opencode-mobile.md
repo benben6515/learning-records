@@ -34,6 +34,16 @@ tailscale serve status
 # |-- / proxy http://127.0.0.1:49374
 ```
 
+#### 若 443 已被占用（機器上已有別的 serve 反代）
+
+root 路徑被占時不要整個蓋掉，另開一個 HTTPS port 給 opencode：
+
+```bash
+tailscale serve --bg --https=8443 49374
+```
+
+之後的網址是 `https://<你的機器>.<tailnet>.ts.net:8443`，配對時 `opencode pair --url` 也帶這個 port。新開的 port 不會繼承機器上原本的 Funnel 設定，仍是 tailnet only。
+
 ### 2. 查這台機器的 MagicDNS 名稱
 
 ```bash
@@ -60,6 +70,7 @@ opencode pair --url https://<你的機器>.<tailnet>.ts.net
 
 ## 踩過的坑
 
+- **`tailscale serve` 沒有 `--host` flag**（至少 1.102.3 沒有）：想用子網域（`oc.<machine>.ts.net`）區分不同服務行不通，會直接 `flag provided but not defined: -host`。多服務共存就各開一個 `--https=<port>`。
 - **不要在 opencode session 裡跑 `opencode service set hostname 0.0.0.0`**：
   這個指令會重啟背景 server，而 server 正是當前 session 在用的——等於把自己斷線，指令永遠跑不完。Tailscale Serve 方案根本不需要改 hostname。
 - **server 端 log 看不到手機 IP**：流量經 serve 反代，opencode 看到的來源是 `127.0.0.1`，這是正常的。
