@@ -26,12 +26,12 @@
 <body>
 <div class="container wide">
 
-  <p class="kicker">Reference · v2 <span style="font-weight:400;color:var(--muted);">(synced 2026-08-25)</span></p>
+  <p class="kicker">Reference · v2 <span style="font-weight:400;color:var(--muted);">(synced 2026-10-29)</span></p>
   <p class="back-nav"><a href="../index.html">↑ Course home</a></p>
   <h1>Matt Pocock Skills Catalog</h1>
   <p class="subtitle">Categorised per the official repo (<code>mattpocock/skills</code>), with one-line descriptions. The skill name is the invocation name.</p>
 
-  <div class="principle"><strong>29 stable skills</strong> across three promoted categories — Engineering, Productivity, and Misc — plus in-progress and deprecated ones listed at the end. Each is authoritatively defined by its own <code>SKILL.md</code>.</div>
+  <div class="principle"><strong>31 stable skills</strong> across three promoted categories — Engineering, Productivity, and Misc — plus in-progress ones listed at the end. Each is authoritatively defined by its own <code>SKILL.md</code>.</div>
 
   <p>This workspace teaches the <strong>spec-driven spine</strong> among them — <code>ask-matt → grill-with-docs → to-spec → to-tickets → implement</code> — documented by <code>domain-modeling</code> and consumed by <code>improve-codebase-architecture</code>. See the <a href="spec-driven-workflow.html">workflow map</a>.</p>
 
@@ -50,13 +50,15 @@
     <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
       <tr><td class="name"><code>ask-matt</code></td><td>Ask “which skill or flow fits my situation” — a router over the skills in this repo.</td></tr>
-      <tr><td class="name"><code>grill-with-docs</code></td><td>A grilling session that also builds your project's domain model, sharpening terminology and updating <code>CONTEXT.md</code> and ADRs inline.</td></tr>
+      <tr><td class="name"><code>grill-with-docs</code></td><td>A grilling session that also builds your project's domain model, sharpening terminology and updating <code>GLOSSARY.md</code> and ADRs inline.</td></tr>
       <tr><td class="name"><code>triage</code></td><td>Moves issues through a state machine of triage roles; produces agent-ready issues with agent briefs.</td></tr>
       <tr><td class="name"><code>improve-codebase-architecture</code></td><td>Scans the codebase for deepening opportunities, presents them as a visual HTML report, then grills you on whichever you pick.</td></tr>
       <tr><td class="name"><code>setup-matt-pocock-skills</code></td><td>Configures this repo for the engineering skills (issue tracker, triage labels, domain doc layout). Run once per repo.</td></tr>
       <tr><td class="name"><code>to-spec</code></td><td>Turns the current conversation into a spec and publishes it to the issue tracker — no interview, just synthesizes what you've already discussed.</td></tr>
       <tr><td class="name"><code>to-tickets</code></td><td>Breaks any plan, spec, or conversation into tracer-bullet tickets, each declaring its blocking edges — text in a local file, or native blocking links on a real tracker.</td></tr>
       <tr><td class="name"><code>implement</code></td><td>Builds the work described by a spec or set of tickets, driving <code>/tdd</code> at pre-agreed seams and closing with <code>/code-review</code> before committing.</td></tr>
+      <tr><td class="name"><code>implement-spec</code><span class="badge new">new</span></td><td>Implements a whole spec in one run: reads the tickets as a <strong>task graph</strong>, runs implementer subagents in their own worktrees across the ready <strong>frontier</strong>, and lands everything on one <strong>integration branch</strong>, closing out with <code>/code-review</code>. The parallel alternative to per-ticket <code>/implement</code>.</td></tr>
+      <tr><td class="name"><code>retro</code><span class="badge new">new</span></td><td>Looks back at a coding session — the last step of the main flow, after <code>code-review</code> — and suggests changes to the agent's <strong>environment</strong>, not the code: navigation pointers, automated checks, coding standards, steering files, tool economy. Mechanical violations become deterministic checks; <code>CODING_STANDARDS.md</code> stays for judgement calls.</td></tr>
       <tr><td class="name"><code>wayfinder</code></td><td>Plans a chunk of work too big for one agent session as a shared map of decision tickets on the issue tracker, resolving them one at a time until the way is clear.</td></tr>
     </tbody>
   </table>
@@ -69,10 +71,10 @@
       <tr><td class="name"><code>diagnosing-bugs</code></td><td>Disciplined diagnosis loop for hard bugs and performance regressions: build a feedback loop that goes red on this bug → minimise → hypothesise → instrument → fix → regression-test.</td></tr>
       <tr><td class="name"><code>research</code></td><td>Investigates a question against high-trust primary sources and captures the findings as a cited Markdown file in the repo; runs as a background agent.</td></tr>
       <tr><td class="name"><code>tdd</code></td><td>Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.</td></tr>
-      <tr><td class="name"><code>domain-modeling</code></td><td>Actively builds and sharpens the project's domain model: challenges terms against the glossary, stress-tests with edge-case scenarios, updates <code>CONTEXT.md</code> and ADRs inline.</td></tr>
+      <tr><td class="name"><code>domain-modeling</code></td><td>Actively builds and sharpens the project's domain model: challenges terms against the glossary, stress-tests with edge-case scenarios, updates <code>GLOSSARY.md</code> and ADRs inline.</td></tr>
       <tr><td class="name"><code>codebase-design</code></td><td>Shared discipline and vocabulary for designing deep modules: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface.</td></tr>
       <tr><td class="name"><code>code-review</code></td><td>Two-axis review of the diff since a fixed point — <strong>Standards</strong> (repo conventions + Fowler smell baseline) and <strong>Spec</strong> (faithful to the originating issue/spec) — run as parallel sub-agents.</td></tr>
-      <tr><td class="name"><code>resolving-merge-conflicts</code></td><td>Works through an in-progress git merge/rebase conflict hunk by hunk, resolving by intent traced to each side's primary source, then finishes the operation — never <code>--abort</code>.</td></tr>
+      <tr><td class="name"><code>pr</code><span class="badge new">new</span></td><td>The shape a pull-request body should take (model-invoked, whenever the agent writes a PR): a summary as the <em>smallest visual</em> that makes the change clear, before/after evidence that it works, and a one-way/two-way door merge-danger call.</td></tr>
       <tr><td class="name"><code>wizard</code><span class="badge new">moved</span></td><td>Generates an interactive bash wizard that walks a human through steps only they can perform: provisioning infrastructure, credentials or CI secrets, unfamiliar third-party dashboards, one-off migrations or cutovers.</td></tr>
     </tbody>
   </table>
@@ -90,7 +92,7 @@
       <tr><td class="name"><code>handoff</code></td><td>Compresses the current conversation into a handoff document so another agent can continue the work.</td></tr>
       <tr><td class="name"><code>teach</code></td><td>Teaches you a new skill or concept over multiple sessions, using the current directory as a stateful teaching workspace.</td></tr>
       <tr><td class="name"><code>to-questionnaire</code><span class="badge new">graduated</span></td><td>Turns a decision you can't answer alone into a Markdown questionnaire for the one person who can. Grills you about the <em>send</em> (who it's for, what you need back), not the subject.</td></tr>
-      <tr><td class="name"><code>wait-what</code><span class="badge new">new</span></td><td>Fire this the moment a message doesn't land. The agent re-pitches it with the context you're missing, in plain English, using your <code>CONTEXT.md</code> vocabulary.</td></tr>
+      <tr><td class="name"><code>wait-what</code><span class="badge new">new</span></td><td>Fire this the moment a message doesn't land. The agent re-pitches it with the context you're missing, in plain English, using your <code>GLOSSARY.md</code> vocabulary.</td></tr>
     </tbody>
   </table>
 
@@ -122,40 +124,32 @@
 
   <!-- ============ IN-PROGRESS ============ -->
   <div class="cat archived">
-  <h2 id="in-progress">In-progress (not yet stable)<span class="badge inprog">8</span></h2>
+  <h2 id="in-progress">In-progress (not yet stable)<span class="badge inprog">7</span></h2>
   <p style="color:var(--muted);font-size:0.88rem;margin-top:-0.3rem;">Beta — public on purpose, excluded from the plugin, no docs pages; can change or disappear without warning. Install one directly with <code>npx skills@latest add mattpocock/skills --skill=&lt;name&gt;</code>.</p>
   <table class="cat">
     <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
     <tbody>
+      <tr><td class="name"><code>chief-of-staff</code></td><td>A wiki-backed chief of staff for your agent setup (design stage — in flux).</td></tr>
       <tr><td class="name"><code>loop-me</code></td><td>Grills yourself into implementable workflow specs over multiple sessions, using the current directory as a stateful workspace.</td></tr>
       <tr><td class="name"><code>writing-beats</code></td><td>Shapes an article as a journey of beats, choose-your-own-adventure style: pick a starting beat, write only that beat, pivot to the next, until a natural end.</td></tr>
       <tr><td class="name"><code>writing-fragments</code></td><td>A grilling session that mines you for fragments (heterogeneous nuggets of writing), appended to a single document as raw material for a future article.</td></tr>
       <tr><td class="name"><code>writing-shape</code></td><td>Takes a markdown file of raw material and shapes it into an article paragraph by paragraph, arguing format choices at each step.</td></tr>
       <tr><td class="name"><code>claude-handoff</code></td><td>Hands the current conversation off to a fresh background agent that picks up the work immediately, seeded with a handoff summary via <code>claude --bg</code>.</td></tr>
       <tr><td class="name"><code>setup-ts-deep-modules</code></td><td>Wires dependency-cruiser into a TypeScript repo so each package is a deep module — implementation hidden in subfolders, reachable only through entry-point files.</td></tr>
-      <tr><td class="name"><code>implement-spec</code><span class="badge new">new</span></td><td>Implements a whole spec on one branch. Works the tickets as a task graph rather than a list, running implementer subagents across the ready frontier for maximum concurrency, landing a single PR.</td></tr>
-      <tr><td class="name"><code>retro</code><span class="badge new">stub</span></td><td>Suggests improvements to the coding agent's environment (steering files, coding standards, automated checks, tooling) after a session. <strong>STUB</strong> — design notes only, not functional yet.</td></tr>
     </tbody>
   </table>
   </div>
+
+  <hr class="rule">
 
   <!-- ============ DEPRECATED ============ -->
   <div class="cat archived">
-  <h2 id="deprecated">Deprecated<span class="badge dep">4</span></h2>
-  <p style="color:var(--muted);font-size:0.88rem;margin-top:-0.3rem;">Replaced or folded into other skills (e.g. <code>ubiquitous-language</code> was superseded by <code>domain-modeling</code>).</p>
-  <table class="cat">
-    <thead><tr><th>Skill</th><th>One-liner</th></tr></thead>
-    <tbody>
-      <tr><td class="name"><code>design-an-interface</code></td><td>Generated multiple distinct interface designs for a module via parallel sub-agents.</td></tr>
-      <tr><td class="name"><code>qa</code></td><td>Interactive QA where the user reports bugs verbally and the agent explores the codebase and opens GitHub issues.</td></tr>
-      <tr><td class="name"><code>request-refactor-plan</code></td><td>Interviewed its way to a detailed refactor plan with small commits, submitted as GitHub issues.</td></tr>
-      <tr><td class="name"><code>ubiquitous-language</code></td><td>Extracted a DDD-style glossary from the current conversation, flagging ambiguity and proposing canonical terms (saved to <code>UBIQUITOUS_LANGUAGE.md</code>).</td></tr>
-    </tbody>
-  </table>
+  <h2 id="deprecated">Deprecated<span class="badge dep">0</span></h2>
+  <p style="color:var(--muted);font-size:0.88rem;margin-top:-0.3rem;">Empty since v1.2.x. The retired skills were absorbed elsewhere: <code>ubiquitous-language</code> → <code>/domain-modeling</code>; <code>design-an-interface</code> → <code>/codebase-design</code> (its "design it twice" technique ships as <code>DESIGN-IT-TWICE.md</code>); <code>qa</code> → <code>/triage</code> + <code>/to-tickets</code>; <code>request-refactor-plan</code> → <code>/to-spec</code> + <code>/improve-codebase-architecture</code>. The <code>personal/</code> bucket went with them. Also gone: <code>resolving-merge-conflicts</code> (removed v1.3.0, no replacement) and <code>batch-grill-me</code>.</p>
   </div>
 
   <div class="footer">
-    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> (each skill defined by its own <code>SKILL.md</code>; categories and user/model-invoked markers come from the repo's READMEs). Notable roster changes since v1: <code>writing-great-skills</code> → <code>writing-for-agents</code>; <code>to-questionnaire</code> graduated; <code>wizard</code> promoted to Engineering (model-invoked); <code>wait-what</code> added; the Personal bucket and <code>batch-grill-me</code> removed; <code>implement-spec</code> + <code>retro</code> added in-progress. See the <a href="spec-driven-workflow.html">workflow map</a> · <a href="../RESOURCES.md">resources</a>. 繁中版：<a href="../reference-tw/skills-catalog.html">技能目錄</a>.</p>
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> (each skill defined by its own <code>SKILL.md</code>; categories and user/model-invoked markers come from the repo's READMEs). Notable roster changes since v1: <code>writing-great-skills</code> → <code>writing-for-agents</code>; <code>to-questionnaire</code> and <code>wizard</code> graduated; <code>wait-what</code> added; <code>implement-spec</code>, <code>retro</code>, and <code>pr</code> graduated into Engineering (v1.3.0); <code>resolving-merge-conflicts</code> removed (v1.3.0, no replacement); the <code>CONTEXT.md</code>/<code>CONTEXT-MAP.md</code> convention renamed to <code>GLOSSARY.md</code>/<code>GLOSSARY-MAP.md</code> (v1.3.0); <code>tdd</code> is now red → green only, refactoring moved to the review stage. See the <a href="spec-driven-workflow.html">workflow map</a> · <a href="../RESOURCES.md">resources</a>. 繁中版：<a href="../reference-tw/skills-catalog.html">技能目錄</a>.</p>
   </div>
 
 </div>

@@ -16,7 +16,7 @@
   <h1>詞彙表</h1>
   <p class="subtitle">Matt Pocock 技能集的領域語言。每一課都在用這些術語。</p>
 
-  <p class="lead">技能自己的 <a href="https://github.com/mattpocock/skills/blob/main/CONTEXT.md" target="_blank" rel="noopener">CONTEXT.md</a> 是權威來源。精確使用這些術語；別漂移到近似同義詞。</p>
+  <p class="lead">技能自己的 <a href="https://github.com/mattpocock/skills/blob/main/GLOSSARY.md" target="_blank" rel="noopener">GLOSSARY.md</a> 是權威來源。精確使用這些術語；別漂移到近似同義詞。</p>
 
   <table>
     <thead><tr><th>術語</th><th>定義</th></tr></thead>
@@ -32,16 +32,16 @@
       <tr><td><strong>阻塞邊（Blocking edges）</strong></td><td>票與票之間的依賴連結。每張票宣告哪些票阻塞它。在真追蹤器上這些是原生阻塞連結；本地則是每票一檔裡的文字。未被阻塞、未被認領的票集合就是<strong>前緣</strong>。</td></tr>
       <tr><td><strong>前緣（Frontier）</strong></td><td>開放、未被阻塞、未被認領的票——<code>wayfinder</code> 裡已知世界的邊界，或 <code>to-tickets</code> 裡可拿的工作。追蹤器的原生阻塞渲染會把它畫出來。</td></tr>
       <tr><td><strong>曳光彈（Tracer bullet）</strong></td><td>貫穿所有整合層的薄<em>垂直</em>切片（schema、API、UI、測試），自己就能 demo。第一圈 TDD 先證明一條路端到端走得通，再向外建。相反：<strong>水平切片</strong>（單一層，全部到齊前什麼都不能動）。</td></tr>
-      <tr><td><strong>共用語言（Ubiquitous language）</strong></td><td>（DDD，Evans）開發者與領域專家之間的共享詞彙，在對話、程式碼與檔案裡一致使用。在技能集裡，以純詞彙表的形式收在 <code>CONTEXT.md</code>——零實作細節、零規格。</td></tr>
+      <tr><td><strong>共用語言（Ubiquitous language）</strong></td><td>（DDD，Evans）開發者與領域專家之間的共享詞彙，在對話、程式碼與檔案裡一致使用。在技能集裡，以純詞彙表的形式收在 <code>GLOSSARY.md</code>——零實作細節、零規格。</td></tr>
       <tr><td><strong>ADR</strong></td><td>架構決策紀錄，在 <code>docs/adr/</code> 底下。門檻很高：只在選擇<strong>難以逆轉</strong>、<strong>沒上下文會令人意外</strong>、且是<strong>真實取捨的結果</strong>時才提出。缺任何一個就沒有 ADR。</td></tr>
       <tr><td><strong>HITL / AFK</strong></td><td>（wayfinder）Human-in-the-loop vs away-from-keyboard。每張 wayfinder 票非 HITL（盤問、原型——需要活生生的一來一往）即 AFK（研究——代理獨自跑）。代理絕不自己回答 HITL 票上的問題。</td></tr>
       <tr><td><strong>單一視窗紀律（Context hygiene）</strong></td><td>讓主流程步驟 1–3（grill-with-docs → to-spec → to-tickets）留在<em>同一個不中斷的上下文視窗</em>——<code>to-tickets</code> 結束前不 compact、不清空——讓盤問、規格與票建立在同一份思考上。之後每個 <code>implement</code> 全新開始。</td></tr>
       <tr><td><strong>階段邊界（Phase boundary）</strong></td><td>（ask-matt）session 內兩個階段（盤問、實作、QA）之間的空檔。唯一能在我們的五個選項——<strong>Continue</strong>、<code>/clear</code>、<code>/handoff</code>、<strong>子代理</strong>、<code>/compact</code>——之間做選擇的地方：由上往下過樹，第一個「是」獲勝。階段中途沒有決策可做：繼續，或拆成子代理。</td></tr>
-      <tr><td><strong>紅—綠迴圈（Red-green loop）</strong></td><td>寫一個失敗的測試（紅），加剛好足以通過的程式碼（綠），然後對下一個行為重複。只在綠時重構，絕不在紅時。<code>tdd</code> 與 <code>implement</code> 裡的引擎。</td></tr>
+      <tr><td><strong>紅—綠迴圈（Red-green loop）</strong></td><td>寫一個失敗的測試（紅），加剛好足以通過的程式碼（綠），然後對下一個行為重複。重構不是迴圈的一部分——它屬於審查階段（<code>code-review</code>）。<code>tdd</code> 與 <code>implement</code> 裡的引擎。</td></tr>
     </tbody>
   </table>
 
-  <p style="margin-top:2rem;font-size:0.85rem;color:var(--muted);">來源：<a href="https://github.com/mattpocock/skills/blob/main/CONTEXT.md" target="_blank" rel="noopener">CONTEXT.md</a>、<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/SKILL.md" target="_blank" rel="noopener">ask-matt SKILL.md</a>，與各技能文件頁。</p>
+  <p style="margin-top:2rem;font-size:0.85rem;color:var(--muted);">來源：<a href="https://github.com/mattpocock/skills/blob/main/GLOSSARY.md" target="_blank" rel="noopener">GLOSSARY.md</a>、<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/SKILL.md" target="_blank" rel="noopener">ask-matt SKILL.md</a>，與各技能文件頁。</p>
 
 </div>
 </body>

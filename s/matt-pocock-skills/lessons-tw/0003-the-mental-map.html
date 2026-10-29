@@ -32,11 +32,13 @@
       <span class="stage">implement</span>
       <span class="arrow">→</span>
       <span class="stage">code-review</span>
+      <span class="arrow">→</span>
+      <span class="stage">retro</span>
     </div>
-    <div class="under">想法 &nbsp;⟶&nbsp; 交付 &nbsp;·&nbsp; 全程由 <code>domain-modeling</code> 撰寫 <code>CONTEXT.md</code> + ADR</div>
+    <div class="under">想法 &nbsp;⟶&nbsp; 交付 &nbsp;·&nbsp; 全程由 <code>domain-modeling</code> 撰寫 <code>GLOSSARY.md</code> + ADR</div>
   </div>
 
-  <p>從左讀到右。你從一個想法開始，用訪談把它磨利（<code>grill-with-docs</code>），凍結成規格（<code>to-spec</code>），拆成可施工的票（<code>to-tickets</code>），逐張施作（<code>implement</code>），提交前審查（<code>code-review</code>）。<strong>規格驅動開發，就是中間這一段</strong>——<code>grill-with-docs → to-spec → to-tickets</code>——這也是我們最先要學的。</p>
+  <p>從左讀到右。你從一個想法開始，用訪談把它磨利（<code>grill-with-docs</code>），凍結成規格（<code>to-spec</code>），拆成可施工的票（<code>to-tickets</code>），逐張施作（<code>implement</code>——一張一張來，或用 <code>implement-spec</code> 一次跑完整份規格），提交前審查（<code>code-review</code>），最後用回顧把迴圈閉起來（<code>retro</code>）。<strong>規格驅動開發，就是中間這一段</strong>——<code>grill-with-docs → to-spec → to-tickets</code>——這也是我們最先要學的。</p>
 
   <div class="callout accent">
     <span class="label">單一視窗紀律（context hygiene）</span>
@@ -64,7 +66,7 @@
   <div class="checklist">
     <h3>你的具體收穫 — 把這些說出口</h3>
     <ol>
-      <li>依序說出主流程的五個階段。</li>
+      <li>依序說出主流程的六個階段。</li>
       <li>指出哪一段算是「規格驅動」。</li>
       <li>說出那條視窗紀律，以及你<em>什麼時候</em>才允許清空視窗。</li>
     </ol>
@@ -75,7 +77,7 @@
   <ul>
     <li><strong>主要來源（讀）：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/ask-matt/SKILL.md"><code>ask-matt</code> 技能</a>——它<em>本身就是</em>那張地圖，由作者親寫。五分鐘。</li>
     <li><strong>主要來源（看）：</strong>Matt 的 <a href="https://www.youtube.com/watch?v=6BB6exR8Zd8"><code>/grill-with-docs</code> 簡介影片</a>——入口階段，由他親口說明。</li>
-    <li><strong>完整參考：</strong><a href="../reference-tw/spec-driven-workflow.html">流程圖與詞彙表</a>——每個階段、規格解剖、<code>CONTEXT.md</code>／ADR 規則、最佳實踐原則，外加詞彙表。加入書籤；你會一再回來。</li>
+    <li><strong>完整參考：</strong><a href="../reference-tw/spec-driven-workflow.html">流程圖與詞彙表</a>——每個階段、規格解剖、<code>GLOSSARY.md</code>／ADR 規則、最佳實踐原則，外加詞彙表。加入書籤；你會一再回來。</li>
   </ul>
 
   <div class="callout note">

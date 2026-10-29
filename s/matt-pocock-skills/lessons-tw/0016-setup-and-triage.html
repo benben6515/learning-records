@@ -23,7 +23,7 @@
 <ul>
 <li><strong>議題追蹤器</strong>——議題住哪裡（GitHub、GitLab、本地 <code>.scratch/</code> markdown，或其他）。它會提議符合你 <code>git remote</code> 的那一個。</li>
 <li><strong>分級標籤</strong>——只有裝了 <code>triage</code> 才問。保留預設值（<code>needs-triage</code>、<code>needs-info</code>、<code>ready-for-agent</code>、<code>ready-for-human</code>、<code>wontfix</code>），除非你的追蹤器已用別的字串。</li>
-<li><strong>領域文件</strong>——單一情境（根目錄一份 <code>CONTEXT.md</code> + <code>docs/adr/</code>）幾乎適用每個 repo；只有當它嗅到 monorepo 訊號時才用多情境。</li>
+<li><strong>領域文件</strong>——單一情境（根目錄一份 <code>GLOSSARY.md</code> + <code>docs/adr/</code>）幾乎適用每個 repo；只有當它嗅到 monorepo 訊號時才用多情境。</li>
 </ul>
 <p>產出：<code>docs/agents/</code> 底下的檔案（<code>issue-tracker.md</code>、<code>domain.md</code>，以及裝了 triage 時的 <code>triage-labels.md</code>）+ 你的 <code>CLAUDE.md</code> 或 <code>AGENTS.md</code> 裡一段 <code>## Agent skills</code> 區塊。若 <code>triage</code>／<code>to-spec</code>／<code>to-tickets</code> 開始<em>猜</em>你的議題住哪，就是你跳過了這一步。</p>
 

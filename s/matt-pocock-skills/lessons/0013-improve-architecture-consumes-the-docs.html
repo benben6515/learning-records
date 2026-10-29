@@ -27,7 +27,7 @@
   <h1>How <code>improve-codebase-architecture</code> Consumes the Docs</h1>
   <p class="subtitle">The skill that reads everything you've built — and finds where the code wants deepening.</p>
 
-  <p class="lead">This is the last piece, and it closes the loop. Every artefact from the earlier lessons feeds into it: <code>CONTEXT.md</code> (<a href="0005-context-md-glossary.html">L5</a>) gives names to good seams; ADRs (<a href="0006-adrs-the-gate.html">L6</a>) record decisions not to re-litigate. <code>improve-codebase-architecture</code> reads them both, scans for friction, and proposes <strong>deepening opportunities</strong> — refactors that turn shallow modules into deep ones. The aim: testability and AI-navigability.</p>
+  <p class="lead">This is the last piece, and it closes the loop. Every artefact from the earlier lessons feeds into it: <code>GLOSSARY.md</code> (<a href="0005-context-md-glossary.html">L5</a>) gives names to good seams; ADRs (<a href="0006-adrs-the-gate.html">L6</a>) record decisions not to re-litigate. <code>improve-codebase-architecture</code> reads them both, scans for friction, and proposes <strong>deepening opportunities</strong> — refactors that turn shallow modules into deep ones. The aim: testability and AI-navigability.</p>
 
   <h2>The one idea: deep vs shallow</h2>
   <div class="principle">A <strong>deep module</strong> hides a lot of behaviour behind a small interface. A <strong>shallow</strong> one has an interface nearly as complex as its implementation. Deepen the shallow ones.</div>
@@ -55,16 +55,16 @@
 
   <h2>The flow</h2>
   <ol>
-    <li><strong>Explore — scope first (YAGNI).</strong> Read <code>CONTEXT.md</code> and the relevant ADRs <em>before</em> scanning. Weight your attention to recently-changed code (<code>git log</code> hot spots) — deepening pays off where future change is likely. Note friction organically: concepts that force bouncing between many tiny modules; interfaces as complex as their implementation; pure functions extracted only for testability while the real bugs hide in how they're called.</li>
+    <li><strong>Explore — scope first (YAGNI).</strong> Read <code>GLOSSARY.md</code> and the relevant ADRs <em>before</em> scanning. Weight your attention to recently-changed code (<code>git log</code> hot spots) — deepening pays off where future change is likely. Note friction organically: concepts that force bouncing between many tiny modules; interfaces as complex as their implementation; pure functions extracted only for testability while the real bugs hide in how they're called.</li>
     <li><strong>Present candidates as an HTML report.</strong> Each card: files, problem, solution, benefits (in terms of locality/leverage/testability), a before/after visualisation, and a strength badge (Strong / Worth exploring / Speculative). It does <strong>not</strong> propose interfaces yet — it asks: "which do you want to explore?"</li>
     <li><strong>Grill the one you pick.</strong> Runs <code>/grilling</code> (the L4 primitive) to walk the decision tree — constraints, dependencies, the shape of the deepened module, what survives behind the seam. <strong>Docs update inline as decisions crystallise</strong>, via <code>/domain-modeling</code>.</li>
   </ol>
 
   <h2>How it respects and refreshes your docs</h2>
   <ul>
-    <li><strong>Uses glossary vocabulary for domain, design vocabulary for architecture.</strong> If <code>CONTEXT.md</code> defines "Order," it talks about "the Order-intake module" — not "FooBarHandler."</li>
+    <li><strong>Uses glossary vocabulary for domain, design vocabulary for architecture.</strong> If <code>GLOSSARY.md</code> defines "Order," it talks about "the Order-intake module" — not "FooBarHandler."</li>
     <li><strong>Respects ADRs — doesn't re-litigate.</strong> A candidate that contradicts an ADR is surfaced <em>only</em> if the friction is real enough to warrant reopening, and it's flagged explicitly ("contradicts ADR-0007 — but worth reopening because…").</li>
-    <li><strong>Writes back.</strong> Names a deepened module after a concept not in the glossary? Adds it. Sharpen a fuzzy term mid-grill? Updates <code>CONTEXT.md</code> right there. You reject a candidate with a load-bearing reason? Offers an ADR so future reviews don't re-suggest it.</li>
+    <li><strong>Writes back.</strong> Names a deepened module after a concept not in the glossary? Adds it. Sharpen a fuzzy term mid-grill? Updates <code>GLOSSARY.md</code> right there. You reject a candidate with a load-bearing reason? Offers an ADR so future reviews don't re-suggest it.</li>
   </ul>
 
   <div class="checklist">
@@ -73,7 +73,7 @@
       <li>Define a deep module vs a shallow one (interface size relative to implementation).</li>
       <li>State the deletion test, and which answer signals "shallow."</li>
       <li>Name the two payoffs of depth (leverage, locality) and who each is for.</li>
-      <li>How does this skill <em>use</em> <code>CONTEXT.md</code> and ADRs — and how does it <em>write back</em> to them?</li>
+      <li>How does this skill <em>use</em> <code>GLOSSARY.md</code> and ADRs — and how does it <em>write back</em> to them?</li>
     </ol>
     <p style="margin:0;font-size:0.9rem;color:var(--muted);">If you can answer these, you've completed the conceptual tour of the spec-driven spine.</p>
   </div>
@@ -102,7 +102,7 @@
       <span class="arrow">→</span>
       <span class="stage">implement</span>
     </div>
-    <div class="under">underneath: <code>CONTEXT.md</code> + ADRs (L5–6) · consumed by <code>improve-codebase-architecture</code> (L13)</div>
+    <div class="under">underneath: <code>GLOSSARY.md</code> + ADRs (L5–6) · consumed by <code>improve-codebase-architecture</code> (L13)</div>
   </div>
   <p>That's the map, the entry point, the two artefacts, the spec, the tickets, and the architecture consumer — the disciplined core of the whole set. But the skill set is bigger than the spine: the remaining lessons cover the <em>on-ramps and standalone tools</em> that attach to it — the AFK exploration loop, throwaway prototypes, the issue pipeline, and the router that holds it all in your head.</p>
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>第 7 課 — CONTEXT.md，詞彙表</title>
+<title>第 7 課 — GLOSSARY.md，詞彙表</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="../assets/styles.css">
 <script src="../assets/theme.js"></script>
@@ -13,14 +13,19 @@
 
   <p class="kicker">第 0005 課 · 約 6 分鐘</p>
   <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
-  <h1><code>CONTEXT.md</code> — 詞彙表</h1>
+  <h1><code>GLOSSARY.md</code> — 詞彙表</h1>
   <p class="subtitle">四條規則。一句關鍵話。每個後續技能最先讀的東西。</p>
 
   <p class="lead">在<a href="0004-the-entry-point.html">第 4 課</a>你看到 <code>grill-with-docs</code> 邊訪談邊寫詞彙表。現在的問題是：那個詞彙表<em>是</em>什麼，怎樣算寫得好？這份產物是你整個規格驅動流程的基石——<code>to-spec</code> 用它的用語，<code>implement</code> 動手前會讀它，<code>improve-codebase-architecture</code> 用它來命名模組。規則搞錯，下游每個技能都會跟著偏。</p>
 
   <h2>一個核心觀念</h2>
-  <div class="principle"><code>CONTEXT.md</code> 就是詞彙表，除此無他。不是規格、不是草稿、不是決策紀錄。</div>
+  <div class="principle"><code>GLOSSARY.md</code> 就是詞彙表，除此無他。不是規格、不是草稿、不是決策紀錄。</div>
   <p>這一句就是整課。其餘都是推論。最常見的破壞方式：開始把實作塞進去——檔案路徑、類別名稱、「它怎麼運作」。你一這麼做，它就不再是詞彙表，而變成一坨半程式碼半散文、沒人敢信的爛泥。</p>
+
+  <div class="callout note">
+  <span class="label">歷史備註</span>
+  在技能集 v1.3.0（2026-09）之前，這個檔案叫 <code>CONTEXT.md</code>——較舊的教學與 repo 仍用舊名。技能集已把慣例更名為 <code>GLOSSARY.md</code>（<code>CONTEXT-MAP.md</code> 也更名為 <code>GLOSSARY-MAP.md</code>）。若你的 repo 還是舊名：<code>git mv CONTEXT.md GLOSSARY.md</code>——技能只認新名字。
+  </div>
 
   <h2>四條規則</h2>
   <ol>
@@ -29,6 +34,7 @@
     <li><strong>只放專屬於本專案的。</strong>一般程式設計概念（逾時、錯誤型別）不該出現，即使專案到處在用。自問：<em>這是我這個領域獨有的嗎？</em></li>
     <li><strong>不可含實作。</strong>沒有路徑、沒有類別、沒有技術選型。決策與行為屬於規格和 ADR——不屬於這裡。</li>
   </ol>
+  <p style="font-size:0.9rem;color:var(--ink-soft);">一個結構上的小技巧：當自然群聚出現時，<strong>用小標題把術語分組</strong>——如果所有術語同屬一個連貫區域，平鋪一層也沒問題。</p>
 
   <p>這是一則正確條目，直接取自技能本身的範例：</p>
   <div class="callout note">
@@ -53,13 +59,13 @@
 
   <h2>深入了解</h2>
   <ul>
-    <li><strong>主要來源（讀）：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>domain-modeling/CONTEXT-FORMAT.md</code></a>——格式全文。三分鐘。</li>
-    <li><strong>參考卡：</strong><a href="../reference-tw/context-md-format.html"><code>CONTEXT.md</code> 格式與規則</a>——四條規則、範本、正確／錯誤範例、單一 vs 多情境、以及邊走邊寫的紀律。加入書籤。</li>
+    <li><strong>主要來源（讀）：</strong><a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md"><code>domain-modeling/GLOSSARY-FORMAT.md</code></a>——格式全文。三分鐘。</li>
+    <li><strong>參考卡：</strong><a href="../reference-tw/context-md-format.html"><code>GLOSSARY.md</code> 格式與規則</a>——四條規則、範本、正確／錯誤範例、單一 vs 多情境、以及邊走邊寫的紀律。加入書籤。</li>
   </ul>
 
   <div class="callout note">
     <span class="label">向老師提問</span>
-    挑一題：<em>「你的專案裡有像 <code>permissionBits</code> 位元遮罩（bitmask）這樣的東西，還有一些領域專屬的詞——哪些該進 <code>CONTEXT.md</code>？」</em> · <em>「該進詞彙表、還是該進 ADR？它們感覺很近。」</em>（這正好鋪陳第 6 課）· <em>「如果詞彙表不能含實作，那『我們用位元遮罩做授權』要記在哪？」</em>
+    挑一題：<em>「你的專案裡有像 <code>permissionBits</code> 位元遮罩（bitmask）這樣的東西，還有一些領域專屬的詞——哪些該進 <code>GLOSSARY.md</code>？」</em> · <em>「該進詞彙表、還是該進 ADR？它們感覺很近。」</em>（這正好鋪陳第 6 課）· <em>「如果詞彙表不能含實作，那『我們用位元遮罩做授權』要記在哪？」</em>
   </div>
 
   <p class="nav-next">下一課 → <a href="0006-adrs-the-gate.html"><strong>ADR — 三條件的閘門。</strong></a>詞彙表收<em>用語</em>，ADR 收<em>決策</em>——但只有通過高標的決策。你以為該寫成 ADR 的大多數事情……其實都不必。</p>

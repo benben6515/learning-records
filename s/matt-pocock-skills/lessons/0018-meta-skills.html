@@ -56,7 +56,7 @@
 <ul>
 <li><strong>Leading words</strong> — a compact concept already in the model's pretraining (<em>tight</em>, <em>red</em>, <em>tracer bullet</em>) that the agent thinks with while running the skill. Anchors execution in the fewest tokens.</li>
 <li><strong>Information hierarchy</strong> — the ladder from in-skill step → in-skill reference → external reference behind a <strong>context pointer</strong>. <strong>Progressive disclosure</strong> is the move down that ladder so the top stays legible.</li>
-<li><strong>Pruning</strong> — single source of truth, relevance, and the no-op test applied sentence by sentence, against <strong>sediment</strong> and <strong>sprawl</strong>.</li>
+<li><strong>Pruning</strong> — single source of truth, relevance, and the no-op test applied sentence by sentence, against <strong>sediment</strong> and <strong>sprawl</strong>. Single source of truth now reaches into the environment: <code>package.json</code> scripts, config, directory layout are themselves authoritative, so a doc that restates them is a <strong>cache</strong> of a lookup — it earns its load only when the lookup is expensive.</li>
 <li><strong>Failure modes</strong> — <em>premature completion</em>, <em>duplication</em>, <em>sediment</em>, <em>sprawl</em>, <em>no-op</em> — to diagnose a skill that isn't behaving.</li>
 </ul>
 

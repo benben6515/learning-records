@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reference — CONTEXT.md Format</title>
+<title>Reference — GLOSSARY.md Format</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="../assets/styles.css">
 <script src="../assets/theme.js"></script>
@@ -13,12 +13,17 @@
 
   <p class="kicker">Reference · v1</p>
   <p class="back-nav"><a href="../index.html">↑ Course home</a></p>
-  <h1><code>CONTEXT.md</code> — Format &amp; Rules</h1>
+  <h1><code>GLOSSARY.md</code> — Format &amp; Rules</h1>
   <p class="subtitle">The glossary. Opinionated, tight, project-specific, and devoid of implementation.</p>
 
-  <div class="principle"><code>CONTEXT.md</code> is a glossary and nothing else. Not a spec, not a scratchpad, not a decision log.</div>
+  <div class="principle"><code>GLOSSARY.md</code> is a glossary and nothing else. Not a spec, not a scratchpad, not a decision log.</div>
 
-  <p>This is the project's <strong>ubiquitous language</strong> — the canonical names every other skill uses in issue titles, specs, test names, and refactor proposals. Ground truth: <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>CONTEXT-FORMAT.md</code></a> and the <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/SKILL.md"><code>domain-modeling</code> skill</a>.</p>
+  <div class="callout note">
+    <span class="label">Renamed from <code>CONTEXT.md</code></span>
+    Until v1.3.0 (2026-09) the convention was called <code>CONTEXT.md</code> / <code>CONTEXT-MAP.md</code>. The skills renamed it to <code>GLOSSARY.md</code> / <code>GLOSSARY-MAP.md</code> and only read the new names. Existing file? <code>git mv CONTEXT.md GLOSSARY.md</code> — format unchanged.
+  </div>
+
+  <p>This is the project's <strong>ubiquitous language</strong> — the canonical names every other skill uses in issue titles, specs, test names, and refactor proposals. Ground truth: <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md"><code>GLOSSARY-FORMAT.md</code></a> and the <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/SKILL.md"><code>domain-modeling</code> skill</a>.</p>
 
   <hr class="rule">
 
@@ -98,18 +103,18 @@ _Avoid_: Client, buyer, account</code></pre>
     <li><strong>Challenge conflicts.</strong> When someone uses a term that clashes with the glossary, call it out immediately: <em>"Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"</em></li>
     <li><strong>Sharpen fuzzy language.</strong> When a vague/overloaded term appears, propose the precise canonical term.</li>
     <li><strong>Update inline, don't batch.</strong> The moment a term resolves, write it. Don't collect them for later.</li>
-    <li><strong>Create lazily.</strong> No <code>CONTEXT.md</code> until the first term actually resolves. Don't scaffold an empty one.</li>
+    <li><strong>Create lazily.</strong> No <code>GLOSSARY.md</code> until the first term actually resolves. Don't scaffold an empty one.</li>
   </ul>
 
   <h2 id="layout">Single vs multi-context</h2>
   <ul>
-    <li><strong>Single context (most repos):</strong> one <code>CONTEXT.md</code> at the repo root. A typical project is this.</li>
-    <li><strong>Multi-context:</strong> a root <code>CONTEXT-MAP.md</code> lists the contexts, where each lives, and how they relate; each context gets its own <code>CONTEXT.md</code>. The skill infers which applies — if unclear, it asks.</li>
+    <li><strong>Single context (most repos):</strong> one <code>GLOSSARY.md</code> at the repo root. A typical project is this.</li>
+    <li><strong>Multi-context:</strong> a root <code>GLOSSARY-MAP.md</code> lists the contexts, where each lives, and how they relate; each context gets its own <code>GLOSSARY.md</code>. The skill infers which applies — if unclear, it asks.</li>
   </ul>
   <p>For a monorepo with genuinely separate bounded contexts (e.g. <code>ordering/</code>, <code>billing/</code>), reach for the map. For one cohesive app, a single root file is correct — don't invent contexts.</p>
 
   <div class="footer">
-    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>domain-modeling/CONTEXT-FORMAT.md</code></a>. See also <a href="spec-driven-workflow.html">the Workflow Map</a> · <a href="../lessons/0005-context-md-glossary.html">Lesson 3</a>.</p>
+    <p>Reference for the <em>Matt Pocock Skills</em> workspace. Authoritative source: <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md"><code>domain-modeling/GLOSSARY-FORMAT.md</code></a>. See also <a href="spec-driven-workflow.html">the Workflow Map</a> · <a href="../lessons/0005-context-md-glossary.html">Lesson 3</a>.</p>
   </div>
 
 </div>

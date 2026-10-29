@@ -27,7 +27,7 @@
   <h1><code>improve-codebase-architecture</code> 如何消化這些文件</h1>
   <p class="subtitle">這個技能讀進你一路建立的所有東西——並找出程式碼想要深化之處。</p>
 
-  <p class="lead">這是最後一塊，而且它把迴圈關上。較早各課的每一份產物都餵進它：<code>CONTEXT.md</code>（<a href="0005-context-md-glossary.html">L5</a>）為好的接縫命名；ADR（<a href="0006-adrs-the-gate.html">L6</a>）記錄下不要重新爭論的決策。<code>improve-codebase-architecture</code> 讀這兩份，掃描摩擦，並提出<strong>深化機會（deepening opportunities）</strong>——也就是把淺模組變成深模組的重構。目標：可測性與 AI 可導航性。</p>
+  <p class="lead">這是最後一塊，而且它把迴圈關上。較早各課的每一份產物都餵進它：<code>GLOSSARY.md</code>（<a href="0005-context-md-glossary.html">L5</a>）為好的接縫命名；ADR（<a href="0006-adrs-the-gate.html">L6</a>）記錄下不要重新爭論的決策。<code>improve-codebase-architecture</code> 讀這兩份，掃描摩擦，並提出<strong>深化機會（deepening opportunities）</strong>——也就是把淺模組變成深模組的重構。目標：可測性與 AI 可導航性。</p>
 
   <h2>一個核心觀念：深 vs 淺</h2>
   <div class="principle">一個<strong>深模組（deep module）</strong>把大量行為藏在一個小介面背後。一個<strong>淺（shallow）</strong>模組的介面，幾乎和它的實作一樣複雜。把淺的那些深化。</div>
@@ -55,16 +55,16 @@
 
   <h2>流程</h2>
   <ol>
-    <li><strong>探索 — 先界定範圍（YAGNI）。</strong>掃描<em>之前</em>，先讀 <code>CONTEXT.md</code> 與相關的 ADR。把你的注意力加權在最近變動過的程式碼上（<code>git log</code> 的熱點）——深化在未來可能變動之處才划得來。自然而然地記下摩擦：那些逼你在許多小模組之間跳來跳去的概念；介面和它的實作一樣複雜；純粹函式只是為了可測而被抽出來，而真正的 bug 卻藏在它們<em>被呼叫的方式</em>裡。</li>
+    <li><strong>探索 — 先界定範圍（YAGNI）。</strong>掃描<em>之前</em>，先讀 <code>GLOSSARY.md</code> 與相關的 ADR。把你的注意力加權在最近變動過的程式碼上（<code>git log</code> 的熱點）——深化在未來可能變動之處才划得來。自然而然地記下摩擦：那些逼你在許多小模組之間跳來跳去的概念；介面和它的實作一樣複雜；純粹函式只是為了可測而被抽出來，而真正的 bug 卻藏在它們<em>被呼叫的方式</em>裡。</li>
     <li><strong>以 HTML 報告呈現候選項。</strong>每張卡片：檔案、問題、解法、效益（以局部性／槓桿／可測性來表達）、一個前／後視覺化，以及一個強度徽章（強／值得探索／推測性）。它此刻<strong>還不</strong>提介面——它問的是：「你想探索哪一個？」</li>
     <li><strong>盤問你挑中的那一個。</strong>跑 <code>/grilling</code>（那個 L4 的基本工具）來走一遍決策樹——限制、相依、深化後模組的形狀、什麼留在接縫背後。<strong>隨著決策結晶，文件就地更新</strong>，透過 <code>/domain-modeling</code>。</li>
   </ol>
 
   <h2>它如何尊重並刷新你的文件</h2>
   <ul>
-    <li><strong>領域用詞彙表的詞彙，架構用設計詞彙。</strong>如果 <code>CONTEXT.md</code> 定義了「訂單」，它就講「訂單收件模組」——而不是「FooBarHandler」。</li>
+    <li><strong>領域用詞彙表的詞彙，架構用設計詞彙。</strong>如果 <code>GLOSSARY.md</code> 定義了「訂單」，它就講「訂單收件模組」——而不是「FooBarHandler」。</li>
     <li><strong>尊重 ADR——不重新爭論。</strong>某個候選若與一則 ADR 牴觸，只有當摩擦真實到值得重開時才浮現，而且會被明確標記（「與 ADR-0007 牴觸——但值得重開，因為……」）。</li>
-    <li><strong>回寫。</strong>用詞彙表裡沒有的概念為深化後的模組命名？補進去。在盤問途中把一個模糊的詞磨利？就地更新 <code>CONTEXT.md</code>。你用一個具決定性分量的理由否決了一個候選？提一則 ADR，讓未來的審查別再建議它。</li>
+    <li><strong>回寫。</strong>用詞彙表裡沒有的概念為深化後的模組命名？補進去。在盤問途中把一個模糊的詞磨利？就地更新 <code>GLOSSARY.md</code>。你用一個具決定性分量的理由否決了一個候選？提一則 ADR，讓未來的審查別再建議它。</li>
   </ul>
 
   <div class="checklist">
@@ -73,7 +73,7 @@
       <li>定義深模組 vs 淺模組（介面大小相對於實作）。</li>
       <li>說出刪除測試，以及哪個答案代表「淺」。</li>
       <li>說出深度的兩個回報（槓桿、局部性），以及各自是給誰的。</li>
-      <li>這個技能如何<em>使用</em> <code>CONTEXT.md</code> 和 ADR——又如何<em>回寫</em>它們？</li>
+      <li>這個技能如何<em>使用</em> <code>GLOSSARY.md</code> 和 ADR——又如何<em>回寫</em>它們？</li>
     </ol>
     <p style="margin:0;font-size:0.9rem;color:var(--muted);">若你能答出這些，你就完成了規格驅動主幹的概念導覽。</p>
   </div>
@@ -102,7 +102,7 @@
       <span class="arrow">→</span>
       <span class="stage">implement</span>
     </div>
-    <div class="under">底下：<code>CONTEXT.md</code> + ADR（L5–6）· 被 <code>improve-codebase-architecture</code> 消化（L13）</div>
+    <div class="under">底下：<code>GLOSSARY.md</code> + ADR（L5–6）· 被 <code>improve-codebase-architecture</code> 消化（L13）</div>
   </div>
   <p>那就是地圖、入口、兩份產物、規格、票，以及架構消費者——整套技能的紀律核心。但技能集比這條主幹更大：接下來的課程涵蓋掛上去的<em>入口坡道與獨立工具</em>——AFK 探索迴圈、拋棄式原型、議題管線，以及把它們全部裝進你腦中的路由器。</p>
 

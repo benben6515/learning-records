@@ -11,7 +11,7 @@
 <body>
 <div class="container wide">
 
-  <p class="kicker">Reference · 繁中版</p>
+  <p class="kicker">Reference · 繁中版 <span style="font-weight:400;color:var(--muted);">(synced 2026-10-29)</span></p>
   <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
   <h1>Matt Pocock 技能 — 流程圖與詞彙表</h1>
   <p class="subtitle">一套系統、一條主流程、一條規格驅動主幹，底下是一份共享詞彙。</p>
@@ -34,20 +34,23 @@
       <span class="stage">implement</span>
       <span class="arrow">→</span>
       <span class="stage">code-review</span>
+      <span class="arrow">→</span>
+      <span class="stage">retro</span>
     </div>
-    <div class="under">全程在底下： <code>domain-modeling</code> 撰寫 <code>CONTEXT.md</code> + ADR</div>
+    <div class="under">全程在底下： <code>domain-modeling</code> 撰寫 <code>GLOSSARY.md</code> + ADR</div>
   </div>
 
   <ol>
-    <li><strong><code>/grill-with-docs</code></strong> —— 用窮追不捨的訪談把想法磨利。<em>手上有 codebase 就從這裡開始。</em>它是有狀態的：把學到的東西保存在 <code>CONTEXT.md</code> 與 ADR 裡。沒有 codebase？改用 <code>/grill-me</code>（同一個 <code>/grilling</code> 基本工具，不留文件軌跡）。</li>
+    <li><strong><code>/grill-with-docs</code></strong> —— 用窮追不捨的訪談把想法磨利。<em>手上有 codebase 就從這裡開始。</em>它是有狀態的：把學到的東西保存在 <code>GLOSSARY.md</code> 與 ADR 裡。沒有 codebase？改用 <code>/grill-me</code>（同一個 <code>/grilling</code> 基本工具，不留文件軌跡）。</li>
     <li><strong>分岔 —— 有沒有問題需要可執行的答案？</strong>如果某個問題需要狀態、業務邏輯，或你必須親眼看的 UI，就繞道原型，兩頭都用 <code>/handoff</code> 橋接：出去 → 全新 session → <code>/prototype</code> → <code>/handoff</code> 回來。</li>
     <li><strong>分岔 —— 這是多 session 建置嗎？</strong>
       <ul>
-        <li><strong>是</strong> → <code>/to-spec</code>（把對話變成規格），再 <code>/to-tickets</code> 拆成一張張<em>曳光彈</em>票，每張宣告自己的<em>阻塞邊</em>。然後逐票 <code>/implement</code>，<strong>每張之間清空上下文</strong>。</li>
+        <li><strong>是</strong> → <code>/to-spec</code>（把對話變成規格），再 <code>/to-tickets</code> 拆成一張張<em>曳光彈</em>票，每張宣告自己的<em>阻塞邊</em>。然後兩種方式之一施工：逐票 <code>/implement</code>，<strong>每張之間清空上下文</strong>——或 <code>/implement-spec</code>，一次跑完整份規格（在就緒 frontier 上派 implementer 子代理，落在一條整合分支）。</li>
         <li><strong>否</strong> → 就在這裡、同一個上下文視窗裡 <code>/implement</code>。</li>
       </ul>
     </li>
-    <li>不論哪條路，<strong><code>/implement</code></strong> 內部驅動 <code>/tdd</code>（一次一道紅—綠切片）來建置每個 issue，最後以 <code>/code-review</code> 收尾——對 diff 做雙軸審查（<em>標準</em>＋<em>規格</em>）——然後才提交。</li>
+    <li>不論哪條路，程式都由內部驅動 <strong><code>/tdd</code></strong>（一次一道紅—綠切片）蓋出來，最後以 <strong><code>/code-review</code></strong> 收尾——對 diff 做雙軸審查（<em>標準</em>＋<em>規格</em>）。當成果開成 pull request，<strong><code>/pr</code></strong> 負責塑造本文：呈現改動的最小視覺、改前／改後證據、單向門／雙向門判定。</li>
+    <li><strong><code>/retro</code></strong> 把迴圈閉起來：回顧整個 session，改的是代理的<strong>環境</strong>，不是程式碼——導覽指針、自動化檢查、coding standards、steering files、工具。在它回顧的那個 session 裡跑，清空之前先跑。</li>
   </ol>
 
   <div class="callout accent">
@@ -59,7 +62,7 @@
   <p>會產生工作的起始情境，之後匯入主流程。</p>
   <ul>
     <li><strong>bug 與請求不斷堆積 → <code>/triage</code>。</strong>它讓 issue 走過五個分級角色，產出<em>代理可直接施工</em>的 issue，之後由 <code>/implement</code> 接手。</li>
-    <li><strong>東西壞了 → <code>/diagnosing-bugs</code>。</strong>專治難纏的——一眼看不出所以然的 bug、時好時壞的 flake、兩個已知良好狀態之間潛入的回歸。它拒絕在拿到<em>緊回饋迴圈</em>之前空談理論，修復時帶回歸測試。當真正的發現是「少了好的接縫」，它的病後檢討會交接給 <code>/improve-codebase-architecture</code>。</li>
+    <li><strong>東西壞了 → <code>/diagnosing-bugs</code>。</strong>專治難纏的——一眼看不出所以然的 bug、時好時壞的 flake、兩個已知良好狀態之間潛入的回歸。它拒絕在拿到<em>緊回饋迴圈</em>之前空談理論，修復時帶回歸測試。修好之後，在同一個 session 跑 <code>/retro</code>，問什麼本來能防止這個 bug；當真正的發現是「少了好的接縫」，才輪到 <code>/improve-codebase-architecture</code>。</li>
     <li><strong>巨大而朦朧的工作 → <code>/wayfinder</code>。</strong>綠地專案或塞不進單一 session 的巨型功能。它繪製一張由<em>決策票</em>組成的<em>共享地圖</em>，逐一解開，產出的是<em>決策，不是交付物</em>。地圖清朗之後它交接（經 <code>/to-spec</code>），不動工。</li>
   </ul>
 
@@ -77,12 +80,12 @@
       <tr>
         <td><code>grill-with-docs</code></td>
         <td>窮追不捨的訪談，把計畫／設計磨利。</td>
-        <td>術語／決策成形時，對 <code>CONTEXT.md</code> + ADR 的編輯。</td>
+        <td>術語／決策成形時，對 <code>GLOSSARY.md</code> + ADR 的編輯。</td>
         <td>流程起點，手上有 codebase。</td>
       </tr>
       <tr>
         <td><code>to-spec</code></td>
-        <td><strong>綜合</strong>對話成一份規格／PRD。不訪談——只寫已談定的內容。</td>
+        <td><strong>綜合</strong>對話成一份規格。不訪談——只寫已談定的內容。</td>
         <td>發布到議題追蹤器的規格，標上 <code>ready-for-agent</code>。</td>
         <td>想法已定且需多 session。</td>
       </tr>
@@ -101,7 +104,7 @@
       <tr>
         <td><code>domain-modeling</code> <em>（底層）</em></td>
         <td>建立詞彙表＋記錄決策的主動紀律。</td>
-        <td><code>CONTEXT.md</code> 術語；<code>docs/adr/</code> 裡的 ADR。</td>
+        <td><code>GLOSSARY.md</code> 術語；<code>docs/adr/</code> 裡的 ADR。</td>
         <td>隨時內嵌——只要有術語或決策落定。</td>
       </tr>
     </tbody>
@@ -126,8 +129,8 @@
   <h2 id="domain-docs">文件層（骨幹）</h2>
   <p>有兩個產物住在所有規格驅動技能的底下。它們<strong>懶建立</strong>——有東西可寫才寫——而每個技能探索之前都會先讀它們。</p>
 
-  <h3 id="context-md"><code>CONTEXT.md</code> —— 詞彙表</h3>
-  <p>出自 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>CONTEXT-FORMAT.md</code></a>。它是專案的<strong>共用語言（ubiquitous language）</strong>，除此無他。</p>
+  <h3 id="context-md"><code>GLOSSARY.md</code> —— 詞彙表</h3>
+  <p>出自 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md"><code>GLOSSARY-FORMAT.md</code></a>。它是專案的<strong>共用語言（ubiquitous language）</strong>，除此無他。</p>
   <ul>
     <li><strong>有立場。</strong>多個詞指同一概念時，挑最好的一個，其餘列在 <code>_Avoid_:</code> 底下。</li>
     <li><strong>精練。</strong>一到兩句。定義它<em>是什麼</em>，不是它<em>做什麼</em>。</li>
@@ -144,10 +147,10 @@
   <ol>
     <li><strong>盤問 → 規格 → 票同一個視窗；每個 implement 全新開始。</strong>思考必須連續；建置必須分隔。</li>
     <li><strong>尊重智慧區。</strong><code>to-tickets</code> 前逼近約 15 萬 token？在最近的階段邊界 compact，別硬撐退化中的推理。</li>
-    <li><strong><code>CONTEXT.md</code> 是詞彙表，不是規格。</strong>實作細節一律出局。</li>
-    <li><strong>到處用共用語言。</strong>每一個產出（issue 標題、規格、測試名稱）都用 <code>CONTEXT.md</code> 的術語。別漂移到同義詞。</li>
+    <li><strong><code>GLOSSARY.md</code> 是詞彙表，不是規格。</strong>實作細節一律出局。</li>
+    <li><strong>到處用共用語言。</strong>每一個產出（issue 標題、規格、測試名稱）都用 <code>GLOSSARY.md</code> 的術語。別漂移到同義詞。</li>
     <li><strong>ADR 要節制。</strong>只認三條件。別記錯顯而易見或輕易可逆的事。</li>
-    <li><strong>文件懶建立。</strong>術語沒落定就不寫 <code>CONTEXT.md</code>；決策沒賺到就不開 <code>docs/adr/</code>。</li>
+    <li><strong>文件懶建立。</strong>術語沒落定就不寫 <code>GLOSSARY.md</code>；決策沒賺到就不開 <code>docs/adr/</code>。</li>
     <li><strong>尊重 ADR——別重新審判。</strong>只有摩擦真的大到值得時才重開，而且要明講。</li>
     <li><strong>測試接縫愈少愈好；理想 = 1。</strong>優先現成接縫；用最高的那一個。</li>
     <li><strong>規格裡不放檔案路徑或程式碼</strong>（除了編碼決策的原型）。它們會腐爛。</li>
@@ -160,11 +163,11 @@
     <thead><tr><th>術語</th><th>在本系統中的意義</th></tr></thead>
     <tbody>
       <tr><td><code>flow</code>（流程）</td><td>穿越技能的一條路徑。大多數工作走<em>主流程</em>。</td></tr>
-      <tr><td><code>main flow</code>（主流程）</td><td>想法 → 交付：<code>grill-with-docs → to-spec → to-tickets → implement → code-review</code>。</td></tr>
+      <tr><td><code>main flow</code>（主流程）</td><td>想法 → 交付：<code>grill-with-docs → to-spec → to-tickets → implement（或 implement-spec）→ code-review → retro</code>，PR 本文交給 <code>pr</code>。</td></tr>
       <tr><td><code>on-ramp</code>（入口坡道）</td><td>產生工作、之後匯入主流程的起始情境（<code>triage</code>、<code>diagnosing-bugs</code>、<code>wayfinder</code>）。</td></tr>
-      <tr><td><code>spec / PRD</code>（規格）</td><td><code>to-spec</code> 從對話綜合出的固定形狀文件。</td></tr>
-      <tr><td><code>ubiquitous language</code>（共用語言）</td><td>專案議定好的領域詞彙，收在 <code>CONTEXT.md</code>。</td></tr>
-      <tr><td><code>CONTEXT.md</code></td><td>詞彙表。有立場、精練、專案專屬、零實作。</td></tr>
+      <tr><td><code>spec</code>（規格）</td><td><code>to-spec</code> 從對話綜合出的固定形狀文件。</td></tr>
+      <tr><td><code>ubiquitous language</code>（共用語言）</td><td>專案議定好的領域詞彙，收在 <code>GLOSSARY.md</code>。</td></tr>
+      <tr><td><code>GLOSSARY.md</code></td><td>詞彙表。有立場、精練、專案專屬、零實作。</td></tr>
       <tr><td><code>ADR</code></td><td>架構決策紀錄，在 <code>docs/adr/</code>。只能靠三條件賺到。</td></tr>
       <tr><td><code>seam</code>（接縫）</td><td>功能接受測試之處。用最少、最高的接縫。</td></tr>
       <tr><td><code>deep / shallow module</code>（深／淺模組）</td><td>深模組用簡單介面藏住大量複雜度（<code>improve-codebase-architecture</code> 的目標）。</td></tr>
@@ -179,7 +182,7 @@
   </table>
 
   <div class="footer">
-    <p>《Matt Pocock 技能》學習工作區的參考文件。事實來源：技能各自的 <code>SKILL.md</code> + <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a>。從<a href="../lessons-tw/0003-the-mental-map.html">第 3 課——心智地圖</a>開始。另見配套卡片：<a href="spec-anatomy.html">規格解剖</a> · <a href="tickets-anatomy.html">票解剖</a> · <a href="context-md-format.html"><code>CONTEXT.md</code></a> · <a href="adr-format.html">ADR 格式</a> · <a href="skills-catalog.html">技能目錄</a>。</p>
+    <p>《Matt Pocock 技能》學習工作區的參考文件。事實來源：技能各自的 <code>SKILL.md</code> + <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a>。從<a href="../lessons-tw/0003-the-mental-map.html">第 3 課——心智地圖</a>開始。另見配套卡片：<a href="spec-anatomy.html">規格解剖</a> · <a href="tickets-anatomy.html">票解剖</a> · <a href="context-md-format.html"><code>GLOSSARY.md</code></a> · <a href="adr-format.html">ADR 格式</a> · <a href="skills-catalog.html">技能目錄</a>。</p>
   </div>
 
 </div>

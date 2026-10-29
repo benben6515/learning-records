@@ -13,14 +13,13 @@
 
   <p class="kicker">Lesson 0009 · ~6 min</p>
   <p class="back-nav"><a href="0000-table-of-contents.html">↑ Index</a></p>
-  <h1>Implement &amp; Code Review</h1>
-  <p class="subtitle">The last two steps: implement builds, code-review judges on two axes.</p>
+  <h1>Implement, Review &amp; Close Out</h1>
+  <p class="subtitle">implement builds (one ticket at a time, or the whole spec in one run); code-review judges; pr shapes the PR; retro closes the loop.</p>
 
-<p class="lead">The last two steps of the main flow: <code>/implement</code> builds, <code>/code-review</code> judges. They close the loop.</p>
+<p class="lead">The build-and-close stretch of the main flow: <code>/implement</code> or <code>/implement-spec</code> builds, <code>/code-review</code> judges, <code>/pr</code> shapes the pull request, <code>/retro</code> closes the loop.</p>
 
 <h2><code>/implement</code> — the hands, not the head</h2>
 <p>It builds the work described by a spec or set of tickets — driving it through <code>/tdd</code>, typechecking, and the full test suite, then handing to review and committing to the current branch.</p>
-
 <div class="callout note">
 <span class="label">It does not decide what to build</span>
 The spec is already settled and the seams are already agreed. <code>implement</code> executes that plan rather than reopening it. The thinking happened upstream — in <code>grill-with-docs</code> and <code>to-spec</code>. If the spec doesn't exist yet, write it first.
@@ -30,6 +29,19 @@ The spec is already settled and the seams are already agreed. <code>implement</c
 <p>The idea <code>implement</code> runs on is the <strong>seam</strong> — the stable interface a feature is tested at, chosen <em>before any code is written</em> (during <code>to-spec</code>). It doesn't invent seams mid-build; it uses the ones already picked and writes tests against them via <code>tdd</code>. Working at pre-agreed seams is what keeps the implementation honest: tests target something durable, so the code underneath can move without the tests moving.</p>
 
 <p>Around that core it keeps the loop tight — typecheck often, run single test files as it goes, run the whole suite once at the end — then closes out with a review pass and a commit.</p>
+
+<h2><code>/implement-spec</code> — the whole spec in one run</h2>
+<p>The <strong>parallel alternative</strong> to driving each ticket yourself. You ran <code>/to-spec</code> then <code>/to-tickets</code>; now instead of <code>/implement</code>-ing ticket by ticket, <code>/implement-spec</code> (user-invoked) implements the whole spec in one run:</p>
+<ul>
+<li>It reads the tickets not as a list but as a <strong>task graph</strong> — the blocking edges define a ready <strong>frontier</strong> of tickets that can start now.</li>
+<li>It fires <strong>implementer subagents in their own worktrees</strong> across that frontier, in parallel, each building its ticket with <code>tdd</code>. As one merges, newly-unblocked tickets spawn fresh subagents.</li>
+<li>Everything lands on one <strong>integration branch</strong>; a draft PR opens only when the tracker closes work through PRs (or you ask), after the first merge. Otherwise the tickets are resolved the way the tracker closes work.</li>
+<li>It closes out with one <code>/code-review</code> over the integration branch, and fixes what review raises in a single implementer subagent.</li>
+</ul>
+<div class="callout note">
+<span class="label">Which one?</span>
+Want to stay in the loop and judge each slice yourself? <code>/implement</code> per ticket, fresh context each time. Would rather orchestrate the build and let concurrency do the waiting? <code>/implement-spec</code>. Same tickets, same seams — the choice is only who drives.
+</div>
 
 <h2><code>/code-review</code> — two axes, never merged</h2>
 <p>Reviews the diff between <code>HEAD</code> and a fixed point you supply (commit, branch, tag, merge-base) along <strong>two separate axes</strong>, run as parallel sub-agents so neither pollutes the other's context:</p>
@@ -55,6 +67,24 @@ A change can pass one axis and fail the other. A single blended verdict lets one
 
 <h3>No spec → Spec axis skips</h3>
 <p>The Spec axis needs somewhere to find the originating spec — an issue reference in the commit messages, a path you pass in, or a spec under <code>docs/</code>/<code>specs/</code>. Without one, it reports "no spec available" instead of inventing requirements. The Standards axis needs nothing set up — it always carries the built-in Fowler smell baseline.</p>
+
+<h2><code>/pr</code> — the shape of a pull request body</h2>
+<p>Model-invoked: when the work goes up as a PR, the agent reaches for it. The body has three fixed parts:</p>
+<ul>
+<li><strong>Summary</strong> — the <em>smallest visual</em> that makes the change clear: a diagram, a diff sketch, a call tree, a file tree — whatever shows the shape in one glance.</li>
+<li><strong>Evidence</strong> — before/after: the failing run or screenshot, then the passing one. Proof it works, not a claim that it does.</li>
+<li><strong>Merge Danger</strong> — a one-way or two-way door call, plus a one-word blast radius. Is this reversible after merge, and what does it touch?</li>
+</ul>
+
+<h2><code>/retro</code> — the last step of the main flow</h2>
+<p>User-invoked; run it in the session it's looking back on, <strong>before you clear</strong> (after clearing, point it at that session's log). It looks back over the coding session and suggests changes to the agent's <strong>environment</strong>, not the code:</p>
+<ul>
+<li><strong>Navigation pointers</strong> — the agent took too long to find something; leave a pointer.</li>
+<li><strong>Automated checks</strong> — a mistake an automated check could have caught becomes a linter rule, pre-commit hook, or CI job. A repo with no guardrail at all is itself a finding.</li>
+<li><strong>Coding standards</strong> — a <em>mechanical</em> violation becomes a deterministic check, never a prose rule; <code>CODING_STANDARDS.md</code> is reserved for genuine judgement calls the reviewer agent enforces.</li>
+<li><strong>Steering files, tool economy, information access</strong> — no-op instructions pruned, expensive tool calls streamlined, missing information teed up.</li>
+</ul>
+<div class="principle">Mechanical mistakes become deterministic checks. Judgement calls become coding standards. The next build starts from a better environment.</div>
 
 <div class="quiz"><script type="application/json">
 {
@@ -116,12 +146,27 @@ A change can pass one axis and fail the other. A single blended verdict lets one
 }
 </script></div>
 
+<div class="quiz"><script type="application/json">
+{
+  "question": "You'd rather not drive each ticket yourself. Which skill implements the whole spec in one run?",
+  "options": [
+    "implement, run repeatedly without clearing",
+    "implement-spec, subagents across the frontier",
+    "to-tickets again, with more slices",
+    "code-review on the whole repo"
+  ],
+  "answer": 1,
+  "explainRight": "implement-spec reads the tickets as a task graph and runs implementer subagents in parallel across the ready frontier, landing one integration branch.",
+  "explainWrong": "Re-running implement without clearing breaks the fresh-context rule. implement-spec is the orchestration route."
+}
+</script></div>
+
   <div class="callout note">
     <span class="label">Ask your teacher</span>
     Stuck or curious? Ask a follow-up question — anything unclear is fair game.
   </div>
 
-  <p class="nav-next">Next → <a href="0010-tdd.html">TDD: Red-Green, One Slice</a> — the fix for the ball of mud.</p>
+  <p class="nav-next">Next → <a href="0010-tdd.html">TDD: Red-Green, One Slice</a> — the loop that gives the agent eyes, driven inside implement.</p>
 
   <div class="footer">
     <p>Lesson 9 of the <em>Matt Pocock Skills</em> course · <a href="0008-to-tickets-tracer-bullets.html">← to-tickets — Tracer Bullets</a> · <a href="0000-table-of-contents.html">Index</a> · <a href="../reference/skills-catalog.html">Reference</a></p>

@@ -48,14 +48,15 @@ It refuses to hypothesise before you have a tight feedback loop — <strong>one 
 
 <h2>It's working if</h2>
 <ul>
-<li>It builds and runs a repro command <em>before</em> theorising — and pastes the invocation and its red output.</li>
+<li>It builds and runs a repro command <em>before</em> theorising — and shows the invocation and its red output, with <strong>secrets redacted</strong> first (<code>&lt;REDACTED&gt;</code> in place of credentials).</li>
 <li>The loop asserts the symptom you actually reported, not a nearby failure.</li>
+<li>A forced mutation that produced the red is <code>diff</code>ed against a pristine copy — an edit that silently changed nothing can't pass as a failing test.</li>
 <li>Hypotheses arrive as a ranked, falsifiable list shown to you <em>before</em> any are tested.</li>
 <li>Debug instrumentation is tagged (<code>[DEBUG-...]</code>) and grepped away before it declares done.</li>
 </ul>
 
 <h2>Where it hands off</h2>
-<p>A reach-for-it-anytime standalone — drop in when something's broken, drop out once the fix and its regression test are in. Its <strong>post-mortem</strong> hands off to <code>/improve-codebase-architecture</code> when the real finding is that there's <em>no good seam to lock the bug down</em> — the code, not the bug, is the problem.</p>
+<p>A reach-for-it-anytime standalone — drop in when something's broken, drop out once the fix and its regression test are in. Once the fix is in, run <strong><code>/retro</code></strong> in the same session to ask what would have prevented the bug. And where the real finding is that there's <em>no good seam to lock the bug down</em> — the code, not the bug, is the problem — that's a job for <strong><code>/improve-codebase-architecture</code></strong>.</p>
 
 <div class="quiz"><script type="application/json">
 {
@@ -104,16 +105,16 @@ It refuses to hypothesise before you have a tight feedback loop — <strong>one 
 
 <div class="quiz"><script type="application/json">
 {
-  "question": "The post-mortem says there's no good seam to lock the bug down. Hand off to:",
+  "question": "The fix and its regression test are in. What comes next?",
   "options": [
-    "improve-codebase-architecture",
-    "to-spec, to rewrite it",
-    "triage, to label it wontfix",
-    "wayfinder, to map it out"
+    "Run retro, ask what would have prevented it",
+    "Run improve-codebase-architecture, always",
+    "Open a PR body with /pr",
+    "Nothing, move to the next bug"
   ],
   "answer": 0,
-  "explainRight": "When the code, not the bug, is the problem, hand off to improve-codebase-architecture.",
-  "explainWrong": "No good seam means the code is the problem. improve-codebase-architecture deepens it."
+  "explainRight": "Run retro in the same session — it turns the bug into environment fixes. improve-codebase-architecture only when the finding is a missing seam.",
+  "explainWrong": "The old post-mortem hand-off is gone. retro is the follow-up; the architecture pass is only for missing-seam findings."
 }
 </script></div>
 

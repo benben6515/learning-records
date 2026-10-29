@@ -18,21 +18,27 @@
 
 <p class="lead">大多數工作都走同一條路線。把它背起來——它是整套技能的骨幹。</p>
 
-<div class="flow">grill-with-docs → to-spec → to-tickets → implement → code-review</div>
+<div class="flow">grill-with-docs → to-spec → to-tickets → implement → code-review → retro</div>
 
 <h2>逐步走過</h2>
 
 <ol>
-<li><strong><code>/grill-with-docs</code></strong>——一次一個問題地窮追不捨地訪談你，直到想法變銳利。有狀態：邊問邊把談定的用語寫進 <code>CONTEXT.md</code>、把硬決策寫進 ADR。<em>沒有程式庫？</em>改用 <code>/grill-me</code>——同樣的訪談，但無狀態。</li>
+<li><strong><code>/grill-with-docs</code></strong>——一輪輪窮追不捨地訪談你，直到想法變銳利。有狀態：邊問邊把談定的用語寫進 <code>GLOSSARY.md</code>、把硬決策寫進 ADR。<em>沒有程式庫？</em>改用 <code>/grill-me</code>——同樣的訪談，但無狀態。</li>
 
 <li><strong>原型分支。</strong>若某個問題需要一個能跑的答案（狀態模型、你必須親眼看到的 UI），就繞個路：<code>/handoff</code> 出去 → 開全新 session → <code>/prototype</code> → <code>/handoff</code> 回來 → 在原本的執行緒裡引用結果。</li>
 
 <li><strong>規模分支。</strong>
 <ul>
-<li><strong>多 session</strong> → <code>/to-spec</code>（把執行緒綜合成一份規格——不重新訪談），再 <code>/to-tickets</code>（拆成曳光彈票，每張宣告自己的<strong>阻塞邊</strong>），再逐張 <code>/implement</code>。</li>
+<li><strong>多 session</strong> → <code>/to-spec</code>（把執行緒綜合成一份規格——不重新訪談），再 <code>/to-tickets</code>（拆成曳光彈票，每張宣告自己的<strong>阻塞邊</strong>），然後用兩種方式之一施工：
+<ul>
+<li>逐張 <code>/implement</code>，每張之間 <code>/clear</code>——你自己駕駛。</li>
+<li><code>/implement-spec</code> 一次跑完整份規格——它把票讀成<strong>任務圖（task graph）</strong>，在就緒的 frontier 上並行派出 implementer 子代理，全部落在一條<strong>整合分支（integration branch）</strong>上。</li>
+</ul></li>
 <li><strong>單一 session</strong> → 就在這裡直接 <code>/implement</code>。</li>
 </ul>
-無論哪條，<code>/implement</code> 內部都會驅動 <code>/tdd</code>（一次一道紅—綠切片），然後在提交前跑 <code>/code-review</code>（Standards + Spec，並行子代理）。</li>
+無論哪條，程式都是由內部驅動 <code>/tdd</code>（一次一道紅—綠切片）蓋出來，再由 <code>/code-review</code>（Standards + Spec，並行子代理）收尾。當成果開成 pull request 時，<code>/pr</code> 負責塑造 PR 本文：用最小的視覺呈現改動、附上改前／改後的證據，並判定這是一扇單向門還是雙向門。</li>
+
+<li><strong><code>/retro</code>——把迴圈閉起來。</strong>一次建構結束後（尤其是走歪的那種），回顧整個 session，對代理的<strong>環境</strong>（而非程式碼）提出改進：導覽指針、自動化檢查、coding standards、steering files、工具。機械性的錯誤變成確定性的檢查；判斷題變成 coding standards，讓下一次建構從更好的環境出發。在它回顧的那個 session 裡跑，清空之前先跑。</li>
 </ol>
 
 <div class="callout note">
@@ -55,7 +61,7 @@
     "implement、review、grill、to-tickets"
   ],
   "answer": 1,
-  "explainRight": "先 grill（對齊），再 spec，再 tickets，再 implement。review 收尾。",
+  "explainRight": "先 grill（對齊），再 spec，再 tickets，再 implement。接著 review，最後由 retro 收尾。",
   "explainWrong": "grill 在最前面——你要先對齊才寫規格。再試一次。"
 }
 </script></div>
@@ -85,7 +91,7 @@
     "用 implement，它寫程式"
   ],
   "answer": 1,
-  "explainRight": "grill-with-docs 邊盤問邊寫 CONTEXT.md 與 ADR。grill-me 是無狀態的。",
+  "explainRight": "grill-with-docs 邊盤問邊寫 GLOSSARY.md 與 ADR。grill-me 是無狀態的。",
   "explainWrong": "grill-me 無狀態——不產出成品。grill-with-docs 才是有狀態的那個兄弟。"
 }
 </script></div>

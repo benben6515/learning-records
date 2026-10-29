@@ -73,7 +73,7 @@
   <p><code>to-tickets</code> writes one ticket per item, in dependency order (blockers first). The shape of the edges depends on what <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md"><code>setup-matt-pocock-skills</code></a> configured for your repo:</p>
   <ul>
     <li><strong>Local files</strong> → one file per ticket under <code>.scratch/&lt;feature&gt;/issues/NN-slug.md</code>, "Blocked by" as text. (Your repo is on GitHub, so this isn't you — but it's the solo/no-remote path.)</li>
-    <li><strong>Real tracker (GitHub, Linear…)</strong> → one issue per ticket, using the platform's <em>native</em> blocking / sub-issue links. This is your path. Each ticket gets the <code>ready-for-agent</code> label — agent-grabbable by construction, <strong>no triage</strong>.</li>
+    <li><strong>Real tracker (GitHub, Linear…)</strong> → one issue per ticket, in dependency order (blockers first). Use the platform's <em>native</em> blocking / sub-issue links: each ticket becomes a <strong>sub-issue</strong> of the spec issue, and "Blocked by" becomes native blocking edges (the body's <code>## Blocked by</code> section is only the fallback where the tracker has no native form). This is your path. Each ticket gets the <code>ready-for-agent</code> label — agent-grabbable by construction, <strong>no triage</strong>.</li>
   </ul>
   <p>Same rule as the spec: no file paths or code snippets in tickets (they rot) — except a decision-encoding prototype.</p>
 

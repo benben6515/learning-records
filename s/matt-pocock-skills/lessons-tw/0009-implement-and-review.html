@@ -13,10 +13,10 @@
 
   <p class="kicker">第 0009 課 · 約 6 分鐘</p>
   <p class="back-nav"><a href="0000-table-of-contents.html">↑ 回目錄</a></p>
-  <h1>實作與程式碼審查</h1>
-  <p class="subtitle">主流程的最後兩步：implement 負責建造，code-review 負責在兩條軸線上評判。</p>
+  <h1>實作、審查與收尾</h1>
+  <p class="subtitle">implement 負責建造（一張票一張票來，或一次跑完整份規格）；code-review 在兩條軸線上評判；pr 塑造 PR；retro 把迴圈閉起來。</p>
 
-<p class="lead">主流程的最後兩步：<code>/implement</code> 建造，<code>/code-review</code> 評判。它們把迴圈收起來。</p>
+<p class="lead">主流程的建造與收尾段：<code>/implement</code> 或 <code>/implement-spec</code> 建造，<code>/code-review</code> 評判，<code>/pr</code> 塑造 pull request，<code>/retro</code> 把迴圈閉起來。</p>
 
 <h2><code>/implement</code>——是手，不是腦</h2>
 <p>它建造規格或一組票所描述的工作——驅動 <code>/tdd</code>、型別檢查與完整測試套件，然後交給審查並提交到當前分支。</p>
@@ -30,6 +30,19 @@
 <p><code>implement</code> 運作所依的觀念是<strong>接縫（seam）</strong>——一道穩定的介面，是一道功能接受測試之處，且是<em>在寫任何程式碼之前</em>就（在 <code>to-spec</code> 期間）選定的。它不會在施工中途發明接縫；它用的是已經挑好的那些，並透過 <code>tdd</code> 針對它們寫測試。在預先議定的接縫上施工，正是讓實作保持誠實的關鍵：測試針對的是某個耐久的東西，所以底下的程式碼可以移動，而測試不必跟著移動。</p>
 
 <p>在那個核心之外，它把迴圈維持得很緊——經常型別檢查、邊做邊跑單一測試檔、最後跑一次整套套件——然後以一次審查與一次提交收尾。</p>
+
+<h2><code>/implement-spec</code>——一次跑完整份規格</h2>
+<p>逐張票自己開的<strong>並行替代方案</strong>。你已經跑過 <code>/to-spec</code> 與 <code>/to-tickets</code>；這時改用 <code>/implement-spec</code>（user-invoked）一次跑完整份規格：</p>
+<ul>
+<li>它把票讀成<strong>任務圖（task graph）</strong>而非清單——阻塞邊定義出可立即開工的<strong>frontier</strong>。</li>
+<li>它在 frontier 上並行派出<strong>implementer 子代理</strong>，各自在自己的 worktree、自己的分支上施工，都用 <code>tdd</code> 建票。一張票合併後，新解鎖的票就孵化新的子代理。</li>
+<li>全部落在一條<strong>整合分支（integration branch）</strong>上；只有當追蹤器以 PR 收案（或你要求）時，才在第一次合併後開 draft PR。否則就用追蹤器收案的方式結掉每張票。</li>
+<li>最後對整合分支跑一次 <code>/code-review</code>，並用單一 implementer 子代理修掉審查提出的所有問題。</li>
+</ul>
+<div class="callout note">
+<span class="label">選哪個？</span>
+想留在迴圈裡、親自判斷每一片？逐張 <code>/implement</code>，每張全新上下文。想當指揮、讓並行替你等？<code>/implement-spec</code>。同一批票、同一批接縫——差別只在誰開車。
+</div>
 
 <h2><code>/code-review</code>——兩條軸線，絕不混併</h2>
 <p>它審查 <code>HEAD</code> 與你給定的某個固定基準點（commit、分支、tag、merge-base）之間的 diff，沿著<strong>兩條分開的軸線</strong>，以並行子代理執行，好讓兩者不污染彼此的上下文：</p>
@@ -55,6 +68,24 @@
 
 <h3>沒有規格 → Spec 軸線跳過</h3>
 <p>Spec 軸線需要某個能找到原始規格的地方——commit 訊息裡的 issue 引用、你傳入的路徑，或是 <code>docs/</code>／<code>specs/</code> 底下的規格。沒有的話，它回報「找不到可用規格」，而不是憑空發明需求。Standards 軸線什麼都不必設定——它永遠帶著內建的 Fowler 壞味道基線。</p>
+
+<h2><code>/pr</code>——pull request 本文的形狀</h2>
+<p>model-invoked：當成果開成 PR，代理會自己抓它來用。本文有三個固定部分：</p>
+<ul>
+<li><strong>Summary</strong>——能讓改動一目瞭然的<em>最小視覺</em>：一張圖、一份 diff 草圖、一棵呼叫樹、一個檔案樹——哪個能一眼呈現形狀就用哪個。</li>
+<li><strong>Evidence</strong>——改前／改後：失敗的執行或截圖，接著通過的那個。是「證明它會動」，不是「宣稱它會動」。</li>
+<li><strong>Merge Danger</strong>——判定單向門或雙向門，外加一個詞的爆炸半徑。合併之後還回得了頭嗎？它碰到哪些地方？</li>
+</ul>
+
+<h2><code>/retro</code>——主流程的最後一步</h2>
+<p>user-invoked；在它回顧的那個 session 裡跑，<strong>清空之前</strong>先跑（清空之後，改指向那個 session 的紀錄）。它回顧整個寫程式的 session，對代理的<strong>環境</strong>（而非程式碼）提出改進：</p>
+<ul>
+<li><strong>導覽指針</strong>——代理花太久才找到某樣東西；留一個指針。</li>
+<li><strong>自動化檢查</strong>——一個自動化檢查本可抓住的錯誤，變成 linter 規則、pre-commit hook 或 CI job。整個 repo 連一道防護欄都沒有，本身就是一條發現。</li>
+<li><strong>Coding standards</strong>——<em>機械性</em>違規變成確定性檢查，絕不寫成散文規則；<code>CODING_STANDARDS.md</code> 只留給審查代理該執行的真正判斷題。</li>
+<li><strong>Steering files、工具經濟、資訊存取</strong>——剪掉無效指令、精簡昂貴的工具呼叫、把缺的資訊接出來。</li>
+</ul>
+<div class="principle">機械性錯誤變成確定性檢查。判斷題變成 coding standards。下一次建構從更好的環境出發。</div>
 
 <div class="quiz"><script type="application/json">
 {
@@ -116,12 +147,27 @@
 }
 </script></div>
 
+<div class="quiz"><script type="application/json">
+{
+  "question": "你不想逐張票自己開。哪個技能一次跑完整份規格？",
+  "options": [
+    "implement，不清空連續重跑",
+    "implement-spec，在 frontier 上派子代理",
+    "to-tickets 再跑一次，切更細",
+    "對整個 repo 跑 code-review"
+  ],
+  "answer": 1,
+  "explainRight": "implement-spec 把票讀成任務圖，在就緒 frontier 上並行派 implementer 子代理，全部落在一條整合分支。",
+  "explainWrong": "不清空連跑 implement 破壞了全新視窗規則。implement-spec 才是指揮路線。"
+}
+</script></div>
+
   <div class="callout note">
     <span class="label">向老師提問</span>
     卡住了或好奇？儘管追問——任何不清楚的地方都可以問。
   </div>
 
-  <p class="nav-next">下一課 → <a href="0010-tdd.html">TDD：紅—綠，一道切片</a>——賦予代理眼睛的那個回饋迴圈。</p>
+  <p class="nav-next">下一課 → <a href="0010-tdd.html">TDD：紅—綠，一道切片</a>——賦予代理眼睛的那個回饋迴圈，就在 implement 內部驅動。</p>
 
   <div class="footer">
     <p>《Matt Pocock 技能》第 9 課 · <a href="0008-to-tickets-tracer-bullets.html">← to-tickets——曳光彈</a> · <a href="0000-table-of-contents.html">目錄</a> · <a href="../reference-tw/skills-catalog.html">參考</a></p>

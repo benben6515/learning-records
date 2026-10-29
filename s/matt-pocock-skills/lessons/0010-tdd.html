@@ -24,7 +24,7 @@
 <li>Add just enough code to pass it (green).</li>
 <li>Repeat for the next behaviour — each cycle informed by what the last one taught you.</li>
 </ol>
-<p>Refactor only once the suite is green; <strong>never while red</strong>.</p>
+<p>The loop is <strong>red → green</strong>, nothing else. <strong>Refactoring is not part of the loop</strong> — it belongs to the review stage (<code>/code-review</code>), which sees the finished diff without implementation context pressure.</p>
 
 <div class="callout note">
 <span class="label">Why one at a time, not batched</span>
@@ -36,7 +36,7 @@ Batching the tests first ("horizontal slicing") produces tests of <em>imagined</
 
 <h2>Two rules that keep tests honest</h2>
 <ol>
-<li><strong>Tests read like a specification</strong> — "user can checkout with valid cart" — and exercise real code paths <em>through the public API</em>. Renaming an internal function never breaks a test. Tests target the <strong>seam</strong>, chosen before any code is written.</li>
+<li><strong>Tests read like a specification</strong> — "user can checkout with valid cart" — and exercise real code paths <em>through the public API</em>. Renaming an internal function never breaks a test. Tests target the <strong>seam</strong>, chosen before any code is written — and each proposed seam gets a one-line note on <em>what it catches and what it misses</em>, so choosing between seams is a decision, not a guess.</li>
 <li><strong>Expected values come from an independent source of truth</strong> — a known-good literal, a worked example, the spec — <em>never</em> recomputed the way the code computes them. That recomputation is how a <strong>tautological</strong> test passes by construction and tells you nothing.</li>
 </ol>
 
@@ -92,16 +92,16 @@ Batching the tests first ("horizontal slicing") produces tests of <em>imagined</
 
 <div class="quiz"><script type="application/json">
 {
-  "question": "When can you refactor under tdd?",
+  "question": "Where does refactoring belong under the current tdd skill?",
   "options": [
-    "Only when the suite is green",
-    "Anytime, even while red",
-    "Only before writing tests",
-    "Only after committing code"
+    "After every green cycle",
+    "The review stage, via code-review",
+    "Before writing the first test",
+    "Inside the red phase"
   ],
-  "answer": 0,
-  "explainRight": "Refactor only when green. Never while red — you lose the safety net.",
-  "explainWrong": "Refactoring while red means no passing tests to catch regressions. Green only."
+  "answer": 1,
+  "explainRight": "The loop is red → green only. Refactoring belongs to the review stage, which sees the diff without implementation pressure.",
+  "explainWrong": "The refactor stage was removed from the loop. code-review owns it now."
 }
 </script></div>
 

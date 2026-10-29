@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>參考 — CONTEXT.md 格式</title>
+<title>參考 — GLOSSARY.md 格式</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="../assets/styles.css">
 <script src="../assets/theme.js"></script>
@@ -13,12 +13,17 @@
 
   <p class="kicker">Reference · 繁中版</p>
   <p class="back-nav"><a href="../index.html">↑ 回課程首頁</a></p>
-  <h1><code>CONTEXT.md</code> — 格式與規則</h1>
+  <h1><code>GLOSSARY.md</code> — 格式與規則</h1>
   <p class="subtitle">詞彙表。有立場、精練、專案專屬、零實作。</p>
 
-  <div class="principle"><code>CONTEXT.md</code> 是詞彙表，除此無他。不是規格、不是草稿、不是決策紀錄。</div>
+  <div class="principle"><code>GLOSSARY.md</code> 是詞彙表，除此無他。不是規格、不是草稿、不是決策紀錄。</div>
 
-  <p>這是專案的<strong>共用語言（ubiquitous language）</strong>——其他所有技能在 issue 標題、規格、測試名稱、重構提案裡使用的標準名稱。事實來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>CONTEXT-FORMAT.md</code></a>與 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/SKILL.md"><code>domain-modeling</code> 技能</a>。</p>
+  <div class="callout note">
+    <span class="label">自 <code>CONTEXT.md</code> 更名</span>
+    直到 v1.3.0（2026-09），這個慣例叫 <code>CONTEXT.md</code>／<code>CONTEXT-MAP.md</code>。技能集已更名為 <code>GLOSSARY.md</code>／<code>GLOSSARY-MAP.md</code>，且只認新名字。既有檔案？<code>git mv CONTEXT.md GLOSSARY.md</code>——格式不變。
+  </div>
+
+  <p>這是專案的<strong>共用語言（ubiquitous language）</strong>——其他所有技能在 issue 標題、規格、測試名稱、重構提案裡使用的標準名稱。事實來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md"><code>GLOSSARY-FORMAT.md</code></a>與 <a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/SKILL.md"><code>domain-modeling</code> 技能</a>。</p>
 
   <hr class="rule">
 
@@ -98,18 +103,18 @@ _Avoid_: Client, buyer, account</code></pre>
     <li><strong>挑戰衝突。</strong>有人用了與詞彙表相衝突的術語時，立刻指出：<em>「你的詞彙表把『cancellation』定義為 X，但你似乎指 Y——是哪個？」</em></li>
     <li><strong>磨利模糊語言。</strong>模糊／超載的詞一出現，提出精確的標準詞。</li>
     <li><strong>內嵌更新，別囤積。</strong>術語一落定就寫。別收集起來等之後。</li>
-    <li><strong>懶建立。</strong>第一個術語真正落定之前不寫 <code>CONTEXT.md</code>。別先搭一個空的。</li>
+    <li><strong>懶建立。</strong>第一個術語真正落定之前不寫 <code>GLOSSARY.md</code>。別先搭一個空的。</li>
   </ul>
 
   <h2 id="layout">單一 vs 多 context</h2>
   <ul>
-    <li><strong>單一 context（多數 repo）：</strong>repo 根目錄一個 <code>CONTEXT.md</code>。典型專案就是這樣。</li>
-    <li><strong>多 context：</strong>根目錄的 <code>CONTEXT-MAP.md</code> 列出各 context、各自位置、彼此關係；每個 context 有自己的 <code>CONTEXT.md</code>。技能會推斷適用哪個——不清楚就問。</li>
+    <li><strong>單一 context（多數 repo）：</strong>repo 根目錄一個 <code>GLOSSARY.md</code>。典型專案就是這樣。</li>
+    <li><strong>多 context：</strong>根目錄的 <code>GLOSSARY-MAP.md</code> 列出各 context、各自位置、彼此關係；每個 context 有自己的 <code>GLOSSARY.md</code>。技能會推斷適用哪個——不清楚就問。</li>
   </ul>
   <p>monorepo 裡有真正分離的 bounded context（如 <code>ordering/</code>、<code>billing/</code>）就用 map。單一內聚應用，根目錄一個檔案才是對的——別憑空發明 context。</p>
 
   <div class="footer">
-    <p>《Matt Pocock 技能》工作區的參考文件。權威來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/CONTEXT-FORMAT.md"><code>domain-modeling/CONTEXT-FORMAT.md</code></a>。另見 <a href="spec-driven-workflow.html">流程圖</a> · <a href="../lessons-tw/0005-context-md-glossary.html">第 5 課</a>。</p>
+    <p>《Matt Pocock 技能》工作區的參考文件。權威來源：<a href="https://github.com/mattpocock/skills/blob/main/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md"><code>domain-modeling/GLOSSARY-FORMAT.md</code></a>。另見 <a href="spec-driven-workflow.html">流程圖</a> · <a href="../lessons-tw/0005-context-md-glossary.html">第 5 課</a>。</p>
   </div>
 
 </div>

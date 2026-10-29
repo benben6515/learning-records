@@ -48,14 +48,15 @@
 
 <h2>這樣子就算有在工作</h2>
 <ul>
-<li>它在提出理論<em>之前</em>，就建造並執行一條重現指令——並貼上呼叫方式與它的紅色輸出。</li>
+<li>它在提出理論<em>之前</em>，就建造並執行一條重現指令——並展示呼叫方式與它的紅色輸出，機密<em>先遮蔽</em>（憑證位置放 <code>&lt;REDACTED&gt;</code>）。</li>
 <li>迴圈斷言的是你確實回報的症狀，而不是某個鄰近的失敗。</li>
+<li>用強制突變製造紅燈時，會先 <code>diff</code> 乾淨副本，證明突變真的生效——一個悄悄什麼都沒改的編輯，不能冒充失敗的測試。</li>
 <li>假設以一份排序過、可證偽的清單送達，而且是在<em>任何一條被測試之前</em>先給你看。</li>
 <li>除錯儀器有標記（<code>[DEBUG-...]</code>），而且在宣告完成之前會被 grep 掉。</li>
 </ul>
 
 <h2>它在哪裡交接</h2>
-<p>它是一個隨時可抓的獨立工具——壞掉了就丟進來，修復與回歸測試都就位後就退出。它的<strong>事後檢討</strong>會在真正的發現是「<em>沒有一個好接縫能把 bug 鎖死</em>」時，交接給 <code>/improve-codebase-architecture</code>——這時問題是程式碼，而不是 bug。</p>
+<p>它是一個隨時可抓的獨立工具——壞掉了就丟進來，修復與回歸測試都就位後就退出。修好之後，在同一個 session 跑<strong><code>/retro</code></strong>，問一句「什麼本來能防止這個 bug」。而當真正的發現是「<em>沒有一個好接縫能把 bug 鎖死</em>」——問題是程式碼、不是 bug——那就是<strong><code>/improve-codebase-architecture</code></strong> 的工作。</p>
 
 <div class="quiz"><script type="application/json">
 {
@@ -104,16 +105,16 @@
 
 <div class="quiz"><script type="application/json">
 {
-  "question": "事後檢討說沒有好接縫能鎖死這個 bug。交接給：",
+  "question": "修復與回歸測試都就位了。下一步是什麼？",
   "options": [
-    "improve-codebase-architecture",
-    "to-spec，把整份規格從頭到尾重寫",
-    "triage，直接標 wontfix 關掉",
-    "wayfinder，把整件工作畫成決策地圖"
+    "跑 retro，問什麼本來能防止它",
+    "一律接著跑 improve-codebase-architecture",
+    "用 /pr 開一份 PR 本文",
+    "沒了，直接修下一個 bug"
   ],
   "answer": 0,
-  "explainRight": "當問題是程式碼、不是 bug 時，交接給 improve-codebase-architecture。",
-  "explainWrong": "沒有好接縫代表問題在程式碼。improve-codebase-architecture 來深化它。"
+  "explainRight": "在同一個 session 跑 retro——把 bug 變成環境上的修復。只有發現是缺接縫時才輪到 improve-codebase-architecture。",
+  "explainWrong": "舊的事後檢討交接已移除。現在的後續是 retro；架構巡檢只處理缺接縫的發現。"
 }
 </script></div>
 

@@ -23,7 +23,7 @@
 <ul>
 <li><strong>Issue tracker</strong> — where issues live (GitHub, GitLab, local <code>.scratch/</code> markdown, or other). It proposes the one matching your <code>git remote</code>.</li>
 <li><strong>Triage labels</strong> — only asked if <code>triage</code> is installed. Keep the defaults (<code>needs-triage</code>, <code>needs-info</code>, <code>ready-for-agent</code>, <code>ready-for-human</code>, <code>wontfix</code>) unless your tracker already uses other strings.</li>
-<li><strong>Domain docs</strong> — single-context (one <code>CONTEXT.md</code> + <code>docs/adr/</code> at root) fits almost every repo; multi-context only when it spots monorepo signals.</li>
+<li><strong>Domain docs</strong> — single-context (one <code>GLOSSARY.md</code> + <code>docs/adr/</code> at root) fits almost every repo; multi-context only when it spots monorepo signals.</li>
 </ul>
 <p>Output: files under <code>docs/agents/</code> (<code>issue-tracker.md</code>, <code>domain.md</code>, <code>triage-labels.md</code> if triage is installed) + an <code>## Agent skills</code> block in your <code>CLAUDE.md</code> or <code>AGENTS.md</code>. If <code>triage</code>/<code>to-spec</code>/<code>to-tickets</code> start <em>guessing</em> where your issues live, you skipped this.</p>
 

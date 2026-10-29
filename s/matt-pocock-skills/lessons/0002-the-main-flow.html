@@ -18,21 +18,27 @@
 
 <p class="lead">Most work travels one route. Memorize it — it's the backbone of the whole set.</p>
 
-<div class="flow">grill-with-docs → to-spec → to-tickets → implement → code-review</div>
+<div class="flow">grill-with-docs → to-spec → to-tickets → implement → code-review → retro</div>
 
 <h2>Walk-through</h2>
 
 <ol>
-<li><strong><code>/grill-with-docs</code></strong> — interview you relentlessly, one question at a time, until the idea is sharp. Stateful: writes resolved terms to <code>CONTEXT.md</code> and hard decisions to ADRs as it goes. <em>No codebase?</em> Use <code>/grill-me</code> — same interview, stateless.</li>
+<li><strong><code>/grill-with-docs</code></strong> — interview you relentlessly, round by round, until the idea is sharp. Stateful: writes resolved terms to <code>GLOSSARY.md</code> and hard decisions to ADRs as it goes. <em>No codebase?</em> Use <code>/grill-me</code> — same interview, stateless.</li>
 
 <li><strong>Prototype branch.</strong> If a question needs a runnable answer (state model, UI you must see), detour: <code>/handoff</code> out → fresh session → <code>/prototype</code> → <code>/handoff</code> back → reference from the original thread.</li>
 
 <li><strong>Size branch.</strong>
 <ul>
-<li><strong>Multi-session</strong> → <code>/to-spec</code> (synthesize the thread into a spec — no re-interviewing), then <code>/to-tickets</code> (split into tracer-bullet tickets, each declaring its <strong>blocking edges</strong>), then <code>/implement</code> per ticket.</li>
+<li><strong>Multi-session</strong> → <code>/to-spec</code> (synthesize the thread into a spec — no re-interviewing), then <code>/to-tickets</code> (split into tracer-bullet tickets, each declaring its <strong>blocking edges</strong>), then work the tickets one of two ways:
+<ul>
+<li><code>/implement</code> per ticket, <code>/clear</code>ing between each — you drive.</li>
+<li><code>/implement-spec</code> for the whole spec in one run — it reads the tickets as a <strong>task graph</strong>, runs implementer subagents in parallel across the ready frontier, and lands everything on one <strong>integration branch</strong>.</li>
+</ul></li>
 <li><strong>One session</strong> → <code>/implement</code> right here.</li>
 </ul>
-Either way, <code>/implement</code> drives <code>/tdd</code> internally (red-green slice at a time), then runs <code>/code-review</code> (Standards + Spec, parallel sub-agents) before committing.</li>
+Either way, the code is built by driving <code>/tdd</code> internally (red-green slice at a time), then closed out with <code>/code-review</code> (Standards + Spec, parallel sub-agents). When the work goes up as a pull request, <code>/pr</code> shapes the body: the smallest visual that shows the change, before/after evidence that it works, and a one-way or two-way door call.</li>
+
+<li><strong><code>/retro</code> — close the loop.</strong> After a build — especially one that went sideways — look back over the session and suggest changes to the agent's <strong>environment</strong>, not the code: navigation pointers, automated checks, coding standards, steering files, tooling. Mechanical mistakes become deterministic checks; judgement calls become coding standards, so the next build starts from a better environment. Run it in the session it's looking back on, before you clear.</li>
 </ol>
 
 <div class="callout note">
@@ -55,7 +61,7 @@ Keep steps 1–3 in <strong>one unbroken context window</strong>. Don't compact 
     "implement, review, grill, to-tickets"
   ],
   "answer": 1,
-  "explainRight": "Grill first (align), then spec, then tickets, then implement. Review closes it.",
+  "explainRight": "Grill first (align), then spec, then tickets, then implement. Review follows, and retro closes it.",
   "explainWrong": "Grilling comes first — you align before you spec. Try again."
 }
 </script></div>
@@ -85,7 +91,7 @@ Keep steps 1–3 in <strong>one unbroken context window</strong>. Don't compact 
     "Use implement, it builds code"
   ],
   "answer": 1,
-  "explainRight": "grill-with-docs writes CONTEXT.md and ADRs as it grills. grill-me is stateless.",
+  "explainRight": "grill-with-docs writes GLOSSARY.md and ADRs as it grills. grill-me is stateless.",
   "explainWrong": "grill-me is stateless — no artifacts. grill-with-docs is the stateful sibling."
 }
 </script></div>
