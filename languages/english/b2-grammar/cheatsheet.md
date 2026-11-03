@@ -64,3 +64,11 @@
 - **whose + 名詞** = 所有格，人物皆可（考試首選，of which 結構固定）
 - make 被動還原 to：He was made **to** tell
 - consist of 不用被動：The committee **consists of** ...
+
+## 字彙　[深入](topics/07-vocabulary.md)
+
+- 混淆對：**considerable** 大 ≠ **considerate** 體貼｜**economic** 經濟 ≠ **economical** 省錢｜**sensible** 明智 ≠ **sensitive** 敏感｜**historic** 大事 ≠ **historical** 有關歷史｜**effective** 有效 ≠ **efficient** 高效
+- 不可數（不加 s、不配 many）：damage、information、advice、furniture、equipment、progress、research；計量 a piece of；**damages = 賠償金**
+- 無介系詞及物：discuss / enter / marry / attend / reach / answer + 受詞（✗ discuss about）
+- 及物不及物：**rise** 自己漲（risen）≠ **raise** 有受詞｜**lie** 躺 ≠ **lay** 放
+- **take this opportunity** to-V｜take a chance 冒險｜possibility **of**｜**on** this occasion

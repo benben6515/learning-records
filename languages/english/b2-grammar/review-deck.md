@@ -29,6 +29,18 @@
     → **had worked / would be**｜混合：過去條件 + 現在結果
 12. If the storm ___ tonight, the ferry ___ tomorrow morning.
     → **stops / will leave**｜第一條件句，if 子句不用 will
+13. I wish I ___ him the truth earlier.（11-02 綜合選 have told）
+    → **had told**｜earlier + 主句 would have saved = 過去遺憾
+14. If she hadn't missed the bus, she ___ here by now.（11-02 綜合選 would have been）
+    → **would be**｜混合：過去條件 + 現在結果（by now）
+15. If he had saved more when he was young, he ___ comfortably now.（11-02 再選 would have been，第三踩）
+    → **would be**｜主句旁掃時間詞：now/by now/today → would be；then/at that time → would have been
+16. 同框對照（11-03 全對）：
+    a. If I had set an alarm last night, I ___ at work **by now**.
+       → **would be**｜遮住 if 子句，圈時間詞：by now = 現在結果
+    b. If I had set an alarm last night, I ___ at work on time **that morning**.
+       → **would have been**｜that morning = 過去結果
+    口訣：if 子句固定 had + p.p.，判斷前先遮住它，只看主句時間詞
 
 ## 02 動名詞 vs 不定詞
 
@@ -46,6 +58,8 @@
    → **quitting**｜consider + V-ing
 7. She's used to ___ long hours.（work）
    → **working**｜be used to + V-ing = 習慣於
+8. Please remember ___ the door when you leave.（11-02 綜合選 locking）
+   → **to lock**｜remember to-V = 記得要做（還沒做）；remember V-ing = 記得做過了
 
 ## 03 過去完成式
 
@@ -59,6 +73,8 @@
    → **had we landed**｜No sooner + had + p.p. ... than + 過去簡單式
 5. We ___ the early train; this one is so crowded.
    → **should have taken**｜本應該做卻沒做
+6. No sooner ___ the tickets than the website crashed.（11-02 綜合選 did we buy）
+   → **had we bought**｜No sooner 子句先發生 → had + p.p.（倒裝對但時態淺，第二次踩）
 
 ## 04 倒裝
 
@@ -93,6 +109,8 @@
    → **broken through**｜突破（through = 穿透；名詞 breakthrough）
 9. When planning the budget, remember to ___ extra costs such as taxes.（當時選 account for）
    → **allow for**｜事前預留；account for = 事後解釋、佔比
+10. Never put ___ until tomorrow what you can do today.（兩次都錯：選 up、away）
+    → **off**｜put off = 延期（off = 事件被推走）；諺語「今日事今日畢」
 
 ## 06 雜項
 
@@ -104,3 +122,24 @@
    → **to tell**｜make 被動要把 to 還原
 4. The committee ___ twelve members from five countries.（consist）
    → **consists of**｜固定搭配，不用被動
+5. I admire people ___ opinions differ from mine.（11-02 綜合選 whom）
+   → **whose**｜空格後直接跟名詞（opinions）= 所有格；whom 是受格（whom I met）
+
+## 07 字彙
+
+1. It was very ___ of you to look after my cat while I was away.（當時選 considered）
+   → **considerate**｜體貼；considerable = 相當大的
+2. The storm caused serious ___ to the harbor.（當時選 damages）
+   → **damage**｜不可數，無複數；damages = 賠償金
+3. I'd like to take this ___ to thank everyone who helped.（當時選 chance）
+   → **opportunity**｜take this opportunity to-V 固定搭配；take a chance = 冒險
+4. The manager wants to ___ the new proposal at tomorrow's meeting.（當時選 discuss about）
+   → **discuss**｜及物動詞，不加介系詞（= talk about）
+5. The number of visitors has ___ sharply since the festival ended.（當時選 raised）
+   → **risen**｜數量自己漲 → rise（rise-rose-risen）；raise 需受詞
+6. The signing of the peace treaty was a ___ moment.（當時選 historical）
+   → **historic**｜historic = 有歷史意義（moment、victory）；historical = 有關歷史（novels、documents）
+7. After high school, she will ___ university.（當時選 attend to）
+   → **attend**｜attend + 活動 = 出席，無介系詞；attend to = 照顧、處理（意思不同）
+8. The paramedic attended ___ the injured driver.（11-02 選 with）
+   → **to**｜attend to = 照顧、處理；記法：pay attention TO = attend TO
