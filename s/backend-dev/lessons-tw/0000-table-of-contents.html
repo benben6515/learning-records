@@ -123,13 +123,23 @@
       </span>
     </a>
   </li>
-  <li class="upcoming">
-    <div class="row">
+  <li>
+    <a href="0010-caching.html">
       <span class="num">10</span>
       <span class="meta">
-        <span class="t">快取<span class="tag">排程中</span></span>
-        <span class="s">每個列表請求都重讀一次 Postgres；把答案留在記憶體裡——順便學快取都在哪裡說謊。</span>
-        <span class="d">約 40 分鐘 · 效能</span>
+        <span class="t">快取：記憶體勝過網路</span>
+        <span class="s">先測量，再對最熱的讀取上 cache-aside——然後看你自己的 L08 圍籬抓到快取在 logout 上說謊。</span>
+        <span class="d">約 40 分鐘 · 效能 · 動手做</span>
+      </span>
+    </a>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">11</span>
+      <span class="meta">
+        <span class="t">佇列<span class="tag">排程中</span></span>
+        <span class="s">不該發生在請求裡的工作——寄信、匯出、一切慢的東西——以及怎麼別讓使用者等它。</span>
+        <span class="d">約 40 分鐘 · 架構</span>
       </span>
     </div>
   </li>
@@ -145,6 +155,7 @@
   <li><a href="../reference-tw/auth-first-aid.html">驗證急救包</a>——scrypt 輔助函式、cookie 旗標與攻擊對照、401/403 合約、sessions vs tokens。</li>
   <li><a href="../reference-tw/testing-first-aid.html">測試急救包</a>——node:test 要點、AAA 形狀、整合骨架、紅綠規則、先測什麼。</li>
   <li><a href="../reference-tw/deployment-first-aid.html">部署急救包</a>——設定規則、快速失敗防線、Render 部署設定、深度健康檢查，與全新資料庫的各種坑。</li>
+  <li><a href="../reference-tw/caching-first-aid.html">快取急救包</a>——規則零、cache-aside 骨架、失效法則、誠實取捨表，與學會說謊的 Map。</li>
 </ul>
 
 <div class="footer">

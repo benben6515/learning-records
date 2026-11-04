@@ -123,13 +123,23 @@
       </span>
     </a>
   </li>
-  <li class="upcoming">
-    <div class="row">
+  <li>
+    <a href="0010-caching.html">
       <span class="num">10</span>
       <span class="meta">
-        <span class="t">Caching<span class="tag">queued</span></span>
-        <span class="s">Every list request re-reads Postgres; keep the answer in memory — and learn where caches go to lie.</span>
-        <span class="d">~40 min · performance</span>
+        <span class="t">Caching: Memory Over the Wire</span>
+        <span class="s">Measure, then cache-aside on the hottest read — and watch your own L08 fence catch the cache lying about logout.</span>
+        <span class="d">~40 min · performance · hands-on</span>
+      </span>
+    </a>
+  </li>
+  <li class="upcoming">
+    <div class="row">
+      <span class="num">11</span>
+      <span class="meta">
+        <span class="t">Queues<span class="tag">queued</span></span>
+        <span class="s">Work that shouldn't happen inside a request — emails, exports, anything slow — and how to stop making users wait.</span>
+        <span class="d">~40 min · architecture</span>
       </span>
     </div>
   </li>
@@ -145,6 +155,7 @@
   <li><a href="../reference/auth-first-aid.html">Auth First Aid</a> — the scrypt helpers, cookie flags and the attacks they stop, the 401/403 contract, and sessions vs tokens.</li>
   <li><a href="../reference/testing-first-aid.html">Testing First Aid</a> — node:test essentials, the AAA shape, the integration skeleton, red-green rules, what to test first.</li>
   <li><a href="../reference/deployment-first-aid.html">Deployment First Aid</a> — the config rule, the fail-fast guard, the Render deploy settings, the deep health check, and the fresh-database gotchas.</li>
+  <li><a href="../reference/caching-first-aid.html">Caching First Aid</a> — rule zero, the cache-aside skeleton, the invalidation law, the honesty trade-offs, and the Map that learns to lie.</li>
 </ul>
 
 <div class="footer">

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 · Caching: Memory Over the Wire — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 10 · Performance</p>
+<h1>Caching: Memory Over the Wire</h1>
+<p class="lead">Your server has one habit it grew in Lesson 07 and never questioned: <em>every authenticated request asks Postgres who you are</em>. List notes? Two queries. Create a note? Two queries. The database re-answers the same question a hundred times a second and nobody blinks — yet. Today: the cache-aside pattern, a TTL, and the exact moment your cache starts lying — which your L08 test suite catches in writing.</p>
+<p class="badges">
+  <span class="badge">~40 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">performance</span>
+</p>
+
+<h2>But first — an old debt</h2>
+<p>Open <code>server7.mjs</code>. <code>getSid</code> is sitting there <em>inline</em>, still wearing the pre-L08 bug: <code>startsWith("sid")</code>. Meanwhile <code>utils/index.mjs</code> holds the fixed version, exported, guarded by your decoy test — and server7 never imports it. Two copies, one wrong. Integration tests can't see it (plain <code>sid=…</code> cookies parse correctly either way); only the unit test guards the utils copy, and nobody guards the inline one. First drill item: delete the inline copy, import the guarded one. The suite stays green — that silence is the sound of a fence doing its job.</p>
+
+<h2>Why this lesson</h2>
+<p>Count the queries in one ordinary cycle — register, login, list, create, logout. Seven-ish SQL statements, and every authenticated request pays the same tax twice: <code>getUser</code> re-runs the sessions JOIN <em>every single time</em>, then the handler runs its own query. Locally, each round-trip is half a millisecond and Postgres is bored. But you've already tasted the future: Lesson 09 moved the database behind a network socket. The same code against Cloud SQL or RDS pays 1–10 ms <em>per query, per request</em> — and the session lookup is pure repetition: the same sid, asked again and again, usually gets the same answer.</p>
+
+<h2>The one idea</h2>
+<p><strong>A cache remembers an expensive answer next to the asker — together with a policy for when that answer stops being true.</strong> The policy has two halves and both are mandatory: <em>expiration</em> (a TTL — how long memory may overrule the database) and <em>invalidation</em> (which code paths must delete the entry the moment the truth changes). The pattern is called <a href="https://redis.io/glossary/cache-aside-pattern/">cache-aside</a>: check memory, miss, query the database, remember. Storing is the easy half. The other half is why the field's oldest joke says the two hard problems in computer science are cache invalidation and naming things.</p>
+
+<h2>Step 1 — measure before you cache</h2>
+<p>Rule zero: no cache without a measured, repeated, expensive read. Make the invisible visible — one line in <code>getUser</code> and in any handler:</p>
+<pre><code>const t0 = performance.now()
+const { rows } = await pool.query(`…sessions JOIN…`, [sid])
+console.log(`getUser: ${(performance.now() - t0).toFixed(2)}ms`)</code></pre>
+<p>Walk one cycle (register → login → list → logout) and read the log. You'll see the JOIN fire on <em>every</em> request — logout, login, every note operation. That's your hot path, found with evidence instead of folklore. (And note what you <em>don't</em> cache: <code>/health</code> runs once per platform poll; <code>register</code> inserts unique data. Not repeated, not cached.)</p>
+
+<h2>Step 2 — cache-aside on the hot path</h2>
+<p>A Map, a TTL, three branches:</p>
+<pre><code>const sessionCache = new Map()      <span class="c">// sid → { user, expires } — in-memory, per-process</span>
+const TTL = 60_000                  <span class="c">// 60s: how long memory may overrule Postgres</span>
+
+async function getUser(req) {
+  const sid = getSid(req)
+  if (!sid) return null
+  const hit = sessionCache.get(sid)
+  if (hit &amp;&amp; hit.expires &gt; Date.now()) return hit.user        <span class="c">// hit: zero queries</span>
+
+  const { rows } = await pool.query(`…sessions JOIN…`, [sid]) <span class="c">// miss: ask the DB</span>
+  const user = rows[0] ?? null
+  sessionCache.set(sid, { user, expires: Date.now() + TTL })  <span class="c">// remember the answer</span>
+  return user
+}</code></pre>
+<p>Run the suite before you go further. It goes red — and not by accident.</p>
+
+<h2>Step 3 — the moment your cache lies</h2>
+<p><code>✖ the notes contract, through real HTTP</code> — the line that asserts <code>logout → /auth/me → 401</code> now sees <strong>200</strong>. Walk through why: logout deleted the session row from Postgres, but the cache still holds <code>{ user, expires: … }</code> for that sid. For up to 60 seconds, memory overrules the database — your L07 promise ("logout revokes instantly") is broken, and the L08 fence is the thing that noticed. <em>This is cache invalidation as a lived experience</em>: not a quiz answer, a red test you wrote two lessons before you needed it.</p>
+<p>The fix is one line at the mutation point:</p>
+<pre><code>async function logout(req, res) {
+  const sid = getSid(req)
+  if (sid) {
+    await pool.query("DELETE FROM sessions WHERE sid = $1", [sid])
+    sessionCache.delete(sid)          <span class="c">// evict — or memory keeps lying for the rest of the TTL</span>
+  }
+  return json(res, 204, undefined, { "set-cookie": "sid=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0" })
+}</code></pre>
+<p>The rule the line encodes: <strong>every place that mutates the underlying data is an invalidation point.</strong> For sessions there is exactly one — logout. Login inserts a brand-new sid (nothing cached yet, nothing to evict). If tomorrow a "log out everywhere" feature deletes many sessions, it inherits the same eviction duty. Find the mutation points, or the cache writes fiction.</p>
+
+<h2>Step 4 — the honesty trade-off table</h2>
+<table>
+  <thead><tr><th>Policy</th><th>Freshness</th><th>Cost</th></tr></thead>
+  <tbody>
+    <tr><td>No cache</td><td>always true</td><td>every read pays the DB, forever</td></tr>
+    <tr><td>TTL only</td><td>stale up to TTL — a lying window you chose</td><td>one Map, no bookkeeping — but logout within the window revokes nothing in memory unless you evict</td></tr>
+    <tr><td>Evict at every mutation point</td><td>true at every mutation; stale only for data changed behind your back</td><td>must find <em>all</em> mutation points — miss one, cache lies</td></tr>
+    <tr><td>TTL <em>and</em> eviction (what you built)</td><td>best of both</td><td>the real-world default</td></tr>
+  </tbody>
+</table>
+<p>One more honesty note: this Map grows forever — every sid ever seen stays until a request checks it past expiry. A course API dies of old age first; a real cache evicts (LRU, size caps) or is a separate process with memory limits (Redis). Say the word and we'll build a 30-line LRU some day.</p>
+
+<h2>Step 5 — the discipline: don't cache the notes list</h2>
+<p>It's tempting: cache <code>listByUserId</code> keyed by user, evict on every note write. Don't — not today. Your reads aren't hot, the list has <em>three</em> mutation points (POST, PUT, DELETE), and the lessons of today all say the same thing: cache what you measured, not what you can imagine. The discipline matters more than the pattern: a cache you can't justify is a lie generator you installed on purpose. (Also notice the key question every future cache must answer: <em>whose</em> data is this? A list keyed without the user id would serve strangers each other's notes — your L07 IDOR family, reborn through a Map.)</p>
+
+<h3>Four things to notice</h3>
+<ul>
+  <li><strong>Your fence caught a bug that didn't exist yet.</strong> The logout test was written in L08 against a promise from L07. Caching broke that promise in L10, and the suite went red before you finished typing. That's the whole point of a contract with teeth.</li>
+  <li><strong>The cache lives in one process.</strong> Restart the server, cache is empty — users don't notice. That's a feature: cache is disposable, database is truth. When two server processes need to share the lie, you graduate to Redis — same pattern, shared memory.</li>
+  <li><strong>TTL is a business decision.</strong> 60 seconds means "a revoked session may still work for a minute — unless we evict." Different data would get different numbers: sessions tight, a currency-rate cache loose, a CSS file basically forever.</li>
+  <li><strong>Measure again.</strong> After the cache: one login → list → logout cycle runs roughly half the queries. The number before and after is the only honest sales pitch a cache has.</li>
+</ul>
+
+<h2>The drill — measure, cache, lie, fix</h2>
+<div class="task">
+  <span class="label">Hands-on · the fence, again</span>
+  <ul class="checklist" data-store="bd-l10-drill">
+    <li><span class="box"></span><span class="txt">Kill the old debt: delete server7's inline <code>getSid</code>, import the guarded one from <code>utils/index.mjs</code>; suite stays green; then mutation-check — re-break <code>startsWith("sid=")</code> in utils and watch the decoy test go red. Revert</span></li>
+    <li><span class="box"></span><span class="txt">Measure first: log duration (or just an occurrence) of every <code>pool.query</code> for one register → login → list → logout cycle; count how many times the sessions JOIN runs (answer: once per authed request)</span></li>
+    <li><span class="box"></span><span class="txt">Add the sessionCache Map + TTL 60s to <code>getUser</code> (cache-aside, as above); run <code>npm test</code> — savor the red logout assertion (200 ≠ 401), that's the cache lying in writing</span></li>
+    <li><span class="box"></span><span class="txt">Evict in logout: <code>sessionCache.delete(sid)</code>; suite green. Then mutation-check: comment the eviction out, watch the same test go red again, restore</span></li>
+    <li><span class="box"></span><span class="txt">Feel the TTL: temporarily set TTL to 200ms, write a test that logs in, waits 300ms (<code>await new Promise(r =&gt; setTimeout(r, 300))</code>), hits <code>/auth/me</code>, and asserts it still 200s (session row alive) — then logout, hit <code>/auth/me</code> with no eviction and TTL 200ms, and watch it go 401 on its own once the entry expires. Restore TTL 60s</span></li>
+    <li><span class="box"></span><span class="txt">Measure after: same cycle as step 2 — count the queries again. That delta is the cache's only honest sales pitch</span></li>
+    <li><span class="box"></span><span class="txt">Write the discipline down: one comment (or a line in your notes) stating what you chose NOT to cache (the notes list) and why (no hot reads, three mutation points, unjustified risk)</span></li>
+    <li><span class="box"></span><span class="txt">Stretch: the Map never forgets dead sids. Add eviction-on-read (<code>if expired → delete + treat as miss</code>) plus a size cap of 1000 with arbitrary eviction — feel how fast "just a Map" becomes a policy conversation</span></li>
+  </ul>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — miss means: ask the database, then remember the answer." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>In cache-aside, what happens on a miss?</q>
+  <div class="options">
+    <button class="opt">Query the database, then store the answer in the cache</button>
+    <button class="opt">Return null so the caller retries against the database</button>
+    <button class="opt">Serve the oldest cached value until it expires</button>
+    <button class="opt">Rebuild the whole cache from the database up front</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — memory said alive after Postgres said revoked." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Why did logout return 401s only after eviction was added?</q>
+  <div class="options">
+    <button class="opt">The cache kept serving a session the database had deleted</button>
+    <button class="opt">The DELETE query failed silently and left the row in place</button>
+    <button class="opt">The cookie's Max-Age outlived the session row in Postgres</button>
+    <button class="opt">The JOIN query started matching expired sessions again</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — every mutation point is an invalidation point." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Where must a cached session be invalidated?</q>
+  <div class="options">
+    <button class="opt">Everywhere the sessions table is mutated, like logout</button>
+    <button class="opt">Only when the TTL lapses, never anywhere else</button>
+    <button class="opt">When the server restarts and rebuilds the Map</button>
+    <button class="opt">Whenever any note is created, edited, or deleted</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — measured, repeated, expensive: all three or no cache." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>When is adding a cache justified?</q>
+  <div class="options">
+    <button class="opt">A measured read is expensive and repeats constantly</button>
+    <button class="opt">The database feels slow on some afternoon of load</button>
+    <button class="opt">Redis is already running for another service nearby</button>
+    <button class="opt">Any read path exists, since caches always help somehow</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> the <a href="https://redis.io/glossary/cache-aside-pattern/">cache-aside pattern page</a> from Redis — you just implemented it by hand; the page names the variants and the pitfalls you lived through. Second read: skim MDN's <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching">HTTP caching</a> — a <em>different layer</em> (browsers and proxies caching whole responses via <code>Cache-Control</code>), which is why your API responses ship without cache headers by default. When you're ready to stop lying by hand, say "Redis lesson" — same pattern, the memory moves out of your process.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> Lesson 11 — <em>Queues</em>: the work that shouldn't happen inside a request — emails, exports, anything slow — and how to stop making users wait for it. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — LRU in 30 lines, why Redis exists at all, write-through vs cache-aside, whether caching auth is insane (it's a trade, we priced it today), or HTTP caching headers as a second layer — all fair game.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/caching-first-aid.html">Caching First Aid</a> · Previous: <a href="0009-deployment-and-config.html">Lesson 09</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0010-caching.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

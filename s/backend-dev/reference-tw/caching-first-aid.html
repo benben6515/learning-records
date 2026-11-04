@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>快取急救包 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 09</p>
+<h1>快取急救包</h1>
+<p class="lead">第 10 課濃縮成一張卡：把關每個快取的規則、你為 session 蓋的 cache-aside 骨架、失效法則、誠實取捨表，還有讓一個 Map 變成說謊機的各種坑——依據 <a href="https://redis.io/glossary/cache-aside-pattern/">cache-aside 模式</a>。把我印出來。</p>
+
+<h2>規則零（把關一切）</h2>
+<p class="small"><strong>沒有測量過、重複、而且昂貴的讀取，就沒有快取。</strong>先測量（log 那個 query、走一個循環、數次數）。快取證據點名的東西——不是你想像得到的東西。一個你無法說明正當性的快取，是你刻意安裝的說謊機器。</p>
+
+<h2>Cache-aside 骨架（永久收藏）</h2>
+<pre><code>const cache = new Map()                 <span class="c">// key → { value, expires }——行程內記憶體</span>
+const TTL = 60_000                      <span class="c">// 你親手選的說謊窗口</span>
+
+async function getAnswer(key) {
+  const hit = cache.get(key)
+  if (hit &amp;&amp; hit.expires &gt; Date.now()) return hit.value       <span class="c">// 中：零 DB query</span>
+  const value = await expensiveQuery(key)                     <span class="c">// 沒中：問真相</span>
+  cache.set(key, { value, expires: Date.now() + TTL })        <span class="c">// 記住它</span>
+  return value
+}</code></pre>
+<p class="small">快取是一次性的。重啟＝空快取＝無人察覺。資料庫是真相；記憶體是帶有效期的傳聞。</p>
+
+<h2>失效法則</h2>
+<pre><code>await pool.query("DELETE FROM sessions WHERE sid = $1", [sid])
+sessionCache.delete(sid)          <span class="c">// 每個突變點都欠這一行</span></code></pre>
+<table>
+  <thead><tr><th>政策</th><th>新鮮度</th><th>成本</th></tr></thead>
+  <tbody>
+    <tr><td>不快取</td><td>永遠為真</td><td>每個讀取都付 DB 的錢</td></tr>
+    <tr><td>只有 TTL</td><td>最舊到 TTL 為止</td><td>零簿記，但突變不會傳播</td></tr>
+    <tr><td>每個突變點都清除</td><td>突變時刻為真</td><td>漏一個突變點 → 快取說謊</td></tr>
+    <tr><td>TTL＋清除</td><td>真實世界的預設值</td><td>production 快取都在做的</td></tr>
+  </tbody>
+</table>
+
+<h2>值得現在就知道的坑</h2>
+<ul>
+  <li><strong>說謊窗口是商業決策。</strong>「被撤銷的 session 也許在 TTL 用完前還能用——除非你動手清。」session 收緊（秒級）、匯率放鬆（分級）、CSS 檔永遠。</li>
+  <li><strong>快取 key 是租界邊界。</strong>每用戶資料的 key 沒帶 user id，就會把陌生人的資料互相端上桌——IDOR 家族藉著一個 Map 轉世。</li>
+  <li><strong>找齊所有突變點。</strong>sessions 表正好一個（logout）。哪天做「登出所有裝置」批次刪 session → 繼承同樣的清除義務。</li>
+  <li><strong>無界 Map 永遠不縮。</strong>每個見過的 key 都留著，直到某個請求發現它過期。真正的快取會驅逐（LRU、大小上限），或把記憶體外包給有上限的獨立程序（Redis）。</li>
+  <li><strong>圍籬抓得到謊言。</strong>先寫合約測試（logout → 401）；加快取；看測試轉紅；加清除；轉綠。紅燈就是快取在自首。</li>
+  <li><strong>HTTP 快取是另一層。</strong>瀏覽器與代理用 <code>Cache-Control</code> 標頭快取整個回應——跟你行程內的 Map 無關。你的 API 預設一個都不送，對需要驗證的 API 來說這是對的。</li>
+  <li><strong>兩個行程無法共享一個 Map。</strong>服務擴到 2＋ 個執行個體，各自擁有自己的謊言。那時記憶體搬去 Redis——同一個模式，共享記憶體。</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0010-caching.html">← 第 10 課</a> · 下一課：佇列（第 11 課） · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/caching-first-aid.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caching First Aid — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 09</p>
+<h1>Caching First Aid</h1>
+<p class="lead">Lesson 10 in one card: the rule that gates every cache, the cache-aside skeleton you built for sessions, the invalidation law, the honesty trade-offs, and the gotchas that turn a Map into a liar — grounded in the <a href="https://redis.io/glossary/cache-aside-pattern/">cache-aside pattern</a>. Print me.</p>
+
+<h2>Rule zero (gates everything)</h2>
+<p class="small"><strong>No cache without a measured, repeated, expensive read.</strong> Measure first (log the query, walk one cycle, count). Cache what the evidence names — not what you can imagine. A cache you can't justify is a lie generator you installed on purpose.</p>
+
+<h2>The cache-aside skeleton (copy forever)</h2>
+<pre><code>const cache = new Map()                 <span class="c">// key → { value, expires } — per-process memory</span>
+const TTL = 60_000                      <span class="c">// the lying window you chose</span>
+
+async function getAnswer(key) {
+  const hit = cache.get(key)
+  if (hit &amp;&amp; hit.expires &gt; Date.now()) return hit.value       <span class="c">// hit: zero DB queries</span>
+  const value = await expensiveQuery(key)                     <span class="c">// miss: ask the truth</span>
+  cache.set(key, { value, expires: Date.now() + TTL })        <span class="c">// remember it</span>
+  return value
+}</code></pre>
+<p class="small">Cache is disposable. Restart = empty cache = nobody notices. The database is truth; memory is a rumor with an expiry date.</p>
+
+<h2>The invalidation law</h2>
+<pre><code>await pool.query("DELETE FROM sessions WHERE sid = $1", [sid])
+sessionCache.delete(sid)          <span class="c">// every mutation point owes this line</span></code></pre>
+<table>
+  <thead><tr><th>Policy</th><th>Freshness</th><th>Cost</th></tr></thead>
+  <tbody>
+    <tr><td>No cache</td><td>always true</td><td>every read pays the DB</td></tr>
+    <tr><td>TTL only</td><td>stale up to TTL</td><td>no bookkeeping, but mutations don't propagate</td></tr>
+    <tr><td>Evict at every mutation point</td><td>true at every mutation</td><td>miss one mutation point → cache lies</td></tr>
+    <tr><td>TTL + eviction</td><td>the real-world default</td><td>what production caches do</td></tr>
+  </tbody>
+</table>
+
+<h2>Gotchas worth knowing now</h2>
+<ul>
+  <li><strong>The stale window is a business decision.</strong> "A revoked session may still work for the rest of the TTL — unless you evict." Sessions tight (seconds), currency rates loose (minutes), CSS files forever.</li>
+  <li><strong>Cache keys are tenancy boundaries.</strong> Per-user data keyed without the user id serves strangers each other's data — the IDOR family reborn through a Map.</li>
+  <li><strong>Find ALL the mutation points.</strong> For sessions: exactly one (logout). A "logout everywhere" feature deletes many sessions → inherits the same eviction duty.</li>
+  <li><strong>An unbounded Map never shrinks.</strong> Every key ever seen lingers until a request checks it past expiry. A real cache evicts (LRU, size caps) or outsources memory to a bounded process (Redis).</li>
+  <li><strong>The fence catches the lies.</strong> Write the contract test first (logout → 401); add the cache; watch the test go red; add eviction; green. Red is the cache confessing.</li>
+  <li><strong>HTTP caching is a different layer.</strong> Browsers and proxies cache whole responses via <code>Cache-Control</code> headers — nothing to do with your in-process Map. Your API sends none by default, which is correct for an authenticated API.</li>
+  <li><strong>Two processes can't share a Map.</strong> When your service scales to 2+ instances, each has its own lie. That's when the memory moves to Redis — same pattern, shared memory.</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons/0010-caching.html">← Lesson 10</a> · Next up: Queues (Lesson 11) · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/caching-first-aid.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 10 課 · 快取：記憶體勝過網路 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 10 課 · 效能</p>
+<h1>快取：記憶體勝過網路</h1>
+<p class="lead">你的伺服器有個從第 07 課養成、從沒被質疑過的習慣：<em>每個需要驗證的請求都去問一次 Postgres「你是誰」</em>。列筆記？兩個 query。建筆記？兩個 query。資料庫一秒鐘重複回答同一個問題一百次，沒人皺眉——暫時還沒有。今天：cache-aside 模式、一個 TTL，還有你的快取開始說謊的確切那一刻——而你的 L08 測試 suite 會親手抓到它。</p>
+<p class="badges">
+  <span class="badge">約 40 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">效能</span>
+</p>
+
+<h2>但先還一筆舊債</h2>
+<p>打開 <code>server7.mjs</code>。<code>getSid</code> 還坐在那裡<em>inline</em>，身上穿著 L08 之前的舊 bug：<code>startsWith("sid")</code>。同時 <code>utils/index.mjs</code> 躺著修正版，有 export、有誘餌測試看守——而 server7 從來沒 import 它。兩份副本，一份是錯的。整合測試看不見它（普通的 <code>sid=…</code> cookie 兩種寫法都解析正確）；只有單元測試守著 utils 那份，而 inline 那份無人看守。第一個練習項目：刪掉 inline 副本，import 被看守的那份。Suite 維持綠燈——那份沉默，是圍籬在盡責的聲音。</p>
+
+<h2>為什麼是這一課</h2>
+<p>數數一個平凡循環裡的 query——註冊、登入、列清單、建筆記、登出。七條上下 SQL，而每個需要驗證的請求都繳兩次同樣的稅：<code>getUser</code> 每一次都重跑 sessions JOIN，handler 再跑自己的 query。本地，每趟半毫秒，Postgres 閒得發慌。但你已經嘗過未來了：第 09 課把資料庫搬到網路 socket 後面。同一份程式碼對上 Cloud SQL 或 RDS，每個 query、每個請求要付 1–10 毫秒——而 session 查詢是純粹的重複：同一個 sid，問了又問，答案幾乎總是同一個。</p>
+
+<h2>核心觀念</h2>
+<p><strong>快取＝把昂貴的答案記在提問者旁邊——連同一份「答案什麼時候不再是對的」的政策。</strong>政策有兩半，缺一不可：<em>過期</em>（TTL——記憶體可以勝過資料庫多久）與<em>失效處理</em>（哪些程式路徑必須在真相改變的瞬間刪掉那筆紀錄）。這個模式叫 <a href="https://redis.io/glossary/cache-aside-pattern/">cache-aside</a>：查記憶體、沒中、問資料庫、記住。儲存是簡單的那一半；另一半，就是資訊工程最老的笑話「兩大難題：快取失效與命名」裡的那一半。</p>
+
+<h2>步驟一——快取之前，先測量</h2>
+<p>規則零：沒有測量過、重複發生、而且昂貴的讀取，就不准上快取。把看不見的變成看得見——<code>getUser</code> 裡一行：</p>
+<pre><code>const t0 = performance.now()
+const { rows } = await pool.query(`…sessions JOIN…`, [sid])
+console.log(`getUser: ${(performance.now() - t0).toFixed(2)}ms`)</code></pre>
+<p>走一個循環（註冊 → 登入 → 列清單 → 登出），讀 log。你會看到 JOIN 在<em>每個</em>請求都開火——登出、登入、每個筆記操作。熱路徑找到了，靠證據不是靠都市傳說。（也注意你<em>不</em>快取什麼：<code>/health</code> 每次平台輪詢才跑一次；<code>register</code> 插入的是獨一無二的資料。不重複，就不快取。）</p>
+
+<h2>步驟二——熱路徑上的 cache-aside</h2>
+<p>一個 Map、一個 TTL、三個分支：</p>
+<pre><code>const sessionCache = new Map()      <span class="c">// sid → { user, expires }——行程內記憶體</span>
+const TTL = 60_000                  <span class="c">// 60 秒：記憶體可以勝過 Postgres 的時限</span>
+
+async function getUser(req) {
+  const sid = getSid(req)
+  if (!sid) return null
+  const hit = sessionCache.get(sid)
+  if (hit &amp;&amp; hit.expires &gt; Date.now()) return hit.user        <span class="c">// 中：零 query</span>
+
+  const { rows } = await pool.query(`…sessions JOIN…`, [sid]) <span class="c">// 沒中：問 DB</span>
+  const user = rows[0] ?? null
+  sessionCache.set(sid, { user, expires: Date.now() + TTL })  <span class="c">// 記住答案</span>
+  return user
+}</code></pre>
+<p>繼續之前先跑 suite。它會紅——而且不是意外。</p>
+
+<h2>步驟三——快取說謊的那一刻</h2>
+<p><code>✖ the notes contract, through real HTTP</code>——斷言 <code>logout → /auth/me → 401</code> 的那行，現在看到的是 <strong>200</strong>。走一遍為什麼：logout 從 Postgres 刪了 session row，但快取還握著那個 sid 的 <code>{ user, expires: … }</code>。最長 60 秒，記憶體勝過資料庫——你 L07 的承諾（「logout 立即失效」）破了，而發現它的是 L08 的圍籬。<em>這就是快取失效的親身體驗</em>：不是測驗答案，是一個你在兩課之前就寫好、專門等這一刻的紅燈。</p>
+<p>修法是突變點上的一行：</p>
+<pre><code>async function logout(req, res) {
+  const sid = getSid(req)
+  if (sid) {
+    await pool.query("DELETE FROM sessions WHERE sid = $1", [sid])
+    sessionCache.delete(sid)          <span class="c">// 清除——否則記憶體繼續說謊到 TTL 用完</span>
+  }
+  return json(res, 204, undefined, { "set-cookie": "sid=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0" })
+}</code></pre>
+<p>這行編碼的規則：<strong>每個修改底層資料的地方，都是失效點。</strong>sessions 表正好只有一個——logout。登入插入的是全新 sid（快取裡還沒有，無東西可清）。哪天做「登出所有裝置」批次刪 session，它就繼承同樣的清除義務。找齊突變點，否則快取開始寫小說。</p>
+
+<h2>步驟四——誠實的取捨表</h2>
+<table>
+  <thead><tr><th>政策</th><th>新鮮度</th><th>成本</th></tr></thead>
+  <tbody>
+    <tr><td>不快取</td><td>永遠為真</td><td>每個讀取永遠付 DB 的錢</td></tr>
+    <tr><td>只有 TTL</td><td>最舊到 TTL 為止——你親手選的說謊窗口</td><td>一個 Map、零簿記——但窗口內的登出，除非動手清除，記憶體裡照樣有效</td></tr>
+    <tr><td>每個突變點都清除</td><td>突變時刻為真；只有「背後改掉的資料」會舊</td><td>必須找齊<em>所有</em>突變點——漏一個，快取說謊</td></tr>
+    <tr><td>TTL <em>加</em>清除（你蓋的這個）</td><td>兩者兼得</td><td>真實世界的預設值</td></tr>
+  </tbody>
+</table>
+<p>另一則誠實聲明：這個 Map 永遠不縮——每個見過的 sid 都留著，直到某個請求發現它過期。課程 API 會先老死；真正的快取會驅逐（LRU、大小上限），或是把記憶體外包給有上限的獨立程序（Redis）。哪天想蓋，30 行的 LRU 我們隨時可以寫。</p>
+
+<h2>步驟五——紀律：不要快取筆記清單</h2>
+<p>很誘人：cache <code>listByUserId</code>、key 用 user、每個寫入都清除。別——今天別。你的讀取不熱、清單有<em>三個</em>突變點（POST、PUT、DELETE），而今天的每個教訓都指向同一件事：快取你<em>測量過的</em>，不是你<em>想像得到的</em>。紀律比模式重要：一個你無法說明正當性的快取，是你刻意安裝的說謊機器。（也注意每個未來快取都必須回答的問題：<em>誰的</em>資料？一個 key 沒帶 user id 的清單快取，會把陌生人彼此的筆記發來發去——你 L07 的 IDOR 家族，藉著一個 Map 轉世。）</p>
+
+<h3>四個值得注意的地方</h3>
+<ul>
+  <li><strong>你的圍籬抓到一個還沒誕生的 bug。</strong>logout 測試寫於 L08，看守的是 L07 的承諾。快取在 L10 弄破承諾，suite 在你還沒打完字前就紅給你看。這就是「有牙齒的合約」的全部意義。</li>
+  <li><strong>快取住在一個行程裡。</strong>重啟伺服器，快取清空——使用者無感。這是功能：快取是一次性的，資料庫才是真相。等兩個 server 行程需要共享同一份謊言，你就升級到 Redis——同一個模式，共享的記憶體。</li>
+  <li><strong>TTL 是商業決策。</strong>60 秒的意思是「被撤銷的 session 也許還能用一分鐘——除非我們動手清」。不同資料配不同數字：session 收緊、匯率快取放鬆、CSS 檔基本上永遠。</li>
+  <li><strong>再測量一次。</strong>快取之後：一個登入 → 列清單 → 登出循環的 query 數差不多砍半。前後兩個數字，是快取唯一誠實的推銷詞。</li>
+</ul>
+
+<h2>練習——測量、快取、說謊、修復</h2>
+<div class="task">
+  <span class="label">動手做 · 圍籬，再上陣</span>
+  <ul class="checklist" data-store="bd-l10-drill">
+    <li><span class="box"></span><span class="txt">還舊債：刪掉 server7 的 inline <code>getSid</code>，從 <code>utils/index.mjs</code> import 被看守的那份；suite 維持綠；然後突變檢查——把 utils 裡的 <code>startsWith("sid=")</code> 改壞，看誘餌測試轉紅。還原</span></li>
+    <li><span class="box"></span><span class="txt">先測量：記錄一個註冊 → 登入 → 列清單 → 登出循環裡每個 <code>pool.query</code> 的時間（或只記出現次數）；數 sessions JOIN 跑幾次（答案：每個需要驗證的請求一次）</span></li>
+    <li><span class="box"></span><span class="txt">把 sessionCache Map + TTL 60 秒加進 <code>getUser</code>（cache-aside，照上面）；跑 <code>npm test</code>——細細品嘗紅掉的 logout 斷言（200 ≠ 401），那就是快取在白紙黑字上說謊</span></li>
+    <li><span class="box"></span><span class="txt">logout 裡清除：<code>sessionCache.delete(sid)</code>；suite 轉綠。然後突變檢查：註解掉清除那行，看同一個測試再紅一次，還原</span></li>
+    <li><span class="box"></span><span class="txt">感受 TTL：暫時把 TTL 設 200ms，寫一個測試：登入、等 300ms（<code>await new Promise(r =&gt; setTimeout(r, 300))</code>）、打 <code>/auth/me</code>、斷言還是 200（session row 還活著）——然後 logout、<em>不清除</em>、打 <code>/auth/me</code>，看它在 200ms 後自己變 401。還原 TTL 60 秒</span></li>
+    <li><span class="box"></span><span class="txt">再測量：同步驟二的循環——再數一次 query。前後差額，就是快取唯一誠實的推銷詞</span></li>
+    <li><span class="box"></span><span class="txt">把紀律寫下來：一行註解（或筆記）記下你選擇<em>不</em>快取的東西（筆記清單）與原因（讀取不熱、三個突變點、風險無正當性）</span></li>
+    <li><span class="box"></span><span class="txt">加碼：Map 永遠記著死 sid。加上讀取時驅逐（<code>過期 → delete + 當 miss</code>）加 1000 筆大小上限、滿了任意驅逐——體會「只是一個 Map」多快變成一場政策辯論</span></li>
+  </ul>
+</div>
+
+<h2>測測你的理解</h2>
+<div class="quiz" data-right="正確——沒中就是：問資料庫，然後把答案記下來。" data-wrong="不盡然——正確答案已標出。">
+  <q>Cache-aside 在沒中（miss）的時候做什麼？</q>
+  <div class="options">
+    <button class="opt">查資料庫，然後把答案存進快取</button>
+    <button class="opt">回傳 null，讓呼叫端改去重試資料庫</button>
+    <button class="opt">回最舊的快取值，直到它過期為止</button>
+    <button class="opt">預先從資料庫把整份快取重建一遍</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——資料庫說撤銷了，記憶體還說活著。" data-wrong="不盡然——正確答案已標出。">
+  <q>為什麼 logout 要加上清除那一行才會回 401？</q>
+  <div class="options">
+    <button class="opt">快取一直在端上一個資料庫已刪掉的 session</button>
+    <button class="opt">DELETE query 靜默失敗，那個 row 還留在原地</button>
+    <button class="opt">cookie 的 Max-Age 比 Postgres 裡的 session row 活得久</button>
+    <button class="opt">JOIN query 又開始配對到已過期的 session</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——每個突變點都是失效點。" data-wrong="不盡然——正確答案已標出。">
+  <q>被快取的 session 必須在哪裡被失效處理？</q>
+  <div class="options">
+    <button class="opt">sessions 表被修改的每個地方，例如 logout</button>
+    <button class="opt">只有 TTL 到期的時候，其他哪裡都不用</button>
+    <button class="opt">伺服器重啟、重建 Map 的那一刻</button>
+    <button class="opt">任何筆記被建立、編輯或刪除的時候</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——測量過、重複、昂貴：三個條件缺一就不准快取。" data-wrong="不盡然——正確答案已標出。">
+  <q>什麼時候加快取是有正當性的？</q>
+  <div class="options">
+    <button class="opt">測量過的讀取很昂貴，而且不斷重複發生</button>
+    <button class="opt">某個下午負載時資料庫感覺起來很慢</button>
+    <button class="opt">Redis 已經在旁邊為別的服務跑著了</button>
+    <button class="opt">只要存在任何讀取路徑，快取總是有幫助</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>延伸閱讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong>Redis 的 <a href="https://redis.io/glossary/cache-aside-pattern/">cache-aside 模式頁</a>——你剛徒手蓋完它；頁面替你經歷過的變體與坑都取了名字。第二篇：掃過 MDN 的 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching">HTTP 快取</a>——那是<em>另一層</em>（瀏覽器與代理用 <code>Cache-Control</code> 快取整個回應），也是你的 API 回應預設不帶快取標頭的原因。等你不想再徒手說謊，說一聲「Redis 課」——同一個模式，記憶體搬出你的行程。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>第 11 課——<em>佇列</em>：不該發生在請求裡的工作——寄信、匯出、一切慢的東西——以及怎麼別讓使用者等它。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——30 行的 LRU、Redis 為什麼存在、write-through vs cache-aside、快取驗證資料到底瘋不瘋（這是交易，今天定過價了）、或 HTTP 快取標頭那第二層——都歡迎。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/caching-first-aid.html">快取急救包</a> · 上一課：<a href="0009-deployment-and-config.html">第 09 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0010-caching.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>
