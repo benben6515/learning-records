@@ -1,8 +1,13 @@
 import pg from "pg"
 
 // use the `node --env-file .env`
-// try { process.loadEnvFile(new URL("../.env", import.meta.url)) } catch {}
+// try { process.loadEnvFile(new URL("../.env", import.meta.url)) } catch { }
 
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL is not set")
+  process.exit(1)
+
+}
 export const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
 
 export const sql = {

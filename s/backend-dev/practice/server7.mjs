@@ -3,6 +3,10 @@ import { promisify } from 'node:util'
 import { createServer } from 'node:http'
 import { q, pool } from './utils/db.mjs'
 import { readBody, json, parseJson, fail } from './utils/index.mjs'
+import { pathToFileURL } from 'node:url'
+
+const PORT = process.env.PORT ?? 3322
+const SECURE = process.env.NODE_ENV === "production" ? "; Secure" : ""
 
 
 // ----- auth -----
@@ -65,7 +69,7 @@ async function login(req, res) {
   const sid = randomBytes(32).toString("hex")
   await pool.query("INSERT INTO sessions (sid, user_id) VALUES ($1, $2)", [sid, user.id])
   return json(res, 200, { id: user.id, email: user.email }, {
-    "set-cookie": `sid=${sid}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800`,
+    "set-cookie": `sid=${sid}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${SECURE}`,
   })
 }
 
@@ -132,6 +136,14 @@ async function deleteNoteById(_req, res, p) {
   json(res, 204)
 }
 
+async function checkHealth(_req, res) {
+  try {
+    await pool.query("SELECT 1")
+    return json(res, 200, { ok: true })
+  } catch (error) {
+    return fail(res, 503, "UNHEALTHY", "database unreachable")
+  }
+}
 
 
 const routes = [
@@ -146,6 +158,8 @@ const routes = [
   { method: "GET", pattern: "/notes/:id", handler: getNoteById },
   { method: "PUT", pattern: "/notes/:id", handler: putNoteById },
   { method: "DELETE", pattern: "/notes/:id", handler: deleteNoteById },
+  // health
+  { method: "GET", pattern: "/health", handler: checkHealth },
 ]
 
 const toRegex = (pattern) => new RegExp("^" + pattern.replace(/:(\w+)/g, "(?<$1>\\d+)") + "/?$")
@@ -176,9 +190,6 @@ const app = createServer(async (req, res) => {
   }
 })
 
-import { pathToFileURL } from 'node:url'
-
-const PORT = 3322
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
   app.listen(PORT, () => {
     console.log('server is running')
