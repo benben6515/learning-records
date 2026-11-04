@@ -34,7 +34,7 @@
 <pre><code>const t0 = performance.now()
 const { rows } = await pool.query(`…sessions JOIN…`, [sid])
 console.log(`getUser: ${(performance.now() - t0).toFixed(2)}ms`)</code></pre>
-<p>走一個循環（註冊 → 登入 → 列清單 → 登出），讀 log。你會看到 JOIN 在<em>每個</em>請求都開火——登出、登入、每個筆記操作。熱路徑找到了，靠證據不是靠都市傳說。（也注意你<em>不</em>快取什麼：<code>/health</code> 每次平台輪詢才跑一次；<code>register</code> 插入的是獨一無二的資料。不重複，就不快取。）</p>
+<p>走一個循環（註冊 → 登入 → 列清單 → 登出），讀 log。你會看到 JOIN 在<em>每個需要驗證的</em>請求開火——<code>/auth/me</code>、列清單、建筆記——而註冊、登入、登出根本不呼叫 <code>getUser</code>。熱路徑找到了，靠證據不是靠都市傳說。（也注意你<em>不</em>快取什麼：<code>/health</code> 每次平台輪詢才跑一次；<code>register</code> 插入的是獨一無二的資料。不重複，就不快取。）</p>
 
 <h2>步驟二——熱路徑上的 cache-aside</h2>
 <p>一個 Map、一個 TTL、三個分支：</p>
@@ -77,7 +77,7 @@ async function getUser(req) {
     <tr><td>TTL <em>加</em>清除（你蓋的這個）</td><td>兩者兼得</td><td>真實世界的預設值</td></tr>
   </tbody>
 </table>
-<p>另一則誠實聲明：這個 Map 永遠不縮——每個見過的 sid 都留著，直到某個請求發現它過期。課程 API 會先老死；真正的快取會驅逐（LRU、大小上限），或是把記憶體外包給有上限的獨立程序（Redis）。哪天想蓋，30 行的 LRU 我們隨時可以寫。</p>
+<p>另一則誠實聲明：這個 Map 永遠不縮——每個見過的 sid 都留著，直到某個請求發現它過期。課程 API 會先老死；真正的快取會驅逐（LRU、大小上限），或是把記憶體外包給有上限的獨立行程（Redis）。哪天想蓋，30 行的 LRU 我們隨時可以寫。</p>
 
 <h2>步驟五——紀律：不要快取筆記清單</h2>
 <p>很誘人：cache <code>listByUserId</code>、key 用 user、每個寫入都清除。別——今天別。你的讀取不熱、清單有<em>三個</em>突變點（POST、PUT、DELETE），而今天的每個教訓都指向同一件事：快取你<em>測量過的</em>，不是你<em>想像得到的</em>。紀律比模式重要：一個你無法說明正當性的快取，是你刻意安裝的說謊機器。（也注意每個未來快取都必須回答的問題：<em>誰的</em>資料？一個 key 沒帶 user id 的清單快取，會把陌生人彼此的筆記發來發去——你 L07 的 IDOR 家族，藉著一個 Map 轉世。）</p>
@@ -87,7 +87,7 @@ async function getUser(req) {
   <li><strong>你的圍籬抓到一個還沒誕生的 bug。</strong>logout 測試寫於 L08，看守的是 L07 的承諾。快取在 L10 弄破承諾，suite 在你還沒打完字前就紅給你看。這就是「有牙齒的合約」的全部意義。</li>
   <li><strong>快取住在一個行程裡。</strong>重啟伺服器，快取清空——使用者無感。這是功能：快取是一次性的，資料庫才是真相。等兩個 server 行程需要共享同一份謊言，你就升級到 Redis——同一個模式，共享的記憶體。</li>
   <li><strong>TTL 是商業決策。</strong>60 秒的意思是「被撤銷的 session 也許還能用一分鐘——除非我們動手清」。不同資料配不同數字：session 收緊、匯率快取放鬆、CSS 檔基本上永遠。</li>
-  <li><strong>再測量一次。</strong>快取之後：一個登入 → 列清單 → 登出循環的 query 數差不多砍半。前後兩個數字，是快取唯一誠實的推銷詞。</li>
+  <li><strong>再測量一次。</strong>同步驟二的循環——三個需要驗證的請求，快取前 JOIN 開火三次；快取後一次：重複的請求從兩個 query 變一個，直到 TTL 用完。前後兩個數字，是快取唯一誠實的推銷詞。</li>
 </ul>
 
 <h2>練習——測量、快取、說謊、修復</h2>
@@ -95,11 +95,11 @@ async function getUser(req) {
   <span class="label">動手做 · 圍籬，再上陣</span>
   <ul class="checklist" data-store="bd-l10-drill">
     <li><span class="box"></span><span class="txt">還舊債：刪掉 server7 的 inline <code>getSid</code>，從 <code>utils/index.mjs</code> import 被看守的那份；suite 維持綠；然後突變檢查——把 utils 裡的 <code>startsWith("sid=")</code> 改壞，看誘餌測試轉紅。還原</span></li>
-    <li><span class="box"></span><span class="txt">先測量：記錄一個註冊 → 登入 → 列清單 → 登出循環裡每個 <code>pool.query</code> 的時間（或只記出現次數）；數 sessions JOIN 跑幾次（答案：每個需要驗證的請求一次）</span></li>
+    <li><span class="box"></span><span class="txt">先測量：記錄一個註冊 → 登入 → 列清單 → /auth/me → 再列一次清單 → 登出循環裡每個 <code>pool.query</code> 的時間（或只記出現次數）；數 sessions JOIN 跑幾次（答案：每個需要驗證的請求一次——這個循環是三次）</span></li>
     <li><span class="box"></span><span class="txt">把 sessionCache Map + TTL 60 秒加進 <code>getUser</code>（cache-aside，照上面）；跑 <code>npm test</code>——細細品嘗紅掉的 logout 斷言（200 ≠ 401），那就是快取在白紙黑字上說謊</span></li>
     <li><span class="box"></span><span class="txt">logout 裡清除：<code>sessionCache.delete(sid)</code>；suite 轉綠。然後突變檢查：註解掉清除那行，看同一個測試再紅一次，還原</span></li>
     <li><span class="box"></span><span class="txt">感受 TTL：暫時把 TTL 設 200ms，寫一個測試：登入、等 300ms（<code>await new Promise(r =&gt; setTimeout(r, 300))</code>）、打 <code>/auth/me</code>、斷言還是 200（session row 還活著）——然後 logout、<em>不清除</em>、打 <code>/auth/me</code>，看它在 200ms 後自己變 401。還原 TTL 60 秒</span></li>
-    <li><span class="box"></span><span class="txt">再測量：同步驟二的循環——再數一次 query。前後差額，就是快取唯一誠實的推銷詞</span></li>
+    <li><span class="box"></span><span class="txt">再測量：同步驟二的循環——再數一次 sessions JOIN（3 → 1：每個 sid 一次、直到 TTL 用完，不是每個請求一次）。前後差額，就是快取唯一誠實的推銷詞</span></li>
     <li><span class="box"></span><span class="txt">把紀律寫下來：一行註解（或筆記）記下你選擇<em>不</em>快取的東西（筆記清單）與原因（讀取不熱、三個突變點、風險無正當性）</span></li>
     <li><span class="box"></span><span class="txt">加碼：Map 永遠記著死 sid。加上讀取時驅逐（<code>過期 → delete + 當 miss</code>）加 1000 筆大小上限、滿了任意驅逐——體會「只是一個 Map」多快變成一場政策辯論</span></li>
   </ul>
@@ -118,7 +118,7 @@ async function getUser(req) {
 </div>
 
 <div class="quiz" data-right="正確——資料庫說撤銷了，記憶體還說活著。" data-wrong="不盡然——正確答案已標出。">
-  <q>為什麼 logout 要加上清除那一行才會回 401？</q>
+  <q>為什麼 logout 之後、加上清除那一行之前，/auth/me 一直回 200？</q>
   <div class="options">
     <button class="opt">快取一直在端上一個資料庫已刪掉的 session</button>
     <button class="opt">DELETE query 靜默失敗，那個 row 還留在原地</button>

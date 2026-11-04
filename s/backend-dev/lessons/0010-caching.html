@@ -30,11 +30,11 @@
 <p><strong>A cache remembers an expensive answer next to the asker — together with a policy for when that answer stops being true.</strong> The policy has two halves and both are mandatory: <em>expiration</em> (a TTL — how long memory may overrule the database) and <em>invalidation</em> (which code paths must delete the entry the moment the truth changes). The pattern is called <a href="https://redis.io/glossary/cache-aside-pattern/">cache-aside</a>: check memory, miss, query the database, remember. Storing is the easy half. The other half is why the field's oldest joke says the two hard problems in computer science are cache invalidation and naming things.</p>
 
 <h2>Step 1 — measure before you cache</h2>
-<p>Rule zero: no cache without a measured, repeated, expensive read. Make the invisible visible — one line in <code>getUser</code> and in any handler:</p>
+<p>Rule zero: no cache without a measured, repeated, expensive read. Make the invisible visible — one line in <code>getUser</code>:</p>
 <pre><code>const t0 = performance.now()
 const { rows } = await pool.query(`…sessions JOIN…`, [sid])
 console.log(`getUser: ${(performance.now() - t0).toFixed(2)}ms`)</code></pre>
-<p>Walk one cycle (register → login → list → logout) and read the log. You'll see the JOIN fire on <em>every</em> request — logout, login, every note operation. That's your hot path, found with evidence instead of folklore. (And note what you <em>don't</em> cache: <code>/health</code> runs once per platform poll; <code>register</code> inserts unique data. Not repeated, not cached.)</p>
+<p>Walk one cycle (register → login → list → logout) and read the log. You'll see the JOIN fire on <em>every authenticated</em> request — <code>/auth/me</code>, list notes, create a note — while register, login, and logout never call <code>getUser</code>. That's your hot path, found with evidence instead of folklore. (And note what you <em>don't</em> cache: <code>/health</code> runs once per platform poll; <code>register</code> inserts unique data. Not repeated, not cached.)</p>
 
 <h2>Step 2 — cache-aside on the hot path</h2>
 <p>A Map, a TTL, three branches:</p>
@@ -87,7 +87,7 @@ async function getUser(req) {
   <li><strong>Your fence caught a bug that didn't exist yet.</strong> The logout test was written in L08 against a promise from L07. Caching broke that promise in L10, and the suite went red before you finished typing. That's the whole point of a contract with teeth.</li>
   <li><strong>The cache lives in one process.</strong> Restart the server, cache is empty — users don't notice. That's a feature: cache is disposable, database is truth. When two server processes need to share the lie, you graduate to Redis — same pattern, shared memory.</li>
   <li><strong>TTL is a business decision.</strong> 60 seconds means "a revoked session may still work for a minute — unless we evict." Different data would get different numbers: sessions tight, a currency-rate cache loose, a CSS file basically forever.</li>
-  <li><strong>Measure again.</strong> After the cache: one login → list → logout cycle runs roughly half the queries. The number before and after is the only honest sales pitch a cache has.</li>
+  <li><strong>Measure again.</strong> Same cycle as the drill — three authed reads hit the JOIN three times before the cache, once after: repeats cost one query instead of two until the TTL lapses. The number before and after is the only honest sales pitch a cache has.</li>
 </ul>
 
 <h2>The drill — measure, cache, lie, fix</h2>
@@ -95,11 +95,11 @@ async function getUser(req) {
   <span class="label">Hands-on · the fence, again</span>
   <ul class="checklist" data-store="bd-l10-drill">
     <li><span class="box"></span><span class="txt">Kill the old debt: delete server7's inline <code>getSid</code>, import the guarded one from <code>utils/index.mjs</code>; suite stays green; then mutation-check — re-break <code>startsWith("sid=")</code> in utils and watch the decoy test go red. Revert</span></li>
-    <li><span class="box"></span><span class="txt">Measure first: log duration (or just an occurrence) of every <code>pool.query</code> for one register → login → list → logout cycle; count how many times the sessions JOIN runs (answer: once per authed request)</span></li>
+    <li><span class="box"></span><span class="txt">Measure first: log duration (or just an occurrence) of every <code>pool.query</code> for one register → login → list → /auth/me → list → logout cycle; count how many times the sessions JOIN runs (answer: once per authed request — three in this cycle)</span></li>
     <li><span class="box"></span><span class="txt">Add the sessionCache Map + TTL 60s to <code>getUser</code> (cache-aside, as above); run <code>npm test</code> — savor the red logout assertion (200 ≠ 401), that's the cache lying in writing</span></li>
     <li><span class="box"></span><span class="txt">Evict in logout: <code>sessionCache.delete(sid)</code>; suite green. Then mutation-check: comment the eviction out, watch the same test go red again, restore</span></li>
     <li><span class="box"></span><span class="txt">Feel the TTL: temporarily set TTL to 200ms, write a test that logs in, waits 300ms (<code>await new Promise(r =&gt; setTimeout(r, 300))</code>), hits <code>/auth/me</code>, and asserts it still 200s (session row alive) — then logout, hit <code>/auth/me</code> with no eviction and TTL 200ms, and watch it go 401 on its own once the entry expires. Restore TTL 60s</span></li>
-    <li><span class="box"></span><span class="txt">Measure after: same cycle as step 2 — count the queries again. That delta is the cache's only honest sales pitch</span></li>
+    <li><span class="box"></span><span class="txt">Measure after: same cycle as step 2 — count the JOIN again (3 → 1: once per sid until the TTL lapses, not once per request). That delta is the cache's only honest sales pitch</span></li>
     <li><span class="box"></span><span class="txt">Write the discipline down: one comment (or a line in your notes) stating what you chose NOT to cache (the notes list) and why (no hot reads, three mutation points, unjustified risk)</span></li>
     <li><span class="box"></span><span class="txt">Stretch: the Map never forgets dead sids. Add eviction-on-read (<code>if expired → delete + treat as miss</code>) plus a size cap of 1000 with arbitrary eviction — feel how fast "just a Map" becomes a policy conversation</span></li>
   </ul>
@@ -118,7 +118,7 @@ async function getUser(req) {
 </div>
 
 <div class="quiz" data-right="Correct — memory said alive after Postgres said revoked." data-wrong="Not quite — the correct answer is highlighted.">
-  <q>Why did logout return 401s only after eviction was added?</q>
+  <q>After logout, why did /auth/me keep returning 200 until eviction was added?</q>
   <div class="options">
     <button class="opt">The cache kept serving a session the database had deleted</button>
     <button class="opt">The DELETE query failed silently and left the row in place</button>

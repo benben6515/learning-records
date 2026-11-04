@@ -49,7 +49,7 @@ sessionCache.delete(sid)          <span class="c">// 每個突變點都欠這一
   <li><strong>說謊窗口是商業決策。</strong>「被撤銷的 session 也許在 TTL 用完前還能用——除非你動手清。」session 收緊（秒級）、匯率放鬆（分級）、CSS 檔永遠。</li>
   <li><strong>快取 key 是租界邊界。</strong>每用戶資料的 key 沒帶 user id，就會把陌生人的資料互相端上桌——IDOR 家族藉著一個 Map 轉世。</li>
   <li><strong>找齊所有突變點。</strong>sessions 表正好一個（logout）。哪天做「登出所有裝置」批次刪 session → 繼承同樣的清除義務。</li>
-  <li><strong>無界 Map 永遠不縮。</strong>每個見過的 key 都留著，直到某個請求發現它過期。真正的快取會驅逐（LRU、大小上限），或把記憶體外包給有上限的獨立程序（Redis）。</li>
+  <li><strong>無界 Map 永遠不縮。</strong>每個見過的 key 都留著，直到某個請求發現它過期。真正的快取會驅逐（LRU、大小上限），或把記憶體外包給有上限的獨立行程（Redis）。</li>
   <li><strong>圍籬抓得到謊言。</strong>先寫合約測試（logout → 401）；加快取；看測試轉紅；加清除；轉綠。紅燈就是快取在自首。</li>
   <li><strong>HTTP 快取是另一層。</strong>瀏覽器與代理用 <code>Cache-Control</code> 標頭快取整個回應——跟你行程內的 Map 無關。你的 API 預設一個都不送，對需要驗證的 API 來說這是對的。</li>
   <li><strong>兩個行程無法共享一個 Map。</strong>服務擴到 2＋ 個執行個體，各自擁有自己的謊言。那時記憶體搬去 Redis——同一個模式，共享記憶體。</li>
