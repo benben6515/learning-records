@@ -10,7 +10,7 @@
 | 第二（與現在相反） | 過去式 | would + V | 現在不是這樣 |
 | 第三（與過去相反） | had + p.p. | would have + p.p. | 過去沒發生 |
 
-- 第二條件句 be 一律 **were**：If I were you
+- 第二條件句 be 一律 **were**：If I were you（were 萬用**只在假設語氣**；真實過去事實 → 單數 was：The waiter **was** rude）
 - 混合型：過去條件 + 現在結果 → If you **had worked** last year, you **would be** better off **now**
 
 ## wish　[深入](topics/01-conditionals-wish.md#wish-假設語氣)
@@ -49,6 +49,8 @@
 - 觸發詞：Never / Rarely / Seldom / **Not only...but also** / **Hardly...when** / **No sooner...than** / Not until / Only then
 - 只看句首第一個字（She hardly ever complains → 不倒裝）
 - 助動詞帶時態：過去完成用 had，一般過去用 did
+- 選 did 還是 have/has？具體那次過去事件 → **did + 原式**；至今經驗、無時間錨 → **have/has + p.p.**
+- 形狀鐵律：did + **原式**｜have + **p.p.**｜be + **形容詞/p.p.**（did I ~~woke~~ → wake）
 
 ## 片語動詞　[深入](topics/05-phrasal-verbs.md)
 

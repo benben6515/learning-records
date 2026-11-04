@@ -1,6 +1,6 @@
 # 錯題自測本（Review Deck）
 
-用法：遮住答案行 → 念出正確形式 → 對答案。全錯題來源：2026-10-27 ～ 10-28 練習紀錄。
+用法：遮住答案行 → 念出正確形式 → 對答案。全錯題來源：2026-10-27 ～ 11-04 練習紀錄。
 規則忘了 → [cheatsheet](cheatsheet.md)；要完整講解 → 各主題檔。
 
 ## 01 假設語氣與條件句
@@ -41,6 +41,8 @@
     b. If I had set an alarm last night, I ___ at work on time **that morning**.
        → **would have been**｜that morning = 過去結果
     口訣：if 子句固定 had + p.p.，判斷前先遮住它，只看主句時間詞
+17. I wish you ___ (tell) me about the problem yesterday.（11-04 綜合寫 have tell）
+    → **had told**｜wish + 過去時間詞 = 過去遺憾，had + p.p.；且 have 後面也只能接 p.p.，不能接原式
 
 ## 02 動名詞 vs 不定詞
 
@@ -48,7 +50,7 @@
    → **stealing**｜deny + V-ing
 2. She suggested ___ a taxi.（當時選 to take）
    → **taking**｜suggest + V-ing
-3. The report needs ___ before Friday.（當時選 finish）
+3. The report needs ___ before Friday.（當時選 finish；11-04 再選 to clean）
    → **finishing**｜need + V-ing = 需被（= to be finished）
 4. I'm looking forward to ___ from you.（當時選 hear）
    → **hearing**｜to 是介系詞，不是不定詞
@@ -73,8 +75,8 @@
    → **had we landed**｜No sooner + had + p.p. ... than + 過去簡單式
 5. We ___ the early train; this one is so crowded.
    → **should have taken**｜本應該做卻沒做
-6. No sooner ___ the tickets than the website crashed.（11-02 綜合選 did we buy）
-   → **had we bought**｜No sooner 子句先發生 → had + p.p.（倒裝對但時態淺，第二次踩）
+6. No sooner ___ the tickets than the website crashed.（11-02 選 did we buy；11-04 三踩 did he got）
+   → **had we bought**｜No sooner 子句先發生 → had + p.p.（倒裝對但時態淺，已三踩）
 
 ## 04 倒裝
 
@@ -88,6 +90,14 @@
    → **did I realize**｜Not until 開頭倒裝
 5. Never ___ such a mess.（see）
    → **have I seen**｜Never 開頭倒裝
+6. Never ___ (I / hear) such a ridiculous excuse.（11-04 寫 did I hear）
+   → **have I heard**｜至今經驗（無時間錨）→ 現在完成式倒裝
+7. Rarely ___ (he / make) such a careless mistake.（11-04 寫 did he make）
+   → **has he made**｜選 did 還是 has？具體那次過去事件（如 §03 #3「so she took it」）→ did；無時間錨講至今經驗 → has + p.p.
+8. Not only ___ the waiter rude, but the food was cold too.（11-04 兩次寫 were）
+   → **was**｜真實過去事實 → 單數 was；were 萬用只屬於假設語氣（If I were you），見 §08 #4
+9. Not until she checked the receipt ___ (she / notice) the extra charge.（11-04 綜合寫 than she relax）
+   → **did she notice**｜具體那次 → did + 原式倒裝；Not until 後面不加連接詞（than 是 No sooner 的）
 
 ## 05 片語動詞
 
@@ -143,3 +153,16 @@
    → **attend**｜attend + 活動 = 出席，無介系詞；attend to = 照顧、處理（意思不同）
 8. The paramedic attended ___ the injured driver.（11-02 選 with）
    → **to**｜attend to = 照顧、處理；記法：pay attention TO = attend TO
+
+## 08 動詞形狀與三態
+
+形狀鐵律：**did/do/does + 原式**｜**have/has/had + p.p.**｜**be 動詞 + 形容詞或 p.p.**（11-04 確立：倒裝、had 位置都會了，壞在最後一步動詞形狀）
+
+1. Not until the second alarm rang ___ (I / wake) up.（11-04 寫 did I woke）
+   → **did I wake**｜did 後面動詞還原
+2. 改錯：She have left the office at 6 p.m. yesterday.（11-04）
+   → **She left the office at 6 p.m. yesterday.**｜yesterday 明確過去 → 簡單過去式，不用完成式；She 也不配 have
+3. 不規則三態（11-04 自創形：leaved、saw 當 p.p.、losen、writen）：
+   see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen
+4. 假設 were vs 事實 was（11-04 混淆）：The waiter **was** rude（真實過去事實 → 正常搭配）vs If I **were** you / I wish I **were**（假設 → were 萬用）
+   判斷：這件事真的發生過嗎？真的 → was/were 正常搭配；假的、許願 → were
