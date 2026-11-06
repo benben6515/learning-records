@@ -27,7 +27,7 @@ async function verifyPassword(password, stored) {
 
 
 function getSid(req) {
-  return (req.headers.cookie || "").split("; ").find(c => c.startsWith("sid"))?.slice(4);
+  return (req.headers.cookie || "").split("; ").find(c => c.startsWith("sid="))?.slice(4);
 }
 
 async function getUser(req) {
