@@ -30,15 +30,64 @@ function getSid(req) {
   return (req.headers.cookie || "").split("; ").find(c => c.startsWith("sid="))?.slice(4);
 }
 
+class SessionCache {
+  map = new Map()
+  #TTL = 60_000
+
+  constructor() {
+    setInterval(() => this.#checkCache(), 3000).unref()
+  }
+
+  #checkCache() {
+    if (this.map.size > 1000) {
+      const oldest = this.map.keys().next().value
+      this.delete(oldest)
+    }
+    for (const key of this.map.keys()) {
+      const item = this.map.get(key)
+      if (item.expires < Date.now()) this.map.delete(key)
+    }
+  }
+  get(id) {
+    const item = this.map.get(id) || null
+    if (item && item.expires < Date.now()) return null
+    return item
+  }
+  set(id, values) {
+    this.map.set(id, { ...values, expires: Date.now() + this.#TTL })
+    return true
+  }
+  delete(id) {
+    this.map.delete(id)
+    return true
+  }
+}
+
+const sessionCache = new SessionCache()
+
+async function logCallbackTime(callback) {
+  const t0 = performance.now()
+  const result = await callback()
+  const diff = (performance.now() - t0).toFixed(2)
+  console.log(`gerUser: ${diff}ms`)
+  return result
+}
+
 async function getUser(req) {
-  const sid = getSid(req)
-  if (!sid) return null
-  const { rows } = await pool.query(`
+  return logCallbackTime(async () => {
+    const sid = getSid(req)
+    if (!sid) return null
+    const me = sessionCache.get(sid)?.user ?? null
+    if (me) return me
+    const { rows } = await pool.query(`
     SELECT u.id, u.email FROM sessions s
     JOIN users u ON u.id = s.user_id
     where s.sid = $1 AND s.expires_at > now()
     `, [sid])
-  return rows[0] ?? null
+    const user = rows[0] ?? null
+    sessionCache.set(sid, { user })
+    return rows[0] ?? null
+  })
 }
 
 
@@ -81,7 +130,10 @@ async function authMe(req, res) {
 
 async function logout(req, res) {
   const sid = getSid(req)
-  if (sid) await pool.query("DELETE FROM sessions WHERE sid = $1", [sid])
+  if (sid) {
+    await pool.query("DELETE FROM sessions WHERE sid = $1", [sid])
+    sessionCache.delete(sid)
+  }
   return json(res, 204, undefined, { "set-cookie": "sid=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0" })
 }
 
