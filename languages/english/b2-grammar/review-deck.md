@@ -43,6 +43,8 @@
     口訣：if 子句固定 had + p.p.，判斷前先遮住它，只看主句時間詞
 17. I wish you ___ (tell) me about the problem yesterday.（11-04 綜合寫 have tell）
     → **had told**｜wish + 過去時間詞 = 過去遺憾，had + p.p.；且 have 後面也只能接 p.p.，不能接原式
+18. I wish I ___ my umbrella — look at me, I'm soaking wet!（11-05 綜合選 bought）
+    → **had brought**｜淋濕 = 過去沒帶傘的結果 → 過去遺憾 had + p.p.（回退）；動詞是 bring（bring-brought-brought），bought 是 buy
 
 ## 02 動名詞 vs 不定詞
 
@@ -77,6 +79,8 @@
    → **should have taken**｜本應該做卻沒做
 6. No sooner ___ the tickets than the website crashed.（11-02 選 did we buy；11-04 三踩 did he got）
    → **had we bought**｜No sooner 子句先發生 → had + p.p.（倒裝對但時態淺，已三踩）
+7. No sooner ___ the film than my phone rang.（11-05 綜合選 did start）
+   → **had the film started**｜第四踩、錯法同款：倒裝抓到（did 開頭），時態又淺掉 → No sooner = had + p.p. 倒裝，than 後面才是過去簡單式
 
 ## 04 倒裝
 
@@ -98,6 +102,8 @@
    → **was**｜真實過去事實 → 單數 was；were 萬用只屬於假設語氣（If I were you），見 §08 #4
 9. Not until she checked the receipt ___ (she / notice) the extra charge.（11-04 綜合寫 than she relax）
    → **did she notice**｜具體那次 → did + 原式倒裝；Not until 後面不加連接詞（than 是 No sooner 的）
+10. Seldom ___ the chance to speak at an international conference, so she grabbed it.（11-05 綜合選 had have）
+    → **did she have**｜seldom 是否定副詞（cheatsheet 觸發詞清單上有），開頭必倒裝；後半 so she grabbed it 鎖定過去簡單式 → did + 主詞 + 原形
 
 ## 05 片語動詞
 
@@ -153,6 +159,8 @@
    → **attend**｜attend + 活動 = 出席，無介系詞；attend to = 照顧、處理（意思不同）
 8. The paramedic attended ___ the injured driver.（11-02 選 with）
    → **to**｜attend to = 照顧、處理；記法：pay attention TO = attend TO
+9. Housing prices in the city have ___ sharply this year.（11-05 綜合再選 raised）
+   → **risen**｜與 #5 同家族二犯：價格自己漲 → rise（rise-rose-risen）；raise 要有施動者拉高受詞
 
 ## 08 動詞形狀與三態
 
