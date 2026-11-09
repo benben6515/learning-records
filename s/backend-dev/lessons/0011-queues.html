@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 · Queues: Respond First, Work Later — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">Lesson 11 · Architecture</p>
+<h1>Queues: Respond First, Work Later</h1>
+<p class="lead">Your handlers have obeyed one rule since Lesson 03: <em>finish all the work, then answer</em>. Today we break the rule deliberately — bolt a fake two-second welcome email onto <code>register</code> and watch latency and failure couple. Then we fix it for real: a jobs table in Postgres (the outbox idea), an in-process worker, a <code>202</code>, and one clause — <code>FOR UPDATE SKIP LOCKED</code> — that lets many workers share one queue without doing anything twice.</p>
+<p class="badges">
+  <span class="badge">~40 min</span>
+  <span class="badge">hands-on</span>
+  <span class="badge">architecture</span>
+</p>
+
+<h2>Why this lesson</h2>
+<p>Every endpoint you've built answers only after its work is done. For queries, right. But real services accumulate work the <em>response doesn't need</em>: welcome emails, CSV exports, webhooks, thumbnail generation. That work charges two taxes. <strong>Latency</strong> — the user waits for SMTP because the <code>await</code> sits in the handler. <strong>Coupling</strong> — when the email service is down, registration is down too, because they share a try/catch. And there's a hidden third: <strong>loss</strong> — crash mid-email and the work is gone, with no record it ever existed. One move fixes all three: respond when <em>your</em> outcome is known; put the rest on a durable to-do list.</p>
+
+<h2>The one idea</h2>
+<p><strong>A queue decouples accepting work from completing it.</strong> The response reports on the request's outcome — the note was created, the account exists. Follow-up work goes on a to-do list the request writes down <em>before answering</em>, and a worker drains it whenever it drains it. Durable means a row in Postgres — the same insight that made your notes survive restarts in Lesson 05 — not a <code>setTimeout</code> in memory. HTTP even has vocabulary for this: <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202">202 Accepted</a>, the missing member of your L04 status family.</p>
+
+<h2>Step 1 — feel the pain (measure, as always)</h2>
+<p>The fake SMTP call — slow, like the real one:</p>
+<pre><code>const sleep = (ms) =&gt; new Promise(r =&gt; setTimeout(r, ms))
+
+async function sendWelcomeEmail(email) {
+  await sleep(2000)                       <span class="c">// fake SMTP: slow on purpose</span>
+  console.log(`📧 welcome email sent to ${email}`)
+}</code></pre>
+<p>Bolt it onto register, awaited:</p>
+<pre><code>const u = (await pool.query(
+  "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
+  [body.email, await hashPassword(body.password)]
+)).rows[0]
+await sendWelcomeEmail(u.email)           <span class="c">// ← the two seconds live here</span>
+return json(res, 201, u)</code></pre>
+<p><code>curl -w '%{time_total}\n'</code> on register: single-digit milliseconds becomes 2.0 seconds. And <code>npm test</code> crawls — the suite registers three users per run. Six seconds of pure waiting, added by one line.</p>
+
+<h2>Step 2 — the coupling tax</h2>
+<p>Latency is the polite tax. Flip a <code>SMTP_DOWN</code> flag so the fake email throws, and register answers <code>500 INTERNAL</code> — <em>after</em> the INSERT already ran. The SQL was fine, the password was fine, the user row exists — but the client saw a 500, concluded the signup failed, and the retry gets <code>409 EMAIL_TAKEN</code>. Ghost account, from one badly placed <code>await</code>. Two failure domains now share one status code, and your L08 contract can't tell them apart. A dependency you <code>await</code> inside a handler is a dependency your endpoint inherits.</p>
+
+<h2>Step 3 — fire-and-forget, and its three cracks</h2>
+<p>The naive fix is one deleted word:</p>
+<pre><code>sendWelcomeEmail(u.email).catch(console.error)   <span class="c">// launch, don't wait</span></code></pre>
+<p>Fast again — single-digit milliseconds, suite snappy, failures logged instead of thrown. This pattern has a name, <em>fire-and-forget</em>, and it's L05's file-based persistence all over again: works until it doesn't, then cracks three ways.</p>
+<ul>
+  <li><strong>Crash loses the work.</strong> Kill the server inside the 2-second window: the pending promise dies with the process. No email, and no record an email was ever owed. A <code>setTimeout</code> is not storage.</li>
+  <li><strong>Invisible.</strong> "Did user X's welcome email send?" has no answer anywhere — no status, no list, no timestamp. Debugging by vibes.</li>
+  <li><strong>No retry.</strong> A transient SMTP hiccup swallows the email forever. Fire once, forget permanently.</li>
+</ul>
+
+<h2>Step 4 — the jobs table (the outbox idea)</h2>
+<p>What made notes survive restarts? A row. Same trick for work. Migration <code>0005_jobs.sql</code>:</p>
+<pre><code>CREATE TABLE jobs (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  type TEXT NOT NULL,
+  payload JSONB NOT NULL DEFAULT '{}',
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'running', 'done', 'failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  started_at TIMESTAMPTZ,
+  finished_at TIMESTAMPTZ
+)</code></pre>
+<p>Everything here is a L06 callback: IDENTITY ids, TIMESTAMPTZ, a CHECK constraint as contract. <code>type</code> picks the handler; <code>payload</code> carries the input as JSONB; <code>status</code> is the four-word lifecycle. Register swaps the <code>await</code> for an insert:</p>
+<pre><code>const u = (await pool.query(
+  "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
+  [body.email, await hashPassword(body.password)]
+)).rows[0]
+await pool.query(
+  "INSERT INTO jobs (type, payload) VALUES ('welcome_email', $1)",
+  [JSON.stringify({ email: u.email })]
+)
+return json(res, 201, u)</code></pre>
+<p>The response is unchanged — 201, single-digit milliseconds — but the intention is now <em>written down next to the fact</em>, in the same trustworthy database. That's the outbox idea: record what happened <em>and</em> what must happen next, so a restart can pick up the "next" part. (Stretch: wrap both inserts in one transaction, L06-style, so there's never a user without a job.)</p>
+
+<h2>Step 5 — the worker</h2>
+<p>A loop in the same process: claim a pending job, run its handler, mark the result. L02 taught you the loop; this one wears a uniform:</p>
+<pre><code>const handlers = {
+  welcome_email: async (payload) =&gt; {
+    await sleep(2000)                     <span class="c">// the same fake SMTP — unchanged</span>
+    console.log(`📧 welcome to ${payload.email}`)
+  },
+  export_notes: async (payload) =&gt; {
+    await sleep(1000)                     <span class="c">// fake CSV build</span>
+    console.log(`📦 notes exported for user ${payload.userId}`)
+  },
+}
+
+async function tick() {
+  const { rows } = await pool.query(`
+    UPDATE jobs SET status = 'running', started_at = now()
+    WHERE id = (
+      SELECT id FROM jobs WHERE status = 'pending'
+      ORDER BY id LIMIT 1 FOR UPDATE SKIP LOCKED
+    )
+    RETURNING *`)
+  return rows[0] ?? null
+}
+
+async function runWorker(name = "w1") {
+  for (;;) {
+    const job = await tick()
+    if (!job) { await sleep(500); continue }        <span class="c">// idle: poll every 500ms</span>
+    console.log(`${name} claimed job #${job.id} (${job.type})`)
+    try {
+      await handlers[job.type](job.payload)
+      await pool.query("UPDATE jobs SET status = 'done', finished_at = now() WHERE id = $1", [job.id])
+    } catch (err) {
+      console.error(err)
+      await pool.query("UPDATE jobs SET status = 'failed', finished_at = now() WHERE id = $1", [job.id])
+    }
+  }
+}
+runWorker()</code></pre>
+<p>The clause doing the heavy lifting: <code>FOR UPDATE SKIP LOCKED</code>. The inner SELECT locks the row it's about to claim; a second worker's identical query <em>skips</em> that locked row and takes the next one. N workers, one table, zero double-work — the entire coordination problem in four words. (pg-boss, a real Postgres queue, is essentially this query wearing a README.) And <code>failed</code> is now a recorded, visible state — a lost promise never gave you that.</p>
+
+<h2>Step 6 — 202, and the status endpoint</h2>
+<p>Crack #2 was invisibility. Fix it with two endpoints — and notice how much of this course shows up in twenty lines:</p>
+<pre><code>async function postExport(req, res) {
+  const me = await getUser(req)
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first")
+  const { rows } = await pool.query(
+    "INSERT INTO jobs (type, payload) VALUES ('export_notes', $1) RETURNING id",
+    [JSON.stringify({ userId: me.id })]
+  )
+  return json(res, 202, { id: rows[0].id, status: "pending" },
+    { location: `/jobs/${rows[0].id}` })
+}
+
+async function getJobById(req, res, p) {
+  const me = await getUser(req)
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first")
+  const { rows } = await pool.query("SELECT * FROM jobs WHERE id = $1", [Number(p.id)])
+  const job = rows[0]
+  if (!job) return fail(res, 404, "NOT_FOUND", "no such job")
+  if (job.payload.userId !== me.id) return fail(res, 403, "FORBIDDEN", "not your job")
+  return json(res, 200, job)
+}
+
+// routes:
+{ method: "POST", pattern: "/exports", handler: postExport },
+{ method: "GET", pattern: "/jobs/:id", handler: getJobById },</code></pre>
+<p>L07's authorization pattern (401 → ownership → 403), applied to jobs. And the status code is L04's family reunion: <strong>201 says the resource exists now</strong> (the note row was inserted); <strong>202 says accepted, result later</strong> — the export doesn't exist yet, the <em>job</em> does, which is why <code>Location</code> points at <code>/jobs/:id</code>. The client polls that URL until <code>status</code> says <code>done</code>.</p>
+
+<h2>Step 7 — the honesty trade-off table</h2>
+<table>
+  <thead><tr><th>Strategy</th><th>User waits</th><th>Crash mid-work</th><th>Retry</th><th>Two processes</th></tr></thead>
+  <tbody>
+    <tr><td>Inline <code>await</code></td><td>full 2s</td><td>fails with the request</td><td>no</td><td>—</td></tr>
+    <tr><td>Fire-and-forget</td><td>no</td><td>work lost, no trace</td><td>no</td><td>no</td></tr>
+    <tr><td>Jobs table + worker (what you built)</td><td>no</td><td>row survives, worker resumes</td><td>yes</td><td>yes, via SKIP LOCKED</td></tr>
+    <tr><td>Redis + BullMQ</td><td>no</td><td>yes</td><td>yes, plus rates, priorities, dashboards</td><td>the industry default</td></tr>
+  </tbody>
+</table>
+<p>One honesty note: the worker polls every 500ms, so a job may sit pending for half a second before starting. Fine for emails and exports; a chat app wouldn't tolerate it. The upgrades are Postgres <code>LISTEN/NOTIFY</code> or Redis blocking pops — say "Redis lesson" and we'll price them.</p>
+
+<h2>Step 8 — the discipline: a queue is not a trash chute</h2>
+<p>Three laws, or the queue starts generating fiction like any cache without invalidation:</p>
+<ul>
+  <li><strong>Don't queue what the response needs.</strong> The register response needs the user row — that stays inline. Only queue work the client didn't ask to wait for.</li>
+  <li><strong>Handlers must be idempotent.</strong> Crash between "email sent" and "mark done" → restart runs the handler again → two emails. Queues deliver <em>at least once</em>; "exactly once" is a marketing term. An idempotent handler (L04's word, back for an encore) makes at-least-once <em>behave</em> like exactly-once.</li>
+  <li><strong>Visibility is mandatory.</strong> A queue without a status endpoint is a black hole — jobs can sit <code>pending</code> forever and nobody would know. You built the endpoint before the drill proves the black hole. Keep it.</li>
+</ul>
+<p>And when jobs <code>failed</code>: today you look at the table and re-run by hand. Real systems add retry caps and dead-letter queues. That's an upgrade, not a redesign — the row-based design already gave failure an address.</p>
+
+<h3>Four things to notice</h3>
+<ul>
+  <li><strong>Restart doesn't forget.</strong> Kill the server mid-job, restart, and the new worker finishes the old job — because it was a row all along. Durability you can test, and the drill tests it.</li>
+  <li><strong>The worker is your event loop in a uniform.</strong> <code>sleep</code> is <code>setTimeout</code>, the claim is one query, every <code>await</code> yields. Nothing blocks (L02) — a slow email delays <em>jobs</em>, never <em>requests</em>. That inversion is the whole point.</li>
+  <li><strong>202 was always in the family.</strong> L04 taught 201 + Location; 202 + Location is the same shape with "not ready yet" as the twist. You didn't need a framework — you needed a scenario.</li>
+  <li><strong>SKIP LOCKED is the Redis lesson in one clause.</strong> Claim work so nobody else claims it twice. When the worker moves to its own process — or you need retries, priorities, and throughput — that's pg-boss (same table, packaged) or Redis + BullMQ (shared memory). Same vocabulary you just built by hand.</li>
+</ul>
+
+<h2>The drill — feel, lose, durify, prove</h2>
+<div class="task">
+  <span class="label">Hands-on · the queue, by hand</span>
+  <ul class="checklist" data-store="bd-l11-drill">
+    <li><span class="box"></span><span class="txt">Feel it: add <code>sendWelcomeEmail</code> (fake, 2s) awaited inside register; <code>curl -w '%{time_total}\n'</code> one register before and after (single-digit ms → ~2000ms); run <code>npm test</code> and feel the suite gain ~6s</span></li>
+    <li><span class="box"></span><span class="txt">Feel the coupling tax: flip a flag so the fake email throws — register answers 500 INTERNAL while the SQL was never the problem. Revert</span></li>
+    <li><span class="box"></span><span class="txt">Fire-and-forget: drop the <code>await</code>, add <code>.catch(console.error)</code>; fast again. Then prove crack #1: POST a register, Ctrl-C the server inside the 2s window, restart — no email, no trace. Leave a comment listing the three cracks</span></li>
+    <li><span class="box"></span><span class="txt">Durify: write <code>0005_jobs.sql</code> (as above), run <code>node --env-file=.env utils/migrate.mjs</code>, confirm the table</span></li>
+    <li><span class="box"></span><span class="txt">Swap the await for the jobs INSERT; register still 201 in single-digit ms; watch <code>SELECT id, type, status, created_at FROM jobs ORDER BY id DESC LIMIT 5;</code> in psql</span></li>
+    <li><span class="box"></span><span class="txt">Add the worker: <code>tick()</code> with SKIP LOCKED, <code>handlers</code> map, <code>runWorker()</code>; watch status walk pending → running → done, and feel the ~2s lag of "response instant, work later"</span></li>
+    <li><span class="box"></span><span class="txt">Durability proof: POST a register, kill the server while the job is pending or running, restart — the new worker finishes the old job. Compare with the fire-and-forget kill: this time, nothing was lost</span></li>
+    <li><span class="box"></span><span class="txt">Build POST /exports (202 + Location) and GET /jobs/:id (200/403/404); integration test: poll until done (with a timeout), and assert a stranger's job 403s — L07 scoping, tested</span></li>
+    <li><span class="box"></span><span class="txt">See the black hole: comment out <code>runWorker()</code>, POST /exports, watch the job sit pending forever; then restore and watch it drain. Write one line in your notes: why the status endpoint is not optional</span></li>
+    <li><span class="box"></span><span class="txt">Stretch A: run a second worker (<code>runWorker("w2")</code>) and log claims — no job claimed twice, thanks to SKIP LOCKED. Stretch B: wrap the user INSERT + job INSERT in one transaction, L06-style</span></li>
+  </ul>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-right="Correct — the response never needed the email." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Why does the welcome email have to leave the register handler?</q>
+  <div class="options">
+    <button class="opt">The response doesn't depend on it, so users shouldn't wait</button>
+    <button class="opt">The event loop can't run two awaits inside one handler</button>
+    <button class="opt">SMTP connections are too slow for Postgres to tolerate</button>
+    <button class="opt">Registration responses are cached, so emails would be lost</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — fire-and-forget is storage-free, so a crash is amnesia." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>What is fire-and-forget's deadliest crack?</q>
+  <div class="options">
+    <button class="opt">A crash loses the work and no record says it existed</button>
+    <button class="opt">A timeout makes the request fail with a 500 error</button>
+    <button class="opt">A duplicate event makes the handler run twice over</button>
+    <button class="opt">A console log hides the error from the error handler</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — written before the response, resumed after the restart." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>What makes the job survive a server restart?</q>
+  <div class="options">
+    <button class="opt">It's a row in Postgres, written before the response</button>
+    <button class="opt">It's a promise that Node resumes on the next boot</button>
+    <button class="opt">It's a cookie the browser replays after the crash</button>
+    <button class="opt">It's a timer that setInterval re-arms every cycle</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="Correct — accepted, not finished: only the job exists yet." data-wrong="Not quite — the correct answer is highlighted.">
+  <q>Why does POST /exports answer 202 instead of 201?</q>
+  <div class="options">
+    <button class="opt">The export isn't ready yet, so only the job exists</button>
+    <button class="opt">The export failed validation, so nothing was created</button>
+    <button class="opt">The export is a read operation, and reads answer 200</button>
+    <button class="opt">The export created no rows, so there's nothing returned</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>Read next (15 min)</h2>
+<p><strong>Primary source:</strong> <a href="https://pgboss.io/">pg-boss</a> — a real Postgres-backed job queue for Node. You just built its core by hand: a jobs table, SKIP LOCKED claiming, statuses; pg-boss adds retry caps, expiry, and cron. Read its README and recognize every noun. Second read: <a href="https://docs.bullmq.io/">BullMQ's getting-started guide</a> — the Redis world, with the same vocabulary (queues, jobs, workers, retries) and different memory. When two server processes need to share one queue — or throughput outgrows polling — say "Redis lesson" and we'll make the move.</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>Next:</strong> the capstone — one deployed service where every lesson shows up: routing, REST, SQL, auth, tests, config, a cache, and now a queue. Plan lands in the index when we get there. <span class="kicker">queued</span></p>
+  <p><strong>Stuck? Curious? Disagree?</strong> Ask your agent (me) — pg-boss vs BullMQ, cron vs queues, LISTEN/NOTIFY vs polling, at-least-once vs exactly-once, dead-letter queues, or whether PUT /jobs/:id/cancel is a good idea — all fair game.</p>
+  <p><a href="0000-table-of-contents.html">↑ Course index</a> · Reference: <a href="../reference/queues-first-aid.html">Queues First Aid</a> · Previous: <a href="0010-caching.html">Lesson 10</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons-tw/0011-queues.html">繁體中文</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

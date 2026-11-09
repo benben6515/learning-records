@@ -26,6 +26,10 @@
   The capstone's deployment target (free tier: web service + Postgres). Use for: dashboard mechanics, health check path, env vars, free-tier limits (30-day free PG expiry, 15-min sleep).
 - [Docs: Fly.io](https://fly.io/docs/)
   The pay-as-you-go alternative (credit card required, no free tier since 2024-10). Use for: when the learner outgrows free tiers or wants CLI-first deploys.
+- [Docs: pg-boss](https://pgboss.io/)
+  Postgres-backed job queue for Node — the L11 hand-built design, packaged (SKIP LOCKED claiming, retries, expiry, cron). Use for: graduating from the hand-built queue without leaving Postgres.
+- [Docs: BullMQ](https://docs.bullmq.io/)
+  Redis-backed queue for Node. Use for: the two-processes / high-throughput graduation path; the vocabulary (queues, jobs, workers, retries) matches L11.
 
 ## Wisdom (Communities)
 

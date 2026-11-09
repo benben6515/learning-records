@@ -133,15 +133,15 @@
       </span>
     </a>
   </li>
-  <li class="upcoming">
-    <div class="row">
+  <li>
+    <a href="0011-queues.html">
       <span class="num">11</span>
       <span class="meta">
-        <span class="t">佇列<span class="tag">排程中</span></span>
-        <span class="s">不該發生在請求裡的工作——寄信、匯出、一切慢的東西——以及怎麼別讓使用者等它。</span>
-        <span class="d">約 40 分鐘 · 架構</span>
+        <span class="t">佇列：先回應，工作後補</span>
+        <span class="s">不該發生在請求裡的工作——先用發後不理搬出去，再用 jobs 資料表、工作者與 202。</span>
+        <span class="d">約 40 分鐘 · 架構 · 動手做</span>
       </span>
-    </div>
+    </a>
   </li>
 </ol>
 
@@ -156,6 +156,7 @@
   <li><a href="../reference-tw/testing-first-aid.html">測試急救包</a>——node:test 要點、AAA 形狀、整合骨架、紅綠規則、先測什麼。</li>
   <li><a href="../reference-tw/deployment-first-aid.html">部署急救包</a>——設定規則、快速失敗防線、Render 部署設定、深度健康檢查，與全新資料庫的各種坑。</li>
   <li><a href="../reference-tw/caching-first-aid.html">快取急救包</a>——規則零、cache-aside 骨架、失效法則、誠實取捨表，與學會說謊的 Map。</li>
+  <li><a href="../reference-tw/queues-first-aid.html">佇列急救包</a>——先回應規則、三種策略、jobs 資料表、SKIP LOCKED 認領，與 202 合約。</li>
 </ul>
 
 <div class="footer">

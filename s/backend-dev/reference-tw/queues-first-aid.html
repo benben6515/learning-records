@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>佇列急救包 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">參考卡 · 10</p>
+<h1>佇列（queue）急救包</h1>
+<p class="lead">第 11 課一頁濃縮：先回應規則、三種策略、你 migrate 出來的 jobs 資料表、SKIP LOCKED 認領、工作者迴圈、202 合約，以及讓佇列變黑洞的各種坑——根基在 <a href="https://pgboss.io/">pg-boss</a>，它就是這張卡穿著 README。列印我。</p>
+
+<h2>先回應規則（把關一切）</h2>
+<p class="small"><strong>當<em>你自己</em>的結果已知就回應；回應不需要的工作，排隊。</strong>回應只報告請求本身——帳號存在了、筆記建好了。後續工作（寄信、匯出、webhook）放上持久的待辦清單，在<em>回答之前</em>寫下來。你在 handler 裡 <code>await</code> 的依賴，就是你的 endpoint 繼承的依賴——它的延遲、它的失敗、它的掛點。</p>
+
+<h2>三種策略</h2>
+<table>
+  <thead><tr><th>策略</th><th>使用者等嗎</th><th>做到一半 crash</th><th>重試</th><th>兩個行程</th></tr></thead>
+  <tbody>
+    <tr><td>Inline <code>await</code></td><td>整整等完</td><td>跟著請求一起失敗</td><td>不行</td><td>—</td></tr>
+    <tr><td>發後不理（fire-and-forget）</td><td>不等</td><td>工作遺失，無跡可尋</td><td>不行</td><td>不行</td></tr>
+    <tr><td>jobs 表 + 工作者（worker）</td><td>不等</td><td>那列留著，工作者接手</td><td>可以</td><td>可以，靠 SKIP LOCKED</td></tr>
+    <tr><td>Redis + BullMQ</td><td>不等</td><td>可以</td><td>可以，外加限流、優先序、儀表板</td><td>業界預設</td></tr>
+  </tbody>
+</table>
+
+<h2>jobs 資料表（migration 骨架）</h2>
+<pre><code>CREATE TABLE jobs (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  type TEXT NOT NULL,                        <span class="c">// 挑選處理器</span>
+  payload JSONB NOT NULL DEFAULT '{}',       <span class="c">// 輸入，JSON 格式</span>
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'running', 'done', 'failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  started_at TIMESTAMPTZ,
+  finished_at TIMESTAMPTZ
+)</code></pre>
+<p class="small">在記錄「事實」的同一個資料庫裡排隊——這就是寄件匣（outbox）的概念：<em>發生了什麼</em>與<em>接下來必須發生什麼</em>住在一起，重啟之後接得上「接下來」。</p>
+
+<h2>認領工作（整個協調問題，四個詞）</h2>
+<pre><code>UPDATE jobs SET status = 'running', started_at = now()
+WHERE id = (
+  SELECT id FROM jobs WHERE status = 'pending'
+  ORDER BY id LIMIT 1 FOR UPDATE SKIP LOCKED   <span class="c">// 第二個工作者跳過鎖住的那列</span>
+)
+RETURNING *</code></pre>
+<p class="small">N 個工作者、一張表、零重複。接著：跑處理器、標記 <code>done</code>（或 <code>failed</code>——有紀錄的失敗勝過消失的 promise）、沒事做就每 500ms 輪詢一次。升級路線：<code>LISTEN/NOTIFY</code> 免輪詢，或 Redis 的 blocking pop。</p>
+
+<h2>202 合約</h2>
+<ul>
+  <li><strong>201</strong>——資源<em>現在</em>存在（筆記那列已插入）。<strong>202</strong>——已受理、結果稍後：匯出還不存在，存在的是那個<em>工作</em>。</li>
+  <li>回 <code>202</code> + <code>Location: /jobs/:id</code>；客戶端輪詢（polling）那個 URL，直到 <code>status</code> 說 <code>done</code>。</li>
+  <li>工作是有主人的資料——跟筆記同一套範圍限縮：沒登入 401、不是你的工作 403（L07 再生）。</li>
+</ul>
+
+<h2>值得現在就知道的坑</h2>
+<ul>
+  <li><strong>回應需要的東西不准排隊。</strong>只有客戶端沒要求等的後續工作上清單。</li>
+  <li><strong>保證是至少一次（at-least-once）。</strong>在「工作做完」與「標記完成」之間 crash → 處理器再跑一次。冪等（idempotent）的處理器讓至少一次<em>表現得</em>像恰好一次——只說「恰好一次」是行銷術語。</li>
+  <li><strong>可見性是義務。</strong>沒有狀態 endpoint 的佇列是黑洞：工作永遠坐著 <code>pending</code> 而無人知曉。把 endpoint 建起來，留著。</li>
+  <li><strong>失敗需要一個故事。</strong>標記 <code>failed</code>、查看、手動重跑——今天這樣夠。真實系統會加重試上限與死信佇列（dead-letter queue）；那列資料早就給了失敗一個地址。</li>
+  <li><strong>JSONB payload 有彈性但沒驗證。</strong>在處理器裡驗證；生產端一個錯字，會變成工作者裡的執行期驚喜。</li>
+  <li><strong>setTimeout 不是儲存裝置。</strong>發後不理會在 crash 時丟工作——不可見、永遠。丟了會痛的東西，就該放進表裡。</li>
+  <li><strong>一個行程分享不了迴圈；多個行程分享得了表。</strong>當工作者搬到自己的行程、或吞吐量超過輪詢：pg-boss（同一張表，已打包）或 Redis + BullMQ（共享記憶體）。詞彙相同。</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons-tw/0011-queues.html">← 第 11 課</a> · 下一站：期末專題 · <a href="../lessons-tw/0000-table-of-contents.html">↑ 課程目錄</a> · <a href="../reference/queues-first-aid.html">English</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 11 課 · 佇列：先回應，工作後補 — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet">
+
+<p class="eyebrow">第 11 課 · 架構</p>
+<h1>佇列：先回應，工作後補</h1>
+<p class="lead">從第 03 課開始，你的 handler 一直遵守一條規則：<em>把所有工作做完，然後才回應</em>。今天我們故意打破它——把一封假的兩秒歡迎信掛上 <code>register</code>，看延遲與失敗怎麼被綁在一起。然後認真修好它——用一條佇列（queue）：Postgres 裡一張 jobs 資料表（寄件匣（outbox）的概念）、一個行程內的工作者（worker）、一個 <code>202</code>，還有一個子句——<code>FOR UPDATE SKIP LOCKED</code>——讓多個工作者共用一條佇列卻不重複做任何事。</p>
+<p class="badges">
+  <span class="badge">約 40 分鐘</span>
+  <span class="badge">動手做</span>
+  <span class="badge">架構</span>
+</p>
+
+<h2>為什麼是這一課</h2>
+<p>你建過的每個 endpoint，都是工作全部做完才回應。對查詢來說，正確。但真實的服務會累積一堆<em>回應根本不需要</em>的工作：歡迎信、CSV 匯出、webhook、縮圖。這些工作收兩種稅。<strong>延遲</strong>——<code>await</code> 坐在 handler 裡，使用者陪著 SMTP 一起等。<strong>耦合</strong>——寄信服務掛了，註冊也跟著掛，因為它們共用同一個 try/catch。還有隱藏的第三種：<strong>遺失</strong>——寄信寄到一半 crashes，工作消失，而且沒有任何紀錄說它存在過。一個動作同時修掉三件事：當<em>你自己</em>的結果已知時就回應；其餘的放上持久的待辦清單。</p>
+
+<h2>核心觀念</h2>
+<p><strong>佇列＝把「接下工作」與「完成工作」拆開。</strong>回應只報告請求本身的結果——筆記建好了、帳號存在了。後續工作放到一張待辦清單上，由請求在<em>回答之前</em>寫下它，工作者（worker）什麼時候清完就什麼時候清。持久（durable）指的是 Postgres 裡的一列資料——跟第 05 課讓筆記熬過重開機的是同一個洞察——而不是記憶體裡的一個 <code>setTimeout</code>。HTTP 連詞彙都幫你準備好了：<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202">202 Accepted</a>，你 L04 狀態碼家族裡缺席的那位成員。</p>
+
+<h2>步驟一——先感受痛（照慣例，先測量）</h2>
+<p>假的 SMTP 呼叫——慢，跟真的一樣：</p>
+<pre><code>const sleep = (ms) =&gt; new Promise(r =&gt; setTimeout(r, ms))
+
+async function sendWelcomeEmail(email) {
+  await sleep(2000)                       <span class="c">// 假 SMTP：故意慢</span>
+  console.log(`📧 welcome email sent to ${email}`)
+}</code></pre>
+<p>用 <code>await</code> 掛上 register：</p>
+<pre><code>const u = (await pool.query(
+  "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
+  [body.email, await hashPassword(body.password)]
+)).rows[0]
+await sendWelcomeEmail(u.email)           <span class="c">// ← 兩秒住在這裡</span>
+return json(res, 201, u)</code></pre>
+<p>對 register 下 <code>curl -w '%{time_total}\n'</code>：個位數毫秒變成 2.0 秒。然後 <code>npm test</code> 也爬行起來——suite 每次跑會註冊三個使用者。一行程式碼，加上六秒的純等待。</p>
+
+<h2>步驟二——耦合稅</h2>
+<p>延遲是客氣的稅。撥一個 <code>SMTP_DOWN</code> 旗標讓假信 throw，register 回 <code>500 INTERNAL</code>——<em>而且</em> INSERT 已經跑完了。SQL 沒問題、密碼沒問題、使用者那列資料也存在——但客戶端看到 500，判定註冊失敗，一重試就拿到 <code>409 EMAIL_TAKEN</code>。幽靈帳號，源自一個放錯位置的 <code>await</code>。兩個失敗領域現在共用同一個狀態碼，你的 L08 合約分不出它們。你在 handler 裡 <code>await</code> 的依賴，就是你的 endpoint 繼承的依賴。</p>
+
+<h2>步驟三——發後不理（fire-and-forget），與它的三個裂縫</h2>
+<p>天真的修法是刪掉一個詞：</p>
+<pre><code>sendWelcomeEmail(u.email).catch(console.error)   <span class="c">// 發射，不等</span></code></pre>
+<p>又快了——個位數毫秒，suite 敏捷，失敗被 log 而不是 throw。這個模式有名字，叫<em>發後不理（fire-and-forget）</em>，而它就是 L05 檔案版持久性的故事重演：一直好用，直到不好用，然後裂出三道縫。</p>
+<ul>
+  <li><strong>Crash 弄丟工作。</strong>在兩秒的窗口內砍掉伺服器：還在等的 promise 跟著行程一起死。沒有寄信，也沒有任何紀錄說曾經欠一封信。<code>setTimeout</code> 不是儲存裝置。</li>
+  <li><strong>不可見。</strong>「使用者 X 的歡迎信寄了嗎？」哪裡都找不到答案——沒有狀態、沒有清單、沒有時間戳。靠感覺 debug。</li>
+  <li><strong>無法重試。</strong>SMTP 一次暫時性抽風，那封信永遠消失。發射一次，永遠忘記。</li>
+</ul>
+
+<h2>步驟四——jobs 資料表（寄件匣的概念）</h2>
+<p>筆記靠什麼熬過重開機？一列資料。工作用同一招。Migration <code>0005_jobs.sql</code>：</p>
+<pre><code>CREATE TABLE jobs (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  type TEXT NOT NULL,
+  payload JSONB NOT NULL DEFAULT '{}',
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'running', 'done', 'failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  started_at TIMESTAMPTZ,
+  finished_at TIMESTAMPTZ
+)</code></pre>
+<p>這裡每一樣都是 L06 的老朋友：IDENTITY 主鍵、TIMESTAMPTZ、當合約用的 CHECK 限制。<code>type</code> 挑處理器；<code>payload</code> 用 JSONB 帶輸入；<code>status</code> 是四個詞的生命週期。register 把 <code>await</code> 換成一筆 INSERT：</p>
+<pre><code>const u = (await pool.query(
+  "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
+  [body.email, await hashPassword(body.password)]
+)).rows[0]
+await pool.query(
+  "INSERT INTO jobs (type, payload) VALUES ('welcome_email', $1)",
+  [JSON.stringify({ email: u.email })]
+)
+return json(res, 201, u)</code></pre>
+<p>回應不變——201、個位數毫秒——但「接下來該做的事」現在<em>被寫在事實旁邊</em>，寫在同一個值得信任的資料庫裡。這就是寄件匣（outbox）的概念：記下發生了什麼，<em>也</em>記下接下來必須發生什麼，讓重開機之後接得上「接下來」。（加分題：把兩筆 INSERT 包進同一個 transaction，L06 風格，就不會出現有使用者卻沒有工作的狀態。）</p>
+
+<h2>步驟五——工作者</h2>
+<p>同一個行程裡的一個迴圈：認領一筆 pending 工作、跑它的處理器、標記結果。L02 教過你迴圈；這個只是穿了制服：</p>
+<pre><code>const handlers = {
+  welcome_email: async (payload) =&gt; {
+    await sleep(2000)                     <span class="c">// 同一個假 SMTP——原封不動</span>
+    console.log(`📧 welcome to ${payload.email}`)
+  },
+  export_notes: async (payload) =&gt; {
+    await sleep(1000)                     <span class="c">// 假的 CSV 產出</span>
+    console.log(`📦 notes exported for user ${payload.userId}`)
+  },
+}
+
+async function tick() {
+  const { rows } = await pool.query(`
+    UPDATE jobs SET status = 'running', started_at = now()
+    WHERE id = (
+      SELECT id FROM jobs WHERE status = 'pending'
+      ORDER BY id LIMIT 1 FOR UPDATE SKIP LOCKED
+    )
+    RETURNING *`)
+  return rows[0] ?? null
+}
+
+async function runWorker(name = "w1") {
+  for (;;) {
+    const job = await tick()
+    if (!job) { await sleep(500); continue }        <span class="c">// 沒事做：每 500ms 輪詢一次</span>
+    console.log(`${name} claimed job #${job.id} (${job.type})`)
+    try {
+      await handlers[job.type](job.payload)
+      await pool.query("UPDATE jobs SET status = 'done', finished_at = now() WHERE id = $1", [job.id])
+    } catch (err) {
+      console.error(err)
+      await pool.query("UPDATE jobs SET status = 'failed', finished_at = now() WHERE id = $1", [job.id])
+    }
+  }
+}
+runWorker()</code></pre>
+<p>扛大樑的子句：<code>FOR UPDATE SKIP LOCKED</code>。內層 SELECT 鎖住它正要認領的那列；第二個工作者的相同查詢會<em>跳過</em>那列鎖住的，拿下一列。N 個工作者、一張表、零重複——整個協調問題用四個詞解決。（真實世界的 Postgres 佇列 pg-boss，基本上就是這條查詢加一件 README 外套。）而且 <code>failed</code> 現在是一個有紀錄、看得見的狀態——消失的 promise 從來給不了你這個。</p>
+
+<h2>步驟六——202，與狀態查詢 endpoint</h2>
+<p>裂縫 #2 是不可見。用兩個 endpoint 修它——順便看這門課在二十行裡出場多少次：</p>
+<pre><code>async function postExport(req, res) {
+  const me = await getUser(req)
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first")
+  const { rows } = await pool.query(
+    "INSERT INTO jobs (type, payload) VALUES ('export_notes', $1) RETURNING id",
+    [JSON.stringify({ userId: me.id })]
+  )
+  return json(res, 202, { id: rows[0].id, status: "pending" },
+    { location: `/jobs/${rows[0].id}` })
+}
+
+async function getJobById(req, res, p) {
+  const me = await getUser(req)
+  if (!me) return fail(res, 401, "UNAUTHENTICATED", "log in first")
+  const { rows } = await pool.query("SELECT * FROM jobs WHERE id = $1", [Number(p.id)])
+  const job = rows[0]
+  if (!job) return fail(res, 404, "NOT_FOUND", "no such job")
+  if (job.payload.userId !== me.id) return fail(res, 403, "FORBIDDEN", "not your job")
+  return json(res, 200, job)
+}
+
+// routes:
+{ method: "POST", pattern: "/exports", handler: postExport },
+{ method: "GET", pattern: "/jobs/:id", handler: getJobById },</code></pre>
+<p>L07 的授權模式（401 → 擁有權 → 403），套到工作上。狀態碼則是 L04 的家族團聚：<strong>201 說資源現在存在</strong>（筆記那列已插入）；<strong>202 說已受理，結果稍後</strong>——匯出還不存在，存在的是那個<em>工作</em>，所以 <code>Location</code> 指向 <code>/jobs/:id</code>。客戶端輪詢（polling）那個 URL，直到 <code>status</code> 說 <code>done</code>。</p>
+
+<h2>步驟七——誠實的取捨表</h2>
+<table>
+  <thead><tr><th>策略</th><th>使用者等嗎</th><th>做到一半 crash</th><th>重試</th><th>兩個行程</th></tr></thead>
+  <tbody>
+    <tr><td>Inline <code>await</code></td><td>整整 2 秒</td><td>跟著請求一起失敗</td><td>不行</td><td>—</td></tr>
+    <tr><td>發後不理</td><td>不等</td><td>工作遺失，無跡可尋</td><td>不行</td><td>不行</td></tr>
+    <tr><td>jobs 表 + 工作者（你建的這個）</td><td>不等</td><td>那列留著，工作者接手</td><td>可以</td><td>可以，靠 SKIP LOCKED</td></tr>
+    <tr><td>Redis + BullMQ</td><td>不等</td><td>可以</td><td>可以，外加限流、優先序、儀表板</td><td>業界預設</td></tr>
+  </tbody>
+</table>
+<p>一個誠實的附註：工作者每 500ms 輪詢一次，所以一筆工作可能先坐著 pending 半秒才開跑。寄信和匯出沒差；即時聊天忍不了。升級路線是 Postgres 的 <code>LISTEN/NOTIFY</code> 或 Redis 的 blocking pop——說聲「Redis 這一課」，我們來估價。</p>
+
+<h2>步驟八——紀律：佇列不是垃圾 chute</h2>
+<p>三條法則，否則佇列會開始產生小說——跟沒有失效處理的快取同一款：</p>
+<ul>
+  <li><strong>回應需要的東西不准排隊。</strong>register 的回應需要使用者那列——它留在原地。只排客戶端沒有要求等的工作。</li>
+  <li><strong>處理器必須冪等（idempotent）。</strong>在「信寄了」和「標記完成」之間 crash → 重啟後處理器再跑一次 → 兩封信。佇列的保證是<em>至少一次（at-least-once）</em>；「恰好一次（exactly-once）」是行銷用語。冪等的處理器（L04 的詞，再度返場）讓至少一次<em>表現得</em>像恰好一次。</li>
+  <li><strong>可見性是義務。</strong>沒有狀態 endpoint 的佇列是黑洞——工作可以永遠坐著 <code>pending</code> 而無人知曉。你在練習證明黑洞存在之前就先把 endpoint 建好了。留著它。</li>
+</ul>
+<p>至於 <code>failed</code> 的工作：今天你看著表、手動重跑。真實系統會加重試上限與死信佇列（dead-letter queue）。那是升級，不是重新設計——以列為本的設計早就給了失敗一個地址。</p>
+
+<h3>四件值得注意到的事</h3>
+<ul>
+  <li><strong>重開機不會忘記。</strong>工作做到一半砍伺服器、重啟，新的工作者把舊工作做完——因為它從頭到尾就是一列資料。可測試的持久性，練習會測它。</li>
+  <li><strong>工作者就是你的事件迴圈穿制服。</strong><code>sleep</code> 是 <code>setTimeout</code>、認領是一條查詢、每個 <code>await</code> 都讓出控制權。沒有東西被阻塞（L02）——一封慢信拖延的是<em>工作</em>，不是<em>請求</em>。這個反轉就是全部重點。</li>
+  <li><strong>202 一直在家族裡。</strong>L04 教過 201 + Location；202 + Location 是同一個形狀，只是把「還沒好」當轉折。你缺的不是框架——是場景。</li>
+  <li><strong>SKIP LOCKED 是整堂 Redis 課壓縮成一個子句。</strong>認領工作，讓別人認領不了第二次。當工作者搬到自己的行程——或你需要重試、優先序、吞吐量——那就是 pg-boss（同一張表，已打包）或 Redis + BullMQ（共享記憶體）。詞彙跟你今天手刻的是同一套。</li>
+</ul>
+
+<h2>練習——感受、弄丟、持久化、證明</h2>
+<div class="task">
+  <span class="label">動手做 · 手刻佇列</span>
+  <ul class="checklist" data-store="bd-l11-drill">
+    <li><span class="box"></span><span class="txt">感受：在 register 裡加上 <code>sendWelcomeEmail</code>（假的，2 秒）並 <code>await</code>；前後各跑一次 <code>curl -w '%{time_total}\n'</code>（個位數毫秒 → 約 2000ms）；跑 <code>npm test</code>，感受 suite 多出約 6 秒</span></li>
+    <li><span class="box"></span><span class="txt">感受耦合稅：撥旗標讓假信 throw——SQL 根本沒問題，register 卻回 500 INTERNAL。還原</span></li>
+    <li><span class="box"></span><span class="txt">發後不理：拿掉 <code>await</code>，加上 <code>.catch(console.error)</code>；又快了。然後證明裂縫 #1：POST 一次 register，在 2 秒窗口內 Ctrl-C 伺服器，重啟——沒有信、沒有痕跡。留一段註解列出三個裂縫</span></li>
+    <li><span class="box"></span><span class="txt">持久化：寫 <code>0005_jobs.sql</code>（如上），跑 <code>node --env-file=.env utils/migrate.mjs</code>，確認資料表</span></li>
+    <li><span class="box"></span><span class="txt">把 await 換成 jobs 的 INSERT；register 維持 201、個位數毫秒；在 psql 看 <code>SELECT id, type, status, created_at FROM jobs ORDER BY id DESC LIMIT 5;</code></span></li>
+    <li><span class="box"></span><span class="txt">加上工作者：<code>tick()</code> 用 SKIP LOCKED、<code>handlers</code> 對照表、<code>runWorker()</code>；看 status 走過 pending → running → done，感受「回應即時、工作稍後」的那約 2 秒落差</span></li>
+    <li><span class="box"></span><span class="txt">持久性證明：POST 一次 register，在工作 pending 或 running 時砍伺服器，重啟——新的工作者把舊工作做完。對照發後不理那次砍伺服器：這次，什麼都沒丟</span></li>
+    <li><span class="box"></span><span class="txt">建 POST /exports（202 + Location）與 GET /jobs/:id（200/403/404）；整合測試：輪詢直到 done（設 timeout），並斷言陌生人的工作拿 403——L07 的範圍限縮，這次有測</span></li>
+    <li><span class="box"></span><span class="txt">親眼見黑洞：註解掉 <code>runWorker()</code>，POST /exports，看工作永遠坐著 pending；還原後看它被清掉。在筆記寫一行：為什麼狀態 endpoint 不是可選的</span></li>
+    <li><span class="box"></span><span class="txt">加分 A：跑第二個工作者（<code>runWorker("w2")</code>）並 log 認領——靠 SKIP LOCKED，沒有任何工作被認領兩次。加分 B：把使用者 INSERT + 工作 INSERT 包進同一個 transaction，L06 風格</span></li>
+  </ul>
+</div>
+
+<h2>檢查你自己</h2>
+<div class="quiz" data-right="正確——回應從來不需要那封信。" data-wrong="差一點——正確答案已標出。">
+  <q>為什麼歡迎信必須離開 register handler？</q>
+  <div class="options">
+    <button class="opt">回應不依賴它，所以使用者不該陪等</button>
+    <button class="opt">事件迴圈無法在同一個 handler 跑兩個 await</button>
+    <button class="opt">SMTP 連線太慢，Postgres 容忍不了</button>
+    <button class="opt">註冊回應會被快取，信件會因此遺失</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——發後不理沒有儲存，crash 等於失憶。" data-wrong="差一點——正確答案已標出。">
+  <q>發後不理最致命的裂縫是什麼？</q>
+  <div class="options">
+    <button class="opt">一個 crash 弄丟工作，而且沒有紀錄說它存在過</button>
+    <button class="opt">一個 timeout 讓請求以 500 錯誤收場</button>
+    <button class="opt">一個重複事件讓處理器跑了兩次</button>
+    <button class="opt">一個 console log 把錯誤藏離錯誤處理器</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——回應之前寫入，重啟之後接手。" data-wrong="差一點——正確答案已標出。">
+  <q>是什麼讓工作熬過伺服器重啟？</q>
+  <div class="options">
+    <button class="opt">它是 Postgres 裡的一列，在回應之前就寫入</button>
+    <button class="opt">它是一個 Node 在下次開機時續跑的 promise</button>
+    <button class="opt">它是一個瀏覽器在 crash 後重放的 cookie</button>
+    <button class="opt">它是一個 setInterval 每個週期重新武裝的計時器</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-right="正確——已受理、未完成：目前只存在工作本身。" data-wrong="差一點——正確答案已標出。">
+  <q>為什麼 POST /exports 回 202 而不是 201？</q>
+  <div class="options">
+    <button class="opt">匯出還沒好，所以目前只存在那個工作</button>
+    <button class="opt">匯出驗證失敗，所以什麼都沒建立</button>
+    <button class="opt">匯出屬於讀取操作，讀取回 200</button>
+    <button class="opt">匯出沒有建立任何列，所以無從回傳</button>
+  </div>
+  <p class="feedback"></p>
+</div>
+
+<h2>接著讀（15 分鐘）</h2>
+<p><strong>主要來源：</strong><a href="https://pgboss.io/">pg-boss</a>——真實世界的 Postgres 後端工作佇列，給 Node 用。你剛剛親手刻了它的核心：jobs 資料表、SKIP LOCKED 認領、狀態；pg-boss 再補上重試上限、過期、cron。讀它的 README，把每個名詞認出來。第二篇：<a href="https://docs.bullmq.io/">BullMQ 的入門指南</a>——Redis 的世界，用同一套詞彙（queues、jobs、workers、retries），換一種記憶體。當兩個伺服器行程需要共用一條佇列——或吞吐量超過輪詢——說聲「Redis 這一課」，我們就搬家。</p>
+
+<hr class="rule">
+<div class="footer">
+  <p class="next"><strong>下一課：</strong>期末專題——一個部署起來的服務，每課都會出場：路由、REST、SQL、驗證、測試、設定、快取，還有今天的佇列。計畫會刊登在課程目錄。<span class="kicker">排程中</span></p>
+  <p><strong>卡住了？好奇？不同意？</strong>來問你的 agent（我）——pg-boss vs BullMQ、cron vs 佇列、LISTEN/NOTIFY vs 輪詢、至少一次 vs 恰好一次、死信佇列、或 PUT /jobs/:id/cancel 到底是不是好主意——都歡迎。</p>
+  <p><a href="0000-table-of-contents.html">↑ 課程目錄</a> · 參考卡：<a href="../reference-tw/queues-first-aid.html">佇列急救包</a> · 上一課：<a href="0010-caching.html">第 10 課</a> · <a href="../MISSION.md">Mission</a> · <a href="../RESOURCES.md">Resources</a> · <a href="../lessons/0011-queues.html">English</a></p>
+</div>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/checklist.js"></script>
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Queues First Aid — Backend Fluency</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<article class="sheet ref">
+
+<p class="eyebrow">Reference Sheet · 10</p>
+<h1>Queues First Aid</h1>
+<p class="lead">Lesson 11 in one card: the respond-first rule, the three strategies, the jobs table you migrated, the SKIP LOCKED claim, the worker loop, the 202 contract, and the gotchas that turn a queue into a black hole — grounded in <a href="https://pgboss.io/">pg-boss</a>, which is this card wearing a README. Print me.</p>
+
+<h2>The respond-first rule (gates everything)</h2>
+<p class="small"><strong>Respond when <em>your</em> outcome is known; enqueue the work the response doesn't need.</strong> The response reports on the request — the account exists, the note was created. Follow-up work (emails, exports, webhooks) goes on a durable to-do list, written down <em>before</em> answering. A dependency you <code>await</code> inside a handler is a dependency your endpoint inherits — its latency, its failures, its outages.</p>
+
+<h2>The three strategies</h2>
+<table>
+  <thead><tr><th>Strategy</th><th>User waits</th><th>Crash mid-work</th><th>Retry</th><th>Two processes</th></tr></thead>
+  <tbody>
+    <tr><td>Inline <code>await</code></td><td>full duration</td><td>fails with the request</td><td>no</td><td>—</td></tr>
+    <tr><td>Fire-and-forget</td><td>no</td><td>work lost, no trace</td><td>no</td><td>no</td></tr>
+    <tr><td>Jobs table + worker</td><td>no</td><td>row survives, worker resumes</td><td>yes</td><td>yes, via SKIP LOCKED</td></tr>
+    <tr><td>Redis + BullMQ</td><td>no</td><td>yes</td><td>yes + rates, priorities, dashboards</td><td>the industry default</td></tr>
+  </tbody>
+</table>
+
+<h2>The jobs table (migration skeleton)</h2>
+<pre><code>CREATE TABLE jobs (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  type TEXT NOT NULL,                        <span class="c">// picks the handler</span>
+  payload JSONB NOT NULL DEFAULT '{}',       <span class="c">// the input, as JSON</span>
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'running', 'done', 'failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  started_at TIMESTAMPTZ,
+  finished_at TIMESTAMPTZ
+)</code></pre>
+<p class="small">Enqueue in the same database that records the fact — that's the outbox idea: <em>what happened</em> and <em>what must happen next</em> live together, so a restart can pick up the "next".</p>
+
+<h2>The claim (the whole coordination problem, four words)</h2>
+<pre><code>UPDATE jobs SET status = 'running', started_at = now()
+WHERE id = (
+  SELECT id FROM jobs WHERE status = 'pending'
+  ORDER BY id LIMIT 1 FOR UPDATE SKIP LOCKED   <span class="c">// second worker skips the locked row</span>
+)
+RETURNING *</code></pre>
+<p class="small">N workers, one table, zero double-work. Then: run the handler, mark <code>done</code> (or <code>failed</code> — a recorded failure beats a lost promise), idle-poll 500ms. Upgrades: <code>LISTEN/NOTIFY</code> to skip the poll, or Redis blocking pops.</p>
+
+<h2>The 202 contract</h2>
+<ul>
+  <li><strong>201</strong> — the resource exists <em>now</em> (the note row was inserted). <strong>202</strong> — accepted, result later: the export doesn't exist yet, the <em>job</em> does.</li>
+  <li>Answer <code>202</code> + <code>Location: /jobs/:id</code>; the client polls that URL until <code>status</code> says <code>done</code>.</li>
+  <li>Jobs are owned data — same scoping as notes: 401 without a session, 403 when it's not your job (L07 reborn).</li>
+</ul>
+
+<h2>Gotchas worth knowing now</h2>
+<ul>
+  <li><strong>Don't queue what the response needs.</strong> Only follow-up work the client didn't ask to wait for goes on the list.</li>
+  <li><strong>At-least-once is the guarantee.</strong> Crash between "work done" and "mark done" → the handler runs again. Idempotent handlers make at-least-once <em>behave</em> like exactly-once — "exactly-once" alone is a marketing term.</li>
+  <li><strong>Visibility is mandatory.</strong> A queue without a status endpoint is a black hole: jobs sit <code>pending</code> forever and nobody knows. Build the endpoint, keep it.</li>
+  <li><strong>Failed needs a story.</strong> Mark <code>failed</code>, look, re-run by hand — fine today. Real systems add retry caps and dead-letter queues; the row already gave failure an address.</li>
+  <li><strong>JSONB payload is flexible and unvalidated.</strong> Validate inside the handler; a typo in the producer shows up as a runtime surprise in the worker.</li>
+  <li><strong>setTimeout isn't storage.</strong> Fire-and-forget loses work on crash, invisibly, permanently. If losing it matters, it belongs in a table.</li>
+  <li><strong>One process can't share a loop; many can share a table.</strong> When the worker moves to its own process or throughput outgrows polling: pg-boss (same table, packaged) or Redis + BullMQ (shared memory). Same vocabulary.</li>
+</ul>
+
+<div class="footer">
+  <p><a href="../lessons/0011-queues.html">← Lesson 11</a> · Next up: the capstone · <a href="../lessons/0000-table-of-contents.html">↑ Course index</a> · <a href="../reference-tw/queues-first-aid.html">繁體中文</a></p>
+</div>
+
+</article>
+<script src="../assets/highlight.js"></script>
+</body>
+</html>
