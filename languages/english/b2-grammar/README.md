@@ -14,6 +14,7 @@
 |---|---|
 | [cheatsheet.md](cheatsheet.md) | **每次複習入口**：一頁速覽全部核心規則 |
 | [review-deck.md](review-deck.md) | **自測**：全部錯題 + 弱點家族題，遮答案格式 |
+| [roadmap.md](roadmap.md) | **戰略**：CEFR 診斷結果、B1→B2 路線圖、一週節奏 |
 | [01-conditionals-wish.md](topics/01-conditionals-wish.md) | 深查：條件句、wish 假設語氣、would rather |
 | [02-gerund-infinitive.md](topics/02-gerund-infinitive.md) | 深查：動名詞 vs 不定詞、need + V-ing、to 為介系詞的片語 |
 | [03-past-perfect.md](topics/03-past-perfect.md) | 深查：過去完成式、情態助動詞 + have + p.p. |
@@ -51,6 +52,8 @@
 | 11-04 | 形狀專打 5 題（R6–R10） | 4/5 |
 | 11-04 | did/has 選擇確認 3 題 + 不規則三態小考 5 題 | 3/3、4/5 |
 | 11-05 | 綜合驗收 10 題（語法+片語+字彙） | 6/10 |
+| 11-11 | CEFR 寫作診斷（中翻英 5 題 + 80 字短文） | 估算 B1（文法 A2+、字彙 B1） |
+| 11-11 | 新寫作錯誤家族收進 deck §09；新增 [roadmap.md](roadmap.md) | — |
 
 ## 弱點軌跡
 
@@ -69,3 +72,11 @@
   - **rise/raise 二犯**（再選 raised，10-29、11-05）
   - **Seldom 倒裝**（新點：cheatsheet 觸發詞清單上有但沒套用，選 had have）
 - 修復軌跡參考：混合條件句 11-03 以「遮 if 子句＋圈時間詞」法收掉，本次驗收 #1 守住未回退
+- **11-11 寫作診斷新家族**（自由寫作才現形，語法題反而不會錯 → 產出型弱點）：
+  - 複數+冠詞：three ~~apple~~、the two ~~case~~、go to ~~office~~（11-11，deck §09 #1–3）
+  - be + 原形動詞：~~it is work~~ nicely → it works well（形狀鐵律 §08 的新變形：be 後面也會踩）
+  - need to V 過度類推：人+主動寫成 need ~~considering~~（§02 #3「需被」規則反噬，deck §09 #5）
+  - 現在完成式漏 for：learned English ~~five years~~（11-11）
+  - 被動語態：~~is consider of~~ → is seen as（新區塊，主系統還沒教）
+  - 高頻字拼字：rainy / tomorrow / picnic / ambitious / perspective / colleague / pandemic / economic / compensation（與既有「拼字待加強」同軌，擴充清單在 deck §09 #8）
+  - 診斷詳情與後續計畫：[roadmap.md](roadmap.md)

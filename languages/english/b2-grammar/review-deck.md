@@ -1,6 +1,6 @@
 # 錯題自測本（Review Deck）
 
-用法：遮住答案行 → 念出正確形式 → 對答案。全錯題來源：2026-10-27 ～ 11-04 練習紀錄。
+用法：遮住答案行 → 念出正確形式 → 對答案。全錯題來源：2026-10-27 ～ 11-11 練習紀錄。
 規則忘了 → [cheatsheet](cheatsheet.md)；要完整講解 → 各主題檔。
 
 ## 01 假設語氣與條件句
@@ -174,3 +174,23 @@
    see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen
 4. 假設 were vs 事實 was（11-04 混淆）：The waiter **was** rude（真實過去事實 → 正常搭配）vs If I **were** you / I wish I **were**（假設 → were 萬用）
    判斷：這件事真的發生過嗎？真的 → was/were 正常搭配；假的、許願 → were
+
+## 09 寫作診斷新家族
+
+來源：11-11 CEFR 寫作診斷（中翻英 5 題 + 80 字短文）。語法題答對率不錯的結構，一進自由寫作就現出原形 → 產出型弱點，要用寫作來修。
+
+1. 改錯：I bought three apple at the market.
+   → **three apples**｜數字 > 1 → 名詞加 s（本次測驗最高頻錯誤）
+2. 改錯：There are some pros and cons of the two case.
+   → **the two options / both options**｜可數名詞不能光溜溜，要有限定詞或複數
+3. 改錯：As for the lazy team, go to office is better.
+   → **going to the office is better**｜動作當主詞 → V-ing；辦公室要 the
+4. 改錯：From my perspective, it is work nicely at the first time.
+   → **it works well at first**｜be 後面不接原形（形狀鐵律 §08：be + 形容詞/p.p.）；at first = 一開始
+5. 改錯：We still need considering the potential risk.
+   → **need to consider**｜§02 #3「need + V-ing = 需被」過度類推：主詞是「人」且意思主動 → need to V（The report needs finishing 才是需被）
+6. I have learned English ___ five years.
+   → **for**｜for + 期間（five years）；since + 起點（2015）
+7. 改錯：This new policy is consider of the diverting attention of public.
+   → **is seen as an attempt to divert public attention**｜被動語態 = be + p.p.；divert attention from = 轉移注意力（C1 題，結構崩壞正常，這題照天花板）
+8. 拼字清單（11-11 寫錯）：rainy、tomorrow、picnic、ambitious、perspective、colleague（≠ college）、pandemic、economic（≠ economical）、compensation
