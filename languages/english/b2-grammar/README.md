@@ -55,6 +55,8 @@
 | 11-11 | CEFR 寫作診斷（中翻英 5 題 + 80 字短文） | 估算 B1（文法 A2+、字彙 B1） |
 | 11-11 | 新寫作錯誤家族收進 deck §09；新增 [roadmap.md](roadmap.md) | — |
 | 11-12 | 綜合驗收 10 題（語法+片語+字彙） | 6/10 |
+| 11-12 | 第二輪回退家族補考 7 題（wish 對照、No sooner、Seldom 對照、historic、混合條件句） | 3 全對、1 半對、3 錯 |
+| 11-13 | 綜合 10 題（判斷層修復驗收 + 形狀保鮮） | 5/10 |
 
 ## 弱點軌跡
 
@@ -73,11 +75,17 @@
   - **rise/raise 二犯**（再選 raised，10-29、11-05）→ **11-12 首次過關**（has risen）
   - **Seldom 倒裝**（新點：cheatsheet 觸發詞清單上有但沒套用，選 had have）
 - **待加強（11-12 驗收現回退）**：
-  - **wish 過去遺憾第 3 次回退**：寫 didn't eat（deck §01 #19）——此家族最頑固，後果在現在、遺憾在過去 → had + p.p.
-  - **No sooner 第 5 踩**：倒裝對、時態淺（did the meeting begin），口訣「No sooner 開頭手先寫 had」（deck §03 #8）
-  - **Seldom 倒裝二犯**：這次倒裝沒觸發且時態錯（I saw），兩步口訣「先倒裝、再挑時態：無時間錨 → have + p.p.」（deck §04 #11）
-  - **historic 二犯**（又選 historical，deck §07 #10）
-- **11-12 過關**：rise/raise、混合條件句（would be 守住）、need to V、複數+冠詞、since + 現在完成式、call off——11-11 寫作新家族題目型全守住
+  - **wish 過去遺憾第 3 次回退**：寫 didn't eat（deck §01 #19）——但第二輪同框對照雙對（had accepted / knew），判斷法已啟動（deck §01 #20）
+  - **No sooner 第 5 踩後修復一半**：第二輪 had 位置對了（口訣生效），壞在三態——had she ~~sit~~ → had she **sat**，錯誤轉移到 §08 三態家族
+  - **Seldom 助動詞判斷混亂**：第二輪兩題反向錯（無錨應 have 選 did、有錨應 did 選 had，deck §04 #12）——倒裝已穩，只剩錨點判斷，需間隔重練同框對照
+  - **historic 二犯後第三輪過關**（11-12 第二輪選對 historic）
+  - **混合條件句再回退**：第一輪守住（would be），第二輪形狀破（~~wouldn't been~~ → wouldn't be，deck §01 #21）——形狀鐵律 §08 的 would 分支要一起掃
+- **待加強（11-13 驗收：形狀成為最大瓶頸）**：
+  - **判斷層全修復**：Seldom 錨點雙對（有錨 did、無錨 have 各對，deck §04 #13）、had 位置三題全對（No sooner / wish 口訣生效）、now → would be 對、need 雙向對
+  - **5 錯 100% 是動詞形狀**：did he ~~complained~~（did + 原式）、have I ~~meeted~~ → met、would ~~paied~~ → would have paid、had he ~~drank~~ → drunk、had ~~tell~~ → told——與 11-04 同款「結構全會、最後一步形狀崩」
+  - 自創形擴充（deck §08 #3）：meeted、paied（正確 paid）、drank 當 p.p.（正確 drunk）
+  - **明日方向**：三態集中操（遮表背誦 + p.p. 快問快答）+ 助動詞後形狀轉換，先補形狀再回綜合
+- **11-12 過關**：rise/raise、need to V、複數+冠詞、since + 現在完成式、call off、wish 過去遺憾（第二輪）——11-11 寫作新家族題目型全守住
 - 修復軌跡參考：混合條件句 11-03 以「遮 if 子句＋圈時間詞」法收掉，本次驗收 #1 守住未回退
 - **11-11 寫作診斷新家族**（自由寫作才現形，語法題反而不會錯 → 產出型弱點）：
   - 複數+冠詞：three ~~apple~~、the two ~~case~~、go to ~~office~~（11-11，deck §09 #1–3）

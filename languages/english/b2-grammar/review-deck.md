@@ -47,6 +47,22 @@
     → **had brought**｜淋濕 = 過去沒帶傘的結果 → 過去遺憾 had + p.p.（回退）；動詞是 bring（bring-brought-brought），bought 是 buy
 19. I wish I ___ (not / eat) that second cake — I feel sick now.（11-12 綜合寫 didn't eat，第 3 次回退）
     → **hadn't eaten**｜feel sick now = 過去吃下的結果 → 過去遺憾 had + p.p.；wish 家族判斷法：後果在現在，遺憾在過去 → had + p.p.
+20. 同框對照（11-12 第二輪雙對，wish 判斷已啟動）：
+    a. I wish I ___ (accept) that job offer when I had the chance.
+       → **had accepted**｜when I had the chance = 事已發生 → 過去遺憾
+    b. I wish I ___ (know) the answer right now.
+       → **knew**｜right now = 現在願望 → 過去式
+    口訣：wish 先停一拍，第一問「這件事已經發生了嗎？」發生過 → had + p.p.；還沒發生/現在狀態 → 過去式
+21. If I had gone to bed earlier, I ___ (not / be) so tired now.（11-12 第二輪寫 wouldn't been）
+    → **wouldn't be**｜遮住 if 子句，圈時間詞 now = 現在結果 → would not be；形狀鐵律：would 後面只有兩種——would + 原形 或 would + have + p.p.，沒有 wouldn't been
+22. 同框對照（11-13：#a 對、#b 形狀崩）：
+    a. If she had studied medicine, she ___ (be) a doctor now.
+       → **would be**｜now = 現在結果 → would + 原形
+    b. If we had booked earlier, we ___ (pay) half the price then.
+       → **would have paid**｜then = 過去結果 → would + have + p.p.（11-13 寫 would ~~paied~~：缺 have + paid 拼字）
+    口訣：主句圈時間詞 now → would + 原形；then / at that time → would have + p.p.
+23. I wish I ___ (tell) her the truth last week.（11-13 寫 had tell）
+    → **had told**｜had 位置對 ✓，p.p. 形狀：tell-told-told；had 後面只接 p.p.
 
 ## 02 動名詞 vs 不定詞
 
@@ -85,6 +101,8 @@
    → **had the film started**｜第四踩、錯法同款：倒裝抓到（did 開頭），時態又淺掉 → No sooner = had + p.p. 倒裝，than 後面才是過去簡單式
 8. No sooner ___ (the meeting / begin) than my laptop died.（11-12 綜合寫 did the meeting begin，第 5 踩）
    → **had the meeting begun**｜No sooner 後面 = 先發生動作 = had + p.p. 倒裝；begin-began-**begun**。口訣：No sooner 開頭 → 手先寫 had
+9. No sooner ___ (he / drink) his coffee than the bell rang.（11-13 寫 had he drank）
+   → **had he drunk**｜had 位置對 ✓；三態 drink-drank-**drunk**。對照 #8：had 位置已穩（口訣生效），p.p. 形狀成為最後一關
 
 ## 04 倒裝
 
@@ -110,6 +128,17 @@
     → **did she have**｜seldom 是否定副詞（cheatsheet 觸發詞清單上有），開頭必倒裝；後半 so she grabbed it 鎖定過去簡單式 → did + 主詞 + 原形
 11. Seldom ___ (I / see) such a well-organized event.（11-12 綜合寫 I saw，二犯：倒裝沒觸發 + 時態錯）
     → **have I seen**｜兩步：① Seldom 開頭 → 倒裝（助動詞提到主詞前）② 無時間錨講至今經驗 → have + p.p.。對照 §04 #10：有 so she grabbed it → did；無錨 → have
+12. 同框對照（11-12 第二輪兩題反向錯：#a 應 have 選 did、#b 應 did 選 had → 判斷混亂，待重練）：
+    a. Seldom ___ (we / receive) such positive feedback.
+       → **have we received**｜句尾無錨點，泛指至今經驗 → have + p.p.（拼字：receive，i 在 e 前、c 後）
+    b. Seldom ___ (he / raise) his voice, but yesterday he did.
+       → **did he raise**｜yesterday he did 直接指名那次事件 → did + 原形
+    判斷順序：倒裝（已穩）→ 掃句尾找錨點 → 有錨 did + 原形；沒錨 have/has + p.p.
+13. 同框複檢（11-13：錨點判斷雙對 ✓，兩題都崩在動詞形狀）：
+    a. Seldom ___ (he / complain) out loud, but yesterday he did.
+       → **did he complain**｜有錨 → did ✓；did + 原式（寫 ~~complained~~）
+    b. Seldom ___ (I / meet) anyone so generous.
+       → **have I met**｜無錨 → have ✓；三態 meet-met-**met**（寫 ~~meeted~~，自創形）
 
 ## 05 片語動詞
 
@@ -179,7 +208,7 @@
 2. 改錯：She have left the office at 6 p.m. yesterday.（11-04）
    → **She left the office at 6 p.m. yesterday.**｜yesterday 明確過去 → 簡單過去式，不用完成式；She 也不配 have
 3. 不規則三態（11-04 自創形：leaved、saw 當 p.p.、losen、writen）：
-   see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen
+   see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen｜sit-sat-**sat**（11-12 第二輪 No sooner 寫 had she sit，p.p. 誤用原形）｜meet-met-**met**（11-13 自創 meeted）｜drink-drank-**drunk**（11-13 drank 當 p.p.）｜pay-paid-**paid**（11-13 拼 paied）｜tell-told-**told**（11-13 had tell）
 4. 假設 were vs 事實 was（11-04 混淆）：The waiter **was** rude（真實過去事實 → 正常搭配）vs If I **were** you / I wish I **were**（假設 → were 萬用）
    判斷：這件事真的發生過嗎？真的 → was/were 正常搭配；假的、許願 → were
 
