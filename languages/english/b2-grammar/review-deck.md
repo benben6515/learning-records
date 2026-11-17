@@ -63,6 +63,20 @@
     口訣：主句圈時間詞 now → would + 原形；then / at that time → would have + p.p.
 23. I wish I ___ (tell) her the truth last week.（11-13 寫 had tell）
     → **had told**｜had 位置對 ✓，p.p. 形狀：tell-told-told；had 後面只接 p.p.
+24. I wish you ___ (come) to the party last night.（11-16 複習寫 came，第 4 次回退）
+    → **had come**｜last night = 事已發生的遺憾 → had + p.p.；三態 come-came-**come**（p.p. 和原形同形，別寫 had came）
+25. If I had listened to her advice, I ___ (make) fewer mistakes then.（11-16 複習寫 would make，#22b 同款二犯）
+    → **would have made**｜then = 過去結果 → would + have + p.p.；make-made-**made**。口訣再唸：now → would + 原形；then → would have + p.p.
+26. I wish my neighbor ___ (play) music at night. It's so annoying.（11-16 專練寫 plays）
+    → **wouldn't play**｜未來/別人行為的抱怨 → wish + would + 原形（同款：I wish it would stop raining）；wish 後面三種形式：過去式 / had + p.p. / would + 原形，沒有現在式
+27. 改錯：I wish I would have booked the tickets earlier.（11-16 專練改成 would had booked——would 誤入 wish 子句第 4 次）
+    → **I wish I had booked the tickets earlier.**｜鐵律：would 只住主句。修法程序化：wish 子句見 would → 第一動作刪掉 → 看時間 → 過去語境 → had + p.p.；且 would had 組合不存在（11-17 補課驗收同型題改對 ✓，鐵律修復）
+28. 同框對照（11-16 專練：#b 對、#a 寫 have known）：
+    a. I wish I ___ (know) the answer now.
+       → **knew**｜現在願望 = 過去式 backshift，不是現在完成式
+    b. I wish I ___ (know) the answer during the exam.
+       → **had known**｜事已發生 → had + p.p.
+    對照背：knew（現在）/ had known（過去）
 
 ## 02 動名詞 vs 不定詞
 
@@ -139,6 +153,8 @@
        → **did he complain**｜有錨 → did ✓；did + 原式（寫 ~~complained~~）
     b. Seldom ___ (I / meet) anyone so generous.
        → **have I met**｜無錨 → have ✓；三態 meet-met-**met**（寫 ~~meeted~~，自創形）
+14. Seldom ___ (we / see) such talent in one so young.（11-16 複習寫 had we seen，錨點判斷回退）
+    → **have we seen**｜無錨 → have + p.p.；三態 see-saw-seen（形狀對）。11-13 雙對後隔 3 天又回退 → 判斷層同樣要每日掃，不是只背形狀
 
 ## 05 片語動詞
 
@@ -208,7 +224,7 @@
 2. 改錯：She have left the office at 6 p.m. yesterday.（11-04）
    → **She left the office at 6 p.m. yesterday.**｜yesterday 明確過去 → 簡單過去式，不用完成式；She 也不配 have
 3. 不規則三態（11-04 自創形：leaved、saw 當 p.p.、losen、writen）：
-   see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen｜sit-sat-**sat**（11-12 第二輪 No sooner 寫 had she sit，p.p. 誤用原形）｜meet-met-**met**（11-13 自創 meeted）｜drink-drank-**drunk**（11-13 drank 當 p.p.）｜pay-paid-**paid**（11-13 拼 paied）｜tell-told-**told**（11-13 had tell）
+   see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen｜sit-sat-**sat**（11-12 第二輪 No sooner 寫 had she sit，p.p. 誤用原形）｜meet-met-**met**（11-13 自創 meeted）｜drink-drank-**drunk**（11-13 drank 當 p.p.）｜pay-paid-**paid**（11-13 拼 paied）｜tell-told-**told**（11-13 had tell）｜raise-raised-**raised**（規則動詞，11-16 自創 raisen）｜come-came-**come**（11-16 寫 came 當遺憾答案；p.p. 與原形同形）
 4. 假設 were vs 事實 was（11-04 混淆）：The waiter **was** rude（真實過去事實 → 正常搭配）vs If I **were** you / I wish I **were**（假設 → were 萬用）
    判斷：這件事真的發生過嗎？真的 → was/were 正常搭配；假的、許願 → were
 
@@ -230,4 +246,4 @@
    → **for**｜for + 期間（five years）；since + 起點（2015）
 7. 改錯：This new policy is consider of the diverting attention of public.
    → **is seen as an attempt to divert public attention**｜被動語態 = be + p.p.；divert attention from = 轉移注意力（C1 題，結構崩壞正常，這題照天花板）
-8. 拼字清單（11-11 寫錯）：rainy、tomorrow、picnic、ambitious、perspective、colleague（≠ college）、pandemic、economic（≠ economical）、compensation
+8. 拼字清單（11-11 寫錯）：rainy、tomorrow、picnic、ambitious、perspective、colleague（≠ college）、pandemic、economic（≠ economical）、compensation；+ receive（11-12 i/e 順序）、newspapers、every（11-16）
