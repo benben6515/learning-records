@@ -77,6 +77,25 @@
     b. I wish I ___ (know) the answer during the exam.
        → **had known**｜事已發生 → had + p.p.
     對照背：knew（現在）/ had known（過去）
+29. I wish my boss ___ (give) me clearer instructions.（11-18 二輪寫 would had given）
+    → **would give**｜路三 = wish + 人 + would + 原形，就這樣；**would 後面永遠只接原形**——would give ✓、would had ✗、would given ✗。would had 這個錯塊已三次現身（11-16 #27、11-18 #29 #30b）
+30. 同框對照（11-18 二輪：#a 對、#b 寫 would be）：
+    a. I wish it ___ (be) Friday today.
+       → **were**｜現在 → were 萬用
+    b. I wish it ___ (be) Friday yesterday.
+       → **had been**｜yesterday 已發生 → 路二；would 不進對過去的 wish 子句。對照記憶：today → were / yesterday → had been
+31. 改錯：If I would have seen you, I would have said hello.（11-20 寫 If I ~~have seen~~ you——半修：would 刪了，had 沒補）
+    → **If I had seen you, I would have said hello.**｜if 子句對過去 = had + p.p.；刪 would 後補 had，不是 have。記法：過去的 if 只認 had
+32. 同框對照（11-20：#a 寫 would be，would 滲進對現在子句）：
+    a. I wish the weather ___ (be) nicer today.
+       → **were**｜對現在 = 過去式/were；would 的居住地只有主句和路三
+    b. I wish the weather ___ (be) nicer last weekend.
+       → **had been** ✓
+33. 同框對照（11-20：同一句框、錨點不同 → 答案不同）：
+    a. I wish you ___ (tell) me sooner — the party is next Saturday.
+       → **would tell**｜路三三件套 wish + 人 + would + 原形：would 不能省（本次錯）也不能加東西（11-18 would had）
+    b. I wish you ___ (tell) me sooner — the party was last Saturday.
+       → **had told**｜路二；tell-told-**told**（had tell 三態回退，11-13 同款）
 
 ## 02 動名詞 vs 不定詞
 
@@ -224,7 +243,7 @@
 2. 改錯：She have left the office at 6 p.m. yesterday.（11-04）
    → **She left the office at 6 p.m. yesterday.**｜yesterday 明確過去 → 簡單過去式，不用完成式；She 也不配 have
 3. 不規則三態（11-04 自創形：leaved、saw 當 p.p.、losen、writen）：
-   see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen｜sit-sat-**sat**（11-12 第二輪 No sooner 寫 had she sit，p.p. 誤用原形）｜meet-met-**met**（11-13 自創 meeted）｜drink-drank-**drunk**（11-13 drank 當 p.p.）｜pay-paid-**paid**（11-13 拼 paied）｜tell-told-**told**（11-13 had tell）｜raise-raised-**raised**（規則動詞，11-16 自創 raisen）｜come-came-**come**（11-16 寫 came 當遺憾答案；p.p. 與原形同形）
+   see-saw-**seen**｜leave-left-left｜lose-lost-lost｜write-wrote-**written**（雙 t）｜break-broke-broken｜fall-fell-fallen｜go-went-gone｜take-took-taken｜steal-stole-stolen｜choose-chose-chosen｜sit-sat-**sat**（11-12 第二輪 No sooner 寫 had she sit，p.p. 誤用原形）｜meet-met-**met**（11-13 自創 meeted）｜drink-drank-**drunk**（11-13 drank 當 p.p.）｜pay-paid-**paid**（11-13 拼 paied）｜tell-told-**told**（11-13 had tell）｜raise-raised-**raised**（規則動詞，11-16 自創 raisen）｜come-came-**come**（11-16 寫 came 當遺憾答案；p.p. 與原形同形）｜wear-wore-**worn**（11-18 自創 worned）
 4. 假設 were vs 事實 was（11-04 混淆）：The waiter **was** rude（真實過去事實 → 正常搭配）vs If I **were** you / I wish I **were**（假設 → were 萬用）
    判斷：這件事真的發生過嗎？真的 → was/were 正常搭配；假的、許願 → were
 
